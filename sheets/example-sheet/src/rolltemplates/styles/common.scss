@@ -1,4 +1,4 @@
-@use "../../common/scss/vars.scss";
+@use '../../common/scss/vars.scss';
 
 rolltemplate.examplesheet {
   display: block;
@@ -38,7 +38,6 @@ rolltemplate.examplesheet {
       }
     }
   }
-
 
   .key-values {
     &__pair {

@@ -3,14 +3,14 @@
     <div class="trait__row">
       <button class="trait__toggle" @click="toggleExpand">
         <span class="caret" :class="{ expanded }">►</span>
-        <span class="label">{{trait.name}}</span>
+        <span class="label">{{ trait.name }}</span>
       </button>
       <div class="trait__buttons">
         <button class="link-btn print" title="Print" @click="handlePrint">⮑</button>
         <button class="link-btn delete" title="Delete" @click="handleDelete">✕</button>
       </div>
       <div class="trait__level">
-        {{ index + 1}}
+        {{ index + 1 }}
       </div>
     </div>
 
@@ -18,7 +18,7 @@
       <div class="trait__top">
         <label :for="`name-${trait._id}`">
           <span class="label">Name</span>
-          <input :id="`name-${trait._id}`" v-model="trait.name"/>
+          <input :id="`name-${trait._id}`" v-model="trait.name" />
         </label>
         <label :for="`type-${trait._id}`">
           <span class="label">Type</span>
@@ -29,37 +29,41 @@
         </label>
       </div>
       <div class="trait__bottom">
-        <textarea placeholder="Description" :id="`description-${trait._id}`" v-model="trait.description" />
+        <textarea
+          placeholder="Description"
+          :id="`description-${trait._id}`"
+          v-model="trait.description"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { useTraitsStore } from '@/sheet/stores/traits/traitsStore'
+import { ref, watch } from 'vue';
+import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
 
 const props = defineProps({
   trait: { type: Object },
   index: { type: Number },
-})
+});
 
 const expanded = ref(false);
 
-const toggleExpand = () => { expanded.value = !expanded.value }
+const toggleExpand = () => {
+  expanded.value = !expanded.value;
+};
 const handleDelete = () => {
-  const traitStore = useTraitsStore()
-  traitStore.removeTrait(props.trait._id)
-}
+  const traitStore = useTraitsStore();
+  traitStore.removeTrait(props.trait._id);
+};
 const handlePrint = () => {
-  const traitStore = useTraitsStore()
-  traitStore.printTrait(props.trait._id)
-}
-
+  const traitStore = useTraitsStore();
+  traitStore.printTrait(props.trait._id);
+};
 </script>
 
 <style scoped lang="scss">
-
 .trait {
   .label {
     font-weight: 600;
@@ -133,5 +137,4 @@ const handlePrint = () => {
     }
   }
 }
-
 </style>

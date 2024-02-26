@@ -17,8 +17,8 @@
 </template>
 
 <script setup>
-import { useExampleSheetStore } from "./sheet/stores";
-import router from "./router";
+import { useExampleSheetStore } from './sheet/stores';
+import router from './router';
 
 const store = useExampleSheetStore();
 </script>

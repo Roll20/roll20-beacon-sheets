@@ -1,41 +1,41 @@
-import handlebars from "handlebars";
+import handlebars from 'handlebars';
 
-import chatRollTemplate from "./templates/chat.hbs?raw";
+import chatRollTemplate from './templates/chat.hbs?raw';
 import basicRollTemplate from './templates/basicRoll.hbs?raw';
 
-import keyValues from "./partials/keyValues.hbs?raw";
-import textContent from "./partials/textContent.hbs?raw";
-import rollComponents from "./partials/rollComponents.hbs?raw";
-import wrapper from "./partials/wrapper.hbs?raw";
-import rollTotal from "./partials/rollTotal.hbs?raw";
-import header from "./partials/header.hbs?raw";
-import heroDie from "./partials/heroDie.hbs?raw";
+import keyValues from './partials/keyValues.hbs?raw';
+import textContent from './partials/textContent.hbs?raw';
+import rollComponents from './partials/rollComponents.hbs?raw';
+import wrapper from './partials/wrapper.hbs?raw';
+import rollTotal from './partials/rollTotal.hbs?raw';
+import header from './partials/header.hbs?raw';
+import heroDie from './partials/heroDie.hbs?raw';
 
-import { isGreater } from "./expressions/isGreater";
-import { isEqual } from "./expressions/isEqual";
-import {sumComponents} from "./expressions/sumComponents";
-import {getDice} from "./expressions/getDice";
-import {isArray} from "./expressions/isArray";
-import { capitalize } from "./expressions/capitalize";
+import { isGreater } from './expressions/isGreater';
+import { isEqual } from './expressions/isEqual';
+import { sumComponents } from './expressions/sumComponents';
+import { getDice } from './expressions/getDice';
+import { isArray } from './expressions/isArray';
+import { capitalize } from './expressions/capitalize';
 
-handlebars.registerPartial("header", header);
-handlebars.registerPartial("wrapper", wrapper);
-handlebars.registerPartial("keyValues", keyValues);
-handlebars.registerPartial("rollTotal", rollTotal);
-handlebars.registerPartial("textContent", textContent);
-handlebars.registerPartial("rollComponents", rollComponents);
-handlebars.registerPartial("heroDie", heroDie);
+handlebars.registerPartial('header', header);
+handlebars.registerPartial('wrapper', wrapper);
+handlebars.registerPartial('keyValues', keyValues);
+handlebars.registerPartial('rollTotal', rollTotal);
+handlebars.registerPartial('textContent', textContent);
+handlebars.registerPartial('rollComponents', rollComponents);
+handlebars.registerPartial('heroDie', heroDie);
 
-handlebars.registerHelper("sumComponents", sumComponents);
-handlebars.registerHelper("getDice", getDice);
-handlebars.registerHelper("isGreater", isGreater);
-handlebars.registerHelper("isEqual", isEqual);
-handlebars.registerHelper("isArray", isArray);
-handlebars.registerHelper("capitalize", capitalize);
+handlebars.registerHelper('sumComponents', sumComponents);
+handlebars.registerHelper('getDice', getDice);
+handlebars.registerHelper('isGreater', isGreater);
+handlebars.registerHelper('isEqual', isEqual);
+handlebars.registerHelper('isArray', isArray);
+handlebars.registerHelper('capitalize', capitalize);
 
-handlebars.registerHelper("not", (v) => !v);
-handlebars.registerHelper("or", (a, b) => a || b);
-handlebars.registerHelper("and", (a, b) => a && b);
+handlebars.registerHelper('not', (v) => !v);
+handlebars.registerHelper('or', (a, b) => a || b);
+handlebars.registerHelper('and', (a, b) => a && b);
 
 const rollTemplates = {
   chat: handlebars.compile(chatRollTemplate),
@@ -67,16 +67,16 @@ type CommonParameters = {
 };
 
 export type SendToChatTemplate = {
-  type: "chat";
-  parameters: CommonParameters,
+  type: 'chat';
+  parameters: CommonParameters;
 };
 
 export type RollToChatTemplate = {
-  type: "roll";
+  type: 'roll';
   parameters: CommonParameters & {
     components: DiceComponent[];
     multiplier?: number;
-    resultType?: "crit-success" | "crit-fail";
+    resultType?: 'crit-success' | 'crit-fail';
     allowHeroDie?: boolean;
   };
 };

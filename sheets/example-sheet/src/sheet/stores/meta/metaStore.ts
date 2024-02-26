@@ -1,6 +1,6 @@
-import type { Token } from "@roll20/charsheet-relay-sdk";
-import { defineStore } from "pinia";
-import { reactive, ref, toRaw, type Ref } from "vue";
+import type { Token } from '@roll20/charsheet-relay-sdk';
+import { defineStore } from 'pinia';
+import { reactive, ref, toRaw, type Ref } from 'vue';
 
 export type MetaHydrate = {
   id: string;
@@ -11,17 +11,17 @@ export type MetaHydrate = {
   token: Record<string, any>;
 };
 
-export const useMetaStore = defineStore("meta", () => {
-  const id = ref("");
-  const name = ref("");
-  const avatar = ref("");
-  const bio = ref("");
-  const gmNotes = ref("");
+export const useMetaStore = defineStore('meta', () => {
+  const id = ref('');
+  const name = ref('');
+  const avatar = ref('');
+  const bio = ref('');
+  const gmNotes = ref('');
   const token: Ref<Token> = ref({});
 
   const permissions = reactive({
     isOwner: false,
-    isGM: false
+    isGM: false,
   });
 
   // Stubs for store consistency
@@ -31,7 +31,7 @@ export const useMetaStore = defineStore("meta", () => {
       name: name.value,
       avatar: avatar.value,
       bio: bio.value,
-      gmNotes: gmNotes.value
+      gmNotes: gmNotes.value,
     };
   };
 
@@ -54,6 +54,6 @@ export const useMetaStore = defineStore("meta", () => {
     token,
     permissions,
     dehydrate,
-    hydrate
+    hydrate,
   };
 });

@@ -2,7 +2,9 @@
   <div class="settings">
     SETTINGS
     <button @click="goBack" class="big-button">Back</button>
-    <button class="big-button" :disabled="!(isOwner || isGM)" @click="loadExampleData">Add mock data</button>
+    <button class="big-button" :disabled="!(isOwner || isGM)" @click="loadExampleData">
+      Add mock data
+    </button>
     <div class="settings__main">
       <label class="settings__item" for="encumbrance-penalty">
         <span class="settings__item__name">Encumbrance penalty</span>
@@ -14,11 +16,11 @@
 </template>
 
 <script setup>
-import { useExampleSheetStore } from "@/sheet/stores";
-import { useMetaStore } from "@/sheet/stores/meta/metaStore";
-import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
-import router from "@/router";
-import { computed } from "vue";
+import { useExampleSheetStore } from '@/sheet/stores';
+import { useMetaStore } from '@/sheet/stores/meta/metaStore';
+import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import router from '@/router';
+import { computed } from 'vue';
 
 const store = useExampleSheetStore();
 const meta = useMetaStore();
@@ -27,19 +29,19 @@ const settings = useSettingsStore();
 const isOwner = computed(() => meta.permissions.isOwner);
 const isGM = computed(() => meta.permissions.isGM);
 
-const goBack = () => router.replace({ name: "sheet" });
+const goBack = () => router.replace({ name: 'sheet' });
 
 const loadExampleData = () => {
   store.loadExampleData();
   goBack();
-}
+};
 </script>
 
 <style lang="scss" scoped>
-@use "../common/scss/vars.scss";
+@use '../common/scss/vars.scss';
 
 .settings {
-  &__main{
+  &__main {
     margin: 2rem 0;
   }
   &__item {

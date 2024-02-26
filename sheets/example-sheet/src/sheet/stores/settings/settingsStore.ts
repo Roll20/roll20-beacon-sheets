@@ -1,31 +1,30 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
 export type SettingsHydrate = {
-		settings: {
-				encumbrancePenalty: number;
-		}
+  settings: {
+    encumbrancePenalty: number;
+  };
 };
 
-export const useSettingsStore = defineStore("settings", () => {
+export const useSettingsStore = defineStore('settings', () => {
+  const encumbrancePenalty = ref(-4);
 
-		const encumbrancePenalty = ref(-4)
+  const dehydrate = () => {
+    return {
+      settings: {
+        encumbrancePenalty: encumbrancePenalty.value,
+      },
+    };
+  };
 
-		const dehydrate = () => {
-				return {
-						settings: {
-								encumbrancePenalty: encumbrancePenalty.value,
-						}
-				};
-		};
+  const hydrate = (hydrateStore: SettingsHydrate) => {
+    encumbrancePenalty.value = hydrateStore.settings.encumbrancePenalty || encumbrancePenalty.value;
+  };
 
-		const hydrate = (hydrateStore: SettingsHydrate) => {
-				encumbrancePenalty.value = hydrateStore.settings.encumbrancePenalty || encumbrancePenalty.value;
-		};
-
-		return {
-				encumbrancePenalty,
-				dehydrate,
-				hydrate,
-		};
+  return {
+    encumbrancePenalty,
+    dehydrate,
+    hydrate,
+  };
 });

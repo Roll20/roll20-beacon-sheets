@@ -1,16 +1,16 @@
-import type { Character, Dispatch } from "@roll20/charsheet-relay-sdk";
+import type { Character, Dispatch } from '@roll20/charsheet-relay-sdk';
 
 const applyChange = (oldValue: number, newValue: number | string) => {
-  if (typeof newValue === "string") newValue = newValue.trim();
-  const operator = typeof newValue === "string" ? newValue[0] : false;
-  if (typeof newValue === "string" && (operator === "-" || operator === "+")) {
+  if (typeof newValue === 'string') newValue = newValue.trim();
+  const operator = typeof newValue === 'string' ? newValue[0] : false;
+  if (typeof newValue === 'string' && (operator === '-' || operator === '+')) {
     const intValue = parseInt(newValue.substring(1));
     if (isNaN(intValue)) return oldValue;
-    if (operator === "+") return oldValue + intValue;
-    if (operator === "-") return oldValue - intValue;
+    if (operator === '+') return oldValue + intValue;
+    if (operator === '-') return oldValue - intValue;
     else return oldValue;
   } else {
-    const intValue = typeof newValue === "string" ? parseInt(newValue) : newValue;
+    const intValue = typeof newValue === 'string' ? parseInt(newValue) : newValue;
     if (isNaN(intValue)) return oldValue;
     return intValue;
   }
@@ -31,13 +31,13 @@ export const getLife = ({ character }: { character: Character }) => {
   const current = character.attributes.character.character.lifeCurrent;
   return {
     current,
-  }
+  };
 };
 
 export const setLife = (
   {
     character,
-    dispatch
+    dispatch,
   }: {
     character: Character;
     dispatch: Dispatch;
@@ -52,13 +52,13 @@ export const setLife = (
     character: {
       id: characterId,
       attributes: {
-        updateId: "TOKENCHANGE",
+        updateId: 'TOKENCHANGE',
         character: {
           character: {
-            lifeCurrent: finalValue
-          }
-        }
-      }
-    }
+            lifeCurrent: finalValue,
+          },
+        },
+      },
+    },
   });
 };

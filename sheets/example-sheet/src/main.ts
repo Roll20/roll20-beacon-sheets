@@ -1,16 +1,16 @@
-import { createPinia } from "pinia";
-import { createApp } from "vue";
-import { createI18n } from "vue-i18n";
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+import { createI18n } from 'vue-i18n';
 
-import App from "./App.vue";
-import router from "./router";
+import App from './App.vue';
+import router from './router';
 
-import "./sheet/scss/index.scss";
+import './sheet/scss/index.scss';
 
-import { createRelay } from "./relay/relay";
+import { createRelay } from './relay/relay';
 
-const env = import.meta.env.MODE || "";
-const isDevEnvironment = ["development", "test"].includes(env);
+const env = import.meta.env.MODE || '';
+const isDevEnvironment = ['development', 'test'].includes(env);
 
 const main = async () => {
   const pinia = createPinia();
@@ -29,7 +29,7 @@ const main = async () => {
     return args[0];
   };
 
-  app.mount("#app");
+  app.mount('#app');
 };
 
 main();

@@ -1,15 +1,15 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import jp from "jsonpath";
-import { useMetaStore, type MetaHydrate } from "@/sheet/stores/meta/metaStore";
-import { useCharacterStore } from '@/sheet/stores/character/characterStore'
-import { useAbilityScoreStore } from "@/sheet/stores/abilityScores/abilityScoresStore";
-import { useInventoryStore } from "@/sheet/stores/inventory/inventoryStore";
-import { useTraitsStore } from "@/sheet/stores/traits/traitsStore";
-import { v4 as uuidv4 } from "uuid";
-import { useBioStore } from "@/sheet/stores/bio/bioStore";
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import jp from 'jsonpath';
+import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
+import { useCharacterStore } from '@/sheet/stores/character/characterStore';
+import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
+import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
+import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
+import { v4 as uuidv4 } from 'uuid';
+import { useBioStore } from '@/sheet/stores/bio/bioStore';
 
-export const useExampleSheetStore = defineStore("examplesheetStore", () => {
+export const useExampleSheetStore = defineStore('examplesheetStore', () => {
   const stores = {
     meta: useMetaStore(),
     character: useCharacterStore(),
@@ -35,7 +35,7 @@ export const useExampleSheetStore = defineStore("examplesheetStore", () => {
 
   const doAction = (path: string, payload: Record<string, any>) => {
     const func = jp.value(stores, path);
-    if (typeof func === "function") func(payload, stores);
+    if (typeof func === 'function') func(payload, stores);
   };
 
   const dehydrateStore = () => {
@@ -44,14 +44,13 @@ export const useExampleSheetStore = defineStore("examplesheetStore", () => {
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];
     storeKeys.forEach((key) => {
       //if (key === "rolls") return;
-      if (key === "meta") {
+      if (key === 'meta') {
         const { name, bio, gmNotes, avatar } = stores.meta.dehydrate();
         character.name = name;
         character.bio = bio;
         character.gmNotes = gmNotes;
         character.avatar = avatar;
-      }
-      else {
+      } else {
         character.attributes[key] = stores[key].dehydrate();
       }
     });
@@ -81,21 +80,21 @@ export const useExampleSheetStore = defineStore("examplesheetStore", () => {
   * Can invoke it from a button in the Settings tab.
   * */
   const loadExampleData = () => {
-    stores.meta.name = 'Kitten'
+    stores.meta.name = 'Kitten';
     stores.meta.avatar = 'http://placekitten.com/200/200';
     stores.abilityScores.abilityScores = {
-      Strength: {base: 1, current: 1},
-      Endurance: {base: 0, current: 0},
-      Agility: {base: 4, current: 4},
-      Charisma: {base: 4, current: 4},
-      Aura: {base: 1, current: 0},
-      Thought: {base: 0, current:0},
-    }
+      Strength: { base: 1, current: 1 },
+      Endurance: { base: 0, current: 0 },
+      Agility: { base: 4, current: 4 },
+      Charisma: { base: 4, current: 4 },
+      Aura: { base: 1, current: 0 },
+      Thought: { base: 0, current: 0 },
+    };
     stores.bio.friends = 'My Human';
     stores.bio.enemies = 'Dogs';
     stores.bio.looks = 'Smol';
     stores.bio.species = 'Cat';
-    stores.bio.likes = 'Fish, yarn'
+    stores.bio.likes = 'Fish, yarn';
     stores.character.xp = 6000;
     stores.character.heroDiceMod = 2;
     stores.inventory.items = [
@@ -103,7 +102,8 @@ export const useExampleSheetStore = defineStore("examplesheetStore", () => {
         _id: uuidv4(),
         slots: 1,
         name: 'Yarn Ball',
-        description: 'Can be rolled to force all other cats that see it to roll a Difficulty 10 Aura check or run after it.',
+        description:
+          'Can be rolled to force all other cats that see it to roll a Difficulty 10 Aura check or run after it.',
         type: 'item',
         quantity: 1,
       },
@@ -122,8 +122,8 @@ export const useExampleSheetStore = defineStore("examplesheetStore", () => {
         description: '+4 defense',
         type: 'armor',
         quantity: 1,
-      }
-    ]
+      },
+    ];
     stores.inventory.itemsStowed = [
       {
         _id: uuidv4(),
@@ -133,22 +133,23 @@ export const useExampleSheetStore = defineStore("examplesheetStore", () => {
         type: 'item',
         quantity: 3,
       },
-    ]
+    ];
     stores.traits.traits = [
       {
         _id: uuidv4(),
         name: 'Feline',
         description: 'Proficient at jumping, hunting, stealth, acrobatics and climbing',
-        type: 'skill'
+        type: 'skill',
       },
       {
         _id: uuidv4(),
         name: 'Super Cute',
-        description: 'When targeted for a melee attack, they must attempt a Difficulty 8 Aura test or the attack is cancelled.',
-        type: 'power'
+        description:
+          'When targeted for a melee attack, they must attempt a Difficulty 8 Aura test or the attack is cancelled.',
+        type: 'power',
       },
-    ]
-  }
+    ];
+  };
 
   return {
     ...stores,

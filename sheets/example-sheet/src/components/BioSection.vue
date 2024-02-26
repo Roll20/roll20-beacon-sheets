@@ -3,51 +3,50 @@
     <div class="section__header">Your Hero</div>
     <div class="section__body bio__body">
       <div class="bio__avatar">
-        <img :src="meta.avatar || DEFAULT_AVATAR_URL"/>
+        <img :src="meta.avatar || DEFAULT_AVATAR_URL" />
       </div>
       <div class="bio__form">
         <label for="name">
           <span class="label">Name</span>
-          <input id="name" v-model="meta.name"/>
+          <input id="name" v-model="meta.name" />
         </label>
         <label for="name">
           <span class="label">Title</span>
-          <input id="name" v-model="bio.title"/>
+          <input id="name" v-model="bio.title" />
         </label>
         <label for="name">
           <span class="label">Friends</span>
-          <input id="name" v-model="bio.friends"/>
+          <input id="name" v-model="bio.friends" />
         </label>
         <label for="name">
           <span class="label">Enemies</span>
-          <input id="name" v-model="bio.enemies"/>
+          <input id="name" v-model="bio.enemies" />
         </label>
         <label for="name">
           <span class="label">Species</span>
-          <input id="name" v-model="bio.species"/>
+          <input id="name" v-model="bio.species" />
         </label>
         <label for="name">
           <span class="label">Likes</span>
-          <input id="name" v-model="bio.likes"/>
+          <input id="name" v-model="bio.likes" />
         </label>
         <label for="name">
           <span class="label">Looks</span>
-          <input id="name" v-model="bio.looks"/>
+          <input id="name" v-model="bio.looks" />
         </label>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { useMetaStore } from '@/sheet/stores/meta/metaStore'
-import { useBioStore } from '@/sheet/stores/bio/bioStore'
+import { useMetaStore } from '@/sheet/stores/meta/metaStore';
+import { useBioStore } from '@/sheet/stores/bio/bioStore';
 
-const DEFAULT_AVATAR_URL = 'http://placekitten.com/200/200'
+const DEFAULT_AVATAR_URL = 'http://placekitten.com/200/200';
 
-const meta = useMetaStore()
-const bio = useBioStore()
+const meta = useMetaStore();
+const bio = useBioStore();
 </script>
 
 <style scoped lang="scss">
@@ -76,5 +75,4 @@ const bio = useBioStore()
     display: inline-block;
   }
 }
-
 </style>

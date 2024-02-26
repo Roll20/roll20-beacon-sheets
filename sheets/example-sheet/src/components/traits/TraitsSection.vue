@@ -2,11 +2,14 @@
   <div class="section traits">
     <div class="section__header">Traits</div>
     <div class="section__body traits__body">
-      <div class="traits__top">
-        Unlock at Level ↓
-      </div>
+      <div class="traits__top">Unlock at Level ↓</div>
       <div class="traits__group">
-        <Trait v-for="(trait, index) in traitsStore.traits" :key="trait._id" :trait="trait" :index="index"/>
+        <Trait
+          v-for="(trait, index) in traitsStore.traits"
+          :key="trait._id"
+          :trait="trait"
+          :index="index"
+        />
       </div>
       <div class="add-item">
         <button class="link-btn" @click="traitsStore.addTrait()">+ Add Trait</button>
@@ -16,15 +19,14 @@
 </template>
 
 <script setup>
-import { useTraitsStore } from '@/sheet/stores/traits/traitsStore'
-import Trait from '@/components/traits/Trait.vue'
+import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
+import Trait from '@/components/traits/Trait.vue';
 
-const traitsStore = useTraitsStore()
+const traitsStore = useTraitsStore();
 </script>
 
 <style scoped lang="scss">
 .traits {
-
   &__body {
   }
 
@@ -42,5 +44,4 @@ const traitsStore = useTraitsStore()
     flex-direction: column;
   }
 }
-
 </style>

@@ -1,11 +1,10 @@
 <template>
   <div class="examplesheet-sheet">
-    <div class="examplesheet__header">
-    </div>
+    <div class="examplesheet__header"></div>
     <div class="examplesheet__main">
       <div class="examplesheet__column">
         <div class="examplesheet__character">
-          <BioSection/>
+          <BioSection />
         </div>
         <div class="examplesheet__combat">
           <CombatSection />
@@ -13,40 +12,38 @@
       </div>
       <div class="examplesheet__column">
         <div class="examplesheet__ability-scores">
-          <AbilityScoresSection/>
+          <AbilityScoresSection />
         </div>
         <div class="examplesheet__traits">
-          <TraitsSection/>
+          <TraitsSection />
         </div>
       </div>
       <div class="examplesheet__column">
         <div class="examplesheet__xp">
-          <XPSection/>
+          <XPSection />
         </div>
       </div>
-
-
     </div>
     <div class="examplesheet__inventory">
-      <InventorySection/>
+      <InventorySection />
     </div>
   </div>
 </template>
 
 <script setup>
-import { useExampleSheetStore } from '@/sheet/stores'
-import AbilityScoresSection from '@/components/AbilityScoresSection.vue'
-import BioSection from '@/components/BioSection.vue'
-import XPSection from '@/components/XPSection.vue'
-import InventorySection from '@/components/inventory/InventorySection.vue'
-import TraitsSection from '@/components/traits/TraitsSection.vue'
-import CombatSection from '@/components/CombatSection.vue'
+import { useExampleSheetStore } from '@/sheet/stores';
+import AbilityScoresSection from '@/components/AbilityScoresSection.vue';
+import BioSection from '@/components/BioSection.vue';
+import XPSection from '@/components/XPSection.vue';
+import InventorySection from '@/components/inventory/InventorySection.vue';
+import TraitsSection from '@/components/traits/TraitsSection.vue';
+import CombatSection from '@/components/CombatSection.vue';
 
-const store = useExampleSheetStore()
+const store = useExampleSheetStore();
 </script>
 
 <style lang="scss">
-@use "../common/scss/vars.scss" as vars;
+@use '../common/scss/vars.scss' as vars;
 
 .examplesheet {
   &__header {

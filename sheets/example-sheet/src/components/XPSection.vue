@@ -13,8 +13,12 @@
           <div class="row__header">Life</div>
           <div class="row__header">Mana</div>
         </div>
-        <div class="row" v-for="(thisLevel, index) in levelTable" :class="{ current: Number(index) === calculatedLevel}"
-             :key="index">
+        <div
+          class="row"
+          v-for="(thisLevel, index) in levelTable"
+          :class="{ current: Number(index) === calculatedLevel }"
+          :key="index"
+        >
           <div class="level">
             <div class="level__lv">
               <div>{{ index }}</div>
@@ -22,7 +26,9 @@
             <div>{{ thisLevel.xp }} xp</div>
           </div>
           <div>
-            <span class="bonus" v-if="thisLevel.profBonus !== levelTable[index-1]?.profBonus">+{{ thisLevel.profBonus }}</span>
+            <span class="bonus" v-if="thisLevel.profBonus !== levelTable[index - 1]?.profBonus"
+              >+{{ thisLevel.profBonus }}</span
+            >
           </div>
           <div>{{ thisLevel.life }}</div>
           <div>{{ thisLevel.mana }}</div>
@@ -33,13 +39,17 @@
 </template>
 
 <script setup>
-import { useCharacterStore } from '@/sheet/stores/character/characterStore'
-import levelTable from '@/system/levelTable'
-import { computed } from 'vue'
+import { useCharacterStore } from '@/sheet/stores/character/characterStore';
+import levelTable from '@/system/levelTable';
+import { computed } from 'vue';
 
-const character = useCharacterStore()
-const calculatedLevel = computed( () => Object.values(levelTable).reverse().find(level => level.xp <= character.xp).level)
-
+const character = useCharacterStore();
+const calculatedLevel = computed(
+  () =>
+    Object.values(levelTable)
+      .reverse()
+      .find((level) => level.xp <= character.xp).level,
+);
 </script>
 
 <style scoped lang="scss">
@@ -56,7 +66,7 @@ const calculatedLevel = computed( () => Object.values(levelTable).reverse().find
     .label {
       color: var(--examplesheet-primary);
     }
-    input{
+    input {
       font-size: 1.25rem;
       border: none;
       padding: 0.5rem;
@@ -110,7 +120,5 @@ const calculatedLevel = computed( () => Object.values(levelTable).reverse().find
       }
     }
   }
-
 }
-
 </style>

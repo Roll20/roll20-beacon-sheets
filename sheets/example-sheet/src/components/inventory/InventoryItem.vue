@@ -3,14 +3,20 @@
     <div class="inventory-item__row">
       <button class="inventory-item__toggle" @click="toggleExpand">
         <span class="caret" :class="{ expanded }">►</span>
-        <span class="label">{{item.name}}</span>
+        <span class="label">{{ item.name }}</span>
       </button>
       <div class="inventory-item__type">
         {{ item.type }}
       </div>
       <div class="inventory-item__buttons">
-        <button v-if="isEquippable && !isStowed" class="link-btn equip" :class="{ equipped: isEquipped }" title="Equip" @click="handleEquip">
-          {{ isEquipped ? 'Equipped' : 'Equip'}}
+        <button
+          v-if="isEquippable && !isStowed"
+          class="link-btn equip"
+          :class="{ equipped: isEquipped }"
+          title="Equip"
+          @click="handleEquip"
+        >
+          {{ isEquipped ? 'Equipped' : 'Equip' }}
         </button>
         <button class="link-btn print" title="Print" @click="handlePrint">⮑</button>
         <button class="link-btn swap" title="Swap" @click="handleSwap">⇄</button>
@@ -22,7 +28,7 @@
       <div class="inventory-item__top">
         <label :for="`name-${item._id}`">
           <span class="label">Name</span>
-          <input :id="`name-${item._id}`" v-model="item.name"/>
+          <input :id="`name-${item._id}`" v-model="item.name" />
         </label>
         <label :for="`type-${item._id}`">
           <span class="label">Type</span>
@@ -62,75 +68,78 @@
         </label>
       </div>
       <div class="inventory-item__bottom">
-        <textarea placeholder="Description" :id="`description-${item._id}`" v-model="item.description" />
+        <textarea
+          placeholder="Description"
+          :id="`description-${item._id}`"
+          v-model="item.description"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
-import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore'
+import { computed, ref, watch } from 'vue';
+import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 
 const props = defineProps({
   item: { type: Object },
-  isStowed: { type: Boolean }
-})
+  isStowed: { type: Boolean },
+});
 
 const expanded = ref(false);
 
 const isEquipped = computed(() => {
-  return isEquippable.value && props.item.equipped
-})
+  return isEquippable.value && props.item.equipped;
+});
 
 const isArmor = computed(() => {
   return props.item.type === 'armor';
-})
+});
 
 const isWeapon = computed(() => {
   return props.item.type === 'weapon';
-})
+});
 
 const isConsumable = computed(() => {
   return props.item.type === 'consumable';
-})
+});
 
 const isEquippable = computed(() => {
-  return isWeapon.value || isArmor.value
-})
+  return isWeapon.value || isArmor.value;
+});
 
-
-const toggleExpand = () => { expanded.value = !expanded.value }
+const toggleExpand = () => {
+  expanded.value = !expanded.value;
+};
 
 const handleSwap = () => {
-  const inventory = useInventoryStore()
-  inventory.swapItem(props.item._id, props.isStowed)
-}
+  const inventory = useInventoryStore();
+  inventory.swapItem(props.item._id, props.isStowed);
+};
 
 const handleDelete = () => {
-  const inventory = useInventoryStore()
-  inventory.removeItem(props.item._id, props.isStowed)
-}
+  const inventory = useInventoryStore();
+  inventory.removeItem(props.item._id, props.isStowed);
+};
 
 const handlePrint = () => {
-  const inventory = useInventoryStore()
-  inventory.printItem(props.item._id)
-}
+  const inventory = useInventoryStore();
+  inventory.printItem(props.item._id);
+};
 
 const handleEquip = () => {
-  const inventory = useInventoryStore()
-  inventory.equipItem(props.item._id)
-}
-
+  const inventory = useInventoryStore();
+  inventory.equipItem(props.item._id);
+};
 </script>
 
 <style scoped lang="scss">
-
 .inventory-item {
   max-width: 35em;
   .label {
     font-weight: 600;
-    padding-right: .5rem;
+    padding-right: 0.5rem;
   }
 
   &__row {
@@ -157,7 +166,8 @@ const handleEquip = () => {
     gap: 0.5rem;
     button {
       padding: 0 0.5rem;
-      &.delete,  &.swap {
+      &.delete,
+      &.swap {
         font-size: 1.25rem;
       }
       &.equip {
@@ -202,7 +212,7 @@ const handleEquip = () => {
     flex-wrap: wrap;
     gap: 1rem;
 
-    input[type="number"] {
+    input[type='number'] {
       max-width: 3rem;
     }
   }
@@ -217,5 +227,4 @@ const handleEquip = () => {
     }
   }
 }
-
 </style>

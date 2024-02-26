@@ -4,7 +4,9 @@
     <div class="section__body inventory__body">
       <div>
         <span class="inventory__header">Carried Items - </span>
-        <span :class="{ overburdened: inventory.isOverburdened }">Slots: {{ inventory.totalEncumbrance }}/{{ inventory.carryCapacity }}</span>
+        <span :class="{ overburdened: inventory.isOverburdened }"
+          >Slots: {{ inventory.totalEncumbrance }}/{{ inventory.carryCapacity }}</span
+        >
         <div class="inventory__group">
           <InventoryItem v-for="item in inventory.items" :key="item._id" :item="item" />
         </div>
@@ -15,7 +17,12 @@
       <div>
         <div class="inventory__header">Stowed Items</div>
         <div class="inventory__group">
-          <InventoryItem v-for="item in inventory.itemsStowed" :key="item._id" :item="item" is-stowed/>
+          <InventoryItem
+            v-for="item in inventory.itemsStowed"
+            :key="item._id"
+            :item="item"
+            is-stowed
+          />
         </div>
         <div class="add-item">
           <button class="link-btn" @click="inventory.addItem(true)">+ Add Item</button>
@@ -26,15 +33,14 @@
 </template>
 
 <script setup>
-import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore'
-import InventoryItem from '@/components/inventory/InventoryItem.vue'
+import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
+import InventoryItem from '@/components/inventory/InventoryItem.vue';
 
-const inventory = useInventoryStore()
+const inventory = useInventoryStore();
 </script>
 
 <style scoped lang="scss">
 .inventory {
-
   &__header {
     font-weight: 600;
   }
@@ -57,5 +63,4 @@ const inventory = useInventoryStore()
     color: red;
   }
 }
-
 </style>

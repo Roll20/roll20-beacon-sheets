@@ -1,10 +1,9 @@
-@use "/src/common/scss/vars";
+@use '/src/common/scss/vars';
 
-@use "scale/ecv";
-@use "scale/vtt";
+@use 'scale/ecv';
+@use 'scale/vtt';
 
-@use "inputs";
-
+@use 'inputs';
 
 html {
   font-size: 14px;
@@ -30,7 +29,7 @@ body {
 
   .section {
     border-radius: 0.5rem;
-    border: 2px solid var(--examplesheet-primary);;
+    border: 2px solid var(--examplesheet-primary);
 
     &__header {
       padding: 0.25rem 0.5rem;
@@ -44,7 +43,6 @@ body {
       padding: 0.5rem;
     }
   }
-
 
   .el-loading-mask {
     background-color: rgba(#010101, 0.75);
