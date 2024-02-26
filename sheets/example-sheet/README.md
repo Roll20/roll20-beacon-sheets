@@ -25,3 +25,15 @@ npm run sandbox
 ```sh
 npm run watch-scss
 ```
+
+### Lint Files
+
+```sh
+npm run lint
+```
+
+### Format with prettier
+
+```sh
+npm run format
+```
