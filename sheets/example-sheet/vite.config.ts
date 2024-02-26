@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [vue(), svgLoader()],
   base:
     mode === "production"
-      ? `https://storage.googleapis.com/roll20-cdn/${process.env.VITE_CDN_SHEETS_FOLDER}/dungeon-world-csc/`
+      ? `https://storage.googleapis.com/beacon-community-sheets/example-sheet/`
       : "/",
   build: {
     emptyOutDir: true,
@@ -45,14 +45,6 @@ export default defineConfig(({ mode }) => ({
     }
   },
   server: {
-    cors: false,
-    proxy: {
-      "/api": {
-        target: "https://compendium.csc.roll20teams.net/graphql",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace("/api", "")
-      }
-    }
+    cors: false
   }
 }));

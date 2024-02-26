@@ -6,13 +6,13 @@ export const onInit = ({ character, settings, compendiumDropData }: InitArgs) =>
   initValues.character = character;
   initValues.settings = settings;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
-  console.log('onInit -> Dungeon World Relay');
+  console.log('onInit -> Example Sheet Relay');
 };
 
 export const onChange = async ({ character }: { character: Record<string, any> }) => {
   const old = beaconPulse.value;
   beaconPulse.value = old + 1;
-  console.log('onChange -> Example Sheet Relay');
+  console.log('onChange -> Example Sheet Relay', character);
 };
 
 export const onSettingsChange = () => {};

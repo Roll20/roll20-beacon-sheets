@@ -22,12 +22,7 @@ const main = async () => {
   app.use(router);
   app.use(i18n);
   app.use(relayVue);
-
   pinia.use(relayPinia);
-
-  const t = (...args: string[]): string => {
-    return args[0];
-  };
 
   app.mount('#app');
 };

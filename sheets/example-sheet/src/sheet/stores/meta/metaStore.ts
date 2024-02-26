@@ -1,6 +1,6 @@
 import type { Token } from '@roll20/charsheet-relay-sdk';
 import { defineStore } from 'pinia';
-import { reactive, ref, toRaw, type Ref } from 'vue';
+import { reactive, ref, type Ref } from 'vue';
 
 export type MetaHydrate = {
   id: string;

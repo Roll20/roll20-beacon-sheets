@@ -17,11 +17,12 @@ const applyChange = (oldValue: number, newValue: number | string) => {
 };
 
 export const getAbilityScores = ({ character }: { character: Character }, ...args) => {
+  console.log('You can pass args to dot notation computed values', args);
   if (!character.attributes?.abilityScores) return {};
   return character.attributes.abilityScores.abilityScores;
 };
 
-export const getBio = ({ character }: { character: Character }, ...args) => {
+export const getBio = ({ character }: { character: Character }) => {
   if (!character.attributes?.bio) return {};
   return character.attributes.bio.bio;
 };

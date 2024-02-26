@@ -12,7 +12,6 @@ const whisperToGM = computed(() => {
 });
 
 export const useRollStore = defineStore('rolls', () => {
-  const rollAbilityCheck = (ability: string, prof: boolean = false) => {};
   const sendToChat = async (args: SendToChatTemplate['parameters']) => {
     const { characterName, title, subtitle, keyValues, textContent } = args;
     const dispatch = dispatchRef.value as Dispatch;

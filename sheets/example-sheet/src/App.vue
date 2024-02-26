@@ -18,9 +18,8 @@
 
 <script setup>
 import { useExampleSheetStore } from './sheet/stores';
-import router from './router';
 
-const store = useExampleSheetStore();
+useExampleSheetStore();
 </script>
 
 <style scoped lang="scss">

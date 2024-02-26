@@ -4,7 +4,7 @@
     <div class="section__body traits__body">
       <div class="traits__top">Unlock at Level ↓</div>
       <div class="traits__group">
-        <Trait
+        <CharacterTrait
           v-for="(trait, index) in traitsStore.traits"
           :key="trait._id"
           :trait="trait"
@@ -20,7 +20,7 @@
 
 <script setup>
 import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
-import Trait from '@/components/traits/Trait.vue';
+import CharacterTrait from "@/components/traits/CharacterTrait.vue";
 
 const traitsStore = useTraitsStore();
 </script>

@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
 
 const props = defineProps({

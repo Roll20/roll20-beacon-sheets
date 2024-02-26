@@ -127,7 +127,7 @@ export const createRelay = async ({ primaryStore = 'examplesheetStore', logMode 
     });
 
     watch(beaconPulse, async (newValue, oldValue) => {
-      if (logMode) console.log('❤️ Beacon Pulse');
+      if (logMode) console.log('❤️ Beacon Pulse', { newValue, oldValue });
       const characterId = initValues.character.id;
       blockUpdate.value = true;
       if (logMode) console.log('🔒🔴 locking changes');

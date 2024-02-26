@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 
 const props = defineProps({

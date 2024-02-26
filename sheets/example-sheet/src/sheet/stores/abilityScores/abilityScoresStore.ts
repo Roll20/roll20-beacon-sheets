@@ -3,7 +3,6 @@ import { ref, computed } from 'vue';
 import levelTable from '@/system/levelTable';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import rollToChat from '@/utility/rollToChat';
-import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 

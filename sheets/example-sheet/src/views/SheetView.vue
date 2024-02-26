@@ -39,7 +39,7 @@ import InventorySection from '@/components/inventory/InventorySection.vue';
 import TraitsSection from '@/components/traits/TraitsSection.vue';
 import CombatSection from '@/components/CombatSection.vue';
 
-const store = useExampleSheetStore();
+useExampleSheetStore();
 </script>
 
 <style lang="scss">
