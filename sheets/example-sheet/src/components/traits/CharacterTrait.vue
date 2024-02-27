@@ -18,11 +18,19 @@
       <div class="trait__top">
         <label :for="`name-${trait._id}`">
           <span class="label" data-testid="test-trait-name-label">Name</span>
-          <input data-testid="test-trait-name-input" :id="`name-${trait._id}`" v-model="trait.name" />
+          <input
+            data-testid="test-trait-name-input"
+            :id="`name-${trait._id}`"
+            v-model="trait.name"
+          />
         </label>
         <label :for="`type-${trait._id}`">
           <span class="label" data-testid="test-trait-type-label">Type</span>
-          <select data-testid="test-trait-type-input" :id="`type-${trait._id}`" v-model="trait.type">
+          <select
+            data-testid="test-trait-type-input"
+            :id="`type-${trait._id}`"
+            v-model="trait.type"
+          >
             <option value="skill">Skill</option>
             <option value="power">Power</option>
           </select>

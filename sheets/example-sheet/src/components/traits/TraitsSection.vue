@@ -12,7 +12,9 @@
         />
       </div>
       <div class="add-item">
-        <button data-testid="test-add-trait-btn" class="link-btn" @click="traitsStore.addTrait()">+ Add Trait</button>
+        <button data-testid="test-add-trait-btn" class="link-btn" @click="traitsStore.addTrait()">
+          + Add Trait
+        </button>
       </div>
     </div>
   </div>
@@ -20,7 +22,7 @@
 
 <script setup>
 import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
-import CharacterTrait from "@/components/traits/CharacterTrait.vue";
+import CharacterTrait from '@/components/traits/CharacterTrait.vue';
 
 const traitsStore = useTraitsStore();
 </script>

@@ -1,5 +1,5 @@
-import { useSettingsStore } from "./settingsStore";
-import { createPinia } from "pinia";
+import { useSettingsStore } from './settingsStore';
+import { createPinia } from 'pinia';
 import { describe, it, expect } from 'vitest';
 
 describe('settingsStore', () => {
@@ -14,22 +14,24 @@ describe('settingsStore', () => {
       settings: {
         encumbrancePenalty: defaultEncumbrancePenalty,
       },
-    })
-  })
+    });
+  });
 
   it('updates encumbrance penalty', () => {
     const newEncumbrancePenalty = -1;
 
-    expect(store.hydrate({
-      settings: {
-        encumbrancePenalty: newEncumbrancePenalty
-      }
-    }))
+    expect(
+      store.hydrate({
+        settings: {
+          encumbrancePenalty: newEncumbrancePenalty,
+        },
+      }),
+    );
 
     expect(store.dehydrate()).toEqual({
       settings: {
         encumbrancePenalty: newEncumbrancePenalty,
       },
-    })
-  })
-})
+    });
+  });
+});
