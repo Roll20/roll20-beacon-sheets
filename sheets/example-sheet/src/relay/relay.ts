@@ -106,8 +106,17 @@ const doUpdate = (dispatch: Dispatch, update: Record<string, any>, logMode = fal
 
 const debounceUpdate = debounce(doUpdate, 800);
 
-export const createRelay = async ({ primaryStore = 'examplesheetStore', logMode = false }) => {
-  const dispatch = await initRelay(relayConfig);
+// NOTE: Dev relay is used to run end to end tests
+const devRelay = async (config: Parameters<typeof initRelay>[0]) =>
+  ({
+    update: (...args: any[]) => console.log("devRelay update", args),
+    updateCharacter: (...args: any[]) => console.log("devRelay updateCharacter", args),
+    characters: {},
+    updateTokensByCharacter: () => ""
+  } as any as Dispatch);
+
+export const createRelay = async ({ devMode = false, primaryStore = 'examplesheetStore', logMode = false }) => {
+  const dispatch = await (devMode ? devRelay(relayConfig) : initRelay(relayConfig));
   const relayPinia = (context: PiniaPluginContext) => {
     if (context.store.$id !== primaryStore) return;
     const store = context.store;

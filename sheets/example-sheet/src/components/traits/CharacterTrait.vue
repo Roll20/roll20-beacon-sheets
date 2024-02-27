@@ -3,7 +3,7 @@
     <div class="trait__row">
       <button class="trait__toggle" @click="toggleExpand">
         <span class="caret" :class="{ expanded }">►</span>
-        <span class="label">{{ trait.name }}</span>
+        <span class="label" data-testid="test-trait-header">{{ trait.name }}</span>
       </button>
       <div class="trait__buttons">
         <button class="link-btn print" title="Print" @click="handlePrint">⮑</button>
@@ -17,12 +17,12 @@
     <div class="trait__expansion" :class="{ expanded }">
       <div class="trait__top">
         <label :for="`name-${trait._id}`">
-          <span class="label">Name</span>
-          <input :id="`name-${trait._id}`" v-model="trait.name" />
+          <span class="label" data-testid="test-trait-name-label">Name</span>
+          <input data-testid="test-trait-name-input" :id="`name-${trait._id}`" v-model="trait.name" />
         </label>
         <label :for="`type-${trait._id}`">
-          <span class="label">Type</span>
-          <select :id="`type-${trait._id}`" v-model="trait.type">
+          <span class="label" data-testid="test-trait-type-label">Type</span>
+          <select data-testid="test-trait-type-input" :id="`type-${trait._id}`" v-model="trait.type">
             <option value="skill">Skill</option>
             <option value="power">Power</option>
           </select>
@@ -30,6 +30,7 @@
       </div>
       <div class="trait__bottom">
         <textarea
+          data-testid="test-trait-description"
           placeholder="Description"
           :id="`description-${trait._id}`"
           v-model="trait.description"
