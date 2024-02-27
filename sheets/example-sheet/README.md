@@ -21,6 +21,15 @@ npm run sandbox
 npm run watch-scss
 ```
 
+### Ci Check
+
+This command will run a number of things to make sure your code is as optimal as possible including formatting, linting, type checking, unit tests, and end to end tests.
+Think of this as a sanity check that you can leverage when pushing a big release for your sheet!
+
+```sh
+npm run ci-check
+```
+
 ### Eslint Files
 ```sh
 npm run lint
@@ -41,12 +50,17 @@ npm run type-check
 npm run test:unit
 ```
 
-### Local End To End Tests with Cypress
+### Open up and develop local End To End Tests with Cypress
+```sh
+npm run test:e2e:open:local
+```
+
+### Run local End To End Tests with Cypress
 ```sh
 npm run test:e2e:local
 ```
 
-### CDN Hosted End To End Tests with Cypress
+### Run CDN Hosted End To End Tests with Cypress
 ```sh
 npm run test:e2e
 ```

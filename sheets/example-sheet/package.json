@@ -14,14 +14,15 @@
     "test:unit": "vitest --no-watch",
     "test:unit:watch": "vitest",
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
-    "test:e2e:local": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
-    "cypress:open": "cypress open --e2e",
+    "test:e2e:local": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress run --e2e'",
+    "test:e2e:open:local": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
     "build-only": "vite build",
     "build-scss": "sass ./src/rolltemplates/styles/host.scss ./public/host.css --no-source-map --no-charset",
     "watch-scss": "sass --watch ./src/rolltemplates/styles/host.scss ./public/host.css --no-source-map --no-charset",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "ci-check": "npm run format && npm run lint && npm run type-check && npm run test:unit && npm run test:e2e:local"
   },
   "dependencies": {
     "@roll20/charsheet-relay-sdk": "^1.4.0-staging.36",
