@@ -1,0 +1,55 @@
+@use '/src/common/scss/vars';
+
+@use 'scale/ecv';
+@use 'scale/vtt';
+
+@use 'inputs';
+
+html {
+  font-size: 14px;
+}
+
+body {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  height: min-content;
+  overflow-x: hidden;
+}
+
+.examplesheet {
+  --primary: #89018b;
+
+  width: 88rem;
+  font-family: var(--examplesheet-font-family);
+
+  > * {
+    height: 100%;
+  }
+
+  .section {
+    border-radius: 0.5rem;
+    border: 2px solid var(--examplesheet-primary);
+
+    &__header {
+      padding: 0.25rem 0.5rem;
+      font-size: 1.25rem;
+      background: var(--examplesheet-primary);
+      color: white;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    &__body {
+      padding: 0.5rem;
+    }
+  }
+
+  .el-loading-mask {
+    background-color: rgba(#010101, 0.75);
+
+    .el-loading-spinner .path {
+      stroke: black;
+      stroke-width: 5;
+    }
+  }
+}
