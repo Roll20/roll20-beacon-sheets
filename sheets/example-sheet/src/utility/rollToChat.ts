@@ -1,6 +1,6 @@
 import { createRollTemplate } from '@/rolltemplates/rolltemplates';
 import { dispatchRef, initValues } from '@/relay/relay';
-import type { Dispatch } from '@roll20/charsheet-relay-sdk';
+import type { Dispatch } from '@roll20/beacon-sdk';
 import type { RollToChatTemplate } from '@/rolltemplates/rolltemplates';
 import getRollResult from '@/utility/getRollResult';
 

@@ -1,6 +1,6 @@
 import { dispatchRef, initValues } from '@/relay/relay';
 import { createRollTemplate, type SendToChatTemplate } from '@/rolltemplates/rolltemplates';
-import type { Dispatch } from '@roll20/charsheet-relay-sdk';
+import type { Dispatch } from '@roll20/beacon-sdk';
 import { defineStore } from 'pinia';
 import { reactive, computed } from 'vue';
 

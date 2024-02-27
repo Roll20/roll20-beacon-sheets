@@ -1,4 +1,4 @@
-import type { InitArgs } from '@roll20/charsheet-relay-sdk';
+import type { InitArgs } from '@roll20/beacon-sdk';
 import { initValues, beaconPulse } from '../relay';
 
 export const onInit = ({ character, settings, compendiumDropData }: InitArgs) => {

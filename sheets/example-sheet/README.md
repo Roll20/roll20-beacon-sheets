@@ -1,11 +1,17 @@
 # Beacon Example Sheet
 
 ## Getting Started
+
+### Github Access Token
+
+TODO
+
+### Install Dependencies
+
 These are a list of commands to help you run your first sheet and get you started.
 
 We recommend installing dependencies and being able to run your project from our example sheet template before diving into development.
 
-### Install Dependencies
 ```sh
 npm install
 ```
