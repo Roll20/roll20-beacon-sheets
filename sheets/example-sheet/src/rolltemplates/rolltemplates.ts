@@ -1,15 +1,24 @@
 import handlebars from 'handlebars';
 
+// @ts-ignore
 import chatRollTemplate from './templates/chat.hbs?raw';
+// @ts-ignore
 import basicRollTemplate from './templates/basicRoll.hbs?raw';
-
+// @ts-ignore
 import keyValues from './partials/keyValues.hbs?raw';
+// @ts-ignore
 import textContent from './partials/textContent.hbs?raw';
+// @ts-ignore
 import rollComponents from './partials/rollComponents.hbs?raw';
+// @ts-ignore
 import wrapper from './partials/wrapper.hbs?raw';
+// @ts-ignore
 import rollTotal from './partials/rollTotal.hbs?raw';
+// @ts-ignore
 import header from './partials/header.hbs?raw';
+// @ts-ignore
 import heroDie from './partials/heroDie.hbs?raw';
+
 
 import { isGreater } from './expressions/isGreater';
 import { isEqual } from './expressions/isEqual';

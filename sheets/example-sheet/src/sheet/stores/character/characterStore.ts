@@ -30,7 +30,7 @@ export const useCharacterStore = defineStore('character', () => {
     () =>
       Object.values(levelTable)
         .reverse()
-        .find((level) => level.xp <= xp.value).level,
+        .find((level) => level?.xp <= xp.value)?.level || 0,
   );
   const xp = ref(1500);
   const lifeCurrent = ref(20);

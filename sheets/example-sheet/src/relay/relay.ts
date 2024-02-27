@@ -120,7 +120,7 @@ export const createRelay = async ({
   primaryStore = 'examplesheetStore',
   logMode = false,
 }) => {
-  const dispatch = await (devMode ? devRelay(relayConfig) : initRelay(relayConfig));
+  const dispatch = await (devMode ? devRelay() : initRelay(relayConfig));
   const relayPinia = (context: PiniaPluginContext) => {
     if (context.store.$id !== primaryStore) return;
     const store = context.store;

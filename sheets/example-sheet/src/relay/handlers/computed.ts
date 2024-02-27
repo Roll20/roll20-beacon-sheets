@@ -16,7 +16,7 @@ const applyChange = (oldValue: number, newValue: number | string) => {
   }
 };
 
-export const getAbilityScores = ({ character }: { character: Character }, ...args) => {
+export const getAbilityScores = ({ character }: { character: Character }, ...args: any) => {
   console.log('You can pass args to dot notation computed values', args);
   if (!character.attributes?.abilityScores) return {};
   return character.attributes.abilityScores.abilityScores;

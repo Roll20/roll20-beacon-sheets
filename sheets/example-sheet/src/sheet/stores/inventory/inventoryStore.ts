@@ -73,9 +73,18 @@ export const useInventoryStore = defineStore('inventory', () => {
     if (item.type === 'weapon') equipWeapon(item as Weapon);
     if (item.type === 'armor') equipArmor(item as Armor);
   };
+  const isWeapon = (item: AnyItem) => {
+    return item.type === 'weapon';
+  };
+  const isArmor = (item: AnyItem) => {
+    return item.type === 'armor';
+  }
   const unEquipItem = (_id: string) => {
     const item = items.value.find((item) => item._id === _id);
-    if (item) item.equipped = false;
+    if (item) {
+      if (isWeapon(item)) (item as Weapon).equipped = false;
+      if (isArmor(item)) (item as Armor).equipped = false;
+    }
   };
   const equipWeapon = (weapon: Weapon) => {
     if (!weapon) return;
