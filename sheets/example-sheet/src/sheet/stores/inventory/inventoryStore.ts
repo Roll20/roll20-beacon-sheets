@@ -78,7 +78,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   };
   const isArmor = (item: AnyItem) => {
     return item.type === 'armor';
-  }
+  };
   const unEquipItem = (_id: string) => {
     const item = items.value.find((item) => item._id === _id);
     if (item) {

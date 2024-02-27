@@ -19,7 +19,6 @@ import header from './partials/header.hbs?raw';
 // @ts-ignore
 import heroDie from './partials/heroDie.hbs?raw';
 
-
 import { isGreater } from './expressions/isGreater';
 import { isEqual } from './expressions/isEqual';
 import { sumComponents } from './expressions/sumComponents';

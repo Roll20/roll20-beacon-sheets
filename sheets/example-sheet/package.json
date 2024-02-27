@@ -31,6 +31,7 @@
     "jsonpath": "^1.1.1",
     "pinia": "^2.0.32",
     "quill-divider": "^0.2.0",
+    "uuid": "^9.0.1",
     "vite-svg-loader": "^4.0.0",
     "vue": "^3.2.47",
     "vue-component-library": "^0.0.8",

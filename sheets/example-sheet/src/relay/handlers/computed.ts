@@ -1,4 +1,7 @@
 import type { Character, Dispatch } from '@roll20/charsheet-relay-sdk';
+import type { CharacterHydrate } from '@/sheet/stores/character/characterStore';
+import type { AbilityScoresHydrate } from '@/sheet/stores/abilityScores/abilityScoresStore';
+import type { BioHydrate } from '@/sheet/stores/bio/bioStore';
 
 const applyChange = (oldValue: number, newValue: number | string) => {
   if (typeof newValue === 'string') newValue = newValue.trim();
@@ -19,17 +22,17 @@ const applyChange = (oldValue: number, newValue: number | string) => {
 export const getAbilityScores = ({ character }: { character: Character }, ...args: any) => {
   console.log('You can pass args to dot notation computed values', args);
   if (!character.attributes?.abilityScores) return {};
-  return character.attributes.abilityScores.abilityScores;
+  return (character.attributes.abilityScores as AbilityScoresHydrate).abilityScores;
 };
 
 export const getBio = ({ character }: { character: Character }) => {
   if (!character.attributes?.bio) return {};
-  return character.attributes.bio.bio;
+  return (character.attributes.bio as BioHydrate).bio;
 };
 
 export const getLife = ({ character }: { character: Character }) => {
   if (!character.attributes?.character) return {};
-  const current = character.attributes.character.character.lifeCurrent;
+  const current = (character.attributes.character as CharacterHydrate).character.lifeCurrent;
   return {
     current,
   };
@@ -46,7 +49,8 @@ export const setLife = (
   ...args: any[]
 ) => {
   const newValue = args[0];
-  const oldValue = character.attributes?.character?.character?.lifeCurrent ?? 0;
+  const oldValue =
+    (character.attributes?.character as CharacterHydrate | undefined)?.character?.lifeCurrent ?? 0;
   const characterId = character.id;
   const finalValue = applyChange(oldValue, newValue);
   dispatch.update({

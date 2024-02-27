@@ -9,6 +9,7 @@ import './sheet/scss/index.scss';
 
 import { createRelay } from './relay/relay';
 
+// @ts-ignore
 const env = import.meta.env.MODE || '';
 const isDevEnvironment = ['development', 'test'].includes(env);
 
