@@ -1,4 +1,4 @@
-# beacon-community-sheets
+# roll20-beacon-sheets
 
 Welcome to Beacon!
 
