@@ -121,7 +121,7 @@ export const createRelay = async ({
   logMode = false,
 }) => {
   // @ts-ignore
-  const dispatch = await (devMode ? devRelay() : initRelay(relayConfig));
+  const dispatch = await (false ? devRelay() : initRelay(relayConfig));
   const relayPinia = (context: PiniaPluginContext) => {
     if (context.store.$id !== primaryStore) return;
     const store = context.store;
@@ -131,6 +131,9 @@ export const createRelay = async ({
     // Init Store
     const { attributes, ...profile } = initValues.character;
     store.hydrateStore(attributes, profile);
+
+    // Beacon Provides access to settings, like campaign id for example
+    store.setCampaignId(initValues.settings.campaignId);
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
 
     // Watch for changes

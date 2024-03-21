@@ -5,6 +5,7 @@
       <div class="section__body tabs">
         <router-link to="/sheet">Sheet Tab</router-link>
         <router-link to="/settings">Settings Tab</router-link>
+        <div class="campaignId" v-if="campaignId">Campaign ID: {{campaignId}}</div>
       </div>
     </div>
     <router-view v-slot="{ Component }">
@@ -19,12 +20,19 @@
 <script setup>
 import { useExampleSheetStore } from './sheet/stores';
 
-useExampleSheetStore();
+const store = useExampleSheetStore();
+const campaignId = store.meta.campaignId;
 </script>
 
 <style scoped lang="scss">
 .header {
   margin-bottom: 0.5rem;
+
+  .campaignId {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+  }
 
   .tabs {
     display: flex;
