@@ -74,6 +74,9 @@ export const useExampleSheetStore = defineStore('examplesheetStore', () => {
     stores.meta.permissions.isOwner = owned;
     stores.meta.permissions.isGM = gm;
   };
+  const setCampaignId = (campaignId?: number) => {
+    stores.meta.campaignId = campaignId;
+  }
 
   /*
   DEV METHOD used to fill the sheet with a lot of data without affecting how the stores are initialized.
@@ -160,6 +163,7 @@ export const useExampleSheetStore = defineStore('examplesheetStore', () => {
     dehydrateStore,
     hydrateStore,
     setPermissions,
+    setCampaignId,
     pageLoading,
     loadExampleData,
   };

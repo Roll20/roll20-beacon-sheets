@@ -18,6 +18,7 @@ export const useMetaStore = defineStore('meta', () => {
   const bio = ref('');
   const gmNotes = ref('');
   const token: Ref<Token> = ref({});
+  const campaignId = ref(null);
 
   const permissions = reactive({
     isOwner: false,
@@ -32,6 +33,7 @@ export const useMetaStore = defineStore('meta', () => {
       avatar: avatar.value,
       bio: bio.value,
       gmNotes: gmNotes.value,
+      campaignId: campaignId.value
     };
   };
 
@@ -53,6 +55,7 @@ export const useMetaStore = defineStore('meta', () => {
     gmNotes,
     token,
     permissions,
+    campaignId,
     dehydrate,
     hydrate,
   };
