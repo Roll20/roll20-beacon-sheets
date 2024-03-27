@@ -3,7 +3,7 @@
 This is an advanced sheet example, it is setup as with Vue framework, Typescript, Vite, SCSS and has some basic testing setup.
 Comments have been added to the files in this project to better explain their intent and suggested implementation.
 
-![alt text](preview.png)
+![an example of the default sheet homepage](preview.png)
  
 ## Getting Started
 
