@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import SheetView from '../views/SheetView.vue';
 import SettingsView from '../views/SettingsView.vue';
 
+/*
+  Vue Router that allows us tabbed navigation between the SheetView and SettingsView.
+*/
 const router = createRouter({
   // @ts-ignore
   history: createWebHistory(import.meta.env.BASE_URL),

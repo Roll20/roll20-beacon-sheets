@@ -11,6 +11,7 @@ import { createRelay } from './relay/relay';
 
 // @ts-ignore
 const env = import.meta.env.MODE || '';
+// Determines if the offline mode dev relay should be used
 const isDevEnvironment = ['development', 'test'].includes(env);
 
 const main = async () => {

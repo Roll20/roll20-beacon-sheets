@@ -1,6 +1,6 @@
 # Advanced Beacon Example Sheet
 
-This is an advanced sheet example, it is setup as with Vue framework, Vite, SCSS and has some basic testing setup.
+This is an advanced sheet example, it is setup as with Vue framework, Typescript, Vite, SCSS and has some basic testing setup.
 Comments have been added to the files in this project to better explain their intent and suggested implementation.
 
 ![alt text](preview.png)
@@ -12,7 +12,7 @@ Comments have been added to the files in this project to better explain their in
 Since the beacon SDK is currently hosted on github, you will need access to the github package registry.
 
 In order to do so you will need to generate a [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-tokens-classic):
-* Under the github user account dropdown, go to Settings → Developer Settings → Personal Access Tokens.
+* Under the github user account drop down, go to Settings → Developer Settings → Personal Access Tokens.
 * Generate a new token with `read:packages` scopes.
 * In your terminal, run export `GITHUB_TOKEN="<YOUR_SUPER_SECRET_TOKEN>"`.
 * To avoid having to re-run this command every time you restart your computer, add it to your `.zshenv` file. 
@@ -33,7 +33,7 @@ Before doing anything else and after you have gotten the beacon sdk access token
 npm install
 ```
 
-Now that you have the project's dependences installed you can run the vite server, to start testing changes to the project. To do so there are two ways you can boot up the server:
+Now that you have the project's dependencies installed you can run the vite server, to start testing changes to the project. To do so there are two ways you can boot up the server:
 
 ### Offline development
 ```sh
@@ -42,9 +42,9 @@ npm run dev
 
 This will run the vite server, with the default port and environment set to development. What this means is that the project will read a mock Relay that allows you to open your project in any web browser by going to `http://localhost:5173`.
 
-This is useful when you do not have access to the Roll20 website or would like to work on parts of your project that do not require a connect to the VTT or Roll20 Characters. Such as when working on stying, mocking up environment, building Vue components, testing functionality, etc..
+This is useful when you do not have access to the Roll20 website or would like to work on parts of your project that do not depend on a connect to the VTT or Roll20 Characters. Such as when working on stying, mocking up environment, building Vue components, testing functionality, etc..
 
-While in development mode, you will not be able to save or access exisiting character data, or use the Beacon SDK functions that depend on VTT or Roll20 Characters functionality such as dice rolling and token manipulation.
+While in development mode, you will not be able to save or access existing character data, or use the Beacon SDK functions that depend on VTT or Roll20 Characters functionality such as dice rolling and token manipulation.
 
 ### Sandbox development
 ```sh
