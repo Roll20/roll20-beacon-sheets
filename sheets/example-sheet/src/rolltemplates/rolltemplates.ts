@@ -26,6 +26,9 @@ import { getDice } from './expressions/getDice';
 import { isArray } from './expressions/isArray';
 import { capitalize } from './expressions/capitalize';
 
+/* All custom chat templates (called "roll templates" are created at run-time through handlebars based on this config */
+
+// Re-usable handlebars HTML partials.
 handlebars.registerPartial('header', header);
 handlebars.registerPartial('wrapper', wrapper);
 handlebars.registerPartial('keyValues', keyValues);
@@ -34,6 +37,7 @@ handlebars.registerPartial('textContent', textContent);
 handlebars.registerPartial('rollComponents', rollComponents);
 handlebars.registerPartial('heroDie', heroDie);
 
+// Helper functions for math/transformations
 handlebars.registerHelper('sumComponents', sumComponents);
 handlebars.registerHelper('getDice', getDice);
 handlebars.registerHelper('isGreater', isGreater);
@@ -45,11 +49,14 @@ handlebars.registerHelper('not', (v) => !v);
 handlebars.registerHelper('or', (a, b) => a || b);
 handlebars.registerHelper('and', (a, b) => a && b);
 
+// We have 2 base templates. One for when dice are rolled and one for just rendering information.
 const rollTemplates = {
   chat: handlebars.compile(chatRollTemplate),
   roll: handlebars.compile(basicRollTemplate),
 };
 
+// This corresponds to the data returned by Beacon when you ask it to roll dice for you.
+// You may want to re-use this to simplify crafting your own templates.
 export type DiceComponent = {
   /** The number of sides the die has */
   sides?: number;
@@ -65,6 +72,7 @@ export type DiceComponent = {
   alwaysShowInBreakdown?: boolean;
 };
 
+// Generic params used by our 2 templates. These can be changed for your own templates.
 type CommonParameters = {
   characterName?: string;
   title: string;
@@ -91,6 +99,7 @@ export type RollToChatTemplate = {
 
 export type AnyRollTemplate = SendToChatTemplate | RollToChatTemplate;
 
+// Returns the final HTML for a given template using all the required data.
 export const createRollTemplate = ({ type, parameters }: AnyRollTemplate) => {
   const template = rollTemplates[type];
   const rollTemplate = template(parameters);

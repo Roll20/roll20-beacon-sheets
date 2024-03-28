@@ -1,3 +1,5 @@
+//  In this example system, Level/HP/MP/Prof/HeroDie are determined by your current XP.
+// here's a table with the entire progression for doing the calculations.
 export default {
   0: { level: 0, life: 5, mana: 2, profBonus: 1, heroDice: 0, xp: 0 },
   1: { level: 1, life: 8, mana: 4, profBonus: 2, heroDice: 1, xp: 300 },
