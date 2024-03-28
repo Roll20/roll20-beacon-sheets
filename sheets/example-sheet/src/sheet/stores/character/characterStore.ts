@@ -211,8 +211,8 @@ export const useCharacterStore = defineStore('character', () => {
 *  */
 export const addHeroDie = async (props: any, originalResult: number, originalTitle: string) => {
   // This follow-up roll subtracts 1 hero die then adds the result of 1d6 to the previous roll and re-posts the new total.
-  const character = useCharacterStore();
-  if (character.heroDiceCurrent < 0) {
+  const heroDiceCurrent = props?.character?.attributes?.character?.character?.heroDiceCurrent || -1;
+  if (heroDiceCurrent < 0) {
     await sendToChat(
       {
         title: `Adding Hero Dice: ${originalTitle}`,
@@ -235,5 +235,18 @@ export const addHeroDie = async (props: any, originalResult: number, originalTit
     },
     props.dispatch,
   );
-  character.heroDiceCurrent--;
+
+  // Since we can not access the Pinia store to update the store's value, we need to handle updating the values through the relay.
+  props.dispatch.update({
+    character: {
+      id: props.character.id,
+      attributes: {
+        character: {
+          character: {
+            heroDiceCurrent: heroDiceCurrent - 1,
+          },
+        },
+      },
+    },
+  });
 };
