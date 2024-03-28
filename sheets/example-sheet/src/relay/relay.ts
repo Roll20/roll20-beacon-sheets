@@ -43,6 +43,7 @@ const relayConfig = {
      See /src/rolltemplates/partials/heroDie.hbs for an example of how an action is performed.
      This one rolls 1d6, adds the result to a previous roll, and then prints the new result.
      Check out Marvel Multiverse RPG Edges for a more complex example.
+     ⭐ An important note is that the actions will not have access to any of the Pinia stores, so they need to be passed the necessary data or have access to it through the passed in character object.
      */
     addHeroDie: {
       method: async (

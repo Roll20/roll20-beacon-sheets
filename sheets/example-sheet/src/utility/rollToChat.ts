@@ -7,7 +7,7 @@ import getRollResult from '@/utility/getRollResult';
 export default async (args: RollToChatTemplate['parameters'], customDispatch?: Dispatch) => {
   const dispatch = customDispatch || (dispatchRef.value as Dispatch); // Need a different Relay instance when handling sheet-actions
 
-  const { components, total } = await getRollResult(args.components);
+  const { components, total } = await getRollResult(args.components, dispatch);
 
   const rollTemplate = createRollTemplate({
     type: 'roll',
