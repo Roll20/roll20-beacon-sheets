@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+/* Very simple store that just stores and syncs some strings with text-inputs on the sheet. */
 export type BioHydrate = {
   bio: {
     friends: string;

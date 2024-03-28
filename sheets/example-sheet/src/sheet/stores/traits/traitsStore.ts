@@ -5,6 +5,7 @@ import { arrayToObject, objectToArray } from '@/utility/objectify';
 import { v4 as uuidv4 } from 'uuid';
 import sendToChat from '@/utility/sendToChat';
 
+// See "inventoryStore.ts" for an explanation of how to use list/repeating sections
 interface Trait {
   type: 'skill' | 'power';
   _id: string;

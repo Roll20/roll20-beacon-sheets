@@ -35,18 +35,17 @@ export const useCharacterStore = defineStore('character', () => {
   const xp = ref(1500);
   const lifeCurrent = ref(20);
   const lifeMod = ref(0);
-  // @ts-ignore
+  // Example of auto-calculated field. These don't need to be saved into firebase and should handled internally in the app whenever.
+  // Formula for HP is the one indicated by level table + level multiplied by endurance + arbitrary life modifier.
   const lifeMax = computed(
     () =>
-      levelTable[level.value].life + level.value * abilityScoresStore.EnduranceBase + lifeMod.value,
+      levelTable[level.value].life + (level.value * abilityScoresStore.EnduranceBase) + lifeMod.value,
   );
   const heroDiceCurrent = ref(3);
   const heroDiceMod = ref(0);
-  // @ts-ignore
   const heroDiceMax = computed(() => levelTable[level.value].heroDice + heroDiceMod.value);
   const manaCurrent = ref(10);
   const manaMod = ref(0);
-  // @ts-ignore
   const manaMax = computed(
     () =>
       levelTable[level.value].mana + level.value * abilityScoresStore.ThoughtBase + manaMod.value,
@@ -70,12 +69,13 @@ export const useCharacterStore = defineStore('character', () => {
         heroDiceCurrent: heroDiceCurrent.value,
         manaCurrent: manaCurrent.value,
         defenseMod: defenseMod.value,
-        // We don't need to save the computed ones on Firebase as long as we track everything needed to calculate them.
+        // We don't need to save the computed ones on Firebase as long as we have everything needed to calculate them.
       },
     };
   };
 
   const hydrate = (hydrateStore: CharacterHydrate) => {
+    // Should only need to hydrate the same attributes as in "dehydrate".
     xp.value = hydrateStore.character.xp ?? xp.value;
     lifeCurrent.value = hydrateStore.character.lifeCurrent ?? lifeCurrent.value;
     heroDiceCurrent.value = hydrateStore.character.heroDiceCurrent ?? heroDiceCurrent.value;
@@ -83,6 +83,7 @@ export const useCharacterStore = defineStore('character', () => {
     defenseMod.value = hydrateStore.character.defenseMod ?? defenseMod.value;
   };
 
+  // Posts a message to chat with the "chat" template.
   const heroDiceFailure = async (title: string): Promise<void> => {
     await sendToChat({
       title,
@@ -205,8 +206,11 @@ export const useCharacterStore = defineStore('character', () => {
   };
 });
 
-/* After any Ability Roll you can choose to spend 1 hero die to roll 1d6 and add it to the total */
+/* After any Ability Roll you can choose to spend 1 hero die to roll 1d6 and add it to the total.
+* Follow-up Rolls need to be defined outside of the Store since it may not be available when clicking on the button
+*  */
 export const addHeroDie = async (props: any, originalResult: number, originalTitle: string) => {
+  // This follow-up roll subtracts 1 hero die then adds the result of 1d6 to the previous roll and re-posts the new total.
   const character = useCharacterStore();
   if (character.heroDiceCurrent < 0) {
     await sendToChat(

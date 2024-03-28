@@ -2,6 +2,10 @@ import type { Token } from '@roll20/beacon-sdk';
 import { defineStore } from 'pinia';
 import { reactive, ref, type Ref } from 'vue';
 
+/* Every Character, regardless of sheet, has these meta fields
+ * and they must be saved to firebase in this specific way.
+ * This store can be reused as-is for any other Vue project.
+ * */
 export type MetaHydrate = {
   id: string;
   name: string;

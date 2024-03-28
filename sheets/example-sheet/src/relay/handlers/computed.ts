@@ -3,6 +3,10 @@ import type { CharacterHydrate } from '@/sheet/stores/character/characterStore';
 import type { AbilityScoresHydrate } from '@/sheet/stores/abilityScores/abilityScoresStore';
 import type { BioHydrate } from '@/sheet/stores/bio/bioStore';
 
+/*
+applyChange is a helper function that takes an old value and a new value and returns the new value.
+It accounts for the possibility of the new value being a string with a + or - operator.
+*/
 const applyChange = (oldValue: number, newValue: number | string) => {
   if (typeof newValue === 'string') newValue = newValue.trim();
   const operator = typeof newValue === 'string' ? newValue[0] : false;
