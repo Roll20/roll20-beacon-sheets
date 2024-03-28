@@ -8,6 +8,10 @@ import { arrayToObject, objectToArray } from '@/utility/objectify';
 import { v4 as uuidv4 } from 'uuid';
 import sendToChat from '@/utility/sendToChat';
 
+/*
+* This store handles 2 "repeating"/lists of Items in the Inventory. Carried and Stowed.
+* There are 3 types, Generic Item/Weapon/Armor, each with many shared fields and some unique ones
+*  */
 export type Item = {
   _id: string;
   type: 'weapon' | 'armor' | 'item' | 'spell' | 'consumable';
@@ -43,6 +47,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   const abilityScoresStore = useAbilityScoreStore();
 
   const carryCapacityBonus: Ref<number> = ref(0);
+  // Example for a calculated field. Carrying capacity is 10 + Endurance + arbitrary bonus slots.
   const carryCapacity: ComputedRef<number> = computed(
     () => 10 + carryCapacityBonus.value + Number(abilityScoresStore.abilityScores.Endurance.base),
   );
@@ -50,10 +55,14 @@ export const useInventoryStore = defineStore('inventory', () => {
   const itemsStowed: Ref<Array<AnyItem>> = ref([]);
   const cash = ref(0);
 
+  // Total encumbrance is the sum of the slots used by all inventory items.
   const totalEncumbrance = computed(() =>
     items.value.reduce((accum, item) => accum + item.slots, 0),
   );
+  // Calculating whether encumbrance exceeds carrying capacity.
   const isOverburdened = computed(() => totalEncumbrance.value > carryCapacity.value);
+
+  // This one checks if any weapon is marked as "equipped" and will treat it as the active weapon.
   const equippedWeapon: ComputedRef<Weapon | undefined> = computed(() => {
     const weapon = items.value
       .filter((item) => item.type === 'weapon')
@@ -67,6 +76,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     return armor as Armor;
   });
 
+  // Marks a piece of weapon or armor as equipped. It also un-equips whatever was equipped before, if any.
   const equipItem = (_id: string) => {
     const item = items.value.find((item) => item._id === _id);
     if (!item) return;
@@ -101,6 +111,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     armor.equipped = true;
   };
 
+  // Inserts a new blank item into either carried or stowed inventory.
   const addItem = (stowed: boolean = false) => {
     const listToUse = stowed ? itemsStowed.value : items.value;
     const emptyItem: Item = {
@@ -113,7 +124,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     };
     listToUse.push(emptyItem);
   };
-  // Switches an item between the regular and stowed inventories.
+  // Switches an item between the regular and stowed inventories. Goes to the bottom spot of it's new list.
   const swapItem = (_id: string, stowed: boolean) => {
     const listFrom = stowed ? itemsStowed.value : items.value;
     const listTo = stowed ? items.value : itemsStowed.value;
@@ -130,7 +141,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   };
 
   /*
-   * Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id
+   * Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id.
    * */
   const dehydrate = () => {
     return {
@@ -142,6 +153,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       },
     };
   };
+  // Shows a template with the item details.
   const printItem = async (_id: string) => {
     const item =
       items.value.find((item) => item._id === _id) ||

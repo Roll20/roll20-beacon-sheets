@@ -39,14 +39,14 @@ export type AbilityScoresHydrate = {
 export type AbilityScore = 'Strength' | 'Endurance' | 'Agility' | 'Charisma' | 'Aura' | 'Thought';
 
 export const useAbilityScoreStore = defineStore('abilityScores', () => {
-  // Base Abilities
+  // Initialize Base Ability Scores
   const StrengthBase = ref(0);
   const EnduranceBase = ref(0);
   const AgilityBase = ref(0);
   const CharismaBase = ref(0);
   const AuraBase = ref(0);
   const ThoughtBase = ref(0);
-  // Current Abilities
+  // Initialize Current Ability scores
   const StrengthCurrent = ref(0);
   const EnduranceCurrent = ref(0);
   const AgilityCurrent = ref(0);
@@ -55,6 +55,7 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
   const ThoughtCurrent = ref(0);
 
   // It can be very convenient to make a Getter/Setter computed prop like this to read/write data into store.
+  // This will just read/write into the previously defined ability score fields.
   const abilityScores = computed({
     get() {
       return {
@@ -82,7 +83,7 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
       ThoughtCurrent.value = scores.Thought.current || ThoughtCurrent.value;
     },
   });
-  // Example for how to make basic roll + some modifiers using a custom roll template
+  // Example for how to make basic roll + some modifiers using a custom roll template.
   const rollAbilityCheck = async (abilityScore: AbilityScore, proficient: boolean = false) => {
     const score = abilityScores.value[abilityScore].current;
     const { level } = useCharacterStore();
@@ -113,7 +114,9 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
   };
 
   // Dehydrate determines how fields in Firebase are updated when there's a change in this store.
+  // Everything that needs to be saved to Firebase should be defined here.
   const dehydrate = () => {
+    // We save our entire object with the base/current scores.
     return { abilityScores: abilityScores.value };
   };
 
