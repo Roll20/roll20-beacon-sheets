@@ -1,10 +1,12 @@
 {
-  "name": "quickstart",
+  "name": "@r20sd/quickstart-sheet",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "sandbox-server": "vite --port 7620 --mode staging",
+    "sandbox": "run-s build-scss sandbox-server",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
@@ -12,7 +14,11 @@
   },
   "dependencies": {
     "pinia": "^2.1.7",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "@roll20/beacon-sdk": "0.0.2",
+    "handlebars": "^4.7.8",
+    "uuid": "^9.0.1",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
