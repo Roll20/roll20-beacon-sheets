@@ -10,10 +10,10 @@
       <div class="avatar">
         <img :src="meta.avatar" alt="Character Avatar" />
       </div>
-      <label for="name">
+      <label for="character_name">
         <span class="label">Character Name</span>
       </label>
-      <input id="name" v-model="meta.name" />
+      <input id="character_name" v-model="meta.name" />
       <label for="faction">
         <span class="label">Faction</span>
       </label>
@@ -53,21 +53,22 @@ const appStore = useAppStore();
   line-height: 3rem;
 }
 .button-lg {
+  width: 10rem;
+  justify-self: center;
   cursor: pointer;
   background: #e016e7;
   color: #ffffff;
   border-radius: .25rem;
   font-size: .9rem;
-  padding: 5px 15px;
+  padding: .25rem;
   border: none;
   font-weight: 500;
-  max-width: fit-content;
-  text-align: center;
   &:hover { background: rgba(174, 11, 237, 0.95); }
 }
 .label {
   font-weight: 600;
   font-size: 1rem;
+  text-transform: uppercase;
 }
 input {
   font-size: .75rem;
