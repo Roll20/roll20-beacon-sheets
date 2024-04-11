@@ -96,7 +96,7 @@ This is just one way to trigger a re-render, you can implement your own logic to
 */
 export const createRelay = async ({
   devMode = false,
-  primaryStore = 'examplesheetStore',
+  primaryStore = 'app',
   logMode = false,
 }) => {
   const dispatch = await (devMode ? devRelay() : initRelay(relayConfig));

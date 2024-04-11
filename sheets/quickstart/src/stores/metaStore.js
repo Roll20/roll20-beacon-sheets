@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
+import { DEFAULT_AVATAR_URL, DEFAULT_CHARACTER_NAME } from '@/stores/index.js'
 
 /* Every Character, regardless of sheet, has these meta fields
  * and they must be saved to firebase in this specific way.
@@ -7,8 +8,8 @@ import { reactive, ref } from 'vue';
  * */
 export const useMetaStore = defineStore('meta', () => {
   const id = ref('');
-  const name = ref('');
-  const avatar = ref('');
+  const name = ref(DEFAULT_CHARACTER_NAME);
+  const avatar = ref(DEFAULT_AVATAR_URL);
   const bio = ref('');
   const gmNotes = ref('');
   const token = ref({});

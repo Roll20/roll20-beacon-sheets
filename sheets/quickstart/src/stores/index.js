@@ -4,6 +4,10 @@ import jp from 'jsonpath';
 import { useMetaStore } from '@/stores/metaStore.js'
 import { useSheetStore } from '@/stores/sheetStore.js'
 
+export const DEFAULT_CHARACTER_NAME = 'My Hero';
+export const DEFAULT_AVATAR_URL = 'https://s3.amazonaws.com/files.d20.io/images/388362206/5R6pOnpvGrIRL2L0ImU-uA/original.png';
+export const DEFAULT_FACTION = 'The Revelers';
+
 /*
 * This is the master store for the entire character sheet.
 * This has access to all fields from all the other stores.
@@ -87,9 +91,9 @@ export const useAppStore = defineStore('app', () => {
   * Can invoke it from a button in the Settings tab.
   * */
   const loadExampleData = () => {
-    stores.meta.name = 'My Hero';
-    stores.meta.avatar = 'http://placekitten.com/200/200';
-    stores.sheet.faction = 'The Revelers';
+    stores.meta.name = DEFAULT_CHARACTER_NAME;
+    stores.meta.avatar = DEFAULT_AVATAR_URL;
+    stores.sheet.faction = DEFAULT_FACTION;
     // TODO: Repeating items
   };
 
