@@ -18,7 +18,8 @@
     "@roll20/beacon-sdk": "0.0.2",
     "handlebars": "^4.7.8",
     "uuid": "^9.0.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "jsonpath": "^1.1.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
