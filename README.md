@@ -4,9 +4,7 @@ Welcome to Beacon!
 
 Here you can find what you need to start developing your first community sheet with Roll20's powerful beacon SDK.
 
-## Project Setup
-
-### Quickstart Sheet with Vue
+## Quickstart Sheet with Vue
 
 If you are not familiar with Vue.js, this is the starting point for you!
 
@@ -21,7 +19,7 @@ Copy the `quickstart-example-sheet` directory and rename the directory with a **
 
 <b>Then, most importantly, refer to the [Quickstart Sheet Readme](sheets/quickstart-example-sheet/README.md) to get started</b>. There are important details about what you need to configure, install, and run to get started.
 
-### Advanced Sheet with Vue
+## Advanced Sheet with Vue
 
 If you are familiar with Vue.js, and want to try your hand at sheet development with an example app that features rich data stores, roll templates, and a variety of code examples for various use cases, this is the starting point for you!
 
