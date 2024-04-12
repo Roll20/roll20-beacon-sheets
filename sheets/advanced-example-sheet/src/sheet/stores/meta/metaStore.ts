@@ -22,7 +22,7 @@ export const useMetaStore = defineStore('meta', () => {
   const bio = ref('');
   const gmNotes = ref('');
   const token: Ref<Token> = ref({});
-  const campaignId = ref(null);
+  const campaignId = ref();
 
   const permissions = reactive({
     isOwner: false,
