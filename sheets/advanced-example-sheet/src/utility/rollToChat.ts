@@ -7,7 +7,7 @@ import getRollResult from '@/utility/getRollResult';
 /* Example function for Rolling a basic check and showing the roll template. */
 export default async (args: RollToChatTemplate['parameters'], customDispatch?: Dispatch) => {
   const dispatch = customDispatch || (dispatchRef.value as Dispatch); // Need a different Relay instance when handling sheet-actions
- // Use Beacon to make the rolls and calculations. We end up with a Roll Result.
+  // Use Beacon to make the rolls and calculations. We end up with a Roll Result.
   const { components, total } = await getRollResult(args.components, dispatch);
 
   // Pass in the roll result to Handlebars and get HTML to render the roll template

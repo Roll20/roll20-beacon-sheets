@@ -9,9 +9,9 @@ import { v4 as uuidv4 } from 'uuid';
 import sendToChat from '@/utility/sendToChat';
 
 /*
-* This store handles 2 "repeating"/lists of Items in the Inventory. Carried and Stowed.
-* There are 3 types, Generic Item/Weapon/Armor, each with many shared fields and some unique ones
-*  */
+ * This store handles 2 "repeating"/lists of Items in the Inventory. Carried and Stowed.
+ * There are 3 types, Generic Item/Weapon/Armor, each with many shared fields and some unique ones
+ *  */
 export type Item = {
   _id: string;
   type: 'weapon' | 'armor' | 'item' | 'spell' | 'consumable';

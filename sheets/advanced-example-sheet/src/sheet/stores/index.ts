@@ -10,12 +10,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
 
 /*
-* This is the master store for the entire character sheet.
-* This has access to all fields from all the other stores.
-* It is in charge of combining all data in 1 big object to sync it with Firebase.
-* We are listening to changes in this object in other to trigger Dehydrates.
-* Most of this does not need to be changed if you're using Vue.
-* */
+ * This is the master store for the entire character sheet.
+ * This has access to all fields from all the other stores.
+ * It is in charge of combining all data in 1 big object to sync it with Firebase.
+ * We are listening to changes in this object in other to trigger Dehydrates.
+ * Most of this does not need to be changed if you're using Vue.
+ * */
 export const useExampleSheetStore = defineStore('examplesheetStore', () => {
   // List all the stores individually.
   const stores = {
@@ -89,7 +89,7 @@ export const useExampleSheetStore = defineStore('examplesheetStore', () => {
   };
   const setCampaignId = (campaignId?: number) => {
     stores.meta.campaignId = campaignId;
-  }
+  };
 
   /*
   DEV METHOD used to fill the sheet with a lot of data without affecting how the stores are initialized.

@@ -39,7 +39,7 @@ export const useCharacterStore = defineStore('character', () => {
   // Formula for HP is the one indicated by level table + level multiplied by endurance + arbitrary life modifier.
   const lifeMax = computed(
     () =>
-      levelTable[level.value].life + (level.value * abilityScoresStore.EnduranceBase) + lifeMod.value,
+      levelTable[level.value].life + level.value * abilityScoresStore.EnduranceBase + lifeMod.value,
   );
   const heroDiceCurrent = ref(3);
   const heroDiceMod = ref(0);
@@ -207,8 +207,8 @@ export const useCharacterStore = defineStore('character', () => {
 });
 
 /* After any Ability Roll you can choose to spend 1 hero die to roll 1d6 and add it to the total.
-* Follow-up Rolls need to be defined outside of the Store since it may not be available when clicking on the button
-*  */
+ * Follow-up Rolls need to be defined outside of the Store since it may not be available when clicking on the button
+ *  */
 export const addHeroDie = async (props: any, originalResult: number, originalTitle: string) => {
   // This follow-up roll subtracts 1 hero die then adds the result of 1d6 to the previous roll and re-posts the new total.
   const heroDiceCurrent = props?.character?.attributes?.character?.character?.heroDiceCurrent || -1;

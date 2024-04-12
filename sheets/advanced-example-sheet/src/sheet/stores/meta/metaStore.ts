@@ -37,7 +37,7 @@ export const useMetaStore = defineStore('meta', () => {
       avatar: avatar.value,
       bio: bio.value,
       gmNotes: gmNotes.value,
-      campaignId: campaignId.value
+      campaignId: campaignId.value,
     };
   };
 

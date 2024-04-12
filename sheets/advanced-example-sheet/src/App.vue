@@ -5,7 +5,7 @@
       <div class="section__body tabs">
         <router-link to="/sheet">Sheet Tab</router-link>
         <router-link to="/settings">Settings Tab</router-link>
-        <div class="campaignId" v-if="campaignId">Campaign ID: {{campaignId}}</div>
+        <div class="campaignId" v-if="campaignId">Campaign ID: {{ campaignId }}</div>
       </div>
     </div>
     <router-view v-slot="{ Component }">
