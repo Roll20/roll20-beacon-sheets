@@ -1,5 +1,5 @@
 {
-  "name": "@r20sd/example-sheet",
+  "name": "@r20sd/advanced-example-sheet",
   "version": "0.0.0",
   "exports": {
     ".": "./src/index.ts"
