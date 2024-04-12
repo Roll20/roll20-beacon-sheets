@@ -30,6 +30,9 @@
         <div class="trait-item" v-for="(trait) in sheet.traits" :key="trait._id">
           <input v-model="trait.name" placeholder="Name" />
           <input v-model="trait.description" placeholder="Description" />
+          <button class="button" @click="sheet.postTraitToChat(trait)">
+            Chat
+          </button>
           <button class="button" @click="sheet.removeTrait(trait._id)">
             Remove
           </button>
@@ -49,7 +52,7 @@ const sheet = useSheetStore();
 const appStore = useAppStore();
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .header {
   display: grid;
   justify-content: center;
@@ -128,7 +131,7 @@ input {
 }
 .trait-item {
   display: grid;
-  grid-template-columns: 10rem 1fr auto 1rem;
+  grid-template-columns: 8rem 1fr auto auto 1rem;
   column-gap: .25rem;
   padding-bottom: .25rem;
 }
