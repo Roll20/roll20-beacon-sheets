@@ -1,3 +1,6 @@
+/*
+This is a utility function that will handle converting an array into a list of objects in a firebase friendly format.
+ */
 export const arrayToObject = (array) => {
   const isValidArray = array.every((item) => '_id' in item)
 
@@ -17,6 +20,9 @@ export const arrayToObject = (array) => {
   return newObject
 }
 
+/*
+This is a utility function that will handle converting an object from firebase into an array.
+ */
 export const objectToArray = (object) => {
   if (!object) return []
 

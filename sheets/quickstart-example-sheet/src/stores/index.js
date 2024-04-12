@@ -4,6 +4,8 @@ import jp from 'jsonpath'
 import { useMetaStore } from '@/stores/metaStore.js'
 import { useSheetStore } from '@/stores/sheetStore.js'
 
+// Here you can set all default values for your sheet.
+// This is your blank slate, new character setup.
 export const DEFAULT_CHARACTER_NAME = 'My Hero'
 export const DEFAULT_AVATAR_URL =
   'https://s3.amazonaws.com/files.d20.io/images/388362206/5R6pOnpvGrIRL2L0ImU-uA/original.png'

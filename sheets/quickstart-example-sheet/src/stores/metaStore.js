@@ -13,14 +13,12 @@ export const useMetaStore = defineStore('meta', () => {
   const gmNotes = ref('')
   const token = ref({})
   const campaignId = ref(null)
-
   const permissions = reactive({
     isOwner: false,
     isGM: false
   })
 
-  // Stubs for store consistency
-
+  // Handles retrieving these values from the store
   const dehydrate = () => {
     return {
       name: name.value,
@@ -31,6 +29,7 @@ export const useMetaStore = defineStore('meta', () => {
     }
   }
 
+  // Handles updating these values in the store.
   const hydrate = (hydrateStore) => {
     id.value = hydrateStore.id ?? id.value
     name.value = hydrateStore.name ?? name.value
