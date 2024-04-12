@@ -21,7 +21,7 @@
     </div>
     <div class="card">
       <div class="subheader">
-        <div class="subtitle">Traits</div>
+        <div class="subtitle">Traits - {{sheet.traitsCount}}</div>
         <button class="button" @click="sheet.addTrait">
           Add
         </button>
@@ -75,7 +75,7 @@ const appStore = useAppStore();
   border-radius: 2rem;
   padding: 1rem;
   background: #1f1f1f;
-  &:hover { background: #0e626b; }
+  &:hover { background: rgba(14, 98, 107, 0.86); }
 }
 .title {
   font-size: 2.5rem;
@@ -90,14 +90,14 @@ const appStore = useAppStore();
   cursor: pointer;
   width: auto;
   height: fit-content;
-  background: #e016e7;
+  background: #b719be;
   color: #ffffff;
   border-radius: .25rem;
   font-size: .75rem;
   padding: .25rem;
   border: none;
   font-weight: 500;
-  &:hover { background: rgba(174, 11, 237, 0.95); }
+  &:hover { background: rgb(200, 68, 206); }
 }
 .label {
   font-weight: 600;
@@ -112,6 +112,10 @@ input {
   border: none;
   height: 2rem;
   padding: .25rem;
+  &:focus {
+    outline-color: #ffffff;
+    outline-style: groove;
+  }
 }
 .avatar {
   justify-self: center;
@@ -120,6 +124,7 @@ input {
 .traits {
   overflow-y: scroll;
   height: 15rem;
+  padding: .25rem;
 }
 .trait-item {
   display: grid;
