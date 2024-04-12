@@ -6,7 +6,7 @@ import { useSheetStore } from '@/stores/sheetStore.js'
 
 export const DEFAULT_CHARACTER_NAME = 'My Hero';
 export const DEFAULT_AVATAR_URL = 'https://s3.amazonaws.com/files.d20.io/images/388362206/5R6pOnpvGrIRL2L0ImU-uA/original.png';
-export const DEFAULT_FACTION = 'The Revelers';
+export const DEFAULT_FACTION = 'The Guild of Awesome';
 
 /*
 * This is the master store for the entire character sheet.
@@ -94,7 +94,7 @@ export const useAppStore = defineStore('app', () => {
     stores.meta.name = DEFAULT_CHARACTER_NAME;
     stores.meta.avatar = DEFAULT_AVATAR_URL;
     stores.sheet.faction = DEFAULT_FACTION;
-    // TODO: Repeating items
+    stores.sheet.traits = [];
   };
 
   return {
