@@ -1,0 +1,37 @@
+{
+  "name": "@r20sd/quickstart-example-sheet",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "sandbox-server": "vite --port 7620 --mode staging",
+    "sandbox": "run-s build-scss sandbox-server",
+    "build": "run-s build-scss && vite build",
+    "build-scss": "sass ./src/rolltemplates/host.scss ./public/host.css --no-source-map --no-charset",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21",
+    "@roll20/beacon-sdk": "0.0.2",
+    "handlebars": "^4.7.8",
+    "uuid": "^9.0.1",
+    "lodash": "^4.17.21",
+    "jsonpath": "^1.1.1"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.8.0",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue-jsx": "^3.1.0",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.23.0",
+    "prettier": "^3.2.5",
+    "vite": "^5.2.8",
+    "vite-plugin-vue-devtools": "^7.0.25",
+    "sass": "^1.75.0"
+  }
+}
