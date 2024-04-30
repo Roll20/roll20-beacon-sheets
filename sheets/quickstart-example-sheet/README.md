@@ -82,11 +82,6 @@ npm run lint
 npm run format
 ```
 
-### Type Check with typescript
-```sh
-npm run type-check
-```
-
 ## Deploying your sheet
 
 Details for this coming soon!
