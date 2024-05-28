@@ -1,6 +1,6 @@
 import { createRollTemplate, type SendToChatTemplate } from '@/rolltemplates/rolltemplates';
 import { dispatchRef, initValues } from '@/relay/relay';
-import type { Dispatch } from '@roll20/beacon-sdk';
+import type { Dispatch } from '@roll20-official/beacon-sdk';
 
 /* Example function for sending a text message to chat with no rolls involved, using a template */
 export default async (args: SendToChatTemplate['parameters'], customDispatch?: Dispatch) => {

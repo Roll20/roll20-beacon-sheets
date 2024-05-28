@@ -16,7 +16,7 @@
   "dependencies": {
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
-    "@roll20/beacon-sdk": "0.0.2",
+    "@roll20-official/beacon-sdk": "0.0.2",
     "handlebars": "^4.7.8",
     "uuid": "^9.0.1",
     "lodash": "^4.17.21",

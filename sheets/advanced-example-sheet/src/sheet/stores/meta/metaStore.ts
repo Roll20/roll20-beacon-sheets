@@ -1,4 +1,4 @@
-import type { Token } from '@roll20/beacon-sdk';
+import type { Token } from '@roll20-official/beacon-sdk';
 import { defineStore } from 'pinia';
 import { reactive, ref, type Ref } from 'vue';
 

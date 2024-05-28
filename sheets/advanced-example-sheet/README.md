@@ -20,25 +20,16 @@ Comments have been added to the files in this project to better explain their in
 
 ### Accessing the Beacon SDK
 
-Since the beacon SDK is currently hosted on github, you will need access to the github package registry.
+Add `@roll20-official/beacon-sdk` to your `package.json`.
 
-In order to do so you will need to generate a [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-tokens-classic):
-* Under the github user account drop down, go to Settings → Developer Settings → Personal Access Tokens.
-* Generate a new token with `read:packages` scopes.
-* In your terminal, run export `GITHUB_TOKEN="<YOUR_SUPER_SECRET_TOKEN>"`.
-* To avoid having to re-run this command every time you restart your computer, add it to your `.zshenv` file. 
-  * (Bash users can add it to either .bashrc or .profile., or add it to the profile for the environment you are using)
-* Close the current shell and open a new one to start using the new token.
+```sh
+npm i @roll20-official/beacon-sdk
+```
 
-
-### What is the .npmrc file?
-The .npmrc file in this folder, contains the logic for looking up the beacon sdk package through the github package registry. 
-
-You shouldn't have to edit this file but you would need to copy it to your own project if you would like to access the beacon sdk package.
 
 ### Install Dependencies
 
-Before doing anything else and after you have gotten the beacon sdk access token, you have to install the packages this project depends on. 
+Before doing anything else you have to install the packages this project depends on. 
 
 ```sh
 npm install
