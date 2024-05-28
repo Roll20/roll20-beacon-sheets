@@ -20,10 +20,10 @@ Comments have been added to the files in this project to better explain their in
 
 ### Accessing the Beacon SDK
 
-Add `@roll20/beacon-sdk` to your `package.json`.
+Add `@roll20-official/beacon-sdk` to your `package.json`.
 
 ```sh
-npm i @roll20/beacon-sdk
+npm i @roll20-official/beacon-sdk
 ```
 
 

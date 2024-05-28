@@ -22,7 +22,7 @@
     "ci-check": "npm run format && npm run lint && npm run type-check && npm run test:unit && npm run test:e2e:local"
   },
   "dependencies": {
-    "@roll20/beacon-sdk": "0.0.0",
+    "@roll20-official/beacon-sdk": "0.0.0",
     "handlebars": "^4.7.7",
     "jsonpath": "^1.1.1",
     "lodash": "^4.17.21",

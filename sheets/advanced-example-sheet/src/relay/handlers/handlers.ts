@@ -1,4 +1,4 @@
-import type { InitArgs } from '@roll20/beacon-sdk';
+import type { InitArgs } from '@roll20-official/beacon-sdk';
 import { initValues, beaconPulse } from '../relay';
 
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.

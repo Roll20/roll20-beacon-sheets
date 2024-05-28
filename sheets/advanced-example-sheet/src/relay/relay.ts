@@ -5,7 +5,7 @@ import {
   type Dispatch,
   type Settings,
   type UpdateArgs,
-} from '@roll20/beacon-sdk';
+} from '@roll20-official/beacon-sdk';
 import { debounce } from 'lodash';
 import type { PiniaPluginContext } from 'pinia';
 

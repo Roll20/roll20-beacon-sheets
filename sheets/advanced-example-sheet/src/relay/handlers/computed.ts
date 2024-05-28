@@ -1,4 +1,4 @@
-import type { Character, Dispatch } from '@roll20/beacon-sdk';
+import type { Character, Dispatch } from '@roll20-official/beacon-sdk';
 import type { CharacterHydrate } from '@/sheet/stores/character/characterStore';
 import type { AbilityScoresHydrate } from '@/sheet/stores/abilityScores/abilityScoresStore';
 import type { BioHydrate } from '@/sheet/stores/bio/bioStore';

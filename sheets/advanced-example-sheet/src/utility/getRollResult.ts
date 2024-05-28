@@ -1,5 +1,5 @@
 import { dispatchRef } from '@/relay/relay';
-import type { Dispatch } from '@roll20/beacon-sdk';
+import type { Dispatch } from '@roll20-official/beacon-sdk';
 import type { DiceComponent } from '@/rolltemplates/rolltemplates';
 
 type RollResults = {

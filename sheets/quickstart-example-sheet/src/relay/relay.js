@@ -1,4 +1,4 @@
-import { initRelay } from '@roll20/beacon-sdk'
+import { initRelay } from '@roll20-official/beacon-sdk'
 import { debounce } from 'lodash'
 
 import {
