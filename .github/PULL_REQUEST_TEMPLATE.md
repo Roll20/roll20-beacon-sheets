@@ -1,49 +1,40 @@
-# Pull Request (PR)
+# Pull Request Submission Checklist
 
-This template exists to help provide context for code changes in this pull request. Any of the information filled out is preferred but also optional.
+## Required Submission Criteria
 
-Sheet Name:
+If you fail to meet all these criteria, your PR will be rejected.
 
-Publisher / Author:
+- [ ] The pull request title clearly contains the name of the sheet I am editing.
+- [ ] The pull request title clearly states the type of change I am submitting (New Sheet/New Feature/Bugfix/etc.).
+- [ ] The pull request makes changes to files in only one sub-folder.
 
-## What type of PR is this? (check all applicable)
+Pull Request Title Example: Feature/<SHEET_NAME>
 
-- [ ] Creating New Sheet
-  - [ ] Quickstart Example Sheet was used as a template
-  - [ ] Advanced Example Sheet was used as a template
-  - [ ] Started from scratch
-- [ ] Updating Existing Sheet
-  - [ ] Bug Fixes
-  - [ ] Optimization / Refactor
-  - [ ] Documentation
+## Creating A New Sheet Details
 
-## Description
+If you are submitting a new sheet to the repository, please fill in any empty spaces indicated by `< >`.
 
-Describe any notes about your Pull Request here.
+- The name of this game is: `<   >`  
+  - _(i.e. Dungeons & Dragons 5th Edition, The Dresden Files RPG)_
+- The publisher of this game is: `<   >` 
+  - _(i.e. Wizards of the Coast, Evil Hat)_
+- The name of this game system/family is: `<   >` 
+  - _(i.e. Dungeons & Dragons, FATE)_
 
-* Note 1
-* Note 2
+Please check any that apply:
 
-## Questions
+- [ ] I have authorization from the game's publisher to make this an official sheet on Roll20 with their name attached.
+- [ ] This game is not a traditionally published game, but a copy of the game rules can be purchased/downloaded/found at: <   >
+- [ ] This sheet is for an unofficial fan game, modification to an existing game, or a homebrew system.
 
-List out your questions here about anything related to this PR. For general questions about the beacon community repo, please use the issues tab and mention user `@Roll20/beacon-devs`.
+# Changes / Description (optional)
 
-* Question 1
-* Question 2
-
-## Related Pull Requests
-
-Any pull requests related to this PR can be mentioned here with whatever reason. For example, this PR may be depending on changes to be merged from another PR. 
-
-* PR 1
-  * Reason 1
-* PR 2
-  * Reason 2
+Provide any notes relevant to this pull request here. This can include a description of the code changes, references to related pull requests, etc.
 
 ## More Help
 
 Additional information for the beacon sdk can be found at the
 [Beacon SDK Documentation Site](https://roll20.github.io/beacon-docs/docs/guides/introduction/).
 
-You can also post additonal questions using the 
-[Beacon Community Github Issues Tab](https://github.com/Roll20/roll20-beacon-sheets/issues).
+You can also post additional questions using the
+[Beacon Community GitHub Issues Tab](https://github.com/Roll20/roll20-beacon-sheets/issues).
