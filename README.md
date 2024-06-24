@@ -34,3 +34,4 @@ This project features:
 Copy the `advanced-example-sheet` directory and rename the directory with a **name** that resembles the sheet you are wanting to make. Make sure to update the package.json name to your desired sheet name. 
 
 <b>Then, most importantly, refer to the [Advanced Example Sheet Readme](sheets/advanced-example-sheet/README.md) to get started</b>. There are important details about what you need to configure, install, and run to get started.
+
