@@ -1,0 +1,20 @@
+{{#> wrapper type=type keyValues=keyValues }}
+  {{#> header characterName=characterName title=title subtitle=subtitle}}
+  {{/ header}}
+
+  <div class="body">
+    {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
+
+    <details>
+      {{> rollComponents components=components }}
+    </details>
+
+    {{#if keyValues}}
+      {{> keyValues keyValues=keyValues }}
+    {{/if}}
+
+    {{#if textContent}}
+      {{> textContent textContent=textContent }}
+    {{/if}}
+  </div>
+{{/ wrapper }}

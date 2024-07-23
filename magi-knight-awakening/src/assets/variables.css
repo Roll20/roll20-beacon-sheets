@@ -1,0 +1,50 @@
+html{
+  --lm-masterBack: white;
+  --dm-masterBack: #1f1f1f;
+  --masterBack: var(--lm-masterBack);
+
+  --lm-backColor:transparent;
+  --dm-backColor:blue;
+  --backColor: var(--lm-backColor);
+
+  --lm-color:black;
+  --dm-color:#ede9da;
+  --color: var(--lm-color);
+
+  --lm-borderColor: black;
+  --dm-borderColor: #4087e5;
+  --borderColor: var(--lm-borderColor);
+
+  --lm-header-blue: #153859;
+  --dm-header-blue: #3337f3;
+  --header-blue: var(--lm-header-blue);
+
+  --error-red: #dc0508;
+  /* spacing */
+  --gap: 1em;
+  --half-gap: calc(var(--gap) / 2);
+  --tiny-gap: calc(var(--half-gap) / 2);
+  --big-gap: calc(var(--gap) * 2);
+
+  /* images */
+  --crownImage: url('./crown.png');
+  --swordImage: url('./sword.png');
+  --abilityImage: url('./ability-circle.png');
+
+  --moon1Image:url('./moon1.png');
+  --moon2Image:url('./moon2.png');
+  --moon3Image:url('./moon3.png');
+  --moon4Image:url('./moon4.png');
+  --moon5Image:url('./moon5.png');
+  --moon6Image:url('./moon6.png');
+  --moon7Image:url('./moon7.png');
+  --moon8Image:url('./moon8.png');
+  --eclipseBorder: url('./eclipse-border.png');
+}
+html.dark{
+  --masterBack: var(--dm-masterBack);
+  --backColor: var(--dm-backColor);
+  --color: var(--dm-color);
+  --borderColor: var(--dm-borderColor);
+  --header-blue: var(--dm-header-blue);
+}

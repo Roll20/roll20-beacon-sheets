@@ -1,0 +1,135 @@
+.magiknight-template {
+  .header{
+    border-radius: 10px 10px 0 0;
+    color: var(--masterBack);
+  }
+}
+
+rolltemplate.magiknight-template {
+  
+  --lm-masterBack: white;
+  --dm-masterBack: #1f1f1f;
+  --masterBack: var(--lm-masterBack);
+
+  --lm-backColor:transparent;
+  --dm-backColor:blue;
+  --backColor: var(--lm-backColor);
+
+  --lm-color:black;
+  --dm-color:#ede9da;
+  --color: var(--lm-color);
+
+  --lm-borderColor: black;
+  --dm-borderColor: #4087e5;
+  --borderColor: var(--lm-borderColor);
+
+  --lm-header-blue: #153859;
+  --dm-header-blue: #3337f3;
+  --header-blue: var(--lm-header-blue);
+
+  --error-red: #dc0508;
+  /* spacing */
+  --gap: 1em;
+  --half-gap: calc(var(--gap) / 2);
+  --tiny-gap: calc(var(--half-gap) / 2);
+  --big-gap: calc(var(--gap) * 2);
+
+  /* images */
+  --crownImage: url('./crown.png');
+  --swordImage: url('./sword.png');
+  --abilityImage: url('./ability-circle.png');
+
+  --moon1Image:url('./moon1.png');
+  --moon2Image:url('./moon2.png');
+  --moon3Image:url('./moon3.png');
+  --moon4Image:url('./moon4.png');
+  --moon5Image:url('./moon5.png');
+  --moon6Image:url('./moon6.png');
+  --moon7Image:url('./moon7.png');
+  --moon8Image:url('./moon8.png');
+  --eclipseBorder: url('./eclipse-border.png');
+
+  display: block;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  background: white;
+  color: black;
+
+  .header {
+    background-color: var(--header-blue);;
+    text-align: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    color: white;
+    &__title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    &__subtitle {
+      font-size: 1rem;
+    }
+  }
+  .body {
+    padding: 0.5rem;
+
+    hr {
+      margin: 0.5rem 0;
+    }
+
+    .trait-list {
+      display: flex;
+      gap: 0.5rem;
+
+      .trait {
+        font-style: italic;
+      }
+    }
+  }
+
+  .key-values {
+    &__pair {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      gap: 0.5rem;
+    }
+    &__key {
+      font-weight: 600;
+    }
+  }
+
+  .roll {
+    &__total {
+      text-align: center;
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
+    }
+    &__components {
+      display: flex;
+      gap: 0.5rem;
+
+      .component {
+        &__value {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .hero-die {
+    text-align: center;
+    &__button {
+      display: inline-block;
+      padding: 0.25rem;
+      transition: background-color 0.2s ease-in-out;
+      border-radius: 0.25rem;
+      background-color: var(--examplesheet-primary);
+      color: white;
+      &:hover {
+        background-color: var(--examplesheet-secondary);
+        color: black;
+      }
+    }
+  }
+}
