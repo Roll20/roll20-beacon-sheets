@@ -13,9 +13,10 @@ export default defineConfig(({ mode }) => ({
   ],
   base:
     mode === "production"
-      ? `https://storage.googleapis.com/beacon-community-sheets/example-sheet/`
-      : "/",
+    ? `${process.env.VITE_SHEET_PATH}/${process.env.VITE_SHEET_SHORT_NAME}/`
+    : "/",
   build: {
+    target: 'esnext',
     emptyOutDir: true,
     minify: true,
     cssCodeSplit: false,

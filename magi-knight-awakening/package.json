@@ -8,7 +8,7 @@
     "sandbox-server": "vite --port 7620 --mode staging",
     "sandbox": "run-s build-scss sandbox-server",
     "build": "run-s build-scss && vite build",
-    "build-scss": "sass ./src/rolltemplates/styles/host.scss ./public/host.css --no-source-map --no-charset",
+    "build-scss": "sass ./src/rollTemplates/styles/host.scss ./public/host.css --no-source-map --no-charset",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -9,7 +9,10 @@ export default defineConfig(({ mode }) => ({
     vue(),
     VueDevTools(),
   ],
-  base: "/",
+  base: 
+    mode === "production"
+      ? `${process.env.VITE_SHEET_PATH}/${process.env.VITE_SHEET_SHORT_NAME}/`
+      : "/",
   build: {
     target: 'esnext',
     emptyOutDir: true,
