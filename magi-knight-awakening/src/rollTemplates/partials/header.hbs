@@ -1,0 +1,27 @@
+<div class="header">
+  {{#if characterName}}
+    <div class="header__character-name">{{characterName}}</div>
+  {{/if}}
+  {{#if @partial-block}}
+    <div class="header__group">
+      {{> @partial-block }}
+      {{#if title}}
+        <div class="header__sub-group">
+          <div class="header__title">{{title}}</div>
+          {{#if subtitle}}
+            <div class="header__subtitle">{{subtitle}}</div>
+          {{/if}}
+        </div>
+      {{/if}}
+    </div>
+  {{else}}
+    {{#if title}}
+      <div class="header__sub-group">
+        <div class="header__title">{{title}}</div>
+        {{#if subtitle}}
+          <div class="header__subtitle">{{ capitalize subtitle}}</div>
+        {{/if}}
+      </div>
+    {{/if}}
+  {{/if}}
+</div>
