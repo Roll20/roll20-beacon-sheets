@@ -2,7 +2,9 @@ import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
 import jp from 'jsonpath';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useAttributeStore } from './attributeStore/attributeStore';
 import { useGMStore } from './gmStore/gmStore';
+import { useUIStore } from './uiStore/uiStore';
 
 
 /*
@@ -12,11 +14,13 @@ import { useGMStore } from './gmStore/gmStore';
  * We are listening to changes in this object in other to trigger Dehydrates.
  * Most of this does not need to be changed if you're using Vue.
  * */
-export const useExampleSheetStore = defineStore('examplesheetStore', () => {
+export const useStarTrekStore = defineStore('StarTrek', () => {
   // List all the stores individually.
   const stores = {
-    meta: useMetaStore(),
+    attributes: useAttributeStore(),
     gm: useGMStore(),
+    meta: useMetaStore(),
+    ui: useUIStore(),
   };
 
   const pageLoading = ref(false);

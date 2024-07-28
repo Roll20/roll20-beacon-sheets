@@ -56,6 +56,7 @@ const decrement = () => {
 
 <style scoped lang="scss">
   @use "@/common/scss/common.scss";
+  @use "@/sheet/scss/generics.scss";
   .resource-counter {
     grid-column: span 3;
     display: grid;
@@ -63,17 +64,7 @@ const decrement = () => {
     grid-template-columns: 1rem 5rem 1rem;
     gap: 2px;
     &__button {
-      height: 1rem;
-      width: 1rem;
-      padding: 0;
-      background-position: 50% 50%;
-
-      &--subtract {
-        background-image: url(../../common/assets/remove.svg);
-      }
-      &--add {
-        background-image: url(../../common/assets/add.svg);
-      }
+      @include generics.icon-button;
     }
     &__input {
       width: 5rem;

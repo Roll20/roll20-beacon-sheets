@@ -16,9 +16,9 @@
 </template>
 
 <script setup>
-import { useExampleSheetStore } from './sheet/stores';
+import { useStarTrekStore } from './sheet/stores';
 
-const store = useExampleSheetStore();
+const store = useStarTrekStore();
 const campaignId = store.meta.campaignId;
 </script>
 

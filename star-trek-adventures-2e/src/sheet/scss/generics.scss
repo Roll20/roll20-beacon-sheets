@@ -1,0 +1,20 @@
+@mixin icon-button {
+  height: 1rem;
+  width: 1rem;
+  padding: 0;
+  background-position: 50% 50%;
+  cursor: pointer;
+  &--subtract {
+    background-image: url(@/common/assets/remove.svg);
+  }
+  &--add {
+    background-image: url(@/common/assets/add.svg);
+  }
+  &--calculate {
+    background-image: url(@/common/assets/calculate.svg)
+  }
+}
+
+.icon-button {
+  @include icon-button();
+}

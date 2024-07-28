@@ -1,23 +1,16 @@
 <template>
-  <header class="pc-header">
-    <div class="pc-header__resource-display">Momentum: {{ gmStore.resources.momentum }}</div>
-    <div class="pc-header__resource-display">Threat: {{ gmStore.resources.threat }}</div>
-  </header>
+  <ThePCHeader />
   <hr>
   <main>
-    This will be the sheet body
+    <ThePCAttributes />
   </main>
 </template>
 
 <script setup lang="ts">
-import { useGMStore } from "@/sheet/stores/gmStore/gmStore";
-const gmStore = useGMStore();
+import ThePCAttributes from '@/components/PC/ThePCAttributes.vue';
+import ThePCHeader from '@/components/PC/ThePCHeader.vue';
 
 </script>
 
-<style scoped lang="scss">
-  .pc-header {
-    display: flex;
-    gap: 8px;
-  }
+<style lang="scss">
 </style>

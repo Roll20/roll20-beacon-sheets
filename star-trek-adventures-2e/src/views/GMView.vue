@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { ResourceCounter } from "@/components/ResourceCounter";
+import { ResourceCounter } from "@/components/GM/ResourceCounter";
 import { useGMStore } from "@/sheet/stores/gmStore/gmStore";
 import { computed } from "vue";
 

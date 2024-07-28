@@ -10,7 +10,6 @@ import { debounce } from 'lodash';
 import type { PiniaPluginContext } from 'pinia';
 
 import { getAbilityScores, getBio, getLife, setLife } from '@/relay/handlers/computed';
-import { updateGMResources } from '@/sheet/stores/gmStore/gmStore';
 import { v4 as uuidv4 } from 'uuid';
 import { nextTick, reactive, ref, watch, type App, type Ref } from 'vue';
 import {
@@ -136,7 +135,7 @@ This is just one way to trigger a re-render, you can implement your own logic to
 */
 export const createRelay = async ({
   devMode = false,
-  primaryStore = 'examplesheetStore',
+  primaryStore = 'StarTrek',
   logMode = false,
 }) => {
   // @ts-ignore
@@ -150,12 +149,11 @@ export const createRelay = async ({
     // Init Store
     const { attributes, ...profile } = initValues.character;
     store.hydrateStore(attributes, profile);
+    store.hydrateStore({gm:initValues.sharedSettings})
 
     // Beacon Provides access to settings, like campaign id for example
     store.setCampaignId(initValues.settings.campaignId);
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
-
-    updateGMResources(initValues.sharedSettings)
 
     // Watch for changes
     store.$subscribe(() => {

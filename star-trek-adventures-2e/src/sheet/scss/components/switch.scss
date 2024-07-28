@@ -1,0 +1,31 @@
+.switch {
+  cursor: pointer;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  width: 2rem;
+  height: 1rem;
+  background-color: var(--switch-disabled);
+  border-radius: .5rem;
+  padding: 0;
+  border: 1px transparent;
+  
+  &--enabled {
+    background-color: var(--switch-enabled);
+  }
+
+  &__handle {
+    display: inline-block;
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    border-radius: .5rem;
+    background-color: white;
+    left: 0;
+    transition: all .5s;
+
+    &--enabled {
+      left: 1rem;
+    }
+  }
+}
