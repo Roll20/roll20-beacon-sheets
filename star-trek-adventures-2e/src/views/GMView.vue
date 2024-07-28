@@ -8,6 +8,12 @@
           :modelValue="{value: momentum}"
           @update:modelValue="momentum = $event.value"
         />
+        <ResourceCounter 
+          id="Threat"
+          label="Threat"
+          :modelValue="{value: threat}"
+          @update:modelValue="threat = $event.value"
+        />
       </div>
     </div>
   </div>
@@ -23,8 +29,14 @@ const gmStore = useGMStore();
 const momentum = computed({
   get() {return gmStore.resources.momentum},
   set(newValue) {
-    console.log(newValue)
     gmStore.resources.momentum = newValue
+  }
+})
+
+const threat = computed({
+  get() {return gmStore.resources.threat},
+  set(newValue) {
+    gmStore.resources.threat = newValue
   }
 })
 
@@ -38,7 +50,13 @@ const momentum = computed({
     display: grid;
     gap: 1rem;
     margin-bottom: 1rem;
-    grid-template-columns: repeat(1fr, 12);
+    grid-template-columns: repeat(12, 1fr);
+  }
+  &__resources {
+    display: grid;
+    grid-column: span 12;
+    grid-template-columns: subgrid;
+    justify-items: center;
   }
 }
 </style>

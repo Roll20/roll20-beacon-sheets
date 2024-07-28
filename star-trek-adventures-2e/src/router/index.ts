@@ -1,3 +1,4 @@
+import PCView from '@/views/PCView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import GMView from '../views/GMView.vue';
 
@@ -14,7 +15,11 @@ const router = createRouter({
       path: '/gm',
       name: 'gm',
       component: GMView,
-      alias: '/',
+    },
+    {
+      path: '/pc',
+      name: 'pc',
+      component: PCView,
     },
   ],
 });

@@ -42,7 +42,6 @@ export const useExampleSheetStore = defineStore('examplesheetStore', () => {
   // Meta store has unique behavior which shouldn't be modified.
   // This is invoked any time Firebase data changes.
   const dehydrateStore = () => {
-    console.log("dehydrating store")
     const character: Record<string, any> = {};
     character.attributes = {};
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];

@@ -1,9 +1,9 @@
 <template>
-  <div class="examplesheet">
+  <html class="examplesheet">
     <div class="header section">
-      <div class="section__header">This is the Header</div>
       <div class="section__body tabs">
         <router-link :to="{ name: 'gm' }">GM Tab</router-link>
+        <router-link :to="{ name: 'pc' }">PC Tab</router-link>
         <div class="campaignId" v-if="campaignId">Campaign ID: {{ campaignId }}</div>
       </div>
     </div>
@@ -12,8 +12,7 @@
         <component :is="Component" />
       </transition>
     </router-view>
-    <div class="footer section section__header">This is the Footer</div>
-  </div>
+  </html>
 </template>
 
 <script setup>

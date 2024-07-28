@@ -1,10 +1,11 @@
 <template>
-  <div class="resource-counter">
+  <div class="resource-counter" data-testid="resource-counter">
     <label class="resource-counter__label" :for="id ?? label"> {{ label }}</label>
-    <button class="resource-counter__button resource-counter__button--subtract">
-      <span class="sr-only">
-        subtract
-      </span>
+    <button 
+      class="resource-counter__button resource-counter__button--subtract"
+      aria-label="subtract"
+      @click="decrement"
+    >
     </button>
     <input 
     :id="id ?? label"
@@ -12,10 +13,11 @@
     type="number"
     v-model="model"
     >
-    <button class="resource-counter__button resource-counter__button--add">
-      <span class="sr-only">
-        add
-      </span>
+    <button 
+      class="resource-counter__button resource-counter__button--add"
+      aria-label="add"
+      @click="increment"
+    >
     </button>
   </div>
 </template>
@@ -34,22 +36,28 @@ const props = defineProps<ResourceCounterProps>();
 
 const emit = defineEmits(["update:modelValue"])
 
-const model = computed({
+let model = computed({
   get() {
-    console.log(props.modelValue.value)
     return props.modelValue.value
   },
   set(newValue) {
-    console.log("setting", newValue)
     emit("update:modelValue", {key: "value", value: newValue})
   }
 })
+
+const increment = () => {
+  emit("update:modelValue", {key: "value", value: model.value+1})
+}
+const decrement = () => {
+  emit("update:modelValue", {key: "value", value: model.value-1})
+}
 
 </script>
 
 <style scoped lang="scss">
   @use "@/common/scss/common.scss";
   .resource-counter {
+    grid-column: span 3;
     display: grid;
     align-items: center;
     grid-template-columns: 1rem 5rem 1rem;
@@ -70,6 +78,7 @@ const model = computed({
     &__input {
       width: 5rem;
       box-sizing: border-box;
+      text-align: center;
       &::-webkit-outer-spin-button
       &::-webkit-inner-spin-button {
         -webkit-appearance: none;

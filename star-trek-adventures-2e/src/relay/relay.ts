@@ -10,8 +10,9 @@ import { debounce } from 'lodash';
 import type { PiniaPluginContext } from 'pinia';
 
 import { getAbilityScores, getBio, getLife, setLife } from '@/relay/handlers/computed';
+import { updateGMResources } from '@/sheet/stores/gmStore/gmStore';
 import { v4 as uuidv4 } from 'uuid';
-import { nextTick, reactive, ref, shallowRef, watch, type App, type Ref } from 'vue';
+import { nextTick, reactive, ref, watch, type App, type Ref } from 'vue';
 import {
   onChange,
   onDragOver,
@@ -56,11 +57,17 @@ const relayConfig = {
   },
 };
 
+export type SharedSettings = {
+  momentum?: number;
+  threat?: number;
+}
+
 // This is the typescript type for the initial values that the sheet will use when it starts.
 export type InitValues = {
   id: string;
   character: Character;
   settings: Settings;
+  sharedSettings: SharedSettings;
   compendiumDrop: CompendiumDragDropData | null;
 };
 
@@ -71,6 +78,7 @@ export const initValues: InitValues = reactive({
     attributes: {},
   } as Character,
   settings: {} as Settings,
+  sharedSettings: {} as SharedSettings,
   compendiumDrop: null,
 });
 
@@ -80,7 +88,7 @@ This is a way to keep track of the state of the sheet in a reactive way.
 */
 export const beaconPulse = ref(0);
 export const blockUpdate = ref(false);
-export const dispatchRef = shallowRef();
+export const dispatchRef = ref();
 export const dropUpdate: Ref<Dispatch> = ref({} as Dispatch);
 export const settingsSheet = ref(false);
 const sheetId = ref(uuidv4());
@@ -146,6 +154,8 @@ export const createRelay = async ({
     // Beacon Provides access to settings, like campaign id for example
     store.setCampaignId(initValues.settings.campaignId);
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
+
+    updateGMResources(initValues.sharedSettings)
 
     // Watch for changes
     store.$subscribe(() => {
