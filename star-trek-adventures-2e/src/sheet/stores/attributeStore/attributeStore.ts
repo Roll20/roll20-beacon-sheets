@@ -7,6 +7,7 @@ import { computed, reactive, toRaw } from "vue";
 export type AttributeModifier = {
   operation: ModifierKey,
   value: number,
+  note?: string,
 };
 
 export type AttributeField = {

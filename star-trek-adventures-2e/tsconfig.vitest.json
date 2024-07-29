@@ -4,6 +4,6 @@
   "compilerOptions": {
     "lib": [],
     "types": ["node", "jsdom"],
-    "allowJs": true
+    "allowJs": true,
   }
 }

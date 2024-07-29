@@ -22,20 +22,22 @@
     "ci-check": "npm run format && npm run lint && npm run type-check && npm run test:unit && npm run test:e2e:local"
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.1.2",
     "@headlessui/vue": "^1.7.22",
     "@roll20-official/beacon-sdk": "0.0.0",
     "handlebars": "^4.7.7",
     "jsonpath": "^1.1.1",
     "lodash": "^4.17.21",
-    "pinia": "^2.0.32",
+    "pinia": "^2.2.0",
     "uuid": "^9.0.1",
     "vite-svg-loader": "^4.0.0",
-    "vue": "^3.2.47",
+    "vue": "^3.4.34",
     "vue-component-library": "^0.0.8",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "@pinia/testing": "^0.1.4",
     "@rushstack/eslint-patch": "^1.2.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/user-event": "^14.5.2",
