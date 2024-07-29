@@ -1,7 +1,20 @@
 
+$federation-blue: #3289b5;
+$federation-blue-50: #3289b580;
+$federation-blue-25: #3289b540;
+$federation-grey: #4f4f4f;
+$federation-silver: #A5A5A5;
+
 html {
   --switch-disabled: grey;
   --switch-enabled: orange;
 
   --popover-background: white;
+
+  --primary-border-color: #{$federation-blue-50};
+
+  --primary-text-color: #{$federation-blue};
+  --secondary-text-color: #{$federation-grey};
+
+  --secondary-background: #{$federation-blue-25};
 }

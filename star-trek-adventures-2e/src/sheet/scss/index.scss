@@ -1,8 +1,11 @@
 @use "./components/switch.scss";
 @use "./generics.scss";
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
 html {
   font-size: 16px;
+  font-family: "Orbitron"
 }
 
 body {

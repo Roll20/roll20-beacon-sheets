@@ -1,6 +1,6 @@
 <template>
-  <html class="examplesheet">
-    <div class="header section">
+  <html class="star-trek-adventures-2e">
+    <div class="header">
       <div class="section__body tabs">
         <router-link :to="{ name: 'gm' }">GM Tab</router-link>
         <router-link :to="{ name: 'pc' }">PC Tab</router-link>

@@ -13,4 +13,8 @@ import ThePCHeader from '@/components/PC/ThePCHeader.vue';
 </script>
 
 <style lang="scss">
+  main {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+  }
 </style>

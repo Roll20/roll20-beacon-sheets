@@ -1,4 +1,4 @@
-import { ModifierKey } from "@/system/logicTerms"
+import { type ModifierKey } from "@/system/logicTerms"
 
 export const getOperationSymbol = (operation: ModifierKey) => {
   switch(operation) {

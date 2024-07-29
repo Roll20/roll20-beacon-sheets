@@ -60,7 +60,7 @@ export const useAttributeStore = defineStore("attributes", () => {
   const PRESENCE = computed(() => calculateAttribute("PRESENCE"))
   const DARING = computed(() => calculateAttribute("DARING"))
   const INSIGHT = computed(() => calculateAttribute("INSIGHT"))
-  const REASON = computed(() => calculateAttribute("PRESENCE"))
+  const REASON = computed(() => calculateAttribute("REASON"))
 
 
   const dehydrate = () => {

@@ -1,11 +1,32 @@
 <template>
-  <div v-if="!editing">
-    <label>{{ label }}</label>
-    <input type="number" disabled :value="total">
-  </div>
-  <div v-else>
-    <label>{{ label }} Base:</label>
+  <button 
+    v-if="!editing"
+    class="attribute-view"
+  >
+      <label 
+        class="attribute-view__label"
+        :for="`attribute-view-${attribute.toLowerCase()}`"
+      >
+        {{ label }}
+      </label>
+      <span 
+        class="attribute-view__total"
+        data-testid="attribute-view-total"
+      >
+        {{ total }}
+      </span>
+  </button>
+  <div 
+    v-else
+    class="attribute-edit"
+  >
+    <label
+      class="attribute-edit__label"
+      >
+      {{ label }} Base:
+    </label>
     <input 
+      class="attribute-edit__base"
       v-model="attributeBase"
       type="number"
     >
@@ -16,7 +37,7 @@
       @blur="showTooltip=false"
       @mouseleave="showTooltip = false"
       ref="reference"
-      class="icon-button icon-button--calculate"
+      class="icon-button icon-button--calculate attribute-edit__modifiers-button"
     >
       <label class="sr-only">
         Modifiers
@@ -115,4 +136,64 @@ const {floatingStyles} = useFloating(reference, floating, {
   max-width: 20%;
 }
 
+.attribute-view {
+  cursor: pointer;
+
+  display: grid;
+  grid-column: span 2;
+  grid-template-columns: subgrid;
+  justify-items: center;
+
+  background: white;
+
+  padding: 2px;
+
+  border: 1px solid var(--primary-border-color);
+  border-radius: 4px;
+
+  * {
+    cursor: pointer;
+  }
+
+  &__label {
+    text-transform: uppercase;
+    color: var(--primary-text-color);
+  }
+
+  &__total {
+    grid-column: span 1;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+
+    border: none;
+    padding: 0;
+
+    -moz-appearance: textfield;
+    &::-webkit-outer-spin-button
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+  }
+}
+
+.attribute-edit {
+  display: grid;
+  grid-column: span 6;
+  grid-template-columns: subgrid;
+
+  justify-items: center;
+
+  &__label {
+    grid-column: span 3;
+    color: var(--label-color);
+  }
+
+  &__base {
+    grid-column: span 2;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
 </style>

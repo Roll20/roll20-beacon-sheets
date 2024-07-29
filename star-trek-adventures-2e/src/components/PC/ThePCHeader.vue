@@ -8,7 +8,7 @@
     </div>
     <SwitchGroup>
       <SwitchLabel>
-        {{ editing ? "Edit Mode:": "View Mode:" }}
+        Edit Mode
       </SwitchLabel>
       <Switch 
         v-model="editing"

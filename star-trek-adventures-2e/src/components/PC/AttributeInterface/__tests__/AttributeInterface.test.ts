@@ -39,11 +39,11 @@ describe("AttributeInterface", () => {
     const attributeStore = useAttributeStore();
     attributeStore.fields.CONTROL.base = 4;
     doRender();
-    const total = screen.getByRole("spinbutton") as HTMLInputElement
-    expect(Number(total.value)).toBe(attributeStore.CONTROL)
+    const total = screen.getByTestId("attribute-view-total");
+    expect(Number(total.textContent)).toBe(attributeStore.CONTROL)
     attributeStore.fields.CONTROL.base = 2;
     await nextTick();
-    expect(Number(total.value)).toBe(attributeStore.CONTROL);
+    expect(Number(total.textContent)).toBe(attributeStore.CONTROL);
   })
 
   it("should provide an input for the attribute's base value when in edit mode", () => {
