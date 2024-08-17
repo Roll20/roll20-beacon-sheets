@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { useUIStore } from '@/sheet/stores/uiStore/uiStore';
-import StatInterfaceBlock from './StatInterfaceBlock.vue';
+import StatInterfaceBlock from './StatInterface/StatInterfaceBlock.vue';
 import { computed } from 'vue';
 
 const uiStore = useUIStore();

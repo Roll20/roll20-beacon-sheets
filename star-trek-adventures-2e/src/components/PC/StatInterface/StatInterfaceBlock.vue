@@ -6,9 +6,10 @@
 </template>
 
 <script setup lang="ts">
-import { AttributeKey, AttributeKeys, DepartmentKey, DepartmentKeys } from '@/system/gameTerms';
+import type { AttributeKey,  DepartmentKey } from '@/system/gameTerms';
+import { AttributeKeys, DepartmentKeys } from '@/system/gameTerms';
 import { computed } from 'vue';
-import StatInterface from './StatInterface/StatInterface.vue';
+import StatInterface from './StatInterface.vue';
 
 
 export type StatInterfaceBlockProps = {

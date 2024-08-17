@@ -45,7 +45,7 @@ const campaignId = store.meta.campaignId;
       &.router-link-active {
         color: var(--examplesheet-primary);
         font-weight: 600;
-        text-decoation: underline;
+        text-decoration: underline;
         border-color: var(--examplesheet-primary);
       }
     }

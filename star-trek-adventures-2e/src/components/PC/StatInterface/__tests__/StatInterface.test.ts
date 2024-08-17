@@ -9,6 +9,7 @@ import { setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 import StatInterface, { type StatInterfaceProps } from "../StatInterface.vue";
+import { useRollStore } from "@/sheet/stores/rollStore/rollStore";
 
 type AttributeRenderProps = Partial<StatInterfaceProps> & {
   stat?: AttributeKey
@@ -20,7 +21,7 @@ type DepartmentRenderProps = Partial<StatInterfaceProps> & {
 const doAttributeRender = ({
   stat: attribute = "CONTROL"
 }: AttributeRenderProps = {}) => {
-  const mounted =render(StatInterface, {
+  const mounted = render(StatInterface, {
     props: {
       stat: attribute
     }
@@ -145,6 +146,13 @@ describe("StatInterface", () => {
           .toBe(`${modifiers[index].note}`)
       })
     });
+    it("should change the active attribute being rolled when clicked in view mode", async () => {
+      const rollStore = useRollStore();
+      doAttributeRender();
+      const button = screen.getByRole("button")
+      await userEvent.click(button)
+      expect(rollStore.activeStats.attribute).toBe("CONTROL")
+    })
   })
 
   describe("Departments", () => {
@@ -210,5 +218,12 @@ describe("StatInterface", () => {
           .toBe(`${modifiers[index].note}`)
       })
     });
+    it("should change the active attribute being rolled when clicked in view mode", async () => {
+      const rollStore = useRollStore();
+      doDepartmentRender();
+      const button = screen.getByRole("button")
+      await userEvent.click(button)
+      expect(rollStore.activeStats.department).toBe("COMMAND")
+    })
   })
 })

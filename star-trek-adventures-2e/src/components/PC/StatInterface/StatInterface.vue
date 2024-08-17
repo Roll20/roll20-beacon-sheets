@@ -1,6 +1,7 @@
 <template>
   <button 
     v-if="!editing"
+    @click="setActiveToStat()"
     class="stat-view"
     :class="`stat-view--${stat.toLowerCase()}`"
   >
@@ -85,6 +86,7 @@ import { useUIStore } from '@/sheet/stores/uiStore/uiStore';
 import { getOperationSymbol } from '@/utility/getSymbols';
 import { offset, useFloating } from '@floating-ui/vue';
 import { computed, ref } from 'vue';
+import { useRollStore } from '@/sheet/stores/rollStore/rollStore';
 
 export type StatInterfaceProps = {
   stat: AttributeKey | DepartmentKey
@@ -94,6 +96,7 @@ const props = defineProps<StatInterfaceProps>();
 
 const uiStore = useUIStore();
 const statsStore = useStatsStore();
+const rollStore = useRollStore();
 
 const editing = computed(() => {
   return uiStore.editMode
@@ -140,6 +143,13 @@ const statBase = computed({
 
 const setModifyingToStat = () => {
   uiStore.modifyingStat = stat;
+}
+
+const setActiveToStat = () => {
+  if (isAttribute)
+    rollStore.activeStats.attribute = stat;
+  else if (isDepartment)
+    rollStore.activeStats.department = stat;
 }
 
 const reference = ref(null);

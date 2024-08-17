@@ -5,21 +5,16 @@ import { ref } from 'vue';
 import { useStatsStore } from './statsStore/statsStore';
 import { useGMStore } from './gmStore/gmStore';
 import { useUIStore } from './uiStore/uiStore';
+import { useRollStore } from './rollStore/rollStore';
 
 
-/*
- * This is the master store for the entire character sheet.
- * This has access to all fields from all the other stores.
- * It is in charge of combining all data in 1 big object to sync it with Firebase.
- * We are listening to changes in this object in other to trigger Dehydrates.
- * Most of this does not need to be changed if you're using Vue.
- * */
 export const useStarTrekStore = defineStore('StarTrek', () => {
   // List all the stores individually.
   const stores = {
-    stats: useStatsStore(),
     gm: useGMStore(),
     meta: useMetaStore(),
+    roll: useRollStore(),
+    stats: useStatsStore(),
     ui: useUIStore(),
   };
 
@@ -50,7 +45,7 @@ export const useStarTrekStore = defineStore('StarTrek', () => {
     character.attributes = {};
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];
     storeKeys.forEach((key) => {
-      //if (key === "rolls") return;
+      if (key === "roll" || key === "gm") return;
       if (key === 'meta') {
         const { name, bio, gmNotes, avatar } = stores.meta.dehydrate();
         character.name = name;
@@ -69,8 +64,10 @@ export const useStarTrekStore = defineStore('StarTrek', () => {
   const hydrateStore = (partial: Record<string, any>, meta: MetaHydrate) => {
     if (partial) {
       storeRegistry.forEach((store) => {
-        if (!partial[store]) return;
-        //if (store === "rolls") return;
+        if (!partial[store] 
+          || store === "roll" 
+          || store === "gm"
+        ) return;
         stores[store].hydrate(partial[store]);
       });
     }
