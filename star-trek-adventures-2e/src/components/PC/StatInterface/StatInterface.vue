@@ -5,7 +5,7 @@
   >
       <label 
         class="attribute-view__label"
-        :for="`attribute-view-${attribute.toLowerCase()}`"
+        :for="`attribute-view-${stat.toLowerCase()}`"
       >
         {{ label }}
       </label>
@@ -27,11 +27,11 @@
     </label>
     <input 
       class="attribute-edit__base"
-      v-model="attributeBase"
+      v-model="statBase"
       type="number"
     >
     <button 
-      @click="setModifyingToAttribute()"
+      @click="setModifyingToStat()"
       @mouseover="showTooltip = true"
       @focus="showTooltip=true"
       @blur="showTooltip=false"
@@ -56,7 +56,7 @@
         class="modifiers-display__modifier-wrapper"
         >
         <div 
-          v-if="modifier.operation && modifier.value"
+          v-if="'operation' in modifier && modifier.value"
           class="modifiers-display__modifier-value"
           :data-testid="`popover-modifier-${index}-value`"
         >
@@ -76,43 +76,68 @@
 </template>
 
 <script setup lang="ts">
-import { AttributeModifier, useAttributeStore } from '@/sheet/stores/attributeStore/attributeStore';
+import type { AttributeKey, DepartmentKey, } from '@/system/gameTerms';
+import { isAttributeKey, isDepartmentKey } from '@/system/gameTerms';
+import { MessageModifier, StatModifier, useStatsStore } from '@/sheet/stores/statsStore/statsStore';
 import { useUIStore } from '@/sheet/stores/uiStore/uiStore';
-import { AttributeKey, AttributesEnum } from '@/system/gameTerms';
 import { getOperationSymbol } from '@/utility/getSymbols';
 import { offset, useFloating } from '@floating-ui/vue';
 import { computed, ref } from 'vue';
 
-export type AttributeInterfaceProps = {
-  attribute: AttributeKey
+export type StatInterfaceProps = {
+  stat: AttributeKey | DepartmentKey
 }
 
-const props = defineProps<AttributeInterfaceProps>();
+const props = defineProps<StatInterfaceProps>();
 
 const uiStore = useUIStore();
-const attributeStore = useAttributeStore();
+const statsStore = useStatsStore();
 
 const editing = computed(() => {
   return uiStore.editMode
 });
 
-const attribute = computed(() => props.attribute);
-const total = computed(() => attributeStore[attribute.value])
-const label = computed(() => attributeStore.fields[attribute.value].label)
-const modifiers = computed<Partial<AttributeModifier>[]>(() => 
-  attributeStore.fields[attribute.value].modifiers 
-  || [{note: `No ${AttributesEnum[attribute.value]} Modifiers. Click to add some!`}]
+const {stat} = props;
+
+const isAttribute = isAttributeKey(stat);
+const isDepartment = isDepartmentKey(stat);
+const total = computed(() => statsStore[stat])
+const label = computed(() => {
+  if (isAttribute) {
+    return statsStore.attributeFields[stat].label
+  }
+  else if (isDepartment) {
+    return statsStore.departmentFields[stat].label
+  }
+})
+const modifiers = computed<(StatModifier|MessageModifier)[]>(() => {
+  let statField;
+  if (isAttribute) {
+    statField = statsStore.attributeFields[stat];
+  }
+  if (isDepartment) {
+    statField = statsStore.departmentFields[stat]; 
+  }
+  if (statField?.modifiers && statField.modifiers.length > 0) return statField.modifiers
+  return [{note: `No ${label.value} Modifiers. Click to add some!`}]
+}
 )
 
-const attributeBase = computed({
-  get: () => attributeStore.fields[attribute.value].base,
+const statBase = computed({
+  get: () => {
+    if (isAttribute) return statsStore.attributeFields[stat].base
+    if (isDepartment) return statsStore.departmentFields[stat].base
+  },
   set: (newValue) => {
-    attributeStore.fields[attribute.value].base = newValue
+    if (isAttribute) statsStore.attributeFields[stat].base  = newValue ?? 0
+    if (isDepartment) statsStore.departmentFields[stat].base  = newValue ?? 0
   }
 })
 
-const setModifyingToAttribute = () => {
-  uiStore.modifyingStat = attribute.value;
+
+
+const setModifyingToStat = () => {
+  uiStore.modifyingStat = stat;
 }
 
 const reference = ref(null);

@@ -1,0 +1,20 @@
+.stats-section {
+  display: grid;
+  grid-column: span 6;
+  grid-row: span 4;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+
+  padding: 4px;
+  border-radius: 4px;
+
+  h2 {
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--secondary-text-color);
+    text-align: center;
+    margin: 0;
+    grid-column: span 6;
+    grid-row: 1 / 2;
+  }
+}

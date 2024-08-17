@@ -1,9 +1,15 @@
 
-$federation-blue: #3289b5;
-$federation-blue-50: #3289b580;
-$federation-blue-25: #3289b540;
+$federation-blue: #c8e0ec;
+$federation-blue-50: #c8e0ec80;
+$federation-blue-25: #c8e0ec40;
 $federation-grey: #4f4f4f;
 $federation-silver: #A5A5A5;
+$federation-beige: #dfdfdf;
+$federation-beige-50: #dfdfdf80;
+$federation-beige-25: #dfdfdf40;
+$federation-eng-red: #c82b2b;
+$federation-comm-yellow: #d4a414;
+$federation-sci-blue: #4393bc;
 
 html {
   --switch-disabled: grey;
@@ -11,10 +17,18 @@ html {
 
   --popover-background: white;
 
-  --primary-border-color: #{$federation-blue-50};
+  --primary-border-color: #{darken($federation-blue, 50)};
 
-  --primary-text-color: #{$federation-blue};
+  --primary-text-color: #{darken($federation-blue, 50)};
   --secondary-text-color: #{$federation-grey};
 
-  --secondary-background: #{$federation-blue-25};
+  --secondary-background: #{$federation-blue};
+  --tertiary-background: #{$federation-beige};
+
+  --command: #{$federation-comm-yellow};
+  --conn: #{$federation-comm-yellow};
+  --engineering: #{$federation-eng-red};
+  --security: #{$federation-eng-red};
+  --medicine: #{$federation-sci-blue};
+  --science: #{$federation-sci-blue};
 }

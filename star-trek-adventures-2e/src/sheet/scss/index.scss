@@ -1,4 +1,5 @@
 @use "./components/switch.scss";
+@use "./pcLayout.scss";
 @use "./generics.scss";
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
@@ -9,8 +10,6 @@ html {
 }
 
 body {
-  width: 100%;
-  min-width: 100%;
   max-width: 100%;
   height: min-content;
   overflow-x: hidden;

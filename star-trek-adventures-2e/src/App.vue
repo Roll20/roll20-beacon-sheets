@@ -1,5 +1,5 @@
 <template>
-  <html class="star-trek-adventures-2e">
+  <div class="star-trek-adventures-2e">
     <div class="header">
       <div class="section__body tabs">
         <router-link :to="{ name: 'gm' }">GM Tab</router-link>
@@ -9,10 +9,10 @@
     </div>
     <router-view v-slot="{ Component }">
       <transition name="fade">
-        <component :is="Component" />
+      <component :is="Component" />
       </transition>
     </router-view>
-  </html>
+  </div>
 </template>
 
 <script setup>
@@ -22,7 +22,7 @@ const store = useStarTrekStore();
 const campaignId = store.meta.campaignId;
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .header {
   margin-bottom: 0.5rem;
 

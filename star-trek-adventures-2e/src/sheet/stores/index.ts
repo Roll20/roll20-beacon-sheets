@@ -2,7 +2,7 @@ import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
 import jp from 'jsonpath';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useAttributeStore } from './attributeStore/attributeStore';
+import { useStatsStore } from './statsStore/statsStore';
 import { useGMStore } from './gmStore/gmStore';
 import { useUIStore } from './uiStore/uiStore';
 
@@ -17,7 +17,7 @@ import { useUIStore } from './uiStore/uiStore';
 export const useStarTrekStore = defineStore('StarTrek', () => {
   // List all the stores individually.
   const stores = {
-    attributes: useAttributeStore(),
+    stats: useStatsStore(),
     gm: useGMStore(),
     meta: useMetaStore(),
     ui: useUIStore(),

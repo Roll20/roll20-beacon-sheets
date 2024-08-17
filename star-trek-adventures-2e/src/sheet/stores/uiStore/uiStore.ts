@@ -1,9 +1,9 @@
-import { type AttributeKey } from "@/system/gameTerms";
+import type { DepartmentKey, AttributeKey } from "@/system/gameTerms";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useUIStore = defineStore("interface", () => {
-  const modifyingStat = ref<AttributeKey | undefined>()
+  const modifyingStat = ref<AttributeKey | DepartmentKey | undefined>()
   const editMode = ref(false);
 
   const dehydrate = () => {};
