@@ -17,4 +17,8 @@
     grid-column: span 6;
     grid-row: 1 / 2;
   }
+
+  &--edit {
+    grid-row: span 8;
+  }
 }

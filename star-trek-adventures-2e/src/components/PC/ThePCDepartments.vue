@@ -1,15 +1,20 @@
 <template>
-  <section class="stats-section departments-section">
+  <section 
+    class="stats-section departments-section"
+    :class="`stats-section--${editMode}`"
+  >
     <h2>Departments</h2>
     <StatInterfaceBlock statType="Department" />
   </section>
 </template>
 
 <script setup lang="ts">
+import { useUIStore } from '@/sheet/stores/uiStore/uiStore';
 import StatInterfaceBlock from './StatInterfaceBlock.vue';
+import { computed } from 'vue';
 
-
-
+const uiStore = useUIStore();
+const editMode = computed(()=> uiStore.editMode ? "edit": "view")
 </script>
 
 <style lang="scss">

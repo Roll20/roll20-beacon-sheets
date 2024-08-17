@@ -87,7 +87,7 @@ describe("StatInterface", () => {
       const statsStore = useStatsStore();
       statsStore.attributeFields.CONTROL.base = 4;
       doAttributeRender();
-      const total = screen.getByTestId("attribute-view-total");
+      const total = screen.getByTestId("stat-view-total");
       expect(Number(total.textContent)).toBe(statsStore.CONTROL)
       statsStore.attributeFields.CONTROL.base = 2;
       await nextTick();
@@ -152,7 +152,7 @@ describe("StatInterface", () => {
       const statsStore = useStatsStore();
       statsStore.departmentFields.COMMAND.base = 4;
       doDepartmentRender();
-      const total = screen.getByTestId("attribute-view-total");
+      const total = screen.getByTestId("stat-view-total");
       expect(Number(total.textContent)).toBe(statsStore.COMMAND)
       statsStore.departmentFields.COMMAND.base = 2;
       await nextTick();

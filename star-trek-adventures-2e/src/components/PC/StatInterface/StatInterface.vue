@@ -1,32 +1,34 @@
 <template>
   <button 
     v-if="!editing"
-    class="attribute-view"
+    class="stat-view"
+    :class="`stat-view--${stat.toLowerCase()}`"
   >
       <label 
-        class="attribute-view__label"
-        :for="`attribute-view-${stat.toLowerCase()}`"
+        class="stat-view__label"
+        :for="`stat-view-${stat.toLowerCase()}`"
       >
         {{ label }}
       </label>
       <span 
-        class="attribute-view__total"
-        data-testid="attribute-view-total"
+        class="stat-view__total"
+        data-testid="stat-view-total"
       >
         {{ total }}
       </span>
   </button>
   <div 
     v-else
-    class="attribute-edit"
+    class="stat-edit"
+    :class="`stat-edit--${stat.toLowerCase()}`"
   >
     <label
-      class="attribute-edit__label"
+      class="stat-edit__label"
       >
       {{ label }} Base:
     </label>
     <input 
-      class="attribute-edit__base"
+      class="stat-edit__base"
       v-model="statBase"
       type="number"
     >
@@ -37,7 +39,7 @@
       @blur="showTooltip=false"
       @mouseleave="showTooltip = false"
       ref="reference"
-      class="icon-button icon-button--calculate attribute-edit__modifiers-button"
+      class="icon-button icon-button--calculate stat-edit__modifiers-button"
     >
       <label class="sr-only">
         Modifiers
@@ -161,7 +163,7 @@ const {floatingStyles} = useFloating(reference, floating, {
   max-width: 20%;
 }
 
-.attribute-view {
+.stat-view {
   cursor: pointer;
 
   display: grid;
@@ -200,9 +202,58 @@ const {floatingStyles} = useFloating(reference, floating, {
       -webkit-appearance: none;
     }
   }
+
+  &--command {
+    border-color: var(--command);
+    color: var(--command);
+
+    .stat-view__label {
+      color: var(--command);
+    }
+  }
+  &--conn {
+    border-color: var(--conn);
+    color: var(--conn);
+
+    .stat-view__label {
+      color: var(--conn);
+    }
+  }
+  &--engineering {
+    border-color: var(--engineering);
+    color: var(--engineering);
+
+    .stat-view__label {
+      color: var(--engineering);
+    }
+  }
+  &--security {
+    border-color: var(--security);
+    color: var(--security);
+
+    .stat-view__label {
+      color: var(--security);
+    }
+  }
+  &--medicine {
+    border-color: var(--medicine);
+    color: var(--medicine);
+
+    .stat-view__label {
+      color: var(--medicine);
+    }
+  }
+  &--science {
+    border-color: var(--science);
+    color: var(--science);
+
+    .stat-view__label {
+      color: var(--science);
+    }
+  }
 }
 
-.attribute-edit {
+.stat-edit {
   display: grid;
   grid-column: span 6;
   grid-template-columns: subgrid;
@@ -219,6 +270,79 @@ const {floatingStyles} = useFloating(reference, floating, {
     width: 100%;
     box-sizing: border-box;
     text-align: center;
+  }
+
+  &--command,
+  &--control {
+    grid-row: 2;
+  }
+  &--command {
+    border-color: var(--command);
+    color: var(--command);
+
+    .stat-edit__label {
+      color: var(--command);
+    }
+  }
+  &--conn,
+  &--daring {
+    grid-row: 3;
+  }
+  &--conn {
+    border-color: var(--conn);
+    color: var(--conn);
+
+    .stat-edit__label {
+      color: var(--conn);
+    }
+  }
+  &--engineering,
+  &--fitness {
+    grid-row: 4;
+  }
+  &--engineering {
+    border-color: var(--engineering);
+    color: var(--engineering);
+
+    .stat-edit__label {
+      color: var(--engineering);
+    }
+  }
+  &--security,
+  &--insight {
+    grid-row: 5;
+  }
+  &--security {
+    border-color: var(--security);
+    color: var(--security);
+
+    .stat-edit__label {
+      color: var(--security);
+    }
+  }
+  &--medicine,
+  &--presence {
+    grid-row: 6;
+  }
+  &--medicine {
+    border-color: var(--medicine);
+    color: var(--medicine);
+
+    .stat-edit__label {
+      color: var(--medicine);
+    }
+  }
+  &--science,
+  &--reason {
+    grid-row: 7;
+  }
+  &--science {
+    border-color: var(--science);
+    color: var(--science);
+
+    .stat-edit__label {
+      color: var(--science);
+    }
   }
 }
 </style>
