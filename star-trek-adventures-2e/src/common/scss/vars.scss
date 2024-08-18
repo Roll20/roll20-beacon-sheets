@@ -1,7 +1,8 @@
 
 $federation-blue: #c8e0ec;
-$federation-blue-50: #c8e0ec80;
-$federation-blue-25: #c8e0ec40;
+$federation-blue-125: darken($federation-blue, 25%);
+$federation-blue-50: lighten($federation-blue, 50%);
+$federation-blue-25: lighten($federation-blue, 75%);
 $federation-grey: #4f4f4f;
 $federation-silver: #A5A5A5;
 $federation-beige: #dfdfdf;
@@ -17,13 +18,13 @@ html {
 
   --popover-background: white;
 
-  --primary-border-color: #{darken($federation-blue, 50)};
+  --primary-border-color: #{$federation-blue-125};
 
-  --primary-text-color: #{darken($federation-blue, 50)};
+  --primary-text-color: #{$federation-blue-125};
   --secondary-text-color: #{$federation-grey};
 
-  --secondary-background: #{$federation-blue};
-  --tertiary-background: #{$federation-beige};
+  --secondary-background-color: #{$federation-blue};
+  --tertiary-background-color: #{$federation-beige};
 
   --command: #{$federation-comm-yellow};
   --conn: #{$federation-comm-yellow};

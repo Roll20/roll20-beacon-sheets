@@ -43,10 +43,10 @@ const campaignId = store.meta.campaignId;
       border: 1px solid lightgrey;
       // Router-links get this class added if you're already on the page it leads you to. Useful for tabs.
       &.router-link-active {
-        color: var(--examplesheet-primary);
+        color: var(--primary-border-color);
         font-weight: 600;
         text-decoration: underline;
-        border-color: var(--examplesheet-primary);
+        border-color: var(--primary-text-color);
       }
     }
   }

@@ -1,0 +1,27 @@
+@use "../../common/scss/vars.scss";
+
+@use "./rolls.scss";
+
+rolltemplate.sta2 {
+  display: grid;
+  width: 100%;
+
+  grid-template-columns: repeat(12, 1fr);
+
+  background: var(--secondary-background-color);
+
+  padding: 8px;
+
+  border-radius: 4px;
+
+  .info {
+    display: grid;
+    grid-column: span 12;
+
+    &__name {
+      display: flex;
+      grid-column: span 12;
+      justify-content: center;
+    }
+  }
+}

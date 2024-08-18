@@ -5,6 +5,7 @@ import { useRollStore } from "@/sheet/stores/rollStore/rollStore";
 import { setActivePinia } from "pinia";
 import { createTestingPinia } from "@pinia/testing";
 import { nextTick } from "vue";
+import userEvent from "@testing-library/user-event";
 
 const doRender = () => {
   const mounted = render(TheReadout, {})
@@ -46,5 +47,19 @@ describe("TheReadout", () => {
     const focus = screen.getByLabelText("Focus") as HTMLInputElement
     expect(focus.value).toBe("Warp Field Mechanics");
   });
+
+  it("should have a button that clears the active attributes", async () => {
+    const rollStore = useRollStore();
+    rollStore.activeStats.department = "CONN";
+    rollStore.activeStats.attribute = "DARING";
+    rollStore.activeStats.focus = "Warp Field Mechanics";
+    doRender();
+    await userEvent.click(screen.getByRole("button", { name: "Clear" }))
+    expect(rollStore.activeStats).toStrictEqual({})
+  })
+
+  it("should have a roll button that rolls an assembled roll", async () => {
+    
+  })
 })
 

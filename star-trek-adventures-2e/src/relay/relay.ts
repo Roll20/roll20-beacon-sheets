@@ -11,7 +11,7 @@ import type { PiniaPluginContext } from 'pinia';
 
 import { getAbilityScores, getBio, getLife, setLife } from '@/relay/handlers/computed';
 import { v4 as uuidv4 } from 'uuid';
-import { nextTick, reactive, ref, watch, type App, type Ref } from 'vue';
+import { nextTick, reactive, ref, toRaw, watch, type App, type Ref } from 'vue';
 import {
   onChange,
   onDragOver,
@@ -149,7 +149,7 @@ export const createRelay = async ({
     // Init Store
     const { attributes, ...profile } = initValues.character;
     store.hydrateStore(attributes, profile);
-    store.hydrateStore({gm:initValues.sharedSettings})
+    store.gm.hydrate(initValues.sharedSettings)
 
     // Beacon Provides access to settings, like campaign id for example
     store.setCampaignId(initValues.settings.campaignId);

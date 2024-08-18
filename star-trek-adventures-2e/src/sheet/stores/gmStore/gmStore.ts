@@ -42,18 +42,19 @@ export const useGMStore = defineStore("gm", () => {
     resources.threat = hyrdrateStore.threat ?? resources.threat;
   }
 
+  const updateGMResources = (change: Partial<GMResources>) => {
+    const gmStore = useGMStore();
+    const {
+      momentum = gmStore.resources.momentum,
+      threat = gmStore.resources.threat
+    } = change
+    Object.assign(resources, {momentum, threat})
+  }
+
   return {
+    updateGMResources,
     resources,
     dehydrate,
     hydrate,
   }
 })
-
-export const updateGMResources = (change: Partial<GMResources>) => {
-  const gmStore = useGMStore();
-  const {
-    momentum = gmStore.resources.momentum,
-    threat = gmStore.resources.threat
-  } = change
-  Object.assign(gmStore.resources, {momentum, threat})
-}

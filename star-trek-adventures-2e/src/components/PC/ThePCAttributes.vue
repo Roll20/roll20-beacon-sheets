@@ -19,6 +19,6 @@ const editMode = computed(()=> uiStore.editMode ? "edit": "view")
 
 <style lang="scss">
   .attributes-section {
-    background-color: var(--secondary-background);
+    background-color: var(--secondary-background-color);
   }
 </style>

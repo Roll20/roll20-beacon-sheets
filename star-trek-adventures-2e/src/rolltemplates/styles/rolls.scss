@@ -1,0 +1,13 @@
+.sta2--roll {
+  .roll {
+    &__bottom-line {
+      display: grid;
+      grid-column: span 12;
+      grid-template-columns: subgrid;
+    }
+    &__equation,
+    &__successes {
+      grid-column: span 6;
+    }
+  }
+}
