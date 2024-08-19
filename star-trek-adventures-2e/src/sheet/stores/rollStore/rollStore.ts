@@ -53,6 +53,7 @@ export const useRollStore = defineStore("roll", () => {
     const content = createRollTemplate({type: "roll", parameters: { 
       equation: results.roll.expression, 
       successes: results.roll.results.result,
+      dice: results.roll.results.dice,
       characterName: metaStore.name,
     }})
     dispatch.post({

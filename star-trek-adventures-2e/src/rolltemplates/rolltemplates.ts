@@ -19,6 +19,7 @@ type RollPost = {
   parameters: CommonParams & {
     equation: string,
     successes: number,
+    dice?: number[],
   }
 };
 

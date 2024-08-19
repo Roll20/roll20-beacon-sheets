@@ -1,4 +1,5 @@
 .sta2--roll {
+  color: var(--primary-text-color);
   .roll {
     &__bottom-line {
       display: grid;
@@ -7,6 +8,8 @@
     }
     &__equation,
     &__successes {
+      display: flex;
+      justify-content: center;
       grid-column: span 6;
     }
   }
