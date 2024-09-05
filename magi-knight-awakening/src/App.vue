@@ -45,6 +45,11 @@ const colorTheme = initValues.settings.colorTheme;
   display: grid;
   gap: var(--half-gap);
   container-type: inline-size;
+  max-width: 863px;    /* Set a fixed max width */
+  min-width: 863px;    /* Set a fixed minimum width */
+  width: 100%;         /* Ensure it takes full width up to the limit */
+  margin: 0 auto;      /* Center the container */
+  overflow-x: hidden;  /* Prevent horizontal scrolling */
 }
 .sheet-nav{
   ul{
