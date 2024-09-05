@@ -50,8 +50,8 @@ const abilityAbbreviations = {
       border: 1px solid var(--borderColor);
       width: 10px;
       aspect-ratio: 1 / 1;
-      rotate: 55deg;
-      transform: skew(30deg);
+      rotate: 52deg;
+      transform: skew(15deg);
       &:checked{
         background-color: var(--borderColor);
       }

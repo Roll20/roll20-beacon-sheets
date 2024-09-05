@@ -8,35 +8,35 @@ const sheet = useSheetStore();
   <img src="@/assets/sword.png" alt="magic sword">
   <div class="hp-row">
     <div class="hp-cell">
-      <label for="curr-hp">hp</label>
+      <label for="curr-hp">HP</label>
       <input type="number" v-model="sheet.hp.current" id="curr-hp">
     </div>
     <div class="hp-cell">
-      <label for="temp-hp">temp</label>
+      <label for="temp-hp">Temp</label>
       <input type="number" v-model="sheet.hp.temp" id="temp-hp">
     </div>
     <div class="hp-cell">
-      <label for="max-hp">max</label>
+      <label for="max-hp">Max</label>
       <span id="max-hp">{{ sheet.hp.max }}</span>
     </div>
   </div>
   <div class="hp-row">
     <div class="hp-cell double-cell">
-      <label for="curr-mp">mp</label>
+      <label for="curr-mp">MP</label>
       <input type="number" v-model="sheet.mp.current" id="curr-mp">
     </div>
     <div class="hp-cell">
-      <label for="max-mp">max</label>
+      <label for="max-mp">Max</label>
       <span id="max-mp">{{ sheet.mp.max }}</span>
     </div>
   </div>
   <div class="hp-row">
     <div class="hp-cell double-cell">
-      <label for="curr-shp">shp</label>
+      <label for="curr-shp">SHP</label>
       <input type="number" v-model="sheet.shp.current" id="curr-shp">
     </div>
     <div class="hp-cell">
-      <label for="max-shp">max</label>
+      <label for="max-shp">Max</label>
       <span id="max-shp">{{ sheet.shp.max }}</span>
     </div>
   </div>

@@ -14,7 +14,7 @@ const props = defineProps({
         <p>{{ props.item.description }}</p>
       </template>
       <template v-slot:expanded>
-        <input type="text" class="underline technique-header text-4" v-model="props.item.name" placeholder="technique name">
+        <input type="text" class="underline technique-header text-4" v-model="props.item.name" placeholder="Technique Name">
         <div class="flex-box">
           <span class="technique-header capitalize">type</span>
           <select name="type" class="underline" v-model="props.item.type">

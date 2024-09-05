@@ -16,21 +16,21 @@ const attributes = [
     image: 'star',
     button: true,
     crown: false,
-    text: 'initiative',
+    text: 'Initiative',
     readonly: true
   },
   {
     name: 'stress',
     image: 'star',
     crown: false,
-    text: 'stress',
+    text: 'Stress',
     readonly: false
   },
   {
     name: 'exhaustion',
     image: 'star',
     crown: false,
-    text: 'exhaustion',
+    text: 'Exhaustion',
     readonly: false
   }
 ];

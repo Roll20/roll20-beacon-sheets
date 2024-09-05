@@ -131,8 +131,8 @@ export const useSheetStore = defineStore('sheet',() => {
   const eclipse = ref([]);
   const eclipse_phase = computed(()=>{
     return Math.max(0,...eclipse.value) >= 3 ?
-      'heartless knight' :
-      'soul eclipse chart'});
+      'Heartless Knight' :
+      'Soul Eclipse Chart'});
   
   const crystal = {
     facet1: ref(false),
