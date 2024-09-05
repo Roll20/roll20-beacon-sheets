@@ -80,7 +80,7 @@ const crystalClick = ({currentTarget:path}) => {
 }
 .crystal{
   padding-inline: var(--big-gap);
-  width: clamp(150px,20vw,200px);
+  width: 200px;
 }
 .crystal-container{
   display: grid;
