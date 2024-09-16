@@ -11,7 +11,6 @@ const {
 
 const skillRef = skillName.replace(/\s+/g,'_');
 const skillObj = skills[skillRef];
-const abilities = ['strength','dexterity','constitution','intelligence','wisdom','charisma'];
 const abilityAbbreviations = {
   strength: 'str',
   dexterity: 'dex',
@@ -20,12 +19,13 @@ const abilityAbbreviations = {
   wisdom: 'wis',
   charisma: 'cha'
 }
+
 </script>
 
 <template>
   <div class="skill-row">
     <select :name="`${skillRef}_ability`" v-model="skillObj.ability">
-      <option v-for="ability in abilities" :value="ability">{{ abilityAbbreviations[ability] }}</option>
+      <option v-for="ability in skillObj.abilitiesList" :value="ability">{{ abilityAbbreviations[ability] }}</option>
     </select>
     <span class="skill-value">{{ skills[`${skillRef}`].value }}</span>
     <input type="checkbox" :name="`${skillRef}_proficiency`" value="1" v-model="skillObj.proficiency">
@@ -43,6 +43,7 @@ const abilityAbbreviations = {
     }
     select{
       text-transform: capitalize;
+      width: 5.8ch;
     }
     input[type="checkbox"]{
       appearance: none;

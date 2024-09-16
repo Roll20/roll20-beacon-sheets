@@ -94,14 +94,16 @@ export const useSheetStore = defineStore('sheet',() => {
   const skills = Object.keys(skillDetails).reduce((m,n) =>{
     const skillName = n.replace(/\s+/g,'_')
     const prof = ref(false);
-    const ability = ref(skillDetails[skillName][0]);
+    const defaultAbility = ref(skillDetails[skillName][0]);
+    const abilitiesList = ref(skillDetails[skillName]);
 
     m[skillName] = {
       name:skillName,
       proficiency: prof,
-      ability,
+      ability: defaultAbility,
+      abilitiesList: abilitiesList,
       value: computed(() => 
-        abilityScores[ability.value].mod.value + (prof.value ? proficiency.value : 0))
+        abilityScores[defaultAbility.value].mod.value + (prof.value ? proficiency.value : 0))
     };
     return m;
   },{});
