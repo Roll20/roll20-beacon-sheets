@@ -68,7 +68,85 @@ export const useSheetStore = defineStore('sheet',() => {
   };
   const levelSpellDict = [,1,1,2,2,3,3,3,4,4,4,5,5,5,6,6]
   const max_spell_tier = computed(() => levelSpellDict[level]);
-  const proficiency = ref(2);
+
+  const proficiencyMap = {
+    0: 2,  // or use a more detailed lookup based on the table
+    1: 3,
+    2: 3,
+    3: 4,
+    4: 5,
+    5: 6
+  };
+
+  // // Default proficiency value and custom tracking
+  // const proficiency = computed(() => 
+  //   {
+  //     if (hasCustomProficiency == true)
+  //       {
+  //         return customProficiencyValue.value;
+  //       } 
+  //       else
+  //       {
+  //         return proficiencyMap[reputation.value];
+  //       }
+  //   });
+
+  //   const hasCustomProficiency = ref(false);
+  //   const customProficiencyValue = ref(2);
+
+  //   const customProficiency = computed(
+  //   {
+  //     get() 
+  //     {
+  //       return customProficiencyValue.value;
+  //     },
+  //     set(newValue) 
+  //     {
+  //       // Setter logic: If the user provides a valid number, set it; otherwise, reset to null (default)
+  //       if (newValue === "" || newValue === null || newValue === undefined) 
+  //       {
+  //         hasCustomProficiency.value = false;  // Reset custom value to null if input is cleared
+  //       } 
+  //       else 
+  //       {
+  //         hasCustomProficiency.value = true; 
+  //         customProficiencyValue.value = Number(newValue); // Ensure it's a number and store it
+  //       }
+  //     } 
+  //   });
+
+  // hasCustomProficiency should be a ref, so Vue tracks its reactivity
+  const hasCustomProficiency = ref(false);  // Track whether the user has set a custom value
+  const customProficiencyValue = ref(2);  // Default custom proficiency value
+
+  // Computed proficiency value based on custom or default
+  const proficiency = computed(() => {
+    // Check if the user has set a custom proficiency value
+    if (hasCustomProficiency.value) {
+      return customProficiencyValue.value;  // Return the custom value
+    } else {
+      return proficiencyMap[reputation.value] ?? 0;  // Fallback to reputation-based value
+    }
+  });
+
+  // Computed property with getter and setter for customProficiency
+  const customProficiency = computed({
+    get() {
+      // Return the current custom proficiency value
+      return customProficiencyValue.value;
+    },
+    set(newValue) {
+      // Setter logic: If the user provides a valid number, set it; otherwise, reset to null (default)
+      if (newValue === "" || newValue === null || newValue === undefined) {
+        hasCustomProficiency.value = false;  // Reset to false if the input is cleared
+        customProficiencyValue.value = null;  // Reset custom value
+      } else {
+        hasCustomProficiency.value = true;  // Track that a custom value has been set
+        customProficiencyValue.value = Number(newValue);  // Store the new value as a number
+      }
+    }
+  });
+
   // skills
   const skillDetails = {
     academic_arts: ['intelligence','wisdom'],
@@ -385,6 +463,8 @@ export const useSheetStore = defineStore('sheet',() => {
       elemental_affinity: elemental_affinity.value,
       magic_style: magic_style.value,
       mam: mam.value,
+      proficiency: proficiency.value,
+      customProficiency: customProficiency.value,
       skills: dehydrateNested(skills),
       abilityScores: dehydrateNested(abilityScores),
       // eclipse:Math.max(0,...eclipse.value),
@@ -438,6 +518,8 @@ export const useSheetStore = defineStore('sheet',() => {
     sheet_mode.value = hydrateStore.sheet_mode ?? sheet_mode.value;
     level.value = hydrateStore.level ?? level.value;
     reputation.value = hydrateStore.reputation ?? reputation.value;
+    proficiency.value = hydrateStore.proficiency ?? proficiency.value;
+    customProficiency.value = hydrateStore.customProficiency ?? customProficiency.value;
     player.value = hydrateStore.player ?? player.value;
     inspiration.value = hydrateStore.inspiration ?? inspiration.value;
     stress.value = hydrateStore.stress ?? stress.value;
