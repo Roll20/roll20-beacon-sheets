@@ -35,10 +35,15 @@ const proficiencyMap = {
       () => sheet.reputation,
       (newValue, oldValue) => 
       {
+        var oldProf = sheet.proficiency;
+        if (sheet.customProficiency == '' || sheet.customProficiency == undefined)
+      {
         var reputation = sheet.reputation;
         sheet.proficiency = Number(proficiencyMap[reputation]);
+      }else{
+        sheet.proficiency = oldProf;
       }
-    );
+    });
 
 </script>
 
