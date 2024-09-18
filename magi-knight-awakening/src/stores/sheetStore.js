@@ -91,7 +91,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const proficiency = ref(calculateProficiency());
 
   function calculateProficiency() {
-    if (customProficiency.value !== 0) {
+    if (customProficiency.value != undefined && customProficiency.value != '') {
       return customProficiency.value;
     } else {
       return proficiencyMap[reputation.value];
@@ -124,7 +124,7 @@ export const useSheetStore = defineStore('sheet',() => {
     const skillName = n.replace(/\s+/g,'_')
     const prof = ref(false);
     const defaultAbility = ref(skillDetails[skillName][0]);
-    const abilitiesList = ref(skillDetails[skillName]);
+    const abilitiesList = skillDetails[skillName];
 
     m[skillName] = {
       name:skillName,
