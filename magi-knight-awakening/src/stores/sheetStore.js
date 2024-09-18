@@ -469,6 +469,7 @@ export const useSheetStore = defineStore('sheet',() => {
     level.value = hydrateStore.level ?? level.value;
     reputation.value = hydrateStore.reputation ?? reputation.value;
     customProficiency.value = hydrateStore.customProficiency ?? customProficiency.value;
+    proficiency.value = calculateProficiency();
     player.value = hydrateStore.player ?? player.value;
     inspiration.value = hydrateStore.inspiration ?? inspiration.value;
     stress.value = hydrateStore.stress ?? stress.value;
@@ -627,6 +628,7 @@ export const useSheetStore = defineStore('sheet',() => {
     stress,
     exhaustion,
     proficiency,
+    customProficiency,
 
     hp,
     mp,

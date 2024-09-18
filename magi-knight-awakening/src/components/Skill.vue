@@ -25,7 +25,7 @@ const abilityAbbreviations = {
 <template>
   <div class="skill-row">
     <select :name="`${skillRef}_ability`" v-model="skillObj.ability">
-      <option v-for="ability in skillObj.abilitiesList" :value="ability">{{ abilityAbbreviations[ability] }}</option>
+      <option v-for="ability in skillObj.abilitiesList" :key="ability.id" :value="ability">{{ abilityAbbreviations[ability] }}</option>
     </select>
     <span class="skill-value">{{ skills[`${skillRef}`].value }}</span>
     <input type="checkbox" :name="`${skillRef}_proficiency`" value="1" v-model="skillObj.proficiency">
