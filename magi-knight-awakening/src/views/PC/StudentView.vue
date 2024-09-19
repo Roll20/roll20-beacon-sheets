@@ -76,8 +76,8 @@ const studentAttributes = [
           <span class="student-description-display">{{ sheet.student_ability.description }}</span>
         </template>
         <template v-slot:expanded>
-          <input class="underline" type="text" v-model="sheet.student_ability.name" placeholder="item name">
-          <textarea class="underline" v-model="sheet.student_ability.description" placeholder="item description"></textarea>
+          <input class="underline" type="text" v-model="sheet.student_ability.name" placeholder="Ability Name">
+          <textarea class="underline" v-model="sheet.student_ability.description" placeholder="Description"></textarea>
         </template>
       </Collapsible>
     </NotchContainer>
@@ -95,27 +95,33 @@ const studentAttributes = [
       </select>
     </NotchContainer>
     <div class="gear-section">
-      <h4>gear</h4>
-      <RepeatingSection name="gear">
-        <RepeatingItem v-for="item in sheet.sections.gear.rows" :key="item._id" :row="item" name="gear"
-          class="gear-item">
-          <Collapsible class="gear-content" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
-            <template v-slot:collapsed>
-              <span>{{ item.name }}</span>
-            </template>
-            <template v-slot:expanded>
-              <input class="underline" type="text" v-model="item.name" placeholder="item name">
-              <textarea class="underline" v-model="item.description" placeholder="item description"></textarea>
-            </template>
-          </Collapsible>
-        </RepeatingItem>
-      </RepeatingSection>
-    </div>
-    <div class="notebook">
-      <SocialSection name="npc" />
-      <SocialSection name="squadron" />
+      <NotchContainer>
+        <h4>gear</h4>
+        <RepeatingSection name="gear">
+          <RepeatingItem v-for="item in sheet.sections.gear.rows" :key="item._id" :row="item" name="gear"
+            class="gear-item">
+            <NotchContainer notchType="none">
+            <Collapsible class="gear-content" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
+              <template v-slot:collapsed>
+                <span>{{ item.name }}</span>
+              </template>
+              <template v-slot:expanded>
+                <input class="underline" type="text" v-model="item.name" placeholder=" Item name">
+                <textarea class="underline" v-model="item.description" placeholder=" Item description"></textarea>
+              </template>
+            </Collapsible>
+            </NotchContainer>
+          </RepeatingItem>
+        </RepeatingSection>
+      </NotchContainer>
     </div>
   </div>
+    <NotchContainer class="notebook">
+      <SocialSection name="npc" />
+    </NotchContainer>
+    <NotchContainer class="notebook">
+      <SocialSection name="squadron" />
+    </NotchContainer>
 </template>
 
 <style lang="scss">
@@ -133,9 +139,12 @@ const studentAttributes = [
     grid-column: 1 / -1;
   }
 
-  .gear-section,
-  .notebook {
+  .gear-section{
     grid-column: 1 / -1;
+  }
+
+  .notebook {
+    grid-column: 1;
   }
 
   .fate-card{

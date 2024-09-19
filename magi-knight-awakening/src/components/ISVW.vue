@@ -16,7 +16,7 @@ const isvws = [
     <label class="flex-box flex-column" v-for="item in isvws" :key="`student-${item}`">
       <span class='capitalize'>{{ item }}</span>
       <NotchContainer width="thick" :notch="20" class="isvw-item">
-        <input type="text" class="underline" v-model="sheet[item]">
+        <textarea type="text" class="underline" v-model="sheet[item]"/>
       </NotchContainer>
     </label>
   </div>
@@ -28,5 +28,7 @@ const isvws = [
 }
 .isvw-item{
   display: grid;
+  min-width: 15cap;
+  min-height: 5cap;
 }
 </style>
