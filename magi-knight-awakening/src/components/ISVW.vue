@@ -7,15 +7,22 @@ const isvws = [
   'interests',
   'virtues',
   'strengths',
-  'weaknesses'
+  'weaknesses',
+  'electives_and_clubs',
+  'characteristics',
+  'quote',
+  'player_links',
+  'backstory',
 ];
+
+// Change the h4 class from capitalize to one that capitalizes, strips out the underscores, and checks for "and, of, etc. and doesn't capitalize those"
 </script>
 
 <template>
   <div class="isvw flex-box flex-wrap tiny-gap">
     <label class="flex-box flex-column" v-for="item in isvws" :key="`student-${item}`">
-      <span class='capitalize'>{{ item }}</span>
-      <NotchContainer width="thick" :notch="20" class="isvw-item">
+      <NotchContainer width="thick" :notch="10" class="isvw-item">
+              <h4 class='capitalize'>{{ item }}</h4>
         <textarea type="text" class="underline" v-model="sheet[item]"/>
       </NotchContainer>
     </label>

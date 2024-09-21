@@ -191,6 +191,12 @@ export const useSheetStore = defineStore('sheet',() => {
   const virtues = ref('');
   const strengths = ref('');
   const weaknesses = ref('');
+  const electives_and_clubs = ref('');
+  const characteristics = ref('');
+  const quote = ref('');
+  const player_links = ref('');
+  const backstory = ref('');
+
   const student_ability = {
     name: ref(''),
     description: ref(''),
@@ -726,6 +732,11 @@ export const useSheetStore = defineStore('sheet',() => {
     virtues,
     strengths,
     weaknesses,
+    electives_and_clubs,
+    characteristics,
+    quote,
+    player_links,
+    backstory,
     student_damage,
     student_armor,
     student_move,
