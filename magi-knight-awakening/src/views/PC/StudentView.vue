@@ -120,7 +120,7 @@ const studentAttributes = [
     <NotchContainer class="notebook">
       <SocialSection name="npc" />
     </NotchContainer>
-  Squadron Bonds
+  Magi-Knight Bonds
     <NotchContainer class="notebook">
       <SocialSection name="squadron" />
     </NotchContainer>

@@ -33,6 +33,7 @@ rolltemplate.magiknight-template {
   --half-gap: calc(var(--gap) / 2);
   --tiny-gap: calc(var(--half-gap) / 2);
   --big-gap: calc(var(--gap) * 2);
+  --skill-gap: 0.22em;
 
   /* images */
   --crownImage: url('./crown.png');

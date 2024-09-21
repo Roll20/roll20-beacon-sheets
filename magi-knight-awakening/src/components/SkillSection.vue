@@ -5,7 +5,7 @@ import Skill from './Skill.vue';
 import { useSheetStore } from '@/stores/sheetStore';
 
 const sheet = useSheetStore();
-const skills = ['academic arts', 'athletics','coordination','creativity','deception','influence','insight','investigation','leadership','medicine','mysiticism','perception','performance','persuasion','purity','stealth','stem']
+const skills = ['academic arts', 'athletics','coordination','creativity','deception','influence','insight','investigation','leadership','medicine','mysticism','perception','performance','persuasion','purity','stealth','stem']
 
 const proficiencyMap = {
     0: 2,  // or use a more detailed lookup based on the table

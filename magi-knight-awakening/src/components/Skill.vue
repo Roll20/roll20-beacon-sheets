@@ -36,14 +36,14 @@ const abilityAbbreviations = {
 <style lang="scss">
   .skill-row{
     display: flex;
-    gap:var(--tiny-gap);
+    gap:var(--skill-gap);
     align-items: center;
     .skill-name{
       text-transform: capitalize;
     }
     select{
       text-transform: capitalize;
-      width: 5.8ch;
+      width: 6ch;
     }
     input[type="checkbox"]{
       appearance: none;
