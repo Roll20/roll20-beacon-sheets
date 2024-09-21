@@ -599,9 +599,6 @@ export const useSheetStore = defineStore('sheet',() => {
       {total:damageResult,components:damageComp}
     ] = await Promise.all(promArr);
 
-    var rollBreakdown = '';
-    var damageBreakdown = '';
-
     if (damageResult && damageComp) 
     {
       // Format the breakdown of dice rolls for output
@@ -610,10 +607,10 @@ export const useSheetStore = defineStore('sheet',() => {
       const totalDamage = damageComp[0].results.result + abMod || 0;
 
       var modifierUsed = damageResult - diceRolls.reduce((acc, curr) => acc + curr, 0);
-      var damageBreakdownRoll = `ROLL: (${diceRolls.join(' + ')})`;
-      var damageBreakdownMod = `MOD: (${modifierUsed})`;
-      var damageBreakdownMam = `MAM: (${modifier})`;
-      var damageBreakdownTotal = `Total: (${totalDamage})`;
+      var damageBreakdownRoll = `(${diceRolls.join(' + ')})`;
+      var damageBreakdownMod = `(${modifierUsed})`;
+      var damageBreakdownMam = `(${modifier})`;
+      var damageBreakdownTotal = `${totalDamage}`;
     }
 
     const rollObj = {
@@ -629,11 +626,11 @@ export const useSheetStore = defineStore('sheet',() => {
       rollObj.keyValues.Range = item.range;
     }
     if(item[`tier_${tier}_dice`]){
-      rollObj.keyValues[`Spell Damage Roll`] = item[`tier_${tier}_dice`];
-      rollObj.keyValues[``] = damageBreakdownRoll;
-      rollObj.keyValues[` `] = damageBreakdownMod;
-      rollObj.keyValues[`  `] = damageBreakdownMam;
-      rollObj.keyValues[`   `] = damageBreakdownTotal;
+      rollObj.keyValues[`Spell Effect Roll`] = item[`tier_${tier}_dice`];
+      rollObj.keyValues[`Roll`] = damageBreakdownRoll;
+      rollObj.keyValues[`Mod`] = damageBreakdownMod;
+      rollObj.keyValues[`MAM`] = damageBreakdownMam;
+      rollObj.keyValues[`Total`] = damageBreakdownTotal;
     }
     if(item[`tier_${tier}_special`]){
       rollObj.keyValues.Special = item[`tier_${tier}_special`];

@@ -231,6 +231,7 @@ const elements = [
     </Collapsible>
   </NotchContainer>
   <div class="spell-path-container grid-span-all">
+  <NotchContainer class="spell-container" width="thick" notchType="curve">
     <h3>Spells</h3>
     <div class="spell-path-layout">
       <div class="spell-tier-headers">
@@ -243,6 +244,7 @@ const elements = [
       </div>
       <SpellSection/>
     </div>
+  </NotchContainer>
   </div>
 </div>
 </template>
