@@ -582,19 +582,40 @@ export const useSheetStore = defineStore('sheet',() => {
     const attackPromise = getRollResults(
       [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-        {label:'Mod', value:abMod,alwaysShowInBreakdown: true},
-        {label: 'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
+        {label:'MAM', value:abMod,alwaysShowInBreakdown: true},
+        {label:'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
       ]
     );
     const promArr = [attackPromise];
     if(item[`tier_${tier}_dice`]){
-      const damagePromise = getRollResults([{label:'damage',formula:item[`tier_${tier}_dice`]}]);
+      const damagePromise = getRollResults(
+        [
+          {label:'damage',formula:item[`tier_${tier}_dice`]}
+        ]);
       promArr.push(damagePromise);
     }
     const [
       {total:attackResult,components:attackComp},
       {total:damageResult,components:damageComp}
     ] = await Promise.all(promArr);
+
+    var rollBreakdown = '';
+    var damageBreakdown = '';
+
+    if (damageResult && damageComp) 
+    {
+      // Format the breakdown of dice rolls for output
+      const diceRolls = damageComp[0].results.dice || []; // Safely get individual dice roll results
+      const modifier = abMod || 0;
+      const totalDamage = damageComp[0].results.result + abMod || 0;
+
+      var modifierUsed = damageResult - diceRolls.reduce((acc, curr) => acc + curr, 0);
+      var damageBreakdownRoll = `ROLL: (${diceRolls.join(' + ')})`;
+      var damageBreakdownMod = `MOD: (${modifierUsed})`;
+      var damageBreakdownMam = `MAM: (${modifier})`;
+      var damageBreakdownTotal = `Total: (${totalDamage})`;
+    }
+
     const rollObj = {
       title: item[`tier_${tier}_name`] || `${item.name} ${tier}`,
       characterName: metaStore.name,
@@ -608,7 +629,11 @@ export const useSheetStore = defineStore('sheet',() => {
       rollObj.keyValues.Range = item.range;
     }
     if(item[`tier_${tier}_dice`]){
-      rollObj.keyValues[item[`tier_${tier}_dice`]] = damageResult;
+      rollObj.keyValues[`Spell Damage Roll`] = item[`tier_${tier}_dice`];
+      rollObj.keyValues[``] = damageBreakdownRoll;
+      rollObj.keyValues[` `] = damageBreakdownMod;
+      rollObj.keyValues[`  `] = damageBreakdownMam;
+      rollObj.keyValues[`   `] = damageBreakdownTotal;
     }
     if(item[`tier_${tier}_special`]){
       rollObj.keyValues.Special = item[`tier_${tier}_special`];
@@ -618,6 +643,86 @@ export const useSheetStore = defineStore('sheet',() => {
     }
     rollToChat({rollObj});
   };
+
+  // **********************************************************************
+
+//   const rollSpell = async (item, tier) => {
+//     // Have to update this to use MAM
+//     const abMod = abilityScores[mam.value]?.mod.value || 0;
+//     const attackPromise = getRollResults(
+//         [
+//             { label: '1d20', sides: 20, alwaysShowInBreakdown: true },
+//             { label: 'MAM', value: abMod, alwaysShowInBreakdown: true },
+//             { label: 'Prof', value: proficiency.value, alwaysShowInBreakdown: true }
+//         ]
+//     );
+
+//     const promArr = [attackPromise];
+
+//     // Check if there is a damage roll for this tier and add to promises
+//     if (item[`tier_${tier}_dice`]) {
+//         const damagePromise = getRollResults(
+//             [
+//                 { label: 'damage', formula: item[`tier_${tier}_dice`] }
+//             ]
+//         );
+//         promArr.push(damagePromise);
+//     }
+
+//     // Await all promises (attack and damage rolls)
+//     const [{ total: attackResult, components: attackComp }, damageResult] = await Promise.all(promArr);
+
+//     // Handle damage roll result if it exists
+//     let damageComp = [];
+//     let damageBreakdown = '';
+//     if (damageResult && damageResult.components) {
+//         damageComp = damageResult.components;
+        
+//         // Format the breakdown of dice rolls for output
+//         //const diceRolls = damageResult.components[0].results.dice.map(r => r.result); // Get individual dice roll results
+//         const diceRolls = damageResult.components[0].results.dice; // Get individual dice roll results
+//         const modifier = abMod || 0;
+//         const totalDamage = damageComp[0].results.result;
+
+//         damageBreakdown = `${item[`tier_${tier}_dice`]}: (${diceRolls.join(' + ')}) + MAM: (${modifier}) = ${totalDamage}`;
+//     }
+
+//     // Prepare the roll object that will be sent to the chat
+//     const rollObj = {
+//         title: item[`tier_${tier}_name`] || `${item.name} ${tier}`,
+//         characterName: metaStore.name,
+//         components: attackComp,  // Combine attack and damage components
+//         keyValues: {}
+//     };
+
+//     // Set subtitle if item name exists for the tier
+//     if (item[`tier_${tier}_name`]) {
+//         rollObj.subtitle = item.name;
+//     }
+
+//     // Add range if available
+//     if (item.range) {
+//         rollObj.keyValues.Range = item.range;
+//     }
+
+//     // Add dice roll result to keyValues if available
+//     if (item[`tier_${tier}_dice`]) {
+//         rollObj.keyValues[`Damage Roll`] = damageBreakdown; // Add formatted damage breakdown
+//     }
+
+//     // Add any special keyValues if they exist for this tier
+//     if (item[`tier_${tier}_special`]) {
+//         rollObj.keyValues.Special = item[`tier_${tier}_special`];
+//     }
+
+//     // Add description if available for this tier
+//     if (item[`tier_${tier}_description`]) {
+//         rollObj.textContent = item[`tier_${tier}_description`];
+//     }
+
+//     // Send the roll object to the chat
+//     rollToChat(rollObj);
+// };
 
   return {
     sheet_mode,

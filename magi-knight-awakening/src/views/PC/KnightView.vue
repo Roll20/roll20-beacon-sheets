@@ -1,5 +1,10 @@
 <script setup>
 
+function capitalize(str) {
+  if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 import SplitMods from '@/components/SplitMods.vue';
 import NotchContainer from '@/components/NotchContainer.vue';
 import ImageBackedLabel from '@/components/ImageBackedLabel.vue';
@@ -63,7 +68,8 @@ const elements = [
     name: 'void',
     description: 'energy'
   }
-]
+];
+
 </script>
 
 <template>
@@ -72,8 +78,8 @@ const elements = [
     <LabelStacked>
       <template v-slot:number>
         <select class="underline" v-model="sheet.elemental_affinity">
-          <option selected value="">select element</option>
-          <option v-for="element in elements" :value="element.name">{{ `${element.name} (${element.description})` }}</option>
+          <option selected value="">Select Element</option>
+          <option v-for="element in elements" :value="element.name">{{ capitalize(element.name) }}</option>
         </select>
       </template>
       <template v-slot:label>
@@ -91,8 +97,8 @@ const elements = [
     <LabelStacked>
       <template v-slot:number>
         <select class="underline" v-model="sheet.mam">
-          <option selected value="">select ability</option>
-          <option v-for="(o,ability) in sheet.abilityScores" :value="ability">{{ ability }}</option>
+          <option selected value="">Select Ability</option>
+          <option v-for="(o,ability) in sheet.abilityScores" :value="ability">{{ capitalize(ability) }}</option>
         </select>
       </template>
       <template v-slot:label>
