@@ -116,9 +116,11 @@ const studentAttributes = [
       </NotchContainer>
     </div>
   </div>
+  NPC Bonds
     <NotchContainer class="notebook">
       <SocialSection name="npc" />
     </NotchContainer>
+  Squadron Bonds
     <NotchContainer class="notebook">
       <SocialSection name="squadron" />
     </NotchContainer>

@@ -232,7 +232,7 @@ const elements = [
   </NotchContainer>
   <div class="spell-path-container grid-span-all">
   <NotchContainer class="spell-container" width="thick" notchType="curve">
-    <h3>Spells</h3>
+    <h3>Spell Paths</h3>
     <div class="spell-path-layout">
       <div class="spell-tier-headers">
         <h4>I</h4>
