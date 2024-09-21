@@ -165,47 +165,54 @@ const elements = [
     </Collapsible>
     <!-- Static content here -->
   </NotchContainer>
-  <NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
-    <h4>Combat Forms</h4>
-    <RepeatingSection name="forms">
-      <RepeatingItem name="forms" v-for="item in sheet.sections.forms.rows">
-        <Collapsible class="form-item basic-item" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
-          <template v-slot:expanded>
-            <div class="flex-box half-gap grow-label">
-              <label :for="`form-${item._id}-name`">Name</label>
-              <input type="text" v-model="item.name" :id="`form-${item._id}-name`">
-            </div>
-            <div class="grid">
-              <label :for="`form-${item._id}-description`">Description</label>
-              <textarea :id="`form-${item._id}-description`" v-model="item.description"></textarea>
-            </div>
-          </template>
-          <template v-slot:collapsed>
-            <span>{{ item.name || 'New Form' }}</span>
-          </template>
-        </Collapsible>
-      </RepeatingItem>
-    </RepeatingSection>
-    <!-- repeating section here -->
-  </NotchContainer>
+<NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
+  <h4>Combat Forms</h4>
+  <RepeatingSection name="forms">
+    <RepeatingItem name="forms" v-for="item in sheet.sections.forms.rows" :key="item._id" :row="item">
+      <Collapsible class="form-item basic-item" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
+        <template v-slot:expanded>
+          <div class="flex-box half-gap grow-label">
+            <label :for="`form-${item._id}-name`">Name</label>
+            <input type="text" class="underline" v-model="item.name" :id="`form-${item._id}-name`">
+          </div>
+          <div class="grid">
+            <label :for="`form-${item._id}-description`">Description</label>
+            <textarea class="underline" v-model="item.description" :id="`form-${item._id}-description`"></textarea>
+          </div>
+        </template>
+        <template v-slot:collapsed>
+          <span>{{ item.name || 'New Form' }}</span>
+        </template>
+        <!-- Delete button -->
+        <div class="repcontrol">
+          <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('forms', item._id)">delete_forever</button>
+        </div>
+      </Collapsible>
+    </RepeatingItem>
+  </RepeatingSection>
+</NotchContainer>
   <NotchContainer class="arm-rune-container basic-item" width="thick" notchType="curve">
     <h4>Soul Armament Runes</h4>
     <RepeatingSection name="runes">
-      <RepeatingItem name="runes" v-for="item in sheet.sections.runes.rows">
+      <RepeatingItem name="runes" v-for="item in sheet.sections.runes.rows" :key="item._id" :row="item">
         <Collapsible class="form-item basic-item" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
           <template v-slot:expanded>
             <div class="flex-box half-gap grow-label">
               <label :for="`form-${item._id}-name`">Name</label>
-              <input class="underline" type="text" v-model="item.name" :id="`form-${item._id}-name`">
+              <input class="underline" type="text" v-model="item.name" :id="`rune-${item._id}-name`">
             </div>
             <div class="grid">
-              <label :for="`form-${item._id}-description`">Description</label>
-              <textarea class="underline" :id="`form-${item._id}-description`" v-model="item.description"></textarea>
+              <label :for="`rune-${item._id}-description`">Description</label>
+              <textarea class="underline" :id="`rune-${item._id}-description`" v-model="item.description"></textarea>
             </div>
           </template>
           <template v-slot:collapsed>
-            <span>{{ item.name || 'New Form' }}</span>
+            <span>{{ item.name || 'New Rune' }}</span>
           </template>
+          <!-- Delete button -->
+          <div class="repcontrol">
+            <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('forms', item._id)">delete_forever</button>
+          </div>
         </Collapsible>
       </RepeatingItem>
     </RepeatingSection>
