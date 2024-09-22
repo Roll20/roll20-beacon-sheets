@@ -3,6 +3,7 @@ import BasicView from '@/views/PC/BasicView.vue';
 import NPCView from '@/views/NPCView.vue';
 import KnightView from '@/views/PC/KnightView.vue';
 import StudentView from '@/views/PC/StudentView.vue';
+import BackgroundView from '@/views/PC/BackgroundView.vue';
 
 const router = createRouter({
   history: createMemoryHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/knight',
       name: 'knight',
       component: KnightView,
+    },
+    {
+      path: '/background',
+      name: 'background',
+      component: BackgroundView,
     },
     {
       path: '/npc',

@@ -24,6 +24,13 @@ import NotchContainer from './NotchContainer.vue';
           </NotchContainer>
         </RouterLink>
       </li>
+      <li>
+        <RouterLink to="/background">
+          <NotchContainer class="nav-notch" notchType="wedge">
+            Background
+          </NotchContainer>
+        </RouterLink>
+      </li>
     </ul>
   </nav>
 </template>
