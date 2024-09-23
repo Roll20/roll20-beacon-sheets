@@ -3,50 +3,93 @@ import { useSheetStore } from '@/stores';
 const sheet = useSheetStore();
 </script>
 
-<template>
+<!-- <template>
 <div class="hp-container">
   <img src="@/assets/sword.png" alt="magic sword">
   <div class="hp-row">
-    <div class="hp-cell">
+    <div class="hp-cell left-input">
       <label for="curr-hp">HP</label>
       <input type="number" v-model="sheet.hp.current" id="curr-hp">
     </div>
-    <div class="hp-cell">
-      <label for="temp-hp">Temp</label>
+    <div class="hp-cell left-input">
+      <label for="temp-hp">Temp HP</label>
       <input type="number" v-model="sheet.hp.temp" id="temp-hp">
     </div>
-    <div class="hp-cell">
-      <label for="max-hp">Max</label>
-      <span id="max-hp">{{ sheet.hp.max }}</span>
+    <div class="hp-cell right-input">
+      <label for="max-hp">Max HP</label>
+      <input id="max-hp">{{ sheet.hp.max }}</input>
     </div>
   </div>
-  <div class="hp-row">
+  <div class="hp-row left-input">
     <div class="hp-cell double-cell">
       <label for="curr-mp">MP</label>
       <input type="number" v-model="sheet.mp.current" id="curr-mp">
     </div>
-    <div class="hp-cell">
-      <label for="max-mp">Max</label>
-      <span id="max-mp">{{ sheet.mp.max }}</span>
+    <div class="hp-cell right-input">
+      <label for="max-mp">Max MP</label>
+      <input id="max-mp">{{ sheet.mp.max }}</input>
     </div>
   </div>
-  <div class="hp-row">
+
+
+  <div class="hp-row left-input">
     <div class="hp-cell double-cell">
       <label for="curr-shp">SHP</label>
       <input type="number" v-model="sheet.shp.current" id="curr-shp">
     </div>
-    <div class="hp-cell">
-      <label for="max-shp">Max</label>
-      <span id="max-shp">{{ sheet.shp.max }}</span>
+    <div class="hp-cell right-input">
+      <label for="max-shp">Max SHP</label>
+      <input id="max-shp">{{ sheet.shp.max }}</input>
     </div>
   </div>
 </div>
+</template> -->
+
+<template>
+  <div class="hp-container">
+    <img src="@/assets/sword.png" alt="magic sword">
+    <div class="hp-row">
+      <div class="hp-cell left-input">
+        <label for="curr-hp">HP</label>
+        <input type="number" v-model="sheet.hp.current" id="curr-hp">
+      </div>
+      <div class="hp-cell left-input">
+        <label for="temp-hp">Temp HP</label>
+        <input type="number" v-model="sheet.hp.temp" id="temp-hp">
+      </div>
+      <div class="hp-cell right-input">
+        <label for="max-hp">Max HP</label>
+        <input type="number" v-model="sheet.hp.max" id="max-hp">
+      </div>
+    </div>
+    <div class="hp-row left-input">
+      <div class="hp-cell double-cell">
+        <label for="curr-mp">MP</label>
+        <input type="number" v-model="sheet.mp.current" id="curr-mp">
+      </div>
+      <div class="hp-cell right-input">
+        <label for="max-mp">Max MP</label>
+        <input type="number" v-model="sheet.mp.max" id="max-mp">
+      </div>
+    </div>
+    <div class="hp-row left-input">
+      <div class="hp-cell double-cell">
+        <label for="curr-shp">SHP</label>
+        <input type="number" v-model="sheet.shp.current" id="curr-shp">
+      </div>
+      <div class="hp-cell right-input">
+        <label for="max-shp">Max SHP</label>
+        <input type="number" v-model="sheet.shp.max" id="max-shp">
+      </div>
+    </div>
+  </div>
 </template>
+
 
 <style>
 .hp-container {
   --_swordOverflow: 40px;
-  --_borderSize: 1px;
+  --_borderSize: 2px;
   position: relative;
   display: grid;
   gap: var(--half-gap) var(--_borderSize);
@@ -61,6 +104,7 @@ const sheet = useSheetStore();
     place-self: center;
     height: calc(100% + calc(var(--_swordOverflow) * 2));
     z-index: 10;
+    pointer-events: none; /* Makes the image click-through */
   }
 }
 
@@ -91,21 +135,38 @@ const sheet = useSheetStore();
 
   label {
     grid-area: label;
+    font-size: x-small;
+    font-weight: bold;
   }
 
   input,
   span {
     grid-area: input;
-    text-align: center;
+    text-align: left;
     vertical-align: bottom;
+    align-self: self-end;
     z-index: -1;
     background-color: transparent;
     border: none;
     z-index:10;
+    padding-top:1cap;
+    margin-top:.1cap;
+    margin-bottom: .1cap;
+    font-size: xx-large;
   }
   span{
     place-self: center;
   }
+}
+
+.left-input input{
+  text-align: left; /* Left-justifies the text */
+  vertical-align: bottom; /* Aligns the input to the bottom */
+}
+
+.right-input input{
+  text-align: right; /* Left-justifies the text */
+  vertical-align: bottom; /* Aligns the input to the bottom */
 }
 
 .double-cell {

@@ -191,7 +191,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const virtues = ref('');
   const strengths = ref('');
   const weaknesses = ref('');
-  const electives_and_clubs = ref('');
+  const electives = ref('');
   const characteristics = ref('');
   const quote = ref('');
   const player_links = ref('');
@@ -440,7 +440,18 @@ export const useSheetStore = defineStore('sheet',() => {
       knight_damage: knight_damage.value,
       knight_armor: knight_armor.value,
       knight_move: knight_move.value,
-      knight_attack: knight_attack.value
+      knight_attack: knight_attack.value,
+
+      interests: interests.value,
+      virtues: virtues.value,
+      strengths: strengths.value,
+      weaknesses: weaknesses.value,
+      electives: electives.value,
+      characteristics: characteristics.value,
+      quote: quote.value,
+      player_links: player_links.value,
+      backstory: backstory.value,
+
       // faction: faction.value,
       // traits: arrayToObject(traits.value)
     };
@@ -493,6 +504,16 @@ export const useSheetStore = defineStore('sheet',() => {
     knight_armor.value = hydrateStore.knight_armor ?? knight_armor.value;
     knight_move.value = hydrateStore.knight_move ?? knight_move.value;
     knight_attack.value = hydrateStore.knight_attack ?? knight_attack.value;
+
+    interests.value = hydrateStore.interests ?? interests.value;
+    virtues.value = hydrateStore.virtues ?? virtues.value;
+    strengths.value = hydrateStore.strengths ?? strengths.value;
+    weaknesses.value = hydrateStore.weaknesses ?? weaknesses.value;
+    electives.value = hydrateStore.electives ?? electives.value;
+    characteristics.value = hydrateStore.characteristics ?? characteristics.value;
+    quote.value = hydrateStore.quote ?? quote.value;
+    player_links.value = hydrateStore.player_links ?? player_links.value;
+    backstory.value = hydrateStore.backstory ?? backstory.value;
 
     elemental_affinity.value = hydrateStore.elemental_affinity ?? elemental_affinity.value;
     magic_style.value = hydrateStore.magic_style ?? magic_style.value;
@@ -728,15 +749,17 @@ export const useSheetStore = defineStore('sheet',() => {
     gloom_gems:gloom,
     unity_points:unity,
     traitsCount,
+
     interests,
     virtues,
     strengths,
     weaknesses,
-    electives_and_clubs,
+    electives,
     characteristics,
     quote,
     player_links,
     backstory,
+
     student_damage,
     student_armor,
     student_move,

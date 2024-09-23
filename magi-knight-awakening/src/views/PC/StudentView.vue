@@ -3,7 +3,7 @@
 import { useSheetStore } from '@/stores/sheetStore';
 
 import SplitMods from '@/components/SplitMods.vue';
-import ISVW from '@/components/ISVW.vue';
+import BackgroundItems from '@/components/BackgroundItems.vue';
 import ImageBackedLabel from '@/components/ImageBackedLabel.vue';
 import RepeatingSection from '@/components/RepeatingSection.vue';
 import RepeatingItem from '@/components/RepeatingItem.vue';
@@ -67,7 +67,6 @@ const studentAttributes = [
         </ImageBackedLabel>
       </template>
     </SplitMods>
-    <ISVW />
     <NotchContainer class="student-ability" notchType="none" width="thick">
       <h4>Student Ability</h4>
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
@@ -85,12 +84,12 @@ const studentAttributes = [
       <h4>Fate Card</h4>
       <select v-model="sheet.fate.card" class="fate-select underline">
         <option value="" selected>Select Card</option>
-        <option v-for="card in ['king', 'queen', 'knight', 'dame', 'squire', 'damsel']" :value="card">{{ card }}</option>
+        <option v-for="card in ['king', 'queen', 'knight', 'dame', 'squire', 'damsel']" :key="card" :value="card">{{ card }}</option>
       </select>
       <select class="underline" v-model="sheet.fate.name">
         <option value="" selected>Select Person</option>
-        <option v-for="person in sheet.sections['npc-social'].rows" :value="person._id || 'New Person'">{{ person.name || 'New Person' }}</option>
-        <option v-for="person in sheet.sections['squadron-social'].rows" :value="person._id || 'New Person'">{{ person.name || 'New Squadmate' }}</option>
+        <option v-for="person in sheet.sections['npc-social'].rows" :key="person.id || 'new-person'" :value="person.id || 'New Person'">{{ person.name || 'New Person' }}</option>
+        <option v-for="person in sheet.sections['squadron-social'].rows" :key="person.id || 'new-squadmate'" :value="person.id || 'New Person'">{{ person.name || 'New Squadmate' }}</option>
         <!--  -->
       </select>
     </NotchContainer>
@@ -116,11 +115,11 @@ const studentAttributes = [
       </NotchContainer>
     </div>
   </div>
-  NPC Bonds
+  <h4>NPC Bonds</h4>
     <NotchContainer class="notebook">
       <SocialSection name="npc" />
     </NotchContainer>
-  Magi-Knight Bonds
+  <h4>Magi-Knight Bonds</h4>
     <NotchContainer class="notebook">
       <SocialSection name="squadron" />
     </NotchContainer>
@@ -137,7 +136,7 @@ const studentAttributes = [
   }
 
   .student-split,
-  .isvw {
+  .backgroundItems {
     grid-column: 1 / -1;
   }
 
