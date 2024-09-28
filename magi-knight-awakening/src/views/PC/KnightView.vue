@@ -219,24 +219,6 @@ const elements = [
     <!-- repeating section here -->
   </NotchContainer>
   
-  <NotchContainer class="relic-container basic-item" width="thick" notchType="curve">
-    <h4>Relic</h4>
-    <Collapsible class="basic-item" :default="sheet.relic.collapsed" @collapse="sheet.relic.collapsed = !sheet.relic.collapsed">
-      <template v-slot:expanded>
-        <div class="flex-box half-gap grow-label">
-          <label :for="`relic-name`">Name</label>
-          <input class="underline" type="text" v-model="sheet.relic.name" :id="`relic-name`">
-        </div>
-        <div class="grid">
-          <label :for="`relic-description`">Description</label>
-          <textarea class="underline" :id="`relic-description`" v-model="sheet.relic.description"></textarea>
-        </div>
-      </template>
-      <template v-slot:collapsed>
-        <span>{{ sheet.relic.name || 'New Weave' }}</span>
-      </template>
-    </Collapsible>
-  </NotchContainer>
   <div class="spell-path-container grid-span-all">
   <NotchContainer class="spell-container" width="thick" notchType="curve">
     <h3>Spell Paths</h3>

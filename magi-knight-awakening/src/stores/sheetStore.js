@@ -220,11 +220,6 @@ export const useSheetStore = defineStore('sheet',() => {
     description: ref(''),
     collapsed: ref(false)
   };
-  const relic = {
-    name: ref(''),
-    description: ref(''),
-    collapsed: ref(false)
-  };
   const soul_weapon = {
     name: ref(''),
     range: ref(''),
@@ -262,6 +257,18 @@ export const useSheetStore = defineStore('sheet',() => {
       rows: ref([])
     },
     gear: {
+      template: {
+        name: '',
+        description: '',
+        collapsed: false
+      },
+      addItem(item){
+        const newItem = {...this.template,...item};
+        this.rows.value.push(item);
+      },
+      rows: ref([])
+    },
+    relics: {
       template: {
         name: '',
         description: '',
@@ -431,7 +438,6 @@ export const useSheetStore = defineStore('sheet',() => {
       student_ability: dehydrateNested(student_ability),
       fate:dehydrateNested(fate),
       armor_weave: dehydrateNested(armor_weave),
-      relic: dehydrateNested(relic),
       soul_weapon: dehydrateNested(soul_weapon),
       student_damage: student_damage.value,
       student_armor: student_armor.value,
@@ -520,7 +526,6 @@ export const useSheetStore = defineStore('sheet',() => {
     mam.value = hydrateStore.mam ?? mam.value;
     // eclipse.value = [...Array(hydrateStore.eclipse).keys()].map(k => k + 1);
     hydrateNested(armor_weave,hydrateStore.armor_weave);
-    hydrateNested(relic,hydrateStore.relic);
     hydrateNested(soul_weapon,hydrateStore.soul_weapon);
     hydrateNested(fate,hydrateStore.fate);
     hydrateNested(student_ability,hydrateStore.student_ability);
@@ -744,7 +749,6 @@ export const useSheetStore = defineStore('sheet',() => {
     fate,
     student_ability,
     armor_weave,
-    relic,
     soul_weapon,
     gloom_gems:gloom,
     unity_points:unity,
