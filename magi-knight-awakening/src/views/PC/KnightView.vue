@@ -236,6 +236,27 @@ const elements = [
   </NotchContainer>
   </div>
 </div>
+<div class="relics-section">
+      <NotchContainer>
+        <h4>relics</h4>
+        <RepeatingSection name="relics">
+          <RepeatingItem v-for="item in sheet.sections.relics.rows" :key="item._id" :row="item" name="relics"
+            class="relics-item">
+            <NotchContainer notchType="none">
+            <Collapsible class="relic-content" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
+              <template v-slot:collapsed>
+                <span>{{ item.name }}</span>
+              </template>
+              <template v-slot:expanded>
+                <input class="underline" type="text" v-model="item.name" placeholder=" Relic name">
+                <textarea class="underline" v-model="item.description" placeholder=" Relic description"></textarea>
+              </template>
+            </Collapsible>
+            </NotchContainer>
+          </RepeatingItem>
+        </RepeatingSection>
+      </NotchContainer>
+    </div>
 </template>
 
 <style lang="scss">
@@ -247,14 +268,31 @@ const elements = [
     grid-column: 1 / -1;
   }
 
-  @container (650px < width) {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
   @container (500px < width <=650px) {
     grid-template-columns: 1fr 1fr;
   }
 
+  .relics-section {
+  grid-column: 1 / -1;
+  
+  .repcontainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-column: 1 / -1;
+  }
+  
+  .relic-content {
+    display: grid;
+    grid-column: 1 / -1;
+    gap: var(--tiny-gap);
+    min-height: 1em;
+  }
+
+  .relics-item {
+  grid-column: 1 / -1;
+}
+
+}
   .skill-container {
     grid-column: 1;
   }
