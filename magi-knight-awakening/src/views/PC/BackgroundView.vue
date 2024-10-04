@@ -19,7 +19,22 @@ const sheet = useSheetStore();
     <BackgroundItems />
   </div>
   <h4>Goal Tallies</h4>
+  <div class="goal-tallies-view">
     <NotchContainer class="tallies">
       <GoalTallies name="club" />
     </NotchContainer>
+  </div>
 </template>
+
+<style>
+
+.goal-tallies-view{
+  display: grid;
+  min-width: 22.4cap;
+  min-height: 10cap;
+  max-width: 50cap;
+  margin-top: .5cap;
+  margin-right: 0.5cap;
+}
+
+</style>

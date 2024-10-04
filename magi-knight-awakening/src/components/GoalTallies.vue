@@ -38,7 +38,7 @@ const props = defineProps({
 <style lang="scss">
 .goalTallies-section{
   display: grid;
-  grid-template-columns: 1fr 50px 1fr;
+  grid-template-columns: 30% auto;
   gap: 1px;
   &,
   .repcontainer{
@@ -48,7 +48,7 @@ const props = defineProps({
     grid-column: 1;
   }
   .rep-edit-button{
-    grid-column: 3;
+    grid-column: 2;
   }
   :is(.goalTallies-header,.repeating-section,.repcontainer,.repitem,.goalTallies-content){
     display: grid;
