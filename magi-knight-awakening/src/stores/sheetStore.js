@@ -367,7 +367,22 @@ export const useSheetStore = defineStore('sheet',() => {
       },
       rows: ref([])
     };
-  })
+  });
+
+  ['club'].forEach(n => {
+    sections[`${n}-goalTallies`] = {
+      template: {
+        name: '',
+        description: '',
+        collapsed: false
+      },
+      addItem(item){
+        const newItem = {...this.template,...item};
+        this.rows.value.push(item);
+      },
+      rows: ref([])
+    };
+  });
 
   // /*
   // Adds a trait to the list of traits

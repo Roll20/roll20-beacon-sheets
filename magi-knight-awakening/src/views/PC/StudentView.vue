@@ -135,6 +135,9 @@ const studentAttributes = [
     grid-column: 1 / -1;
   }
 
+  .npc-social-item{
+    max-height: 20cap;
+  }
   .student-split,
   .backgroundItems {
     grid-column: 1 / -1;
@@ -146,6 +149,7 @@ const studentAttributes = [
 
   .notebook {
     grid-column: 1;
+    max-height: 4px;
   }
 
   .fate-card{

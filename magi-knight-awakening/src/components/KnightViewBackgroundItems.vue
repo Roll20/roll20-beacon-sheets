@@ -4,33 +4,13 @@ import { useSheetStore } from '@/stores/sheetStore';
 const sheet = useSheetStore();
 
 const backgroundItems = { 
-  interests: 'Interests',
-  virtues: 'Virtues',
-  strengths: 'Strengths',
-  weaknesses: 'Weaknesses',
-  electives: 'Electives & Clubs',
-  characteristics: 'characteristics',
-};
-
-const backstoryItems = {
-  backstory: 'backstory',
+  player_links: 'Player Links',
+  quote: 'Quote',
 };
 
 </script>
 
 <template>
-
-    <!-- Backstory Section -->
-    <div class="backstory flex-box flex-wrap tiny-gap">
-    <label class="flex-box flex-column" v-for="(value, key) in backstoryItems" :key="`backstory-${key}`">
-      <NotchContainer width="thick" notch="25" class="backstory-item">
-        <h4 class="capitalize">{{ value }}</h4>
-        <!-- Bind to sheet[key] instead of sheet[value] -->
-        <textarea type="text" class="underline" v-model="sheet[key]" />
-      </NotchContainer>
-    </label>
-  </div>
-
   <!-- Background Items Section -->
   <div class="backgroundItems flex-box flex-wrap tiny-gap">
     <label class="flex-box flex-column" v-for="(value, key) in backgroundItems" :key="`background-${key}`">
@@ -41,7 +21,6 @@ const backstoryItems = {
       </NotchContainer>
     </label>
   </div>
-
 </template>
 
 <style>
