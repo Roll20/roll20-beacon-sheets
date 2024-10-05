@@ -155,7 +155,10 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const elemental_affinity = ref('');
   const magic_style = ref('');
+  const element_name = ref('');
   const mam = ref('');
+  const elemental_enhancement_1 = ref('');
+  const elemental_enhancement_2 = ref('');
 
   const spell_attack = computed(()=> proficiency.value + (abilityScores[mam]?.mod.value || 0));
   const spell_dc = computed(() => 8 + spell_attack.value);
@@ -441,7 +444,10 @@ export const useSheetStore = defineStore('sheet',() => {
       unity_points: unity.value,
       elemental_affinity: elemental_affinity.value,
       magic_style: magic_style.value,
+      element_name: element_name.value,
       mam: mam.value,
+      elemental_enhancement_1: elemental_enhancement_1.value,
+      elemental_enhancement_2: elemental_enhancement_2.value,
       skills: dehydrateNested(skills),
       abilityScores: dehydrateNested(abilityScores),
       // eclipse:Math.max(0,...eclipse.value),
@@ -538,7 +544,11 @@ export const useSheetStore = defineStore('sheet',() => {
 
     elemental_affinity.value = hydrateStore.elemental_affinity ?? elemental_affinity.value;
     magic_style.value = hydrateStore.magic_style ?? magic_style.value;
+    element_name.value = hydrateStore.element_name ?? element_name.value;
     mam.value = hydrateStore.mam ?? mam.value;
+    elemental_enhancement_1.value = hydrateStore.elemental_enhancement_1 ?? elemental_enhancement_1.value;
+    elemental_enhancement_2.value = hydrateStore.elemental_enhancement_2 ?? elemental_enhancement_2.value;
+    
     // eclipse.value = [...Array(hydrateStore.eclipse).keys()].map(k => k + 1);
     hydrateNested(armor_weave,hydrateStore.armor_weave);
     hydrateNested(soul_weapon,hydrateStore.soul_weapon);
@@ -789,7 +799,10 @@ export const useSheetStore = defineStore('sheet',() => {
     knight_attack,
     elemental_affinity,
     magic_style,
+    element_name,
     mam,
+    elemental_enhancement_1,
+    elemental_enhancement_2,
     spell_attack,
     spell_dc,
     sections,

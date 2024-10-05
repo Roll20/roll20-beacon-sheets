@@ -5,6 +5,7 @@ function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+import { ref, computed } from 'vue';
 import SplitMods from '@/components/SplitMods.vue';
 import NotchContainer from '@/components/NotchContainer.vue';
 import ImageBackedLabel from '@/components/ImageBackedLabel.vue';
@@ -48,65 +49,72 @@ const knightAttributes = [
     readonly: false
   }
 ];
+// Elements with enhancements
 const elements = [
   {
     name: 'earth',
-    description: 'solid'
+    description: 'solid',
+    enhancements: [
+      { description: "+1 HP per Level", attribute: "hpPerLevel" },
+      { description: "+1 to Athletics and Medicine", attribute: "athleticsMedicine" },
+      { description: "+1 Armor", attribute: "armor" },
+      { description: "Reduce Armor by 1, Gain 10 Move (Select Additional Enhancement)", attribute: "armorMove" }
+    ]
   },
   {
     name: 'fire',
-    description: 'destructive'
+    description: 'destructive',
+    enhancements: [
+      { description: "+1 HP per Level", attribute: "hpPerLevel" },
+      { description: "+10 to Move", attribute: "move" },
+      { description: "+1 to Athletics and Performance", attribute: "athleticsPerformance" },
+      { description: "Gain +1 per Reputation Level to all weapon and spell damage", attribute: "repDamage" }
+    ]
   },
   {
     name: 'air',
-    description: 'incorporeal'
+    description: 'incorporeal',
+    enhancements: [
+      { description: "+1 HP per Level", attribute: "hpPerLevel" },
+      { description: "+10 to Move", attribute: "move" },
+      { description: "+1 Armor", attribute: "armor" },
+      { description: "+1 to Athletics and Stealth", attribute: "athleticsStealth" }
+    ]
   },
   {
     name: 'water',
-    description: 'shifting'
+    description: 'shifting',
+    enhancements: [
+      { description: "+1 MP per Level", attribute: "mpPerLevel" },
+      { description: "+10 to Move", attribute: "move" },
+      { description: "+1 Armor", attribute: "armor" },
+      { description: "+1 to Coordination and Creativity", attribute: "coordinationCreativity" }
+    ]
   },
   {
     name: 'void',
-    description: 'energy'
+    description: 'energy',
+    enhancements: [
+      { description: "+2 HP per Level", attribute: "hpPerLevel" },
+      { description: "+2 MP per Level", attribute: "mpPerLevel" },
+      { description: "+15 ft Move", attribute: "move" },
+      { description: "+2 Armor", attribute: "armor" },
+      { description: "+1 to Insight and Mysticism", attribute: "insightMysticism" }
+    ]
   }
 ];
+
+// Compute the available enhancements based on the selected element
+const availableEnhancements = computed(() => {
+  const element = elements.find(el => el.name === sheet.elemental_affinity);
+  return element ? element.enhancements : [];
+});
 
 </script>
 
 <template>
 <div class="knight-view">
-  <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
-    <LabelStacked>
-      <template v-slot:number>
-        <select class="underline" v-model="sheet.elemental_affinity">
-          <option selected value="">Select Element</option>
-          <option v-for="element in elements" :value="element.name">{{ capitalize(element.name) }}</option>
-        </select>
-      </template>
-      <template v-slot:label>
-        <span>Elemental Affinity</span>
-      </template>
-    </LabelStacked>
-    <LabelStacked>
-      <template v-slot:number>
-        <input type="text" class="underline" v-model="sheet.magic_style">
-      </template>
-      <template v-slot:label>
-        <span>Magic Style</span>
-      </template>
-    </LabelStacked>
-    <LabelStacked>
-      <template v-slot:number>
-        <select class="underline" v-model="sheet.mam">
-          <option selected value="">Select Ability</option>
-          <option v-for="(o,ability) in sheet.abilityScores" :value="ability">{{ capitalize(ability) }}</option>
-        </select>
-      </template>
-      <template v-slot:label>
-        <span>Magic Ability Modifier</span>
-      </template>
-    </LabelStacked>
-  </div>
+
   <SplitMods :attributes="knightAttributes" class="knight-split">
     <template v-slot:content>
       <ImageBackedLabel v-for="attr in ['Spell Attack','Spell DC']" :key="`${attr}-image-label`" image="bottle">
@@ -136,8 +144,10 @@ const elements = [
         <span>{{ sheet.armor_weave.name || 'New Weave' }}</span>
       </template>
     </Collapsible>
+    
     <!-- static content data here -->
   </NotchContainer>
+
   <NotchContainer class="soul-weapon-container basic-item" width="thick" notchType="curve">
     <h4>Soul Weapon</h4>
     <Collapsible class="basic-item" :default="sheet.soul_weapon.collapsed" @collapse="sheet.soul_weapon.collapsed = !sheet.soul_weapon.collapsed">
@@ -219,7 +229,6 @@ const elements = [
     </RepeatingSection>
     <!-- repeating section here -->
   </NotchContainer>
-  
   <div class="spell-path-container grid-span-all">
   <NotchContainer class="spell-container" width="thick" notchType="curve">
     <h3>Spell Paths</h3>
@@ -257,10 +266,68 @@ const elements = [
       </RepeatingSection>
     </NotchContainer>
   </div>
-</div>
+  </div>
   <div class="KnightViewBackgroundItems-view">
     <KnightViewBackgroundItems />
   </div>
+  <NotchContainer>
+    <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
+      <LabelStacked>
+        <template v-slot:number>
+          <select class="underline" v-model="sheet.elemental_affinity">
+            <option selected value="">Select Element</option>
+            <option v-for="element in elements" :value="element.name" :key="element.name">{{ capitalize(element.name) }}</option>
+          </select>
+        </template>
+        <template v-slot:label>
+          <span>Elemental Affinity</span>
+        </template>
+      </LabelStacked>
+      <LabelStacked>
+        <template v-slot:number>
+          <input type="text" class="underline right-align" v-model="sheet.element_name">
+        </template>
+        <template v-slot:label>
+          <span>Element Name</span>
+        </template>
+      </LabelStacked>
+      <!-- Elemental Enhancements Dropdown (filtered by selected element) -->
+    <div class="elemental_enhancements">
+      <NotchContainer notchType="none" width="500px">
+        <select class="enhancements" v-model="sheet.elemental_enhancement_1">
+          <option selected value="">Select Enhancement</option>
+          <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
+        </select>
+      </NotchContainer>
+      <NotchContainer notchType="none" width="500px">
+        <select class="elemental_enhancements" v-model="sheet.elemental_enhancement_2">
+          <option selected value="">Select Enhancement</option>
+          <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
+        </select>
+      </NotchContainer>
+    </div>
+      <LabelStacked>
+        <template v-slot:number>
+          <input type="text" class="underline" v-model="sheet.magic_style">
+        </template>
+        <template v-slot:label>
+          <span>Magic Style</span>
+        </template>
+      </LabelStacked>
+      <LabelStacked>
+        <template v-slot:number>
+          <select class="underline" v-model="sheet.mam">
+            <option selected value="">Select Ability</option>
+            <option v-for="(o,ability) in sheet.abilityScores" :key="ability.name" :value="ability">{{ capitalize(ability) }}</option>
+          </select>
+        </template>
+        <template v-slot:label>
+          <span>Magic Ability Modifier</span>
+        </template>
+      </LabelStacked>
+
+    </div>
+  </NotchContainer>
 </template>
 
 <style lang="scss">
@@ -271,6 +338,7 @@ const elements = [
   > .split-display{
     grid-column: 1 / -1;
     max-width: 90cap;
+    grid-template-rows: auto;
   }
 
   @container (500px < width <=650px) {
@@ -314,7 +382,12 @@ const elements = [
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-column: 1 / -1;
   }
-}
-
+  }
+  .elemental_enhancements {
+    min-width: 800px;
+    grid-column: 1;
+    align-items: stretch; 
+    width: 100%; /* This makes the NotchContainer span the full width */
+  }
 }
 </style>
