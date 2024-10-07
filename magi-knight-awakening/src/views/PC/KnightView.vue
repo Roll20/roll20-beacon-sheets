@@ -5,7 +5,7 @@ function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import SplitMods from '@/components/SplitMods.vue';
 import NotchContainer from '@/components/NotchContainer.vue';
 import ImageBackedLabel from '@/components/ImageBackedLabel.vue';
@@ -108,6 +108,12 @@ const elements = [
 const availableEnhancements = computed(() => {
   const element = elements.find(el => el.name === sheet.elemental_affinity);
   return element ? element.enhancements : [];
+});
+
+// Watch for changes in elemental affinity and reset enhancements if invalid
+watch(() => sheet.elemental_affinity, (newAffinity) => {
+    sheet.elemental_enhancement_1 = '';
+    sheet.elemental_enhancement_2 = '';
 });
 
 </script>
@@ -285,7 +291,7 @@ const availableEnhancements = computed(() => {
       </LabelStacked>
       <LabelStacked>
         <template v-slot:number>
-          <input type="text" class="underline right-align" v-model="sheet.element_name">
+          <input type="text" class="underline element-name-underline" v-model="sheet.element_name">
         </template>
         <template v-slot:label>
           <span>Element Name</span>
@@ -394,5 +400,8 @@ const availableEnhancements = computed(() => {
     display: grid;
     grid-column: span;
     margin-top: 0.5cap;
+  }
+  .element-name-underline{
+    text-align: center;
   }
 </style>
