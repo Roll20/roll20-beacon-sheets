@@ -163,10 +163,15 @@ export const useSheetStore = defineStore('sheet',() => {
   const spell_attack = computed(()=> proficiency.value + (abilityScores[mam]?.mod.value || 0));
   const spell_dc = computed(() => 8 + spell_attack.value);
   const eclipse = ref([]);
-  const eclipse_phase = computed(()=>{
-    return Math.max(0,...eclipse.value) >= 3 ?
-      'Heartless Knight' :
-      'Soul Eclipse Chart'});
+  const eclipse_outer_blips = ref([]);
+  const eclipse_phase = computed(() => {
+    const text = Math.max(0,...eclipse.value) >= 3 
+      ? 'Heartless Knight' 
+      : 'Soul Eclipse\nChart';
+    
+    return text.replace(/\n/g, '<br>');
+  });
+  
   
   const crystal = {
     facet1: ref(false),
@@ -203,7 +208,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const student_ability = {
     name: ref(''),
     description: ref(''),
-    collapsed: ref(false)
+    collapsed: ref(true)
   };
   const fate = {
     card: ref(''),
@@ -221,14 +226,14 @@ export const useSheetStore = defineStore('sheet',() => {
   const armor_weave = {
     name: ref(''),
     description: ref(''),
-    collapsed: ref(false)
+    collapsed: ref(true)
   };
   const soul_weapon = {
     name: ref(''),
     range: ref(''),
     damage: ref(''),
     qualities: ref(''),
-    collapsed: ref(false)
+    collapsed: ref(true)
   }
   // repeating sections
   const sections = {
@@ -237,7 +242,7 @@ export const useSheetStore = defineStore('sheet',() => {
         name: '',
         description: '',
         type: '',
-        collapsed: false
+        collapsed: true
       },
       addItem(item){
         const newItem = {...this.template,...item};
@@ -251,7 +256,7 @@ export const useSheetStore = defineStore('sheet',() => {
         description: '',
         rarity:1,
         cost: '',
-        collapsed: false
+        collapsed: true
       },
       addItem(item){
         const newItem = {...this.template,...item};
@@ -263,7 +268,7 @@ export const useSheetStore = defineStore('sheet',() => {
       template: {
         name: '',
         description: '',
-        collapsed: false
+        collapsed: true
       },
       addItem(item){
         const newItem = {...this.template,...item};
@@ -275,7 +280,7 @@ export const useSheetStore = defineStore('sheet',() => {
       template: {
         name: '',
         description: '',
-        collapsed: false
+        collapsed: true
       },
       addItem(item){
         const newItem = {...this.template,...item};
@@ -287,7 +292,7 @@ export const useSheetStore = defineStore('sheet',() => {
       template: {
         name: '',
         description: '',
-        collapsed: false
+        collapsed: true
       },
       addItem(item){
         const newItem = {...this.template,...item};
@@ -299,7 +304,7 @@ export const useSheetStore = defineStore('sheet',() => {
       template: {
         name: '',
         description: '',
-        collapsed: false
+        collapsed: true
       },
       addItem(item){
         const newItem = {...this.template,...item};
@@ -768,6 +773,7 @@ export const useSheetStore = defineStore('sheet',() => {
     initiative,
     
     eclipse,
+    eclipse_outer_blips,
     eclipse_phase,
     studied,
     rested,

@@ -51,14 +51,19 @@ const meta = useMetaStore();
   }
   .character-name{
     grid-area: charname;
+    width: 97%;
   }
   .level{
     grid-area: level;
   }
   .player{
     grid-area: player;
+    width: 97%;
   }
   .reputation{
     grid-area: reputation;
+  }
+  .underline{
+    width: 100%;
   }
 </style>

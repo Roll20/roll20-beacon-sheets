@@ -6,8 +6,9 @@ const sheet = useSheetStore();
 <template>
 <div class="eclipse-container" :style="`--_phase:${sheet.eclipse_phase}`">
   <div class="eclipse-grid">
-    <span class='eclipse-label'>{{ sheet.eclipse_phase }}</span>
+    <span class="eclipse-label" v-html="sheet.eclipse_phase"></span>
     <input type="checkbox" :class="`moon moon-${num}`" v-for="num in [1,2,3,4,5,6,7,8]" v-model="sheet.eclipse" :true-value="num" :false-value="0" :key="`eclipse-${num}`">
+    <input type="checkbox" :class="`outer-blips outer-blips-${num}`" v-for="num in [1,2,3,4,5,6,7,8]" v-model="sheet.eclipse_outer_blips" :true-value="num" :false-value="0" :key="`eclipse-blip-${num}`">
   </div>
 </div>
 </template>
@@ -55,7 +56,33 @@ const sheet = useSheetStore();
   }
 }
 .moon{
-  width: var(--_size);
+  width: calc(var(--_size) * 1.2);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: {
+    size: contain;
+    repeat: no-repeat;
+    position: center;
+    image: var(--_phaseRef);
+  };
+  transform: translate(
+    calc(cos(var(--_degrees)) * var(--_offset) * 0.85),
+    calc(sin(var(--_degrees)) * var(--_offset) * 0.85)
+  );
+
+  &:not(:checked){
+    filter:opacity(0.7);
+  }
+  $circleNum: 8;
+  @for $num from 0 to $circleNum{
+    &:nth-of-type(#{$num + 1}){
+      --_degrees: calc((#{$num} * 360deg / #{$circleNum}) - 45deg);
+      --_phaseRef: var(--moon#{$num + 1}Image);
+    }
+  }
+}
+.outer-blips{
+  width: calc(var(--_size));
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: {
@@ -76,8 +103,11 @@ const sheet = useSheetStore();
   @for $num from 0 to $circleNum{
     &:nth-of-type(#{$num + 1}){
       --_degrees: calc((#{$num} * 360deg / #{$circleNum}) - 45deg);
-      --_phaseRef: var(--moon#{$num + 1}Image);
+      --_phaseRef: var(--outer-blips#{$num + 1}Image);
     }
   }
+}
+.eclipse-label{
+  text-align: center;
 }
 </style>
