@@ -294,7 +294,7 @@ const availableEnhancements = computed(() => {
       </div>
       <!-- Elemental Enhancements Dropdown (filtered by selected element) -->
       <div>
-      <NotchContainer class=elemental_enhancements  notch="5">
+      <NotchContainer class=elemental_enhancements notch="5">
         <select v-model="sheet.elemental_enhancement_1">
           <option selected value="">Select Enhancement</option>
           <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
@@ -389,9 +389,10 @@ const availableEnhancements = computed(() => {
     grid-column: 1 / -1;
   }
   }
-  .elemental_enhancements {
+}
+.elemental_enhancements {
     display: grid;
     grid-column: span;
+    margin-top: 0.5cap;
   }
-}
 </style>
