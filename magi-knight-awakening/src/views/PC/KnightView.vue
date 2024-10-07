@@ -44,7 +44,7 @@ const knightAttributes = [
   {
     name: 'knight_damage',
     image: 'thorns',
-    crown: false,
+    crown: true,
     text: 'damage',
     readonly: false
   }
@@ -271,7 +271,7 @@ const availableEnhancements = computed(() => {
     <KnightViewBackgroundItems />
   </div>
   <NotchContainer>
-    <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
+      <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
       <LabelStacked>
         <template v-slot:number>
           <select class="underline" v-model="sheet.elemental_affinity">
@@ -291,21 +291,28 @@ const availableEnhancements = computed(() => {
           <span>Element Name</span>
         </template>
       </LabelStacked>
+      </div>
       <!-- Elemental Enhancements Dropdown (filtered by selected element) -->
-    <div class="elemental_enhancements">
-      <NotchContainer notchType="none" width="500px">
-        <select class="enhancements" v-model="sheet.elemental_enhancement_1">
+      <div>
+      <NotchContainer class=elemental_enhancements  notch="5">
+        <select v-model="sheet.elemental_enhancement_1">
           <option selected value="">Select Enhancement</option>
           <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
         </select>
       </NotchContainer>
-      <NotchContainer notchType="none" width="500px">
-        <select class="elemental_enhancements" v-model="sheet.elemental_enhancement_2">
+      </div>
+      <div>
+      
+      <NotchContainer class=elemental_enhancements notch="5">
+        <select v-model="sheet.elemental_enhancement_2">
           <option selected value="">Select Enhancement</option>
           <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
         </select>
       </NotchContainer>
-    </div>
+      </div>
+  </NotchContainer>
+  <NotchContainer>
+    <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
       <LabelStacked>
         <template v-slot:number>
           <input type="text" class="underline" v-model="sheet.magic_style">
@@ -325,8 +332,7 @@ const availableEnhancements = computed(() => {
           <span>Magic Ability Modifier</span>
         </template>
       </LabelStacked>
-
-    </div>
+      </div>
   </NotchContainer>
 </template>
 
@@ -384,10 +390,8 @@ const availableEnhancements = computed(() => {
   }
   }
   .elemental_enhancements {
-    min-width: 800px;
-    grid-column: 1;
-    align-items: stretch; 
-    width: 100%; /* This makes the NotchContainer span the full width */
+    display: grid;
+    grid-column: span;
   }
 }
 </style>

@@ -186,10 +186,10 @@ export const useSheetStore = defineStore('sheet',() => {
   const traits = ref([]);
   const traitsCount = computed(() => traits.value?.length);
 
-  const student_damage = ref(0);
+  const student_damage = ref('');
   const student_armor = ref(0);
   const student_move = ref(0);
-  const student_attack = ref(0);
+  const student_attack = ref('');
   const interests = ref('');
   const virtues = ref('');
   const strengths = ref('');
