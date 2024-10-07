@@ -54,21 +54,21 @@ export const useSheetStore = defineStore('sheet',() => {
       score: strength,
       mod: strengthMod
     },
-    dexterity:{
-      score: dexterity,
-      mod: dexterityMod
-    },
-    constitution:{
-      score: constitution,
-      mod: constitutionMod
-    },
     intelligence:{
       score: intelligence,
       mod: intelligenceMod
     },
+    dexterity:{
+      score: dexterity,
+      mod: dexterityMod
+    },
     wisdom:{
       score: wisdom,
       mod: wisdomMod
+    },
+    constitution:{
+      score: constitution,
+      mod: constitutionMod
     },
     charisma:{
       score: charisma,
