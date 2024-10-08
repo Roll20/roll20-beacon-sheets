@@ -527,7 +527,6 @@ export const useSheetStore = defineStore('sheet',() => {
       }
     };
 
-
   // Handles updating these values in the store.
   const hydrate = (hydrateStore) => {
     sheet_mode.value = hydrateStore.sheet_mode ?? sheet_mode.value;
@@ -570,23 +569,9 @@ export const useSheetStore = defineStore('sheet',() => {
     elemental_enhancement_1.value = hydrateStore.elemental_enhancement_1 ?? elemental_enhancement_1.value;
     elemental_enhancement_2.value = hydrateStore.elemental_enhancement_2 ?? elemental_enhancement_2.value;
 
-    // Handle eclipse_blips stored as a string with the "$__$" prefix
-    if (typeof hydrateStore.eclipse_blips === 'string' && hydrateStore.eclipse_blips.startsWith('$__$')) {
-      // Extract the content inside the square brackets and parse it as an array
-      const blipArray = JSON.parse(hydrateStore.eclipse_blips.match(/\[(.*?)\]/)[0]);
-      eclipse_blips.value.splice(0, eclipse_blips.value.length, ...blipArray);
-    } else if (Array.isArray(hydrateStore.eclipse_blips)) {
-      // If it's already an array, hydrate directly
-      eclipse_blips.value.splice(
-        0,
-        eclipse_blips.value.length,
-        ...hydrateStore.eclipse_blips
-      );
-    } else {
-      console.warn('eclipse_blips in hydrateStore is neither an array nor a valid string');
-    }
+    hydrateEclipseBlipsArray(eclipse_blips.value, hydrateStore.eclipse_blips);
+    hydrateEclipseBlipsArray(eclipse.value, hydrateStore.eclipse);
 
-    // eclipse.value = [...Array(hydrateStore.eclipse).keys()].map(k => k + 1);
     hydrateNested(armor_weave,hydrateStore.armor_weave);
     hydrateNested(soul_weapon,hydrateStore.soul_weapon);
     hydrateNested(fate,hydrateStore.fate);
@@ -597,7 +582,6 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateNested(mp,hydrateStore.mp);
     hydrateNested(shp,hydrateStore.shp);
     hydrateNested(crystal,hydrateStore.crystal);
-    //hydrateNested(eclipse_blips,hydrateStore.eclipse_blips);
     // faction.value = hydrateStore.faction ?? faction.value
     // traits.value = objectToArray(hydrateStore.traits) || traits.value
     Object.entries(sections).forEach(([name,obj]) => {
