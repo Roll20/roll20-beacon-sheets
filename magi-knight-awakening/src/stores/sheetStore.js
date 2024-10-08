@@ -163,7 +163,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const spell_attack = computed(()=> proficiency.value + (abilityScores[mam]?.mod.value || 0));
   const spell_dc = computed(() => 8 + spell_attack.value);
   const eclipse = ref([]);
-  const eclipse_outer_blips = ref([]);
+  const eclipse_blips = ref([]);
   const eclipse_phase = computed(() => {
     const text = Math.max(0,...eclipse.value) >= 3 
       ? 'Heartless Knight' 
@@ -773,7 +773,7 @@ export const useSheetStore = defineStore('sheet',() => {
     initiative,
     
     eclipse,
-    eclipse_outer_blips,
+    eclipse_blips,
     eclipse_phase,
     studied,
     rested,

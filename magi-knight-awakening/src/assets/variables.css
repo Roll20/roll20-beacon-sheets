@@ -40,6 +40,9 @@ html{
   --moon7Image:url('./moon7.png');
   --moon8Image:url('./moon8.png');
   --eclipseBorder: url('./eclipse-border.png');
+  --blipImage:url('./eclipse-blip.png');
+  --blipXImage:url('./eclipse-blip-x.png');
+  --blipScratchedImage:url('./eclipse-blip-scratched.png');
 }
 html.dark{
   --masterBack: var(--dm-masterBack);
