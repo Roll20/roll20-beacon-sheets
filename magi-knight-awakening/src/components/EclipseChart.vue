@@ -2,10 +2,23 @@
 import { useSheetStore } from '@/stores/sheetStore';
 const sheet = useSheetStore();
 
-// Method to toggle between three image states
+// Method to toggle between two image states for moons
+const cycleMoonState = (index) => {
+  const currentMoon = sheet.eclipse[index];
+  sheet.eclipse[index] = (currentMoon + 1) % 2; // Toggle between 0 and 1
+};
+
+// Function to get the correct moon image based on its state
+const getMoonImage = (index) => {
+  const moonState = sheet.eclipse[index]; // Get the current state of the moon
+  return moonState === 0
+    ? `--moon${index + 1}Image` // Default moon image
+    : `--xmoon${index + 1}Image`; // Clicked state moon image
+};
+
+// Method to toggle between three image states for blips
 const cycleBlipState = (index) => {
   const currentBlip = sheet.eclipse_blips[index];
-  // Cycle between three states (0, 1, 2) representing three different images
   sheet.eclipse_blips[index] = (currentBlip + 1) % 3;
 };
 
@@ -29,28 +42,43 @@ const getBlipImage = (index) => {
 <div class="eclipse-container" :style="`--_phase:${sheet.eclipse_phase}`">
   <div class="eclipse-grid">
     <span class="eclipse-label" v-html="sheet.eclipse_phase"></span>
-    <input type="checkbox" :class="`moon moon-${num}`" v-for="num in [1,2,3,4,5,6,7,8]" v-model="sheet.eclipse" :true-value="num" :false-value="0" :key="`eclipse-${num}`">
+    <!-- Moons: Toggle between two states -->
+    <input
+      type="checkbox"
+      :class="`moon moon-${num}`"
+      v-for="num in [1,2,3,4,5,6,7,8]"
+      @click="cycleMoonState(num - 1)"
+      :key="`eclipse-moon-${num}`"
+      :checked="sheet.eclipse[num - 1] === 1"
+      :style="{
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundImage: `var(${getMoonImage(num - 1)})`
+    }"
+    />
   </div>
+  
   <div class="eclipse-grid">
-      <!-- Click on blips to cycle between images -->
-      <input
-        type="checkbox"
-        :class="`blip blip-${num}`"
-        v-for="num in [1,2,3,4,5,6,7,8]"
-        @click="cycleBlipState(num)"
-        :key="`eclipse-blip-${num}`"
-        :style="{
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundImage: `var(${getBlipImage(num)})`
-        }"
-      />
-    </div>
+    <input
+      type="checkbox"
+      :class="`blip blip-${num}`"
+      v-for="num in [1,2,3,4,5,6,7,8]"
+      @click="cycleBlipState(num - 1)"
+      :key="`eclipse-blip-${num}`"
+      :style="{
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundImage: `var(${getBlipImage(num - 1)})`
+      }"
+    />
+  </div>
 </div>
 </template>
 
 <style lang="scss">
+/* Styles remain the same */
 .eclipse-container{
   container: eclipse-container / size;
   display: grid;
@@ -60,18 +88,8 @@ const getBlipImage = (index) => {
   > *{
     grid-area: content;
   }
-  // test code for generating dynamic terminator line
-  // &:before{
-  //   content: '';
-  //   z-index: -1;
-  //   grid-area: content;
-  //   width: 100%;
-  //   height: 100%;
-  //   background: {
-  //     image: conic-gradient(from 180deg at 50% 50%, #e3b7d6 0%, #3656a6 25%, #000 50%, #05030300 50%);
-  //   }
-  // }
 }
+
 .eclipse-grid{
   --_size: clamp(35px,15cqmin,60px);
   --_borderWidth: 5cqmin;
@@ -92,8 +110,9 @@ const getBlipImage = (index) => {
     grid-area: content;
   }
 }
+
 .moon{
-  width: calc(var(--_size) * 1.2);
+  width: calc(var(--_size) * 1.4);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: {
@@ -110,11 +129,11 @@ const getBlipImage = (index) => {
   &:not(:checked){
     filter:opacity(1);
   }
+  
   $circleNum: 8;
   @for $num from 0 to $circleNum{
     &:nth-of-type(#{$num + 1}){
       --_degrees: calc((#{$num} * 360deg / #{$circleNum}) - 45deg);
-      --_phaseRef: var(--moon#{$num + 1}Image);
     }
   }
 }
@@ -138,11 +157,11 @@ const getBlipImage = (index) => {
   &:not(:checked){
     filter:opacity(1);
   }
+
   $circleNum: 8;
   @for $num from 0 to $circleNum{
     &:nth-of-type(#{$num + 1}){
       --_degrees: calc((#{$num} * 360deg / #{$circleNum}) - 45deg);
-      --_phaseRef: var(${getBlipImage(num)});
     }
   }
 }

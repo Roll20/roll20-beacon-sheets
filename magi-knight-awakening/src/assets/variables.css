@@ -39,6 +39,14 @@ html{
   --moon6Image:url('./moon6.png');
   --moon7Image:url('./moon7.png');
   --moon8Image:url('./moon8.png');
+  --xmoon1Image:url('./xmoon1.png');
+  --xmoon2Image:url('./xmoon2.png');
+  --xmoon3Image:url('./xmoon3.png');
+  --xmoon4Image:url('./xmoon4.png');
+  --xmoon5Image:url('./xmoon5.png');
+  --xmoon6Image:url('./xmoon6.png');
+  --xmoon7Image:url('./xmoon7.png');
+  --xmoon8Image:url('./xmoon8.png');
   --eclipseBorder: url('./eclipse-border.png');
   --blipImage:url('./eclipse-blip.png');
   --blipXImage:url('./eclipse-blip-x.png');

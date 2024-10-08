@@ -455,7 +455,7 @@ export const useSheetStore = defineStore('sheet',() => {
       elemental_enhancement_2: elemental_enhancement_2.value,
       skills: dehydrateNested(skills),
       abilityScores: dehydrateNested(abilityScores),
-      // eclipse:Math.max(0,...eclipse.value),
+      eclipse: [...eclipse.value],
       eclipse_blips: [...eclipse_blips.value],
       customProficiency: customProficiency.value,
       hp: dehydrateNested(hp),
