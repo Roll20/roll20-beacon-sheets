@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, toRaw } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
 import { arrayToObject, getRollResults, objectToArray, rollToChat } from '@/utility';
@@ -456,7 +456,7 @@ export const useSheetStore = defineStore('sheet',() => {
       skills: dehydrateNested(skills),
       abilityScores: dehydrateNested(abilityScores),
       // eclipse:Math.max(0,...eclipse.value),
-      eclipse_blips: eclipse_blips.value,
+      eclipse_blips: [...eclipse_blips.value],
       customProficiency: customProficiency.value,
       hp: dehydrateNested(hp),
       mp: dehydrateNested(mp),
@@ -513,6 +513,21 @@ export const useSheetStore = defineStore('sheet',() => {
       }
     });
 
+    // Utility function to handle parsing and hydrating blip arrays
+    const hydrateEclipseBlipsArray = (targetArray, sourceArray) => {
+      if (typeof sourceArray === 'string' && sourceArray.startsWith('$__$')) {
+        // Extract the content inside the square brackets and parse it as an array
+        const parsedArray = JSON.parse(sourceArray.match(/\[(.*?)\]/)[0]);
+        targetArray.splice(0, targetArray.length, ...parsedArray);
+      } else if (Array.isArray(sourceArray)) {
+        // If it's already an array, hydrate directly
+        targetArray.splice(0, targetArray.length, ...sourceArray);
+      } else {
+        console.warn('Source array is neither an array nor a valid string');
+      }
+    };
+
+
   // Handles updating these values in the store.
   const hydrate = (hydrateStore) => {
     sheet_mode.value = hydrateStore.sheet_mode ?? sheet_mode.value;
@@ -528,7 +543,6 @@ export const useSheetStore = defineStore('sheet',() => {
     studied.value = hydrateStore.studied ?? studied.value;
     gloom.value = hydrateStore.gloom_gems ?? gloom.value;
     unity.value = hydrateStore.unity_points ?? unity.value;
-    eclipse_blips.value = hydrateStore.eclipse_blips ?? eclipse_blips.value;
 
     student_damage.value = hydrateStore.student_damage ?? student_damage.value;
     student_armor.value = hydrateStore.student_armor ?? student_armor.value;
@@ -555,7 +569,23 @@ export const useSheetStore = defineStore('sheet',() => {
     mam.value = hydrateStore.mam ?? mam.value;
     elemental_enhancement_1.value = hydrateStore.elemental_enhancement_1 ?? elemental_enhancement_1.value;
     elemental_enhancement_2.value = hydrateStore.elemental_enhancement_2 ?? elemental_enhancement_2.value;
-    
+
+    // Handle eclipse_blips stored as a string with the "$__$" prefix
+    if (typeof hydrateStore.eclipse_blips === 'string' && hydrateStore.eclipse_blips.startsWith('$__$')) {
+      // Extract the content inside the square brackets and parse it as an array
+      const blipArray = JSON.parse(hydrateStore.eclipse_blips.match(/\[(.*?)\]/)[0]);
+      eclipse_blips.value.splice(0, eclipse_blips.value.length, ...blipArray);
+    } else if (Array.isArray(hydrateStore.eclipse_blips)) {
+      // If it's already an array, hydrate directly
+      eclipse_blips.value.splice(
+        0,
+        eclipse_blips.value.length,
+        ...hydrateStore.eclipse_blips
+      );
+    } else {
+      console.warn('eclipse_blips in hydrateStore is neither an array nor a valid string');
+    }
+
     // eclipse.value = [...Array(hydrateStore.eclipse).keys()].map(k => k + 1);
     hydrateNested(armor_weave,hydrateStore.armor_weave);
     hydrateNested(soul_weapon,hydrateStore.soul_weapon);
@@ -567,6 +597,7 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateNested(mp,hydrateStore.mp);
     hydrateNested(shp,hydrateStore.shp);
     hydrateNested(crystal,hydrateStore.crystal);
+    //hydrateNested(eclipse_blips,hydrateStore.eclipse_blips);
     // faction.value = hydrateStore.faction ?? faction.value
     // traits.value = objectToArray(hydrateStore.traits) || traits.value
     Object.entries(sections).forEach(([name,obj]) => {
