@@ -162,8 +162,8 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const spell_attack = computed(()=> proficiency.value + (abilityScores[mam]?.mod.value || 0));
   const spell_dc = computed(() => 8 + spell_attack.value);
-  const eclipse = ref([]);
-  const eclipse_blips = ref([]);
+  const eclipse = ref([0,0,0,0,0,0,0,0]);
+  const eclipse_blips = ref([0,0,0,0,0,0,0,0]);
   const eclipse_phase = computed(() => {
     const text = Math.max(0,...eclipse.value) >= 3 
       ? 'Heartless Knight' 
@@ -456,6 +456,7 @@ export const useSheetStore = defineStore('sheet',() => {
       skills: dehydrateNested(skills),
       abilityScores: dehydrateNested(abilityScores),
       // eclipse:Math.max(0,...eclipse.value),
+      eclipse_blips: eclipse_blips.value,
       customProficiency: customProficiency.value,
       hp: dehydrateNested(hp),
       mp: dehydrateNested(mp),
@@ -527,6 +528,7 @@ export const useSheetStore = defineStore('sheet',() => {
     studied.value = hydrateStore.studied ?? studied.value;
     gloom.value = hydrateStore.gloom_gems ?? gloom.value;
     unity.value = hydrateStore.unity_points ?? unity.value;
+    eclipse_blips.value = hydrateStore.eclipse_blips ?? eclipse_blips.value;
 
     student_damage.value = hydrateStore.student_damage ?? student_damage.value;
     student_armor.value = hydrateStore.student_armor ?? student_armor.value;

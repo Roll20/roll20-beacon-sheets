@@ -1,6 +1,28 @@
 <script setup>
 import { useSheetStore } from '@/stores/sheetStore';
 const sheet = useSheetStore();
+
+// Method to toggle between three image states
+const cycleBlipState = (index) => {
+  const currentBlip = sheet.eclipse_blips[index];
+  // Cycle between three states (0, 1, 2) representing three different images
+  sheet.eclipse_blips[index] = (currentBlip + 1) % 3;
+};
+
+const getBlipImage = (index) => {
+  const blipState = sheet.eclipse_blips[index]; // Access the current state of the blip
+  switch (blipState) {
+    case 0:
+      return '--blipImage'; // Reference the blip image CSS variable
+    case 1:
+      return '--blipXImage'; // Reference the X image CSS variable
+    case 2:
+      return '--blipScratchedImage'; // Reference the scratched image CSS variable
+    default:
+      return '--blipImage'; // Default image (fallback)
+  }
+};
+
 </script>
 
 <template>
@@ -10,8 +32,21 @@ const sheet = useSheetStore();
     <input type="checkbox" :class="`moon moon-${num}`" v-for="num in [1,2,3,4,5,6,7,8]" v-model="sheet.eclipse" :true-value="num" :false-value="0" :key="`eclipse-${num}`">
   </div>
   <div class="eclipse-grid">
-    <input type="checkbox" :class="`blip blip-${num}`" v-for="num in [1,2,3,4,5,6,7,8]" v-model="sheet.eclipse_blips" :true-value="num" :false-value="0" :key="`eclipse-blip-${num}`">
-  </div>
+      <!-- Click on blips to cycle between images -->
+      <input
+        type="checkbox"
+        :class="`blip blip-${num}`"
+        v-for="num in [1,2,3,4,5,6,7,8]"
+        @click="cycleBlipState(num)"
+        :key="`eclipse-blip-${num}`"
+        :style="{
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundImage: `var(${getBlipImage(num)})`
+        }"
+      />
+    </div>
 </div>
 </template>
 
@@ -107,7 +142,7 @@ const sheet = useSheetStore();
   @for $num from 0 to $circleNum{
     &:nth-of-type(#{$num + 1}){
       --_degrees: calc((#{$num} * 360deg / #{$circleNum}) - 45deg);
-      --_phaseRef: var(--blipScratchedImage);
+      --_phaseRef: var(${getBlipImage(num)});
     }
   }
 }
