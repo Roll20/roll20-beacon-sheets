@@ -46,7 +46,8 @@ const knightAttributes = [
     image: 'magi-knight-damage',
     crown: true,
     text: 'Damage',
-    readonly: false
+    readonly: false,
+    click: () => sheet.rollKnightDamage()
   }
 ];
 // Elements with enhancements and resist proficiencies

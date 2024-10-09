@@ -17,29 +17,31 @@ const studentAttributes = [
     name: 'student_armor',
     image: 'student-shield',
     crown: false,
-    text: 'armor',
+    text: 'Armor',
     readonly: false
   },
   {
     name: 'student_move',
     image: 'move',
     crown: false,
-    text: 'move',
+    text: 'Move',
     readonly: false
   },
   {
     name: 'student_attack',
     image: 'attack',
     crown: false,
-    text: 'attack',
-    readonly: false
+    text: 'Attack',
+    readonly: false,
+    click: () => sheet.rollStudentAttack()
   },
   {
     name: 'student_damage',
     image: 'student-damage',
     crown: false,
-    text: 'damage',
-    readonly: false
+    text: 'Damage',
+    readonly: false,
+    click: () => sheet.rollStudentDamage()
   }
 ];
 </script>

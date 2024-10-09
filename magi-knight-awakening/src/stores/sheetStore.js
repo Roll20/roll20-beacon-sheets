@@ -221,6 +221,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const knight_armor = ref(0);
   const knight_hasShield = ref(false);
   const knight_move = ref('');
+
   const knight_attack_override = ref('');
   const knight_attack = computed({
     get() {
@@ -242,6 +243,7 @@ export const useSheetStore = defineStore('sheet',() => {
       }
     }
   });
+
   const armor_weave = {
     name: ref(''),
     description: ref(''),
@@ -804,7 +806,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const rollKnightAttack = (name) => {
     const rollObj = {
-      title: 'Attack',
+      title: 'Attack Roll',
       subtitle: 'Magi-Knight Form',
       characterName: metaStore.name,
       components: [
@@ -817,16 +819,134 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const rollStudentAttack = (name) => {
     const rollObj = {
-      title: 'Student Attack',
-      subtitle: 'Ability Check',
+      title: 'Attack Roll',
+      subtitle: 'Student Form',
       characterName: metaStore.name,
       components: [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-        {label:'value', value:2,alwaysShowInBreakdown: true},
+        {label:'value', value:Number(student_attack.value),alwaysShowInBreakdown: true},
       ]
     };
     rollToChat({rollObj});
   };
+
+  const rollStudentDamage = async (notation) => {
+    let notationString = String(student_damage.value || notation);
+    
+    // Parsing the dice notation, e.g., "1d20+2"
+    const regex = /(?:(\d*)d(\d+))([+-]?\d+)?/;
+    const match = notationString.match(regex);
+  
+    if (!match) {
+      return;
+    }
+  
+    const diceCount = match[1] ? parseInt(match[1], 10) : 1; // default to 1 if not specified
+    const diceSides = parseInt(match[2], 10);
+    const modifier = match[3] ? parseInt(match[3], 10) : 0; // default to 0 if not specified
+  
+    // Roll each die individually and calculate the total
+    let rollTotal = 0;
+    const individualRolls = [];
+    for (let i = 0; i < diceCount; i++) {
+      const roll = Math.floor(Math.random() * diceSides) + 1;
+      individualRolls.push(roll);
+      rollTotal += roll;
+    }
+  
+    // Create components for the roll breakdown
+    const components = [
+      {
+        label: `${diceCount}d${diceSides} ` + individualRolls.join(' + '), // Show each roll in the breakdown
+        value: rollTotal, // Total of the dice rolls
+        alwaysShowInBreakdown: true,
+      },
+    ];
+
+    // Add modifier to total
+    rollTotal += modifier;
+  
+    // Adding modifier to components if it exists
+    if (modifier !== 0) {
+      components.push({
+        label: "Modifier",
+        value: modifier,
+        alwaysShowInBreakdown: true,
+      });
+    }
+  
+    // Format the roll for chat
+    const rollObj = {
+      title: 'Damage Roll',
+      subtitle: 'Student Form',
+      characterName: metaStore.name,
+      components: components,
+      total: Number(rollTotal),
+    };
+  
+    rollToChat({ rollObj });
+  
+    return rollTotal;
+  }; 
+
+  const rollKnightDamage = async (notation) => {
+    let notationString = String(knight_damage.value || notation);
+    
+    // Parsing the dice notation, e.g., "1d20+2"
+    const regex = /(?:(\d*)d(\d+))([+-]?\d+)?/;
+    const match = notationString.match(regex);
+  
+    if (!match) {
+      return;
+    }
+  
+    const diceCount = match[1] ? parseInt(match[1], 10) : 1; // default to 1 if not specified
+    const diceSides = parseInt(match[2], 10);
+    const modifier = match[3] ? parseInt(match[3], 10) : 0; // default to 0 if not specified
+  
+    // Roll each die individually and calculate the total
+    let rollTotal = 0;
+    const individualRolls = [];
+    for (let i = 0; i < diceCount; i++) {
+      const roll = Math.floor(Math.random() * diceSides) + 1;
+      individualRolls.push(roll);
+      rollTotal += roll;
+    }
+  
+    // Create components for the roll breakdown
+    const components = [
+      {
+        label: `${diceCount}d${diceSides} ` + individualRolls.join(' + '), // Show each roll in the breakdown
+        value: rollTotal, // Total of the dice rolls
+        alwaysShowInBreakdown: true,
+      },
+    ];
+  
+        // Add modifier to total
+        rollTotal += modifier;
+
+    // Adding modifier to components if it exists
+    if (modifier !== 0) {
+      components.push({
+        label: "Modifier",
+        value: modifier,
+        alwaysShowInBreakdown: true,
+      });
+    }
+  
+    // Format the roll for chat
+    const rollObj = {
+      title: 'Damage Roll',
+      subtitle: 'Magi-Knight Form',
+      characterName: metaStore.name,
+      components: components,
+      total: Number(rollTotal),
+    };
+  
+    rollToChat({ rollObj });
+  
+    return rollTotal;
+  }; 
 
   return {
     sheet_mode,
@@ -903,6 +1023,9 @@ export const useSheetStore = defineStore('sheet',() => {
     rollSpell,
     rollKnightAttack,
     rollStudentAttack,
+    rollStudentDamage,
+    rollKnightDamage,
+
 
     dehydrate,
     hydrate
