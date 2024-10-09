@@ -217,13 +217,30 @@ export const useSheetStore = defineStore('sheet',() => {
   }
   // magi-knight stats
   
-  const knight_damage = ref(0);
+  const knight_damage = ref('');
   const knight_armor = ref(0);
   const knight_hasShield = ref(false);
-  const knight_move = ref(0);
-  const knight_attack = computed(() => {
-    const abMod = abilityScores[mam.value]?.mod.value || 0;
-    return proficiency.value + abMod;
+  const knight_move = ref('');
+  const knight_attack_override = ref('');
+  const knight_attack = computed({
+    get() {
+      // If the override is empty, return the calculated value
+      if (knight_attack_override.value === '') {
+        const abMod = abilityScores[mam.value]?.mod.value || 0;
+        return proficiency.value + abMod;
+      }
+      // If override is set, return the override value
+      return knight_attack_override.value;
+    },
+    set(value) {
+      // If the value is set to '', clear the override (will use the calculated value)
+      if (value === '') {
+        knight_attack_override.value = ''; // Reset override
+      } else {
+        // Set the override value to the custom value
+        knight_attack_override.value = value;
+      }
+    }
   });
   const armor_weave = {
     name: ref(''),
@@ -785,6 +802,32 @@ export const useSheetStore = defineStore('sheet',() => {
     rollToChat({rollObj});
   };
 
+  const rollKnightAttack = (name) => {
+    const rollObj = {
+      title: 'Attack',
+      subtitle: 'Magi-Knight Form',
+      characterName: metaStore.name,
+      components: [
+        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label:'Value', value:Number(knight_attack.value),alwaysShowInBreakdown: true}
+      ]
+    };
+    rollToChat({rollObj});
+  };
+
+  const rollStudentAttack = (name) => {
+    const rollObj = {
+      title: 'Student Attack',
+      subtitle: 'Ability Check',
+      characterName: metaStore.name,
+      components: [
+        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label:'value', value:2,alwaysShowInBreakdown: true},
+      ]
+    };
+    rollToChat({rollObj});
+  };
+
   return {
     sheet_mode,
     level,
@@ -858,6 +901,8 @@ export const useSheetStore = defineStore('sheet',() => {
     rollSkill,
     rollWeapon,
     rollSpell,
+    rollKnightAttack,
+    rollStudentAttack,
 
     dehydrate,
     hydrate

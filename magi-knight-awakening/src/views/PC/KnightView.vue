@@ -23,28 +23,29 @@ const knightAttributes = [
     name: 'knight_armor',
     image: 'magi-knight-shield',
     crown: true,
-    text: 'armor',
+    text: 'Armor',
     readonly: false
   },
   {
     name: 'knight_move',
     image: 'move',
     crown: false,
-    text: 'move',
+    text: 'Move',
     readonly: false
   },
   {
     name: 'knight_attack',
     image: 'attack',
     crown: false,
-    text: 'attack',
-    readonly: false
+    text: 'Attack',
+    readonly: false,
+    click: () => sheet.rollKnightAttack()
   },
   {
     name: 'knight_damage',
     image: 'magi-knight-damage',
     crown: true,
-    text: 'damage',
+    text: 'Damage',
     readonly: false
   }
 ];

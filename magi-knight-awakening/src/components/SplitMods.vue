@@ -35,13 +35,20 @@
 
 <template>
   <div class="split-display">
-    <ImageBackedLabel :button="obj.button" v-for="obj in attributes" :key="obj.name" v-bind="obj">
+    <ImageBackedLabel v-for="obj in attributes" :key="obj.name" v-bind="obj">
       <template v-slot:value>
-        <span v-if="obj.readonly"> {{ sheet[obj.name] }}</span>
+        <span v-if="obj.readonly">{{ sheet[obj.name] }}</span>
         <input v-else v-model="sheet[obj.name]">
       </template>
       <template v-slot:text>
-        <button style="z-index: 100;" v-if="obj.button" @click="$emit('clicked',obj.name)">{{ obj.text }}</button>
+        <!-- Trigger the click event if a click handler is provided -->
+        <button
+          style="z-index: 100;"
+          v-if="obj.click"
+          @click="obj.click"
+        >
+          {{ obj.text }}
+        </button>
         <span v-else>{{ obj.text }}</span>
       </template>
     </ImageBackedLabel>
