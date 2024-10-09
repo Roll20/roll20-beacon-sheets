@@ -30,6 +30,18 @@ html{
   --crownImage: url('./crown.png');
   --swordImage: url('./sword.png');
   --abilityImage: url('./ability-circle.png');
+  --diamondImage: url('./diamond.png');
+  --starImage: url('./star.png');
+  --studentShieldImage: url('./student-shield.png');
+  --moveImage: url('./move.png');
+  --studiedImage: url('./studied.png');
+  --restedImage: url('./rested.png');
+  --attackImage: url('./attack.png');
+  --studentDamageImage: url('./student-damage.png');
+  --magiKnightDamageImage: url('./magi-knight-damage.png');
+  --bottleImage: url('./bottle.png');
+  --magiKnightShieldImage: url('./magi-knight-shield.png');
+  --crystalImage: url('./crystal.png');
 
   --moon1Image:url('./moon1.png');
   --moon2Image:url('./moon2.png');

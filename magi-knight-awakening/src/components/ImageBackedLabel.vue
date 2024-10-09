@@ -35,7 +35,7 @@
 
 <style>
 .image-label{
-  --_containerSize: 50px;
+  --_containerSize: 70px;
   display: inline-flex;
   gap: var(--tiny-gap);
 }
@@ -45,8 +45,6 @@
   place-items: center;
   width:var(--_containerSize);
   height: var(--_containerSize);
-  border-radius: 100%;
-  border: 2px solid var(--borderColor);
   grid-template-areas: 'content';
 }
 .image-container > * {
@@ -63,37 +61,22 @@
   background-image: var(--crownImage);
   grid-area: content;
 }
-.star:before{
-  --_starWeight: 200;
-  grid-area: content;
-  z-index: -1;
-  content: 'star';
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 100px;  /* Preferred icon size */
-  display: inline-block;
-  line-height: 1;
-  text-transform: none;
-  letter-spacing: normal;
-  word-wrap: normal;
-  white-space: nowrap;
-  direction: ltr;
-  color: var(--borderColor);
-  position: absolute;
-  font-variation-settings:
-    'FILL' 0,
-    'wght' var(--_starWeight);
-}
-.dark .star:before{
-  font-variation-settings:
-    'FILL' 1,
-    'wght' var(--_starWeight);
-}
 .image-label input{
   width: 100%;
   background-color: transparent;
   border: none;
   text-align: center;
+}
+.star{
+  background-image: var(--starImage);
+  background-size: 110%;
+  background-position: right -5px top -1px;
+  background-repeat: no-repeat;
+}
+.diamond{
+  background-image: var(--diamondImage);
+  background-size: 110%;
+  background-position: right -5px top -1px;
+  background-repeat: no-repeat;
 }
 </style>

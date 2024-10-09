@@ -21,14 +21,14 @@ const attributes = [
   },
   {
     name: 'stress',
-    image: 'star',
+    image: 'diamond',
     crown: false,
     text: 'Stress',
     readonly: false
   },
   {
     name: 'exhaustion',
-    image: 'star',
+    image: 'diamond',
     crown: false,
     text: 'Exhaustion',
     readonly: false
