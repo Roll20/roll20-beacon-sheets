@@ -609,18 +609,30 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const rollSkill = (name) => {
     const abilityName = skills[name].ability.value;
-    const rollObj = {
-      title: name.replace(/_/g,' '),
-      characterName: metaStore.name,
-      components: [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-        {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true}
-      ]
-    };
-    if(skills[name].proficiency){
-      rollObj.components.push({label: 'Prof',value: proficiency.value,alwaysShowInBreakdown: true});
+    if (skills[name].overrideValue !== '' && skills[name].overrideValue !== undefined){
+      const rollObj = {
+        title: name.replace(/_/g,' '),
+        characterName: metaStore.name,
+        components: [
+          {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+          {label:'Skill Value Override', value:Number(skills[name].overrideValue),alwaysShowInBreakdown: true}
+        ]
+      };
+      rollToChat({rollObj});
+    }else{
+      const rollObj = {
+        title: name.replace(/_/g,' '),
+        characterName: metaStore.name,
+        components: [
+          {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+          {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true}
+        ]
+      };
+      if(skills[name].proficiency.value){
+        rollObj.components.push({label: 'Prof',value: proficiency.value,alwaysShowInBreakdown: true});
+      }
+      rollToChat({rollObj});
     }
-    rollToChat({rollObj});
   };
 
   const rollWeapon = async (item,tier) => {

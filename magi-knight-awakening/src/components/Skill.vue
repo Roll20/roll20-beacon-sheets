@@ -23,7 +23,7 @@ const abilityAbbreviations = {
 // Function to handle clearing input and resetting to default value
 const resetToDefault = () => {
   if (skillObj.overrideValue === '' || skillObj.overrideValue === null) {
-    skillObj.overrideValue = null;
+    skillObj.overrideValue = '';
   }
 };
 
