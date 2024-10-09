@@ -63,6 +63,7 @@ html{
   --blipImage:url('./eclipse-blip.png');
   --blipXImage:url('./eclipse-blip-x.png');
   --blipScratchedImage:url('./eclipse-blip-scratched.png');
+  --blipCheckedImage:url('./eclipse-blip-checked.png');
 }
 html.dark{
   --masterBack: var(--dm-masterBack);

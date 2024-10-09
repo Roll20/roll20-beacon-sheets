@@ -38,7 +38,7 @@
     <ImageBackedLabel :button="obj.button" v-for="obj in attributes" :key="obj.name" v-bind="obj">
       <template v-slot:value>
         <span v-if="obj.readonly"> {{ sheet[obj.name] }}</span>
-        <input v-else type="number" v-model="sheet[obj.name]">
+        <input v-else v-model="sheet[obj.name]">
       </template>
       <template v-slot:text>
         <button style="z-index: 100;" v-if="obj.button" @click="$emit('clicked',obj.name)">{{ obj.text }}</button>

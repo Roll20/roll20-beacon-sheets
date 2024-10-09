@@ -130,8 +130,16 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 </script>
 
 <template>
-<div class="knight-view">
-
+  <div class="knight-view">
+    <div class="invisible-div">
+      <input
+        type="checkbox"
+        id="customCheckbox"
+        class="floating-checkbox"
+        v-model="sheet.knight_hasShield"
+      />
+      <label for="customCheckbox"></label>
+    </div>
   <SplitMods :attributes="knightAttributes" class="knight-split">
     <template v-slot:content>
       <ImageBackedLabel v-for="attr in ['Spell Attack']" :key="`${attr}-image-label`" image="bottle-left">
@@ -368,6 +376,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 
 <style lang="scss">
 .knight-view {
+  position: relative;
   display: grid;
   gap: var(--half-gap);
   grid-auto-flow: dense;
@@ -431,4 +440,48 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   .elemental_label {
     font-weight: bold;
   }
+
+/* Invisible div */
+.invisible-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100px;
+  z-index: 9999;
+}
+
+/* Hide the default checkbox appearance */
+.floating-checkbox {
+  position: absolute;
+  opacity: 1; /* Hide the default checkbox */
+  z-index: 9999;
+}
+
+/* Custom checkbox label */
+.floating-checkbox + label {
+  display: inline-block;
+  width: 27px;  /* Set appropriate width */
+  height: 27px;  /* Set appropriate height */
+  background-color: transparent; /* No background initially */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  cursor: pointer;
+  transform: translate(325%, 155%);
+  z-index: 9999;
+}
+
+/* Unchecked state (no image) */
+.floating-checkbox + label {
+  background-image: none; /* Unchecked image */
+  z-index: 9998;
+}
+
+/* Checked state (image displayed) */
+.floating-checkbox:checked + label {
+  background-image: var(--blipCheckedImage); /* Checked image */
+  z-index: 9998;
+}
+
 </style>

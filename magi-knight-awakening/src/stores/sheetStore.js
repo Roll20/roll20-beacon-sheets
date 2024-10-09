@@ -219,6 +219,7 @@ export const useSheetStore = defineStore('sheet',() => {
   
   const knight_damage = ref(0);
   const knight_armor = ref(0);
+  const knight_hasShield = ref(false);
   const knight_move = ref(0);
   const knight_attack = computed(() => {
     const abMod = abilityScores[mam.value]?.mod.value || 0;
@@ -474,6 +475,7 @@ export const useSheetStore = defineStore('sheet',() => {
       student_attack: student_attack.value,
       knight_damage: knight_damage.value,
       knight_armor: knight_armor.value,
+      knight_hasShield: knight_hasShield.value,
       knight_move: knight_move.value,
       knight_attack: knight_attack.value,
 
@@ -551,6 +553,7 @@ export const useSheetStore = defineStore('sheet',() => {
     student_attack.value = hydrateStore.student_attack ?? student_attack.value;
     knight_damage.value = hydrateStore.knight_damage ?? knight_damage.value;
     knight_armor.value = hydrateStore.knight_armor ?? knight_armor.value;
+    knight_hasShield.value = hydrateStore.knight_hasShield ?? knight_hasShield.value;
     knight_move.value = hydrateStore.knight_move ?? knight_move.value;
     knight_attack.value = hydrateStore.knight_attack ?? knight_attack.value;
 
@@ -833,6 +836,7 @@ export const useSheetStore = defineStore('sheet',() => {
     student_attack,
     knight_damage,
     knight_armor,
+    knight_hasShield,
     knight_move,
     knight_attack,
     elemental_affinity,

@@ -54,7 +54,7 @@ const studentAttributes = [
             <input type="checkbox" v-model="sheet.studied" class="rest-check">
           </template>
           <template v-slot:text>
-            studied
+            Studied
           </template>
         </ImageBackedLabel>
         <ImageBackedLabel image="apple">
@@ -62,7 +62,7 @@ const studentAttributes = [
             <input type="checkbox" v-model="sheet.rested" class="rest-check">
           </template>
           <template v-slot:text>
-            Well Fed / Rested
+            Fed/Rested
           </template>
         </ImageBackedLabel>
       </template>
