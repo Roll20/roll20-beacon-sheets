@@ -21,28 +21,28 @@ const sheet = useSheetStore();
 const knightAttributes = [
   {
     name: 'knight_armor',
-    image: 'shield',
+    image: 'magi-knight-shield',
     crown: true,
     text: 'armor',
     readonly: false
   },
   {
     name: 'knight_move',
-    image: 'complex-hex',
+    image: 'move',
     crown: false,
     text: 'move',
     readonly: false
   },
   {
     name: 'knight_attack',
-    image: 'target',
+    image: 'attack',
     crown: false,
     text: 'attack',
     readonly: false
   },
   {
     name: 'knight_damage',
-    image: 'thorns',
+    image: 'magi-knight-damage',
     crown: true,
     text: 'damage',
     readonly: false
@@ -134,7 +134,15 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 
   <SplitMods :attributes="knightAttributes" class="knight-split">
     <template v-slot:content>
-      <ImageBackedLabel v-for="attr in ['Spell Attack','Spell DC']" :key="`${attr}-image-label`" image="bottle">
+      <ImageBackedLabel v-for="attr in ['Spell Attack']" :key="`${attr}-image-label`" image="bottle-left">
+        <template v-slot:value>
+          <span>{{ sheet[attr.replace(/\s+/g,'_').toLowerCase()] }}</span>
+        </template>
+        <template v-slot:text>
+          <span>{{ attr }}</span>
+        </template>
+      </ImageBackedLabel>
+      <ImageBackedLabel v-for="attr in ['Spell DC']" :key="`${attr}-image-label`" image="bottle-right">
         <template v-slot:value>
           <span>{{ sheet[attr.replace(/\s+/g,'_').toLowerCase()] }}</span>
         </template>

@@ -15,28 +15,28 @@ const sheet = useSheetStore();
 const studentAttributes = [
   {
     name: 'student_armor',
-    image: 'shield',
+    image: 'student-shield',
     crown: false,
     text: 'armor',
     readonly: false
   },
   {
     name: 'student_move',
-    image: 'complex-hex',
+    image: 'move',
     crown: false,
     text: 'move',
     readonly: false
   },
   {
     name: 'student_attack',
-    image: 'target',
+    image: 'attack',
     crown: false,
     text: 'attack',
     readonly: false
   },
   {
     name: 'student_damage',
-    image: 'explosion',
+    image: 'student-damage',
     crown: false,
     text: 'damage',
     readonly: false
@@ -49,7 +49,7 @@ const studentAttributes = [
 
     <SplitMods :attributes="studentAttributes" class="student-split">
       <template v-slot:content>
-        <ImageBackedLabel image="cap">
+        <ImageBackedLabel image="studied">
           <template v-slot:value>
             <input type="checkbox" v-model="sheet.studied" class="rest-check">
           </template>

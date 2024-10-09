@@ -79,4 +79,93 @@
   background-position: right -5px top -1px;
   background-repeat: no-repeat;
 }
+.apple{
+  background-image: var(--appleImage);
+  background-size: 110%;
+  background-position: right -5px top -1px;
+  background-repeat: no-repeat;
+}
+.studied{
+  background-image: var(--studiedImage);
+  background-size: 100%;
+  width: 110px;
+  background-position: right 5px top -3px;
+  background-repeat: no-repeat;
+}
+.move{
+  background-image: var(--moveImage);
+  background-size: 110%;
+  background-position: right -5px top -1px;
+  background-repeat: no-repeat;
+}
+.student-shield{
+  background-image: var(--studentShieldImage);
+  background-size: 100%;
+  background-position: right 0px top -5px;
+  background-repeat: no-repeat;
+}
+.magi-knight-shield{
+  background-image: var(--magiKnightShieldImage);
+  background-size: 100%;
+  background-position: right -2px top -3px;
+  background-repeat: no-repeat;
+}
+.attack{
+  background-image: var(--attackImage);
+  background-size: 120%;
+  background-position: right -7px top -5px;
+  background-repeat: no-repeat;
+}
+.student-damage{
+  background-image: var(--studentDamageImage);
+  background-size: 145%;
+  background-position: right -20px top -3px;
+  background-repeat: no-repeat;
+}
+.magi-knight-damage{
+  background-image: var(--magiKnightDamageImage);
+  background-size: 107%;
+  background-position: right -2px top -3px;
+  background-repeat: no-repeat;
+}
+.bottle-left {
+  position: relative;  /* Make the parent element a positioning context */
+}
+
+.bottle-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--bottleImage);
+  background-size: 80%;
+  background-position: right 5px top 2px;
+  background-repeat: no-repeat;
+  transform: flip;
+  transform: rotate(340deg); /* Rotate the background image */
+  z-index: -1; /* Make sure the pseudo-element is behind the content */
+}
+.bottle-right {
+  position: relative;  /* Make the parent element a positioning context */
+}
+
+.bottle-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--bottleImage);
+  background-size: 80%;
+  background-position: right 5px top 2px;
+  background-repeat: no-repeat;
+  transform: flip;
+  transform: rotate(20deg); /* Rotate the background image */
+  z-index: -1; /* Make sure the pseudo-element is behind the content */
+}
+
+
 </style>
