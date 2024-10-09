@@ -24,11 +24,18 @@
       </div>
     </template>
     <template v-slot:label>
-      <NotchContainer class="image-text-container" width="thin" :notch="5">
-        <span>
-          <slot name="text"></slot>
-        </span>
-      </NotchContainer>
+      <!-- Make the label a button -->
+      <button
+        @click="button && obj.click ? obj.click : null"
+        class="image-text-button"
+        :disabled="!button"
+      >
+        <NotchContainer class="image-text-container" width="thin" :notch="5">
+          <span>
+            <slot name="text"></slot>
+          </span>
+        </NotchContainer>
+      </button>
     </template>
   </LabelStacked>
 </template>
