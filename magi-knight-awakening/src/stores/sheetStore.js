@@ -87,7 +87,7 @@ export const useSheetStore = defineStore('sheet',() => {
     5: 6
   };
 
-  const customProficiency = ref(0);
+  const customProficiency = ref('');
   const proficiency = ref(calculateProficiency());
 
   function calculateProficiency() {

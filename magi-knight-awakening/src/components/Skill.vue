@@ -20,6 +20,13 @@ const abilityAbbreviations = {
   charisma: 'cha'
 }
 
+// Function to handle clearing input and resetting to default value
+const resetToDefault = () => {
+  if (skillObj.overrideValue === '' || skillObj.overrideValue === null) {
+    skillObj.overrideValue = null;
+  }
+};
+
 </script>
 
 <template>
@@ -27,7 +34,13 @@ const abilityAbbreviations = {
     <select :name="`${skillRef}_ability`" v-model="skillObj.ability">
       <option v-for="ability in skillObj.abilitiesList" :key="ability.id" :value="ability">{{ abilityAbbreviations[ability] }}</option>
     </select>
-    <span class="skill-value">{{ skills[`${skillRef}`].value }}</span>
+    <input
+      type="number"
+      class="skill-value"
+      v-model="skillObj.overrideValue"
+      :placeholder="skillObj.value"
+      @blur="resetToDefault"
+    />
     <input type="checkbox" :name="`${skillRef}_proficiency`" value="1" v-model="skillObj.proficiency">
     <button @click="sheet.rollSkill(skillRef)" class="skill-name">{{ skillName }}</button>
   </div>
