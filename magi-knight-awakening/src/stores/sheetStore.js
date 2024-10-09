@@ -161,8 +161,49 @@ export const useSheetStore = defineStore('sheet',() => {
   const elemental_enhancement_2 = ref('');
   const roll_resist_proficiency = ref('');
 
-  const spell_attack = computed(()=> proficiency.value + (abilityScores[mam]?.mod.value || 0));
-  const spell_dc = computed(() => 8 + spell_attack.value);
+  const spell_attack_override = ref('');
+  const spell_attack = computed({
+    get() {
+      // If the override is empty, return the calculated value
+      if (spell_attack_override.value === '') {
+        return proficiency.value + (abilityScores[mam]?.mod.value || 0);
+      }
+      // If override is set, return the override value
+      return spell_attack_override.value;
+    },
+    set(value) {
+      // If the value is set to '', clear the override (will use the calculated value)
+      if (value === '') {
+        spell_attack_override.value = ''; // Reset override
+      } else {
+        // Set the override value to the custom value
+        spell_attack_override.value = value;
+      }
+    }
+  });
+
+  
+  const spell_dc_override = ref('');
+  const spell_dc = computed({
+    get() {
+      // If the override is empty, return the calculated value
+      if (spell_dc_override.value === '') {
+        return 8 + spell_attack.value;
+      }
+      // If override is set, return the override value
+      return spell_dc_override.value;
+    },
+    set(value) {
+      // If the value is set to '', clear the override (will use the calculated value)
+      if (value === '') {
+        spell_dc_override.value = ''; // Reset override
+      } else {
+        // Set the override value to the custom value
+        spell_dc_override.value = value;
+      }
+    }
+  });
+
   const eclipse = ref([0,0,0,0,0,0,0,0]);
   const eclipse_blips = ref([0,0,0,0,0,0,0,0]);
   const eclipse_phase = computed(() => {
@@ -497,6 +538,9 @@ export const useSheetStore = defineStore('sheet',() => {
       knight_hasShield: knight_hasShield.value,
       knight_move: knight_move.value,
       knight_attack: knight_attack.value,
+      knight_attack_override: knight_attack_override.value,
+      spell_attack_override: spell_attack_override.value,
+      spell_dc_override: spell_dc_override.value,
 
       interests: interests.value,
       virtues: virtues.value,
@@ -575,6 +619,9 @@ export const useSheetStore = defineStore('sheet',() => {
     knight_hasShield.value = hydrateStore.knight_hasShield ?? knight_hasShield.value;
     knight_move.value = hydrateStore.knight_move ?? knight_move.value;
     knight_attack.value = hydrateStore.knight_attack ?? knight_attack.value;
+    knight_attack_override.value = hydrateStore.knight_attack_override ?? knight_attack_override.value;
+    spell_attack_override.value = hydrateStore.spell_attack_override ?? spell_attack_override.value;
+    spell_dc_override.value = hydrateStore.spell_dc_override ?? spell_dc_override.value;
 
     interests.value = hydrateStore.interests ?? interests.value;
     virtues.value = hydrateStore.virtues ?? virtues.value;
@@ -1002,6 +1049,9 @@ export const useSheetStore = defineStore('sheet',() => {
     knight_hasShield,
     knight_move,
     knight_attack,
+    knight_attack_override,
+    spell_attack_override,
+    spell_dc_override,
     elemental_affinity,
     magic_style,
     element_name,

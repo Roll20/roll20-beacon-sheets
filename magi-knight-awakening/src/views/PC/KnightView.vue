@@ -20,17 +20,10 @@ import { useSheetStore } from '@/stores/sheetStore';
 const sheet = useSheetStore();
 const knightAttributes = [
   {
-    name: 'knight_armor',
-    image: 'magi-knight-shield',
+    name: 'spell_dc',
+    image: 'bottle-right',
     crown: true,
-    text: 'Armor',
-    readonly: false
-  },
-  {
-    name: 'knight_move',
-    image: 'move',
-    crown: false,
-    text: 'Move',
+    text: 'Spell DC',
     readonly: false
   },
   {
@@ -42,13 +35,34 @@ const knightAttributes = [
     click: () => sheet.rollKnightAttack()
   },
   {
+    name: 'knight_armor',
+    image: 'magi-knight-shield',
+    crown: true,
+    text: 'Armor',
+    readonly: false
+  },
+  {
     name: 'knight_damage',
     image: 'magi-knight-damage',
     crown: true,
     text: 'Damage',
     readonly: false,
     click: () => sheet.rollKnightDamage()
-  }
+  },
+  {
+    name: 'spell_attack',
+    image: 'bottle-left',
+    crown: true,
+    text: 'Spell Attack',
+    readonly: false
+  },
+  {
+    name: 'knight_move',
+    image: 'move',
+    crown: false,
+    text: 'Move',
+    readonly: false
+  },
 ];
 // Elements with enhancements and resist proficiencies
 const elements = [
@@ -142,26 +156,8 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
       />
       <label for="customCheckbox"></label>
     </div>
-  <SplitMods :attributes="knightAttributes" class="knight-split">
-    <template v-slot:content>
-      <ImageBackedLabel v-for="attr in ['Spell Attack']" :key="`${attr}-image-label`" image="bottle-left">
-        <template v-slot:value>
-          <span>{{ sheet[attr.replace(/\s+/g,'_').toLowerCase()] }}</span>
-        </template>
-        <template v-slot:text>
-          <span>{{ attr }}</span>
-        </template>
-      </ImageBackedLabel>
-      <ImageBackedLabel v-for="attr in ['Spell DC']" :key="`${attr}-image-label`" image="bottle-right">
-        <template v-slot:value>
-          <span>{{ sheet[attr.replace(/\s+/g,'_').toLowerCase()] }}</span>
-        </template>
-        <template v-slot:text>
-          <span>{{ attr }}</span>
-        </template>
-      </ImageBackedLabel>
-    </template>
-  </SplitMods>
+  <SplitMods :attributes="knightAttributes" class="knight-split"/>
+
   <NotchContainer class="armor-weave-container basic-item" width="thick" notchType="curve">
     <h4>Soul Armor Weave</h4>
     <Collapsible class="basic-item" :default="sheet.armor_weave.collapsed" @collapse="sheet.armor_weave.collapsed = !sheet.armor_weave.collapsed">

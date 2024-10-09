@@ -24,18 +24,11 @@
       </div>
     </template>
     <template v-slot:label>
-      <!-- Make the label a button -->
-      <button
-        @click="button && obj.click ? obj.click : null"
-        class="image-text-button"
-        :disabled="!button"
-      >
-        <NotchContainer class="image-text-container" width="thin" :notch="5">
-          <span>
-            <slot name="text"></slot>
-          </span>
-        </NotchContainer>
-      </button>
+      <NotchContainer class="image-text-container" width="thin" :notch="5">
+        <span>
+          <slot name="text"></slot>
+        </span>
+      </NotchContainer>
     </template>
   </LabelStacked>
 </template>
@@ -148,7 +141,7 @@
   bottom: 0;
   background-image: var(--bottleImage);
   background-size: 80%;
-  background-position: right 5px top 2px;
+  background-position: right 8px top -2px;
   background-repeat: no-repeat;
   transform: flip;
   transform: rotate(340deg); /* Rotate the background image */
@@ -167,7 +160,7 @@
   bottom: 0;
   background-image: var(--bottleImage);
   background-size: 80%;
-  background-position: right 5px top 2px;
+  background-position: right 5px top 0px;
   background-repeat: no-repeat;
   transform: flip;
   transform: rotate(20deg); /* Rotate the background image */
