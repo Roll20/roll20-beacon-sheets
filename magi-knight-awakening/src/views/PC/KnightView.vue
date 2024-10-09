@@ -447,8 +447,8 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   position: absolute;
   top: 0;
   left: 0;
-  width: 200px;
-  height: 100px;
+  width: 1px;
+  height: 1%;
   z-index: 9999;
 }
 

@@ -99,4 +99,8 @@
     }
   }
 }
+button:disabled {
+  color: black;  // Override the disabled button text color to black
+  cursor: default;
+}
 </style>
