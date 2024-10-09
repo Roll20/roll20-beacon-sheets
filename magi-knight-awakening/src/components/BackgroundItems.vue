@@ -4,6 +4,8 @@ import { useSheetStore } from '@/stores/sheetStore';
 const sheet = useSheetStore();
 
 const backgroundItems = { 
+  player_links: 'Player Links',
+  quote: 'Quote',
   interests: 'Interests',
   virtues: 'Virtues',
   strengths: 'Strengths',

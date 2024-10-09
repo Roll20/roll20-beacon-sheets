@@ -14,7 +14,6 @@ import RepeatingSection from '@/components/RepeatingSection.vue';
 import RepeatingItem from '@/components/RepeatingItem.vue';
 import Collapsible from '@/components/Collapsible.vue';
 import SpellSection from '@/components/SpellSection.vue';
-import KnightViewBackgroundItems from '@/components/KnightViewBackgroundItems.vue';
 
 import { useSheetStore } from '@/stores/sheetStore';
 
@@ -49,7 +48,7 @@ const knightAttributes = [
     readonly: false
   }
 ];
-// Elements with enhancements
+// Elements with enhancements and resist proficiencies
 const elements = [
   {
     name: 'earth',
@@ -59,7 +58,8 @@ const elements = [
       { description: "+1 to Athletics and Medicine", attribute: "athleticsMedicine" },
       { description: "+1 Armor", attribute: "armor" },
       { description: "Reduce Armor by 1, Gain 10 Move (Select Additional Enhancement)", attribute: "armorMove" }
-    ]
+    ],
+    resistProficiency: ['Strength', 'Constitution']
   },
   {
     name: 'fire',
@@ -69,7 +69,8 @@ const elements = [
       { description: "+10 to Move", attribute: "move" },
       { description: "+1 to Athletics and Performance", attribute: "athleticsPerformance" },
       { description: "Gain +1 per Reputation Level to all weapon and spell damage", attribute: "repDamage" }
-    ]
+    ],
+    resistProficiency: ['Strength', 'Dexterity']
   },
   {
     name: 'air',
@@ -79,7 +80,8 @@ const elements = [
       { description: "+10 to Move", attribute: "move" },
       { description: "+1 Armor", attribute: "armor" },
       { description: "+1 to Athletics and Stealth", attribute: "athleticsStealth" }
-    ]
+    ],
+    resistProficiency: ['Dexterity', 'Constitution']
   },
   {
     name: 'water',
@@ -89,7 +91,8 @@ const elements = [
       { description: "+10 to Move", attribute: "move" },
       { description: "+1 Armor", attribute: "armor" },
       { description: "+1 to Coordination and Creativity", attribute: "coordinationCreativity" }
-    ]
+    ],
+    resistProficiency: ['Using your Magic Ability Modifier']
   },
   {
     name: 'void',
@@ -100,7 +103,8 @@ const elements = [
       { description: "+15 ft Move", attribute: "move" },
       { description: "+2 Armor", attribute: "armor" },
       { description: "+1 to Insight and Mysticism", attribute: "insightMysticism" }
-    ]
+    ],
+    resistProficiency: ['Using your Magic Ability Modifier']
   }
 ];
 
@@ -110,10 +114,17 @@ const availableEnhancements = computed(() => {
   return element ? element.enhancements : [];
 });
 
-// Watch for changes in elemental affinity and reset enhancements if invalid
+// Compute the available roll resist proficiency based on the selected element
+const availableResistProficiency = computed(() => {
+  const element = elements.find(el => el.name === sheet.elemental_affinity);
+  return element ? element.resistProficiency : [];
+});
+
+// Watch for changes in elemental affinity and reset enhancements and roll to resist proficiency
 watch(() => sheet.elemental_affinity, (newAffinity) => {
     sheet.elemental_enhancement_1 = '';
     sheet.elemental_enhancement_2 = '';
+    sheet.roll_resist_proficiency = '';
 });
 
 </script>
@@ -273,9 +284,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     </NotchContainer>
   </div>
   </div>
-  <div class="KnightViewBackgroundItems-view">
-    <KnightViewBackgroundItems />
-  </div>
+
   <NotchContainer>
       <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
       <LabelStacked>
@@ -286,7 +295,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           </select>
         </template>
         <template v-slot:label>
-          <span>Elemental Affinity</span>
+          <span class="elemental_label">Elemental Affinity</span>
         </template>
       </LabelStacked>
       <LabelStacked>
@@ -294,7 +303,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           <input type="text" class="underline element-name-underline" v-model="sheet.element_name">
         </template>
         <template v-slot:label>
-          <span>Element Name</span>
+          <span class="elemental_label">Element Name</span>
         </template>
       </LabelStacked>
       </div>
@@ -316,15 +325,22 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
         </select>
       </NotchContainer>
       </div>
+      <span class="elemental_label">Roll to Resist Proficiency</span>
+      <NotchContainer class=elemental_enhancements notch="5">
+                <select v-model="sheet.roll_resist_proficiency">
+                  <option selected value="">Select Roll to Resist Proficiency</option>
+                  <option v-for="proficiency in availableResistProficiency" :value="proficiency" :key="proficiency">{{ proficiency }}</option>
+                </select>
+              </NotchContainer>
   </NotchContainer>
   <NotchContainer>
     <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
       <LabelStacked>
         <template v-slot:number>
-          <input type="text" class="underline" v-model="sheet.magic_style">
+          <input type="text" class="underline element-name-underline" v-model="sheet.magic_style">
         </template>
         <template v-slot:label>
-          <span>Magic Style</span>
+          <span class="elemental_label">Magic Style</span>
         </template>
       </LabelStacked>
       <LabelStacked>
@@ -335,7 +351,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           </select>
         </template>
         <template v-slot:label>
-          <span>Magic Ability Modifier</span>
+          <span class="elemental_label">Magic Ability Modifier</span>
         </template>
       </LabelStacked>
       </div>
@@ -403,5 +419,8 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   }
   .element-name-underline{
     text-align: center;
+  }
+  .elemental_label {
+    font-weight: bold;
   }
 </style>

@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { ref, computed, toRaw } from 'vue';
+import { ref, computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
 import { arrayToObject, getRollResults, objectToArray, rollToChat } from '@/utility';
@@ -159,6 +159,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const mam = ref('');
   const elemental_enhancement_1 = ref('');
   const elemental_enhancement_2 = ref('');
+  const roll_resist_proficiency = ref('');
 
   const spell_attack = computed(()=> proficiency.value + (abilityScores[mam]?.mod.value || 0));
   const spell_dc = computed(() => 8 + spell_attack.value);
@@ -453,6 +454,7 @@ export const useSheetStore = defineStore('sheet',() => {
       mam: mam.value,
       elemental_enhancement_1: elemental_enhancement_1.value,
       elemental_enhancement_2: elemental_enhancement_2.value,
+      roll_resist_proficiency: roll_resist_proficiency.value,
       skills: dehydrateNested(skills),
       abilityScores: dehydrateNested(abilityScores),
       eclipse: [...eclipse.value],
@@ -568,6 +570,7 @@ export const useSheetStore = defineStore('sheet',() => {
     mam.value = hydrateStore.mam ?? mam.value;
     elemental_enhancement_1.value = hydrateStore.elemental_enhancement_1 ?? elemental_enhancement_1.value;
     elemental_enhancement_2.value = hydrateStore.elemental_enhancement_2 ?? elemental_enhancement_2.value;
+    roll_resist_proficiency.value = hydrateStore.roll_resist_proficiency ?? roll_resist_proficiency.value;
 
     hydrateEclipseBlipsArray(eclipse_blips.value, hydrateStore.eclipse_blips);
     hydrateEclipseBlipsArray(eclipse.value, hydrateStore.eclipse);
@@ -826,6 +829,7 @@ export const useSheetStore = defineStore('sheet',() => {
     mam,
     elemental_enhancement_1,
     elemental_enhancement_2,
+    roll_resist_proficiency,
     spell_attack,
     spell_dc,
     sections,
