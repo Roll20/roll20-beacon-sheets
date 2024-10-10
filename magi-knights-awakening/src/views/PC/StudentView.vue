@@ -74,7 +74,6 @@ const studentAttributes = [
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
         <template v-slot:collapsed>
           <h5>{{ sheet.student_ability.name }}</h5>
-          <span class="student-description-display">{{ sheet.student_ability.description }}</span>
         </template>
         <template v-slot:expanded>
           <input class="underline" type="text" v-model="sheet.student_ability.name" placeholder="Ability Name">
