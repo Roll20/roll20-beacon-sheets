@@ -137,20 +137,39 @@ export const useSheetStore = defineStore('sheet',() => {
     return m;
   },{});
 
-  const initiative = computed(() => dexterityMod.value);
+  const initiative_override = ref('');
+  const initiative = computed({
+    get() {
+      // If the override is empty, return the calculated value
+      if (initiative_override.value === '') {
+        return dexterityMod.value;
+      }
+      // If override is set, return the override value
+      return initiative_override.value;
+    },
+    set(value) {
+      // If the value is set to '', clear the override (will use the calculated value)
+      if (value === '') {
+        initiative_override.value = ''; // Reset override
+      } else {
+        // Set the override value to the custom value
+        initiative_override.value = value;
+      }
+    }
+  });
 
   const hp = {
     current: ref(10),
     temp: ref(0),
-    max: computed(() => 10)
+    max: ref(0)
   };
   const mp = {
     current: ref(10),
-    max: computed(() => 10)
+    max: ref(0)
   };
   const shp = {
     current: ref(10),
-    max: computed(() => 10)
+    max: ref(0)
   };
 
   const elemental_affinity = ref('');
@@ -188,7 +207,7 @@ export const useSheetStore = defineStore('sheet',() => {
     get() {
       // If the override is empty, return the calculated value
       if (spell_dc_override.value === '') {
-        return 8 + spell_attack.value;
+        return 8 + Number(spell_attack.value);
       }
       // If override is set, return the override value
       return spell_dc_override.value;
@@ -541,6 +560,7 @@ export const useSheetStore = defineStore('sheet',() => {
       knight_attack_override: knight_attack_override.value,
       spell_attack_override: spell_attack_override.value,
       spell_dc_override: spell_dc_override.value,
+      initiative_override: initiative_override.value,
 
       interests: interests.value,
       virtues: virtues.value,
@@ -622,6 +642,7 @@ export const useSheetStore = defineStore('sheet',() => {
     knight_attack_override.value = hydrateStore.knight_attack_override ?? knight_attack_override.value;
     spell_attack_override.value = hydrateStore.spell_attack_override ?? spell_attack_override.value;
     spell_dc_override.value = hydrateStore.spell_dc_override ?? spell_dc_override.value;
+    initiative_override.value = hydrateStore.initiative_override ?? initiative_override.value;
 
     interests.value = hydrateStore.interests ?? interests.value;
     virtues.value = hydrateStore.virtues ?? virtues.value;
@@ -851,6 +872,18 @@ export const useSheetStore = defineStore('sheet',() => {
     rollToChat({rollObj});
   };
 
+  const rollInitiative = (name) => {
+    const rollObj = {
+      title: 'Roll Initiative',
+      characterName: metaStore.name,
+      components: [
+        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label:'Initiative', value:Number(initiative.value),alwaysShowInBreakdown: true},
+      ]
+    };
+    rollToChat({rollObj});
+  };
+
   const rollKnightAttack = (name) => {
     const rollObj = {
       title: 'Attack Roll',
@@ -871,7 +904,7 @@ export const useSheetStore = defineStore('sheet',() => {
       characterName: metaStore.name,
       components: [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-        {label:'value', value:Number(student_attack.value),alwaysShowInBreakdown: true},
+        {label:'Value', value:Number(student_attack.value),alwaysShowInBreakdown: true},
       ]
     };
     rollToChat({rollObj});
@@ -1016,6 +1049,7 @@ export const useSheetStore = defineStore('sheet',() => {
     skills,
 
     initiative,
+    initiative_override,
     
     eclipse,
     eclipse_blips,
@@ -1067,6 +1101,7 @@ export const useSheetStore = defineStore('sheet',() => {
     removeRow,
     removeTrait: (traitId) => removeTrait(traits, traitId),
 
+    rollInitiative,
     rollAbility,
     rollSkill,
     rollWeapon,

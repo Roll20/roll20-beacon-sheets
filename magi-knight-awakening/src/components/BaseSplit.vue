@@ -14,10 +14,10 @@ const attributes = [
   {
     name: 'initiative',
     image: 'star',
-    button: true,
     crown: false,
     text: 'Initiative',
-    readonly: true
+    readonly: false,
+    click: () => sheet.rollInitiative()
   },
   {
     name: 'stress',
@@ -34,11 +34,6 @@ const attributes = [
     readonly: false
   }
 ];
-const processRoll = (attr) => {
-  if(attr = 'initiative'){
-    sheet.rollInitiative();
-  }
-};
 </script>
 
 <template>
