@@ -10,7 +10,7 @@ const props = defineProps({
 <template>
   <RepeatingItem class="technique-item" :row="props.item" name="techniques">
     <NotchContainer>
-    <Collapsible class="technique-content" :default="item.expanded" @collapse="item.collapsed = !item.collapsed">
+    <Collapsible class="technique-content" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
       <template v-slot:collapsed>
         <span class="technique-header">{{ props.item.name }}</span>
       </template>
