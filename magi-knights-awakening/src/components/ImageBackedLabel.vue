@@ -3,11 +3,9 @@
   import NotchContainer from './NotchContainer.vue';
 
   const {
-    crown,
     image,
     button
   } = defineProps({
-    crown: Boolean,
     image: {
       type: String,
       default: 'star'
@@ -19,7 +17,7 @@
 <template>
   <LabelStacked :button="button" class="image-label">
     <template v-slot:number>
-      <div :class="`image-container ${image}${crown ? ' crown' : ''}`">
+      <div :class="`image-container ${image}`">
         <slot name="value"></slot>
       </div>
     </template>
@@ -55,11 +53,6 @@
   display: flex;
   justify-content: center;
   text-transform: capitalize;
-}
-.image-container.crown:after{
-  content: '';
-  background-image: var(--crownImage);
-  grid-area: content;
 }
 .image-label input{
   width: 100%;

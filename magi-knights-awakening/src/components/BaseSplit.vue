@@ -7,14 +7,12 @@ const attributes = [
   {
     name: 'inspiration',
     image: 'star',
-    crown: true,
     text: 'inspiration',
     readonly: false
   },
   {
     name: 'initiative',
     image: 'star',
-    crown: false,
     text: 'Initiative',
     readonly: false,
     click: () => sheet.rollInitiative()
@@ -22,14 +20,12 @@ const attributes = [
   {
     name: 'stress',
     image: 'diamond',
-    crown: false,
     text: 'Stress',
     readonly: false
   },
   {
     name: 'exhaustion',
     image: 'diamond',
-    crown: false,
     text: 'Exhaustion',
     readonly: false
   }

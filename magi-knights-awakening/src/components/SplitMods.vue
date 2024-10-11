@@ -7,25 +7,6 @@
 
   const emit = defineEmits(['clicked'])
 
-  // expects an array of four objects describing the attributes to be inserted
-  /*
-    [
-      {
-        name: 'inspiration',
-        image: 'star',
-        crown: true,
-        text: 'inspiration',
-        readonly: false
-      },
-      {
-        name: 'initiative',
-        image: 'star',
-        crown: false,
-        text: 'initiative',
-        readonly: true
-      }
-    ]
-  */
   const {
     attributes
   } = defineProps({

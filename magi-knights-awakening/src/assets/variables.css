@@ -27,7 +27,6 @@ html{
   --big-gap: calc(var(--gap) * 2);
 
   /* images */
-  --crownImage: url('./crown.png');
   --swordImage: url('./sword.png');
   --abilityImage: url('./ability-circle.png');
   --diamondImage: url('./diamond.png');
@@ -41,7 +40,6 @@ html{
   --magiKnightDamageImage: url('./magi-knight-damage.png');
   --bottleImage: url('./bottle.png');
   --magiKnightShieldImage: url('./magi-knight-shield.png');
-  --crystalImage: url('./crystal.png');
 
   --moon1Image:url('./moon1.png');
   --moon2Image:url('./moon2.png');

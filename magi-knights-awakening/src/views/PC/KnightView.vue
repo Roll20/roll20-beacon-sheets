@@ -22,14 +22,12 @@ const knightAttributes = [
   {
     name: 'spell_dc',
     image: 'bottle-right',
-    crown: true,
     text: 'Spell DC',
     readonly: false
   },
   {
     name: 'knight_attack',
     image: 'attack',
-    crown: false,
     text: 'Attack',
     readonly: false,
     click: () => sheet.rollKnightAttack()
@@ -37,14 +35,12 @@ const knightAttributes = [
   {
     name: 'knight_armor',
     image: 'magi-knight-shield',
-    crown: true,
     text: 'Armor',
     readonly: false
   },
   {
     name: 'knight_damage',
     image: 'magi-knight-damage',
-    crown: true,
     text: 'Damage',
     readonly: false,
     click: () => sheet.rollKnightDamage()
@@ -52,14 +48,12 @@ const knightAttributes = [
   {
     name: 'spell_attack',
     image: 'bottle-left',
-    crown: true,
     text: 'Spell Attack',
     readonly: false
   },
   {
     name: 'knight_move',
     image: 'move',
-    crown: false,
     text: 'Move',
     readonly: false
   },
