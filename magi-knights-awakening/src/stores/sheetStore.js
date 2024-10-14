@@ -497,21 +497,22 @@ export const useSheetStore = defineStore('sheet',() => {
     sections[section].rows.value = sections[section].rows.value.filter(row => row._id !== id);
   };
 
-  // store hydration/dehydration
-  // dehydrates a nested set of refs/computed
-  const dehydrateNested = (obj) =>
-    Object.entries(obj).reduce((m,[k,v]) => {
-      if(typeof v === 'object'){
-        if(v.constructor?.name === 'RefImpl'){
+  const dehydrateNested = (obj) => 
+    Object.entries(obj).reduce((m, [k, v]) => {
+      if (v instanceof Map) {
+        // Handle Map object appropriately
+        m[k] = Array.from(v.entries());
+      } else if (typeof v === 'object') {
+        if (v.constructor?.name === 'RefImpl') {
           m[k] = v.value;
-        }else if(!v.__v_isReadonly){
+        } else if (!v.__v_isReadonly) {
           m[k] = dehydrateNested(v);
         }
-      }else{
+      } else {
         m[k] = v;
       }
       return m;
-    },{});
+    }, {});
 
   // Handles retrieving these values from the store
   const dehydrate = () => {
@@ -582,20 +583,18 @@ export const useSheetStore = defineStore('sheet',() => {
     return obj;
   }
 
-  const hydrateNested = (orig,hydrateObj = {},name) =>
-    Object.entries(hydrateObj).forEach(([k,v]) => {
-      if(name){
-        console.log(`hydrating ${name}`);
-      }
-      if(typeof orig[k] === 'object'){
-        if(orig[k].constructor?.name === 'RefImpl'){
+  const hydrateNested = (orig, hydrateObj = {}, name) => 
+    Object.entries(hydrateObj).forEach(([k, v]) => {
+      if (v instanceof Array && v[0] instanceof Array) {
+        // Recreate Map from the array representation
+        orig[k] = new Map(v);
+      } else if (typeof orig[k] === 'object') {
+        if (orig[k].constructor?.name === 'RefImpl') {
           orig[k].value = v ?? orig[k].value;
-        }else if(
-          !orig[k].__v_isReadonly
-        ){
-          hydrateNested(orig[k],v);
+        } else if (!orig[k].__v_isReadonly) {
+          hydrateNested(orig[k], v);
         }
-      }else{
+      } else {
         orig[k] = v;
       }
     });
