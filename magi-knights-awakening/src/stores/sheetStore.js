@@ -497,22 +497,165 @@ export const useSheetStore = defineStore('sheet',() => {
     sections[section].rows.value = sections[section].rows.value.filter(row => row._id !== id);
   };
 
-  const dehydrateNested = (obj) => 
-    Object.entries(obj).reduce((m, [k, v]) => {
-      if (v instanceof Map) {
-        // Handle Map object appropriately
-        m[k] = Array.from(v.entries());
-      } else if (typeof v === 'object') {
-        if (v.constructor?.name === 'RefImpl') {
-          m[k] = v.value;
-        } else if (!v.__v_isReadonly) {
-          m[k] = dehydrateNested(v);
-        }
-      } else {
-        m[k] = v;
+  function dehydrateSkills(skills) {
+    const dehydratedSkills = {};
+    for (const [skillName, skillData] of Object.entries(skills)) {
+      dehydratedSkills[skillName] = {
+        proficiency: skillData.proficiency.value,
+        ability: skillData.ability.value,
+      };
+    }
+    return dehydratedSkills;
+  }
+  
+  function hydrateSkills(skills, hydrateData = {}) {
+    for (const [skillName, skillData] of Object.entries(hydrateData)) {
+      if (skills[skillName]) {
+        skills[skillName].proficiency.value = skillData.proficiency ?? skills[skillName].proficiency.value;
+        skills[skillName].ability.value = skillData.ability ?? skills[skillName].ability.value;
       }
-      return m;
-    }, {});
+    }
+  }
+  
+  // Dehydrate and Hydrate methods for 'abilityScores'
+  function dehydrateAbilityScores(abilityScores) {
+    const dehydrated = {};
+    for (const [abilityName, abilityData] of Object.entries(abilityScores)) {
+      dehydrated[abilityName] = {
+        score: abilityData.score.value,
+      };
+    }
+    return dehydrated;
+  }
+  
+  function hydrateAbilityScores(abilityScores, hydrateData = {}) {
+    for (const [abilityName, abilityData] of Object.entries(hydrateData)) {
+      if (abilityScores[abilityName]) {
+        abilityScores[abilityName].score.value = abilityData.score ?? abilityScores[abilityName].score.value;
+      }
+    }
+  }
+  
+  // Dehydrate and Hydrate methods for 'hp'
+  function dehydrateHp(hp) {
+    return {
+      current: hp.current.value,
+      temp: hp.temp.value,
+      max: hp.max.value,
+    };
+  }
+  
+  function hydrateHp(hp, hydrateData = {}) {
+    hp.current.value = hydrateData.current ?? hp.current.value;
+    hp.temp.value = hydrateData.temp ?? hp.temp.value;
+    hp.max.value = hydrateData.max ?? hp.max.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'mp'
+  function dehydrateMp(mp) {
+    return {
+      current: mp.current.value,
+      max: mp.max.value,
+    };
+  }
+  
+  function hydrateMp(mp, hydrateData = {}) {
+    mp.current.value = hydrateData.current ?? mp.current.value;
+    mp.max.value = hydrateData.max ?? mp.max.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'shp'
+  function dehydrateShp(shp) {
+    return {
+      current: shp.current.value,
+      max: shp.max.value,
+    };
+  }
+  
+  function hydrateShp(shp, hydrateData = {}) {
+    shp.current.value = hydrateData.current ?? shp.current.value;
+    shp.max.value = hydrateData.max ?? shp.max.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'crystal'
+  function dehydrateCrystal(crystal) {
+    const dehydrated = {};
+    for (const [facet, refValue] of Object.entries(crystal)) {
+      dehydrated[facet] = refValue.value;
+    }
+    return dehydrated;
+  }
+  
+  function hydrateCrystal(crystal, hydrateData = {}) {
+    for (const [facet, value] of Object.entries(hydrateData)) {
+      if (crystal[facet]) {
+        crystal[facet].value = value ?? crystal[facet].value;
+      }
+    }
+  }
+  
+  // Dehydrate and Hydrate methods for 'student_ability'
+  function dehydrateStudentAbility(studentAbility) {
+    return {
+      name: studentAbility.name.value,
+      description: studentAbility.description.value,
+      collapsed: studentAbility.collapsed.value,
+    };
+  }
+  
+  function hydrateStudentAbility(studentAbility, hydrateData = {}) {
+    studentAbility.name.value = hydrateData.name ?? studentAbility.name.value;
+    studentAbility.description.value = hydrateData.description ?? studentAbility.description.value;
+    studentAbility.collapsed.value = hydrateData.collapsed ?? studentAbility.collapsed.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'fate'
+  function dehydrateFate(fate) {
+    return {
+      card: fate.card.value,
+      name: fate.name.value,
+    };
+  }
+  
+  function hydrateFate(fate, hydrateData = {}) {
+    fate.card.value = hydrateData.card ?? fate.card.value;
+    fate.name.value = hydrateData.name ?? fate.name.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'armor_weave'
+  function dehydrateArmorWeave(armorWeave) {
+    return {
+      name: armorWeave.name.value,
+      description: armorWeave.description.value,
+      collapsed: armorWeave.collapsed.value,
+    };
+  }
+  
+  function hydrateArmorWeave(armorWeave, hydrateData = {}) {
+    armorWeave.name.value = hydrateData.name ?? armorWeave.name.value;
+    armorWeave.description.value = hydrateData.description ?? armorWeave.description.value;
+    armorWeave.collapsed.value = hydrateData.collapsed ?? armorWeave.collapsed.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'soul_weapon'
+  function dehydrateSoulWeapon(soulWeapon) {
+    return {
+      name: soulWeapon.name.value,
+      range: soulWeapon.range.value,
+      damage: soulWeapon.damage.value,
+      qualities: soulWeapon.qualities.value,
+      collapsed: soulWeapon.collapsed.value,
+    };
+  }
+  
+  function hydrateSoulWeapon(soulWeapon, hydrateData = {}) {
+    soulWeapon.name.value = hydrateData.name ?? soulWeapon.name.value;
+    soulWeapon.range.value = hydrateData.range ?? soulWeapon.range.value;
+    soulWeapon.damage.value = hydrateData.damage ?? soulWeapon.damage.value;
+    soulWeapon.qualities.value = hydrateData.qualities ?? soulWeapon.qualities.value;
+    soulWeapon.collapsed.value = hydrateData.collapsed ?? soulWeapon.collapsed.value;
+  }
+  
 
   // Handles retrieving these values from the store
   const dehydrate = () => {
@@ -533,22 +676,22 @@ export const useSheetStore = defineStore('sheet',() => {
       magic_style: magic_style.value,
       element_name: element_name.value,
       mam: mam.value,
-      elemental_enhancement_1: elemental_enhancement_1.value,
-      elemental_enhancement_2: elemental_enhancement_2.value,
-      roll_resist_proficiency: roll_resist_proficiency.value,
-      skills: dehydrateNested(skills),
-      abilityScores: dehydrateNested(abilityScores),
       eclipse: [...eclipse.value],
       eclipse_blips: [...eclipse_blips.value],
       customProficiency: customProficiency.value,
-      hp: dehydrateNested(hp),
-      mp: dehydrateNested(mp),
-      shp: dehydrateNested(shp),
-      crystal: dehydrateNested(crystal),
-      student_ability: dehydrateNested(student_ability),
-      fate:dehydrateNested(fate),
-      armor_weave: dehydrateNested(armor_weave),
-      soul_weapon: dehydrateNested(soul_weapon),
+      elemental_enhancement_1: elemental_enhancement_1.value,
+      elemental_enhancement_2: elemental_enhancement_2.value,
+      roll_resist_proficiency: roll_resist_proficiency.value,
+      skills: dehydrateSkills(skills),
+      abilityScores: dehydrateAbilityScores(abilityScores),
+      hp: dehydrateHp(hp),
+      mp: dehydrateMp(mp),
+      shp: dehydrateShp(shp),
+      crystal: dehydrateCrystal(crystal),
+      student_ability: dehydrateStudentAbility(student_ability),
+      fate: dehydrateFate(fate),
+      armor_weave: dehydrateArmorWeave(armor_weave),
+      soul_weapon: dehydrateSoulWeapon(soul_weapon),
       student_damage: student_damage.value,
       student_armor: student_armor.value,
       student_move: student_move.value,
@@ -572,9 +715,6 @@ export const useSheetStore = defineStore('sheet',() => {
       quote: quote.value,
       player_links: player_links.value,
       backstory: backstory.value,
-
-      // faction: faction.value,
-      // traits: arrayToObject(traits.value)
     };
     
     Object.entries(sections).forEach(([name,val]) => {
@@ -582,22 +722,6 @@ export const useSheetStore = defineStore('sheet',() => {
     });
     return obj;
   }
-
-  const hydrateNested = (orig, hydrateObj = {}, name) => 
-    Object.entries(hydrateObj).forEach(([k, v]) => {
-      if (v instanceof Array && v[0] instanceof Array) {
-        // Recreate Map from the array representation
-        orig[k] = new Map(v);
-      } else if (typeof orig[k] === 'object') {
-        if (orig[k].constructor?.name === 'RefImpl') {
-          orig[k].value = v ?? orig[k].value;
-        } else if (!orig[k].__v_isReadonly) {
-          hydrateNested(orig[k], v);
-        }
-      } else {
-        orig[k] = v;
-      }
-    });
 
     // Utility function to handle parsing and hydrating blip arrays
     const hydrateEclipseBlipsArray = (targetArray, sourceArray) => {
@@ -664,18 +788,17 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateEclipseBlipsArray(eclipse_blips.value, hydrateStore.eclipse_blips);
     hydrateEclipseBlipsArray(eclipse.value, hydrateStore.eclipse);
 
-    hydrateNested(armor_weave,hydrateStore.armor_weave);
-    hydrateNested(soul_weapon,hydrateStore.soul_weapon);
-    hydrateNested(fate,hydrateStore.fate);
-    hydrateNested(student_ability,hydrateStore.student_ability);
-    hydrateNested(abilityScores,hydrateStore.abilityScores);
-    hydrateNested(skills,hydrateStore.skills);
-    hydrateNested(hp,hydrateStore.hp);
-    hydrateNested(mp,hydrateStore.mp);
-    hydrateNested(shp,hydrateStore.shp);
-    hydrateNested(crystal,hydrateStore.crystal);
-    // faction.value = hydrateStore.faction ?? faction.value
-    // traits.value = objectToArray(hydrateStore.traits) || traits.value
+    hydrateSkills(skills, hydrateStore.skills);
+    hydrateAbilityScores(abilityScores, hydrateStore.abilityScores);
+    hydrateHp(hp, hydrateStore.hp);
+    hydrateMp(mp, hydrateStore.mp);
+    hydrateShp(shp, hydrateStore.shp);
+    hydrateCrystal(crystal, hydrateStore.crystal);
+    hydrateStudentAbility(student_ability, hydrateStore.student_ability);
+    hydrateFate(fate, hydrateStore.fate);
+    hydrateArmorWeave(armor_weave, hydrateStore.armor_weave);
+    hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
+    
     Object.entries(sections).forEach(([name,obj]) => {
       obj.rows.value = objectToArray(hydrateStore[name]);
     });
