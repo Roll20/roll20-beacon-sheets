@@ -91,6 +91,12 @@ export const useSheetStore = defineStore('sheet',() => {
   const proficiency = ref(calculateProficiency());
 
   function calculateProficiency() {
+    if (reputation.value > 5){
+      return '0';
+    }
+    if (reputation.value < 0){
+      return '0';
+    }
     if (customProficiency.value != undefined && customProficiency.value != '') {
       return customProficiency.value;
     } else {
@@ -192,34 +198,23 @@ export const useSheetStore = defineStore('sheet',() => {
     },
     set(value) {
       // If the value is set to '', clear the override (will use the calculated value)
-      if (value === '') {
-        spell_attack_override.value = ''; // Reset override
-      } else {
-        // Set the override value to the custom value
-        spell_attack_override.value = value;
-      }
+      spell_attack_override.value = value || ''; // Reset override if empty
     }
   });
 
-  
   const spell_dc_override = ref('');
   const spell_dc = computed({
     get() {
-      // If the override is empty, return the calculated value
-      if (spell_dc_override.value === '') {
-        return 8 + Number(spell_attack.value);
+      // If the override is empty or not a number, return the calculated value
+      if (spell_dc_override.value === '' || isNaN(Number(spell_dc_override.value))) {
+        return 8 + proficiency.value + (abilityScores[mam]?.mod.value || 0);
       }
       // If override is set, return the override value
-      return spell_dc_override.value;
+      return Number(spell_dc_override.value);
     },
     set(value) {
       // If the value is set to '', clear the override (will use the calculated value)
-      if (value === '') {
-        spell_dc_override.value = ''; // Reset override
-      } else {
-        // Set the override value to the custom value
-        spell_dc_override.value = value;
-      }
+      spell_dc_override.value = value || ''; // Reset override if empty
     }
   });
 
@@ -807,7 +802,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const metaStore = useMetaStore();
   const rollAbility = (name) => {
     const rollObj = {
-      title: name,
+      title: toTitleCase(name),
       subtitle: 'Ability Check',
       characterName: metaStore.name,
       components: [
@@ -821,9 +816,10 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const rollSkill = (name) => {
     const abilityName = skills[name].ability.value;
+    const formattedTitle = toTitleCase(name.replace(/_/g, ' '));
     if (skills[name].overrideValue !== '' && skills[name].overrideValue !== undefined){
       const rollObj = {
-        title: name.replace(/_/g,' '),
+        title: formattedTitle,
         characterName: metaStore.name,
         components: [
           {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -833,7 +829,7 @@ export const useSheetStore = defineStore('sheet',() => {
       rollToChat({rollObj});
     }else{
       const rollObj = {
-        title: name.replace(/_/g,' '),
+        title: formattedTitle,
         characterName: metaStore.name,
         components: [
           {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -1149,6 +1145,19 @@ export const useSheetStore = defineStore('sheet',() => {
   
     return rollTotal;
   }; 
+
+  const toTitleCase = (str) => {
+    const minorWords = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'by', 'with', 'in', 'of'];
+  
+    return str.split(' ').map((word, index, arr) => {
+      // Capitalize first and last words, or if word is not a minor word
+      if (index === 0 || index === arr.length - 1 || !minorWords.includes(word.toLowerCase())) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+      // Lowercase the minor words
+      return word.toLowerCase();
+    }).join(' ');
+  };
 
   return {
     sheet_mode,
