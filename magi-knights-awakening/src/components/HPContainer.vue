@@ -3,48 +3,6 @@ import { useSheetStore } from '@/stores';
 const sheet = useSheetStore();
 </script>
 
-<!-- <template>
-<div class="hp-container">
-  <img src="@/assets/sword.png" alt="magic sword">
-  <div class="hp-row">
-    <div class="hp-cell left-input">
-      <label for="curr-hp">HP</label>
-      <input type="number" v-model="sheet.hp.current" id="curr-hp">
-    </div>
-    <div class="hp-cell left-input">
-      <label for="temp-hp">Temp HP</label>
-      <input type="number" v-model="sheet.hp.temp" id="temp-hp">
-    </div>
-    <div class="hp-cell right-input">
-      <label for="max-hp">Max HP</label>
-      <input id="max-hp">{{ sheet.hp.max }}</input>
-    </div>
-  </div>
-  <div class="hp-row left-input">
-    <div class="hp-cell double-cell">
-      <label for="curr-mp">MP</label>
-      <input type="number" v-model="sheet.mp.current" id="curr-mp">
-    </div>
-    <div class="hp-cell right-input">
-      <label for="max-mp">Max MP</label>
-      <input id="max-mp">{{ sheet.mp.max }}</input>
-    </div>
-  </div>
-
-
-  <div class="hp-row left-input">
-    <div class="hp-cell double-cell">
-      <label for="curr-shp">SHP</label>
-      <input type="number" v-model="sheet.shp.current" id="curr-shp">
-    </div>
-    <div class="hp-cell right-input">
-      <label for="max-shp">Max SHP</label>
-      <input id="max-shp">{{ sheet.shp.max }}</input>
-    </div>
-  </div>
-</div>
-</template> -->
-
 <template>
   <div class="hp-container">
     <img src="@/assets/sword.png" alt="magic sword">
@@ -162,11 +120,13 @@ const sheet = useSheetStore();
 .left-input input{
   text-align: left; /* Left-justifies the text */
   vertical-align: bottom; /* Aligns the input to the bottom */
+  color: var(--color);
 }
 
 .right-input input{
   text-align: right; /* Left-justifies the text */
   vertical-align: bottom; /* Aligns the input to the bottom */
+  color: var(--color);
 }
 
 .double-cell {

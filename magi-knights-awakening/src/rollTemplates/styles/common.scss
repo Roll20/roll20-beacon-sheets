@@ -24,7 +24,7 @@ rolltemplate.magiknight-template {
   --borderColor: var(--lm-borderColor);
 
   --lm-header-blue: #153859;
-  --dm-header-blue: #3337f3;
+  --dm-header-blue: #cfcffc;
   --header-blue: var(--lm-header-blue);
 
   --error-red: #dc0508;
@@ -36,6 +36,11 @@ rolltemplate.magiknight-template {
   --skill-gap: 0.22em;
 
   /* images */
+  --header-image-lm: url('./magiKnight-header.png');
+  --header-image-dm: url('./magiKnight-header-dm.png');
+
+  --header-image: var(var(--header-image-lm));
+
   --swordImage: url('./sword.png');
   --abilityImage: url('./ability-circle.png');
   --diamondImage: url('./diamond.png');
@@ -79,7 +84,7 @@ rolltemplate.magiknight-template {
   color: black;
 
   .header {
-    background-color: var(--header-blue);;
+    background-color: var(--header-blue);
     text-align: center;
     padding: 0.25rem 0.5rem;
     border-radius: 0.5rem 0.5rem 0 0;
