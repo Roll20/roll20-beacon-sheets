@@ -19,7 +19,7 @@ const getMoonImage = (index) => {
 // Method to toggle between three image states for blips
 const cycleBlipState = (index) => {
   const currentBlip = sheet.eclipse_blips[index];
-  sheet.eclipse_blips[index] = (currentBlip + 1) % 3;
+  sheet.eclipse_blips[index] = (currentBlip + 1) % 4;
 };
 
 const getBlipImage = (index) => {
@@ -28,8 +28,10 @@ const getBlipImage = (index) => {
     case 0:
       return '--blipImage'; // Reference the blip image CSS variable
     case 1:
-      return '--blipXImage'; // Reference the X image CSS variable
+      return '--blipSelectedImage'; // Reference the blip image CSS variable      
     case 2:
+      return '--blipXImage'; // Reference the X image CSS variable
+    case 3:
       return '--blipScratchedImage'; // Reference the scratched image CSS variable
     default:
       return '--blipImage'; // Default image (fallback)
