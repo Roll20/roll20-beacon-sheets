@@ -16,7 +16,7 @@ const props = defineProps({
   <div class="goalTallies-section">
     <div class="goalTallies-header">
       <h5>name</h5>
-      <h5>description</h5>
+      <h5>number</h5>
     </div>
     <RepeatingSection :name="`${name}-goalTallies`">
       <RepeatingItem :class="`${name}-goalTallies-item`" v-for="item in sheet.sections[`${name}-goalTallies`].rows" :key="item._id" :name="`${name}-goalTallies`" :row="item">
