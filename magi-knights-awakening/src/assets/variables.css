@@ -10,6 +10,7 @@ html{
   --lm-color:black;
   --dm-color:#ede9da;
   --color: var(--lm-color);
+  --light: var(--dm-color);
 
   --lm-borderColor: black;
   --dm-borderColor: #4087e5;
@@ -73,6 +74,7 @@ html.dark{
   --masterBack: var(--dm-masterBack);
   --backColor: var(--dm-backColor);
   --color: var(--dm-color);
+  --light: var(--color);
   --borderColor: var(--dm-borderColor);
   --header-blue: var(--dm-header-blue);
 

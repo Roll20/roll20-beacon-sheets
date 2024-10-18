@@ -38,7 +38,7 @@ const props = defineProps({
 <style lang="scss">
 .goalTallies-section{
   display: grid;
-  grid-template-columns: 30% auto;
+  grid-template-columns: 50% auto;
   gap: 1px;
   &,
   .repcontainer{

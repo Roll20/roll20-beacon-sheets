@@ -36,7 +36,7 @@ const collapseExpand = () => {
     right: 0;
     top: 0;
     background: radial-gradient(circle at center,var(--header-blue),var(--header-blue) 40%,transparent);
-    color: var(--masterBack);
+    color: var(--light);
     border-radius: 100%;
     aspect-ratio: 1 / 1;
     font-size: 100%;

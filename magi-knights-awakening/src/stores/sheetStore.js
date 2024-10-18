@@ -91,7 +91,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const proficiency = ref(calculateProficiency());
 
   function calculateProficiency() {
-    if (reputation.value > 5){
+    if (reputation.value > 6){
       return '0';
     }
     if (reputation.value < 0){
@@ -281,10 +281,10 @@ export const useSheetStore = defineStore('sheet',() => {
   const knight_attack = computed({
     get() {
       // If the override is empty, return the calculated value
-      if (knight_attack_override.value === '') {
-        const abMod = abilityScores[mam.value]?.mod.value || 0;
-        return proficiency.value + abMod;
-      }
+      // if (knight_attack_override.value === '') {
+      //   const abMod = abilityScores[mam.value]?.mod.value || 0;
+      //   return proficiency.value + abMod;
+      // }
       // If override is set, return the override value
       return knight_attack_override.value;
     },
@@ -1005,7 +1005,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollKnightAttack = (name) => {
     const rollObj = {
       title: 'Attack Roll',
-      subtitle: 'Magi-Knight Form',
+      subtitle: 'Magi-Knight Persona',
       characterName: metaStore.name,
       components: [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -1018,7 +1018,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollStudentAttack = (name) => {
     const rollObj = {
       title: 'Attack Roll',
-      subtitle: 'Student Form',
+      subtitle: 'Student Persona',
       characterName: metaStore.name,
       components: [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -1076,7 +1076,7 @@ export const useSheetStore = defineStore('sheet',() => {
     // Format the roll for chat
     const rollObj = {
       title: 'Damage Roll',
-      subtitle: 'Student Form',
+      subtitle: 'Student Persona',
       characterName: metaStore.name,
       components: components,
       total: Number(rollTotal),
@@ -1135,7 +1135,7 @@ export const useSheetStore = defineStore('sheet',() => {
     // Format the roll for chat
     const rollObj = {
       title: 'Damage Roll',
-      subtitle: 'Magi-Knight Form',
+      subtitle: 'Magi-Knight Persona',
       characterName: metaStore.name,
       components: components,
       total: Number(rollTotal),
