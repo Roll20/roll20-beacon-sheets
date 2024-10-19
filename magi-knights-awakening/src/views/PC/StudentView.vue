@@ -77,7 +77,9 @@ function studentAbilitySummary()
       <h4>Student Ability</h4>
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
         <template v-slot:collapsed>
-          <h5>{{ sheet.student_ability.name }}</h5>
+        <div class="student-ability-button">
+          <button @click="sheet.rollWeapon">{{ sheet.student_ability.name || 'Student Ability Name' }}</button>
+        </div>
           <label class="student-ability-description-collapsed">{{ studentAbilitySummary() }}</label>
         </template>
         <template v-slot:expanded>
@@ -187,10 +189,14 @@ function studentAbilitySummary()
   .student-type{
     text-align: center;
   }
+  .student-ability-button{
+   position: relative;
+   left: -6px;
+   top: -5px;
+  }
   .student-ability{
     padding: var(--half-gap);
     display: grid;
-    gap: var(--half-gap);
   }
   .student-ability-content{
     vertical-align: top;
@@ -198,6 +204,7 @@ function studentAbilitySummary()
     .student-description-display{
       white-space: pre-wrap;
     }
+    padding: 10px;
     min-height: 99px;
     max-height: 99px;
   }
