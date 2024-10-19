@@ -34,6 +34,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const inspiration = ref(0);
   const stress = ref(0);
   const exhaustion = ref(0);
+  const student_type = ref('');
 
   // abilityScores
   const strength = ref(10);
@@ -671,6 +672,7 @@ export const useSheetStore = defineStore('sheet',() => {
       magic_style: magic_style.value,
       element_name: element_name.value,
       mam: mam.value,
+      student_type: student_type.value,
       eclipse: [...eclipse.value],
       eclipse_blips: [...eclipse_blips.value],
       customProficiency: customProficiency.value,
@@ -761,6 +763,7 @@ export const useSheetStore = defineStore('sheet',() => {
     spell_attack_override.value = hydrateStore.spell_attack_override ?? spell_attack_override.value;
     spell_dc_override.value = hydrateStore.spell_dc_override ?? spell_dc_override.value;
     initiative_override.value = hydrateStore.initiative_override ?? initiative_override.value;
+    student_type.value = hydrateStore.student_type ?? student_type.value;
 
     interests.value = hydrateStore.interests ?? interests.value;
     virtues.value = hydrateStore.virtues ?? virtues.value;
@@ -1252,6 +1255,7 @@ export const useSheetStore = defineStore('sheet',() => {
     rested,
     fate,
     student_ability,
+    student_type,
     armor_weave,
     soul_weapon,
     gloom_gems:gloom,

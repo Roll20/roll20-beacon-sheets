@@ -40,6 +40,14 @@ const studentAttributes = [
     click: () => sheet.rollStudentDamage()
   }
 ];
+
+function studentAbilitySummary()
+{
+  if (sheet.student_ability.description.length > 100){
+    return sheet.student_ability.description.substring(0, 100) + "...";
+  }
+  return sheet.student_ability.description;
+}
 </script>
 
 <template>
@@ -70,6 +78,7 @@ const studentAttributes = [
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
         <template v-slot:collapsed>
           <h5>{{ sheet.student_ability.name }}</h5>
+          <label class="student-ability-description-collapsed">{{ studentAbilitySummary() }}</label>
         </template>
         <template v-slot:expanded>
           <input class="underline" type="text" v-model="sheet.student_ability.name" placeholder="Ability Name">
@@ -77,6 +86,7 @@ const studentAttributes = [
         </template>
       </Collapsible>
     </NotchContainer>
+    <div>
     <NotchContainer class="fate-card" width="thick" notchType="wedge">
       <h4>Fate Card</h4>
       <select v-model="sheet.fate.card" class="fate-select underline">
@@ -90,6 +100,11 @@ const studentAttributes = [
         <!--  -->
       </select>
     </NotchContainer>
+    <notch-container class="student-type">
+      <h4>Student Type</h4>
+      <input class="underline student-type" type="text" v-model="sheet.student_type" placeholder="Enter Student Type">
+    </notch-container>
+    </div>
     <div class="gear-section">
       <NotchContainer>
         <h4>gear</h4>
@@ -168,17 +183,22 @@ const studentAttributes = [
       text-transform: capitalize;
     }
   }
+  .student-type{
+    text-align: center;
+  }
   .student-ability{
     padding: var(--half-gap);
     display: grid;
     gap: var(--half-gap);
   }
   .student-ability-content{
-    display: grid;
+    vertical-align: top;
     gap: var(--half-gap);
     .student-description-display{
       white-space: pre-wrap;
     }
+    min-height: 99px;
+    max-height: 99px;
   }
   .rest-check{
     height: 100%;
