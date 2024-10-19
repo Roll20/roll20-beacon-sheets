@@ -843,88 +843,153 @@ export const useSheetStore = defineStore('sheet',() => {
     }
   };
 
-  const rollWeapon = async (item,tier) => {
-    let abMod, abModName;
+  // const rollWeapon = async (item,tier) => {
+  //   let abMod, abModName;
 
-    if ((abilityScores.strength.mod.value || 0) > (abilityScores.dexterity.mod.value || 0)) {
-        abMod = abilityScores.strength.mod.value || 0;
-        abModName = abilityScores.strength.mod.value != 0 ? "Strength" : '';
-    } else {
-        abMod = abilityScores.dexterity.mod.value || 0;
-        abModName = abilityScores.dexterity.mod.value != 0 ? "Dexterity" : '';
+  //   if ((abilityScores.strength.mod.value || 0) > (abilityScores.dexterity.mod.value || 0)) {
+  //       abMod = abilityScores.strength.mod.value || 0;
+  //       abModName = abilityScores.strength.mod.value != 0 ? "Strength" : '';
+  //   } else {
+  //       abMod = abilityScores.dexterity.mod.value || 0;
+  //       abModName = abilityScores.dexterity.mod.value != 0 ? "Dexterity" : '';
+  //   }
+  //   const attackPromise = getRollResults(
+  //     [
+  //       {label:'Attack Roll: 1d20',sides:20,alwaysShowInBreakdown: true},
+  //       {label:'Mod', value:abMod,alwaysShowInBreakdown: true},
+  //       //{label:'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
+  //     ]
+  //   );
+  //   const promArr = [attackPromise];
+  //   if(soul_weapon.damage.value){
+  //     const damagePromise = getRollResults([{label:'damage',formula:soul_weapon.damage.value}]);
+  //     promArr.push(damagePromise);
+  //   }
+  //   const [
+  //     {total:attackResult,components:attackComp},
+  //     {total:damageResult,components:damageComp}
+  //   ] = await Promise.all(promArr);
+
+  //   if (damageResult && damageComp) 
+  //   {
+  //     // Format the breakdown of dice rolls for output
+  //     const diceRolls = damageComp[0].results.dice || []; // Safely get individual dice roll results
+  //     const modifier = abMod || 0;
+  //     const totalDamage = damageComp[0].results.result + abMod || 0;
+
+  //     var modifierUsed = damageResult - diceRolls.reduce((acc, curr) => acc + curr, 0);
+  //     var damageBreakdownRoll = `(${diceRolls.join(' + ')})`;
+  //     var damageBreakdownMod = `(${modifierUsed})`;
+  //     var damageBreakdownMam = `(${modifier})`;
+  //     var damageBreakdownTotal = `${totalDamage}`;
+  //     var damageFormula = `${damageComp[0].formula}`;
+  //   }
+
+  //   const rollObj = {
+  //     title: soul_weapon.name.value,
+  //     characterName: metaStore.name,
+  //     components:attackComp,
+  //     keyValues:{}
+  //   }
+  //   if(soul_weapon.range.value){
+  //     rollObj.keyValues.Range = soul_weapon.range.value;
+  //   }
+  //   if(soul_weapon.qualities.value){
+  //     rollObj.textContent = soul_weapon.qualities.value;
+  //   }
+  //   if(soul_weapon.damage.value){
+  //     rollObj.keyValues[soul_weapon.damage.value] = damageResult
+
+  //   if(item[`tier_${tier}_name`]){
+  //     rollObj.subtitle = item.name;
+  //   }
+  //   if(item.range){
+  //     rollObj.keyValues.Range = item.range;
+  //   }
+
+  //   if (damageFormula){
+  //     rollObj.keyValues[`Damage Roll`] = damageFormula;
+  //   }
+  //   if (damageBreakdownRoll){
+  //     rollObj.keyValues[`Roll`] = damageBreakdownRoll;
+  //   }
+  //   if (damageBreakdownMod){
+  //     rollObj.keyValues[`Proficiency Bonus`] = damageBreakdownMod;
+  //   }
+  //   if (damageBreakdownMam && abModName != '') 
+  //   rollObj.keyValues[`${abModName} Modifier`] = damageBreakdownMam;
+  //   if (damageBreakdownTotal){
+  //     rollObj.keyValues[`Total`] = damageBreakdownTotal;
+  //   }
+
+  //   }
+  //   rollToChat({rollObj});
+  // };
+
+  const regex = /(?:(\d*)[Dd](\d+))([+-]?\d+)?/;
+
+  const rollWeapon = async (notation) => {
+    let notationString = String(soul_weapon.damage.value || notation);
+    
+    // Parsing the dice notation, e.g., "1d20+2"
+    const match = notationString.match(regex);
+  
+    if (!match) {
+      return;
     }
-    const attackPromise = getRollResults(
-      [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-        {label:'Mod', value:abMod,alwaysShowInBreakdown: true},
-        {label:'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
-      ]
-    );
-    const promArr = [attackPromise];
-    if(soul_weapon.damage.value){
-      const damagePromise = getRollResults([{label:'damage',formula:soul_weapon.damage.value}]);
-      promArr.push(damagePromise);
+  
+    const diceCount = match[1] ? parseInt(match[1], 10) : 1; // default to 1 if not specified
+    const diceSides = parseInt(match[2], 10);
+    const modifier = match[3] ? parseInt(match[3], 10) : 0; // default to 0 if not specified
+  
+    // Roll each die individually and calculate the total
+    let rollTotal = 0;
+    const individualRolls = [];
+    for (let i = 0; i < diceCount; i++) {
+      const roll = Math.floor(Math.random() * diceSides) + 1;
+      individualRolls.push(roll);
+      rollTotal += roll;
     }
-    const [
-      {total:attackResult,components:attackComp},
-      {total:damageResult,components:damageComp}
-    ] = await Promise.all(promArr);
+  
+    // Create components for the roll breakdown
+    const components = [
+      {
+        label: `${diceCount}d${diceSides} ` + individualRolls.join(' + '), // Show each roll in the breakdown
+        value: rollTotal, // Total of the dice rolls
+        alwaysShowInBreakdown: true,
+      },
+    ];
+  
+        // Add modifier to total
+        rollTotal += modifier;
 
-    if (damageResult && damageComp) 
-    {
-      // Format the breakdown of dice rolls for output
-      const diceRolls = damageComp[0].results.dice || []; // Safely get individual dice roll results
-      const modifier = abMod || 0;
-      const totalDamage = damageComp[0].results.result + abMod || 0;
-
-      var modifierUsed = damageResult - diceRolls.reduce((acc, curr) => acc + curr, 0);
-      var damageBreakdownRoll = `(${diceRolls.join(' + ')})`;
-      var damageBreakdownMod = `(${modifierUsed})`;
-      var damageBreakdownMam = `(${modifier})`;
-      var damageBreakdownTotal = `${totalDamage}`;
-      var damageFormula = `${damageComp[0].formula}`;
+    // Adding modifier to components if it exists
+    if (modifier !== 0) {
+      components.push({
+        label: "Modifier",
+        value: modifier,
+        alwaysShowInBreakdown: true,
+      });
     }
-
+  
+    // Format the roll for chat
     const rollObj = {
       title: soul_weapon.name.value,
+      subtitle: `Range: ${soul_weapon.range.value}`,
       characterName: metaStore.name,
-      components:attackComp,
+      components: components,
+      total: Number(rollTotal),
       keyValues:{}
-    }
-    if(soul_weapon.range.value){
-      rollObj.keyValues.Range = soul_weapon.range.value;
-    }
-    if(soul_weapon.qualities.value){
-      rollObj.textContent = soul_weapon.qualities.value;
-    }
-    if(soul_weapon.damage.value){
-      rollObj.keyValues[soul_weapon.damage.value] = damageResult
+    };
 
-    if(item[`tier_${tier}_name`]){
-      rollObj.subtitle = item.name;
+    if (soul_weapon.qualities){
+      rollObj.keyValues[`Qualities`] = soul_weapon.qualities.value;
     }
-    if(item.range){
-      rollObj.keyValues.Range = item.range;
-    }
-
-    if (damageFormula){
-      rollObj.keyValues[`Damage Roll`] = damageFormula;
-    }
-    if (damageBreakdownRoll){
-      rollObj.keyValues[`Roll`] = damageBreakdownRoll;
-    }
-    if (damageBreakdownMod){
-      rollObj.keyValues[`Proficiency Bonus`] = damageBreakdownMod;
-    }
-    if (damageBreakdownMam && abModName != '') 
-    rollObj.keyValues[`${abModName} Modifier`] = damageBreakdownMam;
-    if (damageBreakdownTotal){
-      rollObj.keyValues[`Total`] = damageBreakdownTotal;
-    }
-
-    }
-    rollToChat({rollObj});
-  };
+  
+    rollToChat({ rollObj });
+  
+    return rollTotal;
+  }; 
 
   const rollSpell = async (item,tier) => {
     const abMod = abilityScores[mam.value]?.mod.value || 0;
@@ -1032,7 +1097,6 @@ export const useSheetStore = defineStore('sheet',() => {
     let notationString = String(student_damage.value || notation);
     
     // Parsing the dice notation, e.g., "1d20+2"
-    const regex = /(?:(\d*)d(\d+))([+-]?\d+)?/;
     const match = notationString.match(regex);
   
     if (!match) {
@@ -1091,7 +1155,6 @@ export const useSheetStore = defineStore('sheet',() => {
     let notationString = String(knight_damage.value || notation);
     
     // Parsing the dice notation, e.g., "1d20+2"
-    const regex = /(?:(\d*)d(\d+))([+-]?\d+)?/;
     const match = notationString.match(regex);
   
     if (!match) {

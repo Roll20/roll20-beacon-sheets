@@ -74,7 +74,7 @@ html.dark{
   --masterBack: var(--dm-masterBack);
   --backColor: var(--dm-backColor);
   --color: var(--dm-color);
-  --light: var(--color);
+  --light: var(--lm-color);
   --borderColor: var(--dm-borderColor);
   --header-blue: var(--dm-header-blue);
 

@@ -32,6 +32,9 @@ input[type="number"]{
 input:is([type="checkbox"],[type="radio"]){
   cursor: pointer;
 }
+.material-symbols-outlined{
+  color: var(--color);
+}
 button{
   border: 0;
   background-color: transparent;

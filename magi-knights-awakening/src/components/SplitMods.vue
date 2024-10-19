@@ -87,4 +87,7 @@ button:disabled {
   color: var(--color);
   cursor: default;
 }
+button.collapse-control{
+  color: var(--masterBack);
+}
 </style>
