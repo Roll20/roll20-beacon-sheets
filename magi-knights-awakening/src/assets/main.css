@@ -136,3 +136,7 @@ h3,h4,h5{
 .big-gap{
   gap: var(--big-gap);
 }
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox specific */
+}
+
