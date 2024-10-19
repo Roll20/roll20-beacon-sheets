@@ -928,6 +928,9 @@ export const useSheetStore = defineStore('sheet',() => {
   //   }
   //   rollToChat({rollObj});
   // };
+ const studentAbilityToChat = () => {
+  return;
+ }
 
   const regex = /(?:(\d*)[Dd](\d+))([+-]?\d+)?/;
 

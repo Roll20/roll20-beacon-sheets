@@ -78,7 +78,7 @@ function studentAbilitySummary()
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
         <template v-slot:collapsed>
         <div class="student-ability-button">
-          <button @click="sheet.rollWeapon">{{ sheet.student_ability.name || 'Student Ability Name' }}</button>
+          <button disabled @click="sheet.studentAbilityToChat">{{ sheet.student_ability.name || 'Ability Name' }}</button>
         </div>
           <label class="student-ability-description-collapsed">{{ studentAbilitySummary() }}</label>
         </template>
@@ -220,7 +220,6 @@ function studentAbilitySummary()
       &:before{
         content:'check';
         font-family: 'Material Symbols Outlined';
-
       }
     }
   }
