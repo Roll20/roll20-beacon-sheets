@@ -37,7 +37,7 @@ const attributes = [
     <template v-slot:content>
       <CloverDisplay class="gloom-gems">
         <template v-slot:header>
-          <span>gloom gems</span>
+          <span class="clover-span">gloom gems</span>
         </template>
         <template v-slot:content>
           <input class="input-number" type="number" name="gloom_gems" v-model="sheet.gloom_gems">
@@ -45,7 +45,7 @@ const attributes = [
       </CloverDisplay>
       <CloverDisplay class="unity-points">
         <template v-slot:header>
-          <span>unity points</span>
+          <span class="clover-span">unity points</span>
         </template>
         <template v-slot:content>
           <input class="input-number" type="number" name="unity_points" v-model="sheet.unity_points">
@@ -64,6 +64,12 @@ const attributes = [
   .input-number {
     margin-left: 38px; /* Move the input to the right in Firefox */
   }
+  .clover-container {
+    margin-left: -75px;
+    margin-right: 0px;
+  }
+  .clover-span{
+    margin-left: 70px;
+  }
 }
-
 </style>
