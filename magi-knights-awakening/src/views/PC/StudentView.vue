@@ -87,6 +87,10 @@ function studentAbilitySummary()
       </Collapsible>
     </NotchContainer>
     <div>
+      <notch-container class="student-type">
+      <h4>Student Type</h4>
+      <input class="underline student-type" type="text" v-model="sheet.student_type" placeholder="Enter Student Type">
+    </notch-container>
     <NotchContainer class="fate-card" width="thick" notchType="wedge">
       <h4>Fate Card</h4>
       <select v-model="sheet.fate.card" class="fate-select underline">
@@ -100,10 +104,6 @@ function studentAbilitySummary()
         <!--  -->
       </select>
     </NotchContainer>
-    <notch-container class="student-type">
-      <h4>Student Type</h4>
-      <input class="underline student-type" type="text" v-model="sheet.student_type" placeholder="Enter Student Type">
-    </notch-container>
     </div>
     <div class="gear-section">
       <NotchContainer>
@@ -165,6 +165,7 @@ function studentAbilitySummary()
   }
 
   .fate-card{
+    margin-top: 0.7cap;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto 40px;
