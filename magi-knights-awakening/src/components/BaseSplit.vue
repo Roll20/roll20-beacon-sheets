@@ -60,13 +60,12 @@ const attributes = [
   text-align: center;
 }
 
-@supports (-moz-appearance: none) {
+@supports (-moz-appearance: none) { /* Tweak positions for clovers only in Firefox */
   .input-number {
-    margin-left: 38px; /* Move the input to the right in Firefox */
+    margin-left: 38px; 
   }
   .clover-container {
     margin-left: -75px;
-    margin-right: 0px;
   }
   .clover-span{
     margin-left: 70px;
