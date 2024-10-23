@@ -66,6 +66,8 @@ const backstoryItems = {
     height: 100%;
     min-height: 10cap;
     box-sizing: border-box;
+    background-color: var(--masterBack);
+    color: var(--color);
 }
 
 .backstory{
@@ -85,6 +87,8 @@ const backstoryItems = {
     height: 100%;
     min-height: 20cap;
     box-sizing: border-box;
+    background-color: var(--masterBack);
+    color: var(--color);
 }
 
 </style>

@@ -32,6 +32,9 @@ input[type="number"]{
 input:is([type="checkbox"],[type="radio"]){
   cursor: pointer;
 }
+.material-symbols-outlined{
+  color: var(--color);
+}
 button{
   border: 0;
   background-color: transparent;
@@ -42,6 +45,8 @@ label:has(button,a){
 }
 select{
   border: 0;
+  background-color: var(--masterBack);
+  color: var(--color);
 }
 input::-webkit-inner-spin-button,
 input::-webkit-outer-spin-button{
@@ -75,6 +80,7 @@ h3,h4,h5{
 }
 .underline{
   border-bottom: 1px solid var(--borderColor);
+  color: var(--color);
 }
 .grid{
   display: grid;
@@ -130,3 +136,7 @@ h3,h4,h5{
 .big-gap{
   gap: var(--big-gap);
 }
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox specific */
+}
+

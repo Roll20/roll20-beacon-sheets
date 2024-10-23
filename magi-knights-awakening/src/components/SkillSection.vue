@@ -33,6 +33,14 @@ const proficiencyMap = {
       () => sheet.reputation,
       (newValue, oldValue) => 
       {
+      if (newValue > 5){
+        sheet.proficiency = 6;
+        return;
+      }
+      if (newValue < 0){
+        sheet.proficiency = 0;
+        return;
+      }
         var oldProf = sheet.proficiency;
         if (sheet.customProficiency == '' || sheet.customProficiency == undefined)
       {

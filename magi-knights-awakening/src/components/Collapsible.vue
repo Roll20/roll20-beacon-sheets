@@ -27,16 +27,18 @@ const collapseExpand = () => {
   .collapsible{
     position: relative;
     min-height: 28px;
+    color: var(--color);
   }
   .collapsible:not(:hover,:focus-within)> .collapse-control{
     visibility: hidden;
+    color: var(--color);
   }
   .collapse-control{
     position: absolute;
     right: 0;
     top: 0;
     background: radial-gradient(circle at center,var(--header-blue),var(--header-blue) 40%,transparent);
-    color: var(--masterBack);
+    color: var(--color);
     border-radius: 100%;
     aspect-ratio: 1 / 1;
     font-size: 100%;

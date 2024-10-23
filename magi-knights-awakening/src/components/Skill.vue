@@ -53,6 +53,7 @@ const resetToDefault = () => {
     align-items: center;
     .skill-name{
       text-transform: capitalize;
+      color: var(--color);
     }
     select{
       text-transform: capitalize;
@@ -73,6 +74,7 @@ const resetToDefault = () => {
     .skill-value{
       width: 3ch;
       text-align: center;
+      color: var(--color);
     }
   }
 </style>

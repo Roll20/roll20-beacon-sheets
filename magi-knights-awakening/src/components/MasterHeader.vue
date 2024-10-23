@@ -6,7 +6,7 @@ const meta = useMetaStore();
 
 <template>
   <header class="master-header">
-    <img src="@/assets/magiKnight-header.png" alt="magi-knight logo" class="logo">
+    <div class="logo" aria-label="magi-knight logo"></div>
     <div class="flex-box tiny-gap flex-column character-name">
       <input type="text" class="underline" v-model="meta.name">
       <span class="capitalize">magi-knight name</span>
@@ -40,7 +40,12 @@ const meta = useMetaStore();
       grid-area: logo;
       position:absolute;
       height: 100%;
+      width: 100%;
+      background-size: 80% 100%;
+      background-repeat: no-repeat;
+      background-position: 50% center;
       place-self: start center;
+      background-image: var(--header-image);
     }
     > :nth-child(odd){
       align-items: end;

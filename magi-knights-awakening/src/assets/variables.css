@@ -10,13 +10,14 @@ html{
   --lm-color:black;
   --dm-color:#ede9da;
   --color: var(--lm-color);
+  --light: var(--dm-color);
 
   --lm-borderColor: black;
   --dm-borderColor: #4087e5;
   --borderColor: var(--lm-borderColor);
 
   --lm-header-blue: #153859;
-  --dm-header-blue: #3337f3;
+  --dm-header-blue: #cfcffc;
   --header-blue: var(--lm-header-blue);
 
   --error-red: #dc0508;
@@ -27,6 +28,11 @@ html{
   --big-gap: calc(var(--gap) * 2);
 
   /* images */
+  --header-image-lm: url('./magiKnight-header.png');
+  --header-image-dm: url('./magiKnight-header-dm.png');
+
+  --header-image: var(--header-image-lm);
+
   --swordImage: url('./sword.png');
   --abilityImage: url('./ability-circle.png');
   --diamondImage: url('./diamond.png');
@@ -62,11 +68,15 @@ html{
   --blipXImage:url('./eclipse-blip-x.png');
   --blipScratchedImage:url('./eclipse-blip-scratched.png');
   --blipCheckedImage:url('./eclipse-blip-checked.png');
+  --blipSelectedImage:url('./eclipse-blip-filled.png');
 }
 html.dark{
   --masterBack: var(--dm-masterBack);
   --backColor: var(--dm-backColor);
   --color: var(--dm-color);
+  --light: var(--lm-color);
   --borderColor: var(--dm-borderColor);
   --header-blue: var(--dm-header-blue);
+
+  --header-image: var(--header-image-dm);
 }

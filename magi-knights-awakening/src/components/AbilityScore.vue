@@ -47,6 +47,7 @@
   .inner-ability-circle,
   .ability-score{
     margin-bottom:10px;
+    color: var(--lm-color);
   }
 }
 </style>

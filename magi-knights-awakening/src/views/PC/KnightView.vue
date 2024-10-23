@@ -161,7 +161,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           <input class="underline" type="text" v-model="sheet.armor_weave.name" :id="`armor-weave-name`">
         </div>
         <div class="grid">
-          <label :for="`armor-weave-description`">Description</label>
+          <label class="properties-header" :for="`armor-weave-description`">Description</label>
           <textarea class="underline" :id="`armor-weave-description`" v-model="sheet.armor_weave.description"></textarea>
         </div>
       </template>
@@ -179,19 +179,19 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
       <template v-slot:expanded>
         <div class="flex-box half-gap grow-label">
           <label :for="`soul-weapon-name`">Name</label>
-          <input type="text" v-model="sheet.soul_weapon.name" :id="`soul-weapon-name`">
+          <input class="input-field" type="text" v-model="sheet.soul_weapon.name" :id="`soul-weapon-name`">
         </div>
         <div class="flex-box half-gap grow-label">
           <label :for="`soul-weapon-range`">Range</label>
-          <input type="text" v-model="sheet.soul_weapon.range" :id="`soul-weapon-range`">
+          <input class="input-field" type="text" v-model="sheet.soul_weapon.range" :id="`soul-weapon-range`">
         </div>
         <div class="flex-box half-gap grow-label">
           <label :for="`soul-weapon-damage`">Damage</label>
-          <input type="text" v-model="sheet.soul_weapon.damage" :id="`soul-weapon-damage`">
+          <input class="input-field" type="text" v-model="sheet.soul_weapon.damage" :id="`soul-weapon-damage`">
         </div>
         <div class="grid">
-          <label :for="`soul-weapon-qualities`">Qualities</label>
-          <textarea :id="`soul-weapon-qualities`" v-model="sheet.soul_weapon.qualities"></textarea>
+          <label class="properties-header" :for="`soul-weapon-qualities`">Qualities</label>
+          <textarea class="input-field" :id="`soul-weapon-qualities`" v-model="sheet.soul_weapon.qualities"></textarea>
         </div>
       </template>
       <template v-slot:collapsed>
@@ -212,7 +212,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
             <input type="text" class="underline" v-model="item.name" :id="`form-${item._id}-name`">
           </div>
           <div class="grid">
-            <label :for="`form-${item._id}-description`">Description</label>
+            <label class="properties-header" :for="`form-${item._id}-description`">Description</label>
             <textarea class="underline" v-model="item.description" :id="`form-${item._id}-description`"></textarea>
           </div>
         </template>
@@ -238,7 +238,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
               <input class="underline" type="text" v-model="item.name" :id="`rune-${item._id}-name`">
             </div>
             <div class="grid">
-              <label :for="`rune-${item._id}-description`">Description</label>
+              <label class="properties-header" :for="`rune-${item._id}-description`">Description</label>
               <textarea class="underline" :id="`rune-${item._id}-description`" v-model="item.description"></textarea>
             </div>
           </template>
@@ -476,4 +476,23 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   z-index: 9998;
 }
 
+label.properties-header{
+  color: var(--header-blue);
+}
+
+h4{
+  color: var(--header-blue);
+}
+
+.grow-label{
+  color: var(--header-blue);
+}
+
+.input-field{
+  color: var(--color);
+}
+
+input{
+  color: var(--lm-color);
+}
 </style>

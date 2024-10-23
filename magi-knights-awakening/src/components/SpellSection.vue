@@ -93,6 +93,14 @@ const addSpell = (id) => {
       gap: inherit;
       padding-top: var(--half-gap);
     }
+    button:enabled{
+    color: var(--header-blue);
+    padding-right: 35px;
+    padding-top: 20px;
+    }
+    button:disabled {
+    color: var(--light);
+}
   }
   .repeating-spells{
     display: contents;

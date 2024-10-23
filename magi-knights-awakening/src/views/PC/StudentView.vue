@@ -40,6 +40,14 @@ const studentAttributes = [
     click: () => sheet.rollStudentDamage()
   }
 ];
+
+function studentAbilitySummary()
+{
+  if (sheet.student_ability.description.length > 100){
+    return sheet.student_ability.description.substring(0, 100) + "...";
+  }
+  return sheet.student_ability.description;
+}
 </script>
 
 <template>
@@ -69,7 +77,10 @@ const studentAttributes = [
       <h4>Student Ability</h4>
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
         <template v-slot:collapsed>
-          <h5>{{ sheet.student_ability.name }}</h5>
+        <div class="student-ability-button">
+          <button disabled @click="sheet.studentAbilityToChat">{{ sheet.student_ability.name || 'Ability Name' }}</button>
+        </div>
+          <label class="student-ability-description-collapsed">{{ studentAbilitySummary() }}</label>
         </template>
         <template v-slot:expanded>
           <input class="underline" type="text" v-model="sheet.student_ability.name" placeholder="Ability Name">
@@ -77,6 +88,11 @@ const studentAttributes = [
         </template>
       </Collapsible>
     </NotchContainer>
+    <div>
+      <notch-container class="student-type">
+      <h4>Student Type</h4>
+      <input class="underline student-type" type="text" v-model="sheet.student_type" placeholder="Enter Student Type">
+    </notch-container>
     <NotchContainer class="fate-card" width="thick" notchType="wedge">
       <h4>Fate Card</h4>
       <select v-model="sheet.fate.card" class="fate-select underline">
@@ -90,6 +106,7 @@ const studentAttributes = [
         <!--  -->
       </select>
     </NotchContainer>
+    </div>
     <div class="gear-section">
       <NotchContainer>
         <h4>gear</h4>
@@ -150,6 +167,7 @@ const studentAttributes = [
   }
 
   .fate-card{
+    margin-top: 0.7cap;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto 40px;
@@ -168,17 +186,27 @@ const studentAttributes = [
       text-transform: capitalize;
     }
   }
+  .student-type{
+    text-align: center;
+  }
+  .student-ability-button{
+   position: relative;
+   left: -6px;
+   top: -5px;
+  }
   .student-ability{
     padding: var(--half-gap);
     display: grid;
-    gap: var(--half-gap);
   }
   .student-ability-content{
-    display: grid;
+    vertical-align: top;
     gap: var(--half-gap);
     .student-description-display{
       white-space: pre-wrap;
     }
+    padding: 10px;
+    min-height: 99px;
+    max-height: 99px;
   }
   .rest-check{
     height: 100%;
@@ -192,7 +220,6 @@ const studentAttributes = [
       &:before{
         content:'check';
         font-family: 'Material Symbols Outlined';
-
       }
     }
   }

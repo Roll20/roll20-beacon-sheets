@@ -34,6 +34,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const inspiration = ref(0);
   const stress = ref(0);
   const exhaustion = ref(0);
+  const student_type = ref('');
 
   // abilityScores
   const strength = ref(10);
@@ -91,6 +92,12 @@ export const useSheetStore = defineStore('sheet',() => {
   const proficiency = ref(calculateProficiency());
 
   function calculateProficiency() {
+    if (reputation.value > 6){
+      return '0';
+    }
+    if (reputation.value < 0){
+      return '0';
+    }
     if (customProficiency.value != undefined && customProficiency.value != '') {
       return customProficiency.value;
     } else {
@@ -192,34 +199,23 @@ export const useSheetStore = defineStore('sheet',() => {
     },
     set(value) {
       // If the value is set to '', clear the override (will use the calculated value)
-      if (value === '') {
-        spell_attack_override.value = ''; // Reset override
-      } else {
-        // Set the override value to the custom value
-        spell_attack_override.value = value;
-      }
+      spell_attack_override.value = value || ''; // Reset override if empty
     }
   });
 
-  
   const spell_dc_override = ref('');
   const spell_dc = computed({
     get() {
-      // If the override is empty, return the calculated value
-      if (spell_dc_override.value === '') {
-        return 8 + Number(spell_attack.value);
+      // If the override is empty or not a number, return the calculated value
+      if (spell_dc_override.value === '' || isNaN(Number(spell_dc_override.value))) {
+        return 8 + proficiency.value + (abilityScores[mam]?.mod.value || 0);
       }
       // If override is set, return the override value
-      return spell_dc_override.value;
+      return Number(spell_dc_override.value);
     },
     set(value) {
       // If the value is set to '', clear the override (will use the calculated value)
-      if (value === '') {
-        spell_dc_override.value = ''; // Reset override
-      } else {
-        // Set the override value to the custom value
-        spell_dc_override.value = value;
-      }
+      spell_dc_override.value = value || ''; // Reset override if empty
     }
   });
 
@@ -286,10 +282,10 @@ export const useSheetStore = defineStore('sheet',() => {
   const knight_attack = computed({
     get() {
       // If the override is empty, return the calculated value
-      if (knight_attack_override.value === '') {
-        const abMod = abilityScores[mam.value]?.mod.value || 0;
-        return proficiency.value + abMod;
-      }
+      // if (knight_attack_override.value === '') {
+      //   const abMod = abilityScores[mam.value]?.mod.value || 0;
+      //   return proficiency.value + abMod;
+      // }
       // If override is set, return the override value
       return knight_attack_override.value;
     },
@@ -497,21 +493,165 @@ export const useSheetStore = defineStore('sheet',() => {
     sections[section].rows.value = sections[section].rows.value.filter(row => row._id !== id);
   };
 
-  // store hydration/dehydration
-  // dehydrates a nested set of refs/computed
-  const dehydrateNested = (obj) =>
-    Object.entries(obj).reduce((m,[k,v]) => {
-      if(typeof v === 'object'){
-        if(v.constructor?.name === 'RefImpl'){
-          m[k] = v.value;
-        }else if(!v.__v_isReadonly){
-          m[k] = dehydrateNested(v);
-        }
-      }else{
-        m[k] = v;
+  function dehydrateSkills(skills) {
+    const dehydratedSkills = {};
+    for (const [skillName, skillData] of Object.entries(skills)) {
+      dehydratedSkills[skillName] = {
+        proficiency: skillData.proficiency.value,
+        ability: skillData.ability.value,
+      };
+    }
+    return dehydratedSkills;
+  }
+  
+  function hydrateSkills(skills, hydrateData = {}) {
+    for (const [skillName, skillData] of Object.entries(hydrateData)) {
+      if (skills[skillName]) {
+        skills[skillName].proficiency.value = skillData.proficiency ?? skills[skillName].proficiency.value;
+        skills[skillName].ability.value = skillData.ability ?? skills[skillName].ability.value;
       }
-      return m;
-    },{});
+    }
+  }
+  
+  // Dehydrate and Hydrate methods for 'abilityScores'
+  function dehydrateAbilityScores(abilityScores) {
+    const dehydrated = {};
+    for (const [abilityName, abilityData] of Object.entries(abilityScores)) {
+      dehydrated[abilityName] = {
+        score: abilityData.score.value,
+      };
+    }
+    return dehydrated;
+  }
+  
+  function hydrateAbilityScores(abilityScores, hydrateData = {}) {
+    for (const [abilityName, abilityData] of Object.entries(hydrateData)) {
+      if (abilityScores[abilityName]) {
+        abilityScores[abilityName].score.value = abilityData.score ?? abilityScores[abilityName].score.value;
+      }
+    }
+  }
+  
+  // Dehydrate and Hydrate methods for 'hp'
+  function dehydrateHp(hp) {
+    return {
+      current: hp.current.value,
+      temp: hp.temp.value,
+      max: hp.max.value,
+    };
+  }
+  
+  function hydrateHp(hp, hydrateData = {}) {
+    hp.current.value = hydrateData.current ?? hp.current.value;
+    hp.temp.value = hydrateData.temp ?? hp.temp.value;
+    hp.max.value = hydrateData.max ?? hp.max.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'mp'
+  function dehydrateMp(mp) {
+    return {
+      current: mp.current.value,
+      max: mp.max.value,
+    };
+  }
+  
+  function hydrateMp(mp, hydrateData = {}) {
+    mp.current.value = hydrateData.current ?? mp.current.value;
+    mp.max.value = hydrateData.max ?? mp.max.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'shp'
+  function dehydrateShp(shp) {
+    return {
+      current: shp.current.value,
+      max: shp.max.value,
+    };
+  }
+  
+  function hydrateShp(shp, hydrateData = {}) {
+    shp.current.value = hydrateData.current ?? shp.current.value;
+    shp.max.value = hydrateData.max ?? shp.max.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'crystal'
+  function dehydrateCrystal(crystal) {
+    const dehydrated = {};
+    for (const [facet, refValue] of Object.entries(crystal)) {
+      dehydrated[facet] = refValue.value;
+    }
+    return dehydrated;
+  }
+  
+  function hydrateCrystal(crystal, hydrateData = {}) {
+    for (const [facet, value] of Object.entries(hydrateData)) {
+      if (crystal[facet]) {
+        crystal[facet].value = value ?? crystal[facet].value;
+      }
+    }
+  }
+  
+  // Dehydrate and Hydrate methods for 'student_ability'
+  function dehydrateStudentAbility(studentAbility) {
+    return {
+      name: studentAbility.name.value,
+      description: studentAbility.description.value,
+      collapsed: studentAbility.collapsed.value,
+    };
+  }
+  
+  function hydrateStudentAbility(studentAbility, hydrateData = {}) {
+    studentAbility.name.value = hydrateData.name ?? studentAbility.name.value;
+    studentAbility.description.value = hydrateData.description ?? studentAbility.description.value;
+    studentAbility.collapsed.value = hydrateData.collapsed ?? studentAbility.collapsed.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'fate'
+  function dehydrateFate(fate) {
+    return {
+      card: fate.card.value,
+      name: fate.name.value,
+    };
+  }
+  
+  function hydrateFate(fate, hydrateData = {}) {
+    fate.card.value = hydrateData.card ?? fate.card.value;
+    fate.name.value = hydrateData.name ?? fate.name.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'armor_weave'
+  function dehydrateArmorWeave(armorWeave) {
+    return {
+      name: armorWeave.name.value,
+      description: armorWeave.description.value,
+      collapsed: armorWeave.collapsed.value,
+    };
+  }
+  
+  function hydrateArmorWeave(armorWeave, hydrateData = {}) {
+    armorWeave.name.value = hydrateData.name ?? armorWeave.name.value;
+    armorWeave.description.value = hydrateData.description ?? armorWeave.description.value;
+    armorWeave.collapsed.value = hydrateData.collapsed ?? armorWeave.collapsed.value;
+  }
+  
+  // Dehydrate and Hydrate methods for 'soul_weapon'
+  function dehydrateSoulWeapon(soulWeapon) {
+    return {
+      name: soulWeapon.name.value,
+      range: soulWeapon.range.value,
+      damage: soulWeapon.damage.value,
+      qualities: soulWeapon.qualities.value,
+      collapsed: soulWeapon.collapsed.value,
+    };
+  }
+  
+  function hydrateSoulWeapon(soulWeapon, hydrateData = {}) {
+    soulWeapon.name.value = hydrateData.name ?? soulWeapon.name.value;
+    soulWeapon.range.value = hydrateData.range ?? soulWeapon.range.value;
+    soulWeapon.damage.value = hydrateData.damage ?? soulWeapon.damage.value;
+    soulWeapon.qualities.value = hydrateData.qualities ?? soulWeapon.qualities.value;
+    soulWeapon.collapsed.value = hydrateData.collapsed ?? soulWeapon.collapsed.value;
+  }
+  
 
   // Handles retrieving these values from the store
   const dehydrate = () => {
@@ -532,22 +672,23 @@ export const useSheetStore = defineStore('sheet',() => {
       magic_style: magic_style.value,
       element_name: element_name.value,
       mam: mam.value,
-      elemental_enhancement_1: elemental_enhancement_1.value,
-      elemental_enhancement_2: elemental_enhancement_2.value,
-      roll_resist_proficiency: roll_resist_proficiency.value,
-      skills: dehydrateNested(skills),
-      abilityScores: dehydrateNested(abilityScores),
+      student_type: student_type.value,
       eclipse: [...eclipse.value],
       eclipse_blips: [...eclipse_blips.value],
       customProficiency: customProficiency.value,
-      hp: dehydrateNested(hp),
-      mp: dehydrateNested(mp),
-      shp: dehydrateNested(shp),
-      crystal: dehydrateNested(crystal),
-      student_ability: dehydrateNested(student_ability),
-      fate:dehydrateNested(fate),
-      armor_weave: dehydrateNested(armor_weave),
-      soul_weapon: dehydrateNested(soul_weapon),
+      elemental_enhancement_1: elemental_enhancement_1.value,
+      elemental_enhancement_2: elemental_enhancement_2.value,
+      roll_resist_proficiency: roll_resist_proficiency.value,
+      skills: dehydrateSkills(skills),
+      abilityScores: dehydrateAbilityScores(abilityScores),
+      hp: dehydrateHp(hp),
+      mp: dehydrateMp(mp),
+      shp: dehydrateShp(shp),
+      crystal: dehydrateCrystal(crystal),
+      student_ability: dehydrateStudentAbility(student_ability),
+      fate: dehydrateFate(fate),
+      armor_weave: dehydrateArmorWeave(armor_weave),
+      soul_weapon: dehydrateSoulWeapon(soul_weapon),
       student_damage: student_damage.value,
       student_armor: student_armor.value,
       student_move: student_move.value,
@@ -571,9 +712,6 @@ export const useSheetStore = defineStore('sheet',() => {
       quote: quote.value,
       player_links: player_links.value,
       backstory: backstory.value,
-
-      // faction: faction.value,
-      // traits: arrayToObject(traits.value)
     };
     
     Object.entries(sections).forEach(([name,val]) => {
@@ -581,24 +719,6 @@ export const useSheetStore = defineStore('sheet',() => {
     });
     return obj;
   }
-
-  const hydrateNested = (orig,hydrateObj = {},name) =>
-    Object.entries(hydrateObj).forEach(([k,v]) => {
-      if(name){
-        console.log(`hydrating ${name}`);
-      }
-      if(typeof orig[k] === 'object'){
-        if(orig[k].constructor?.name === 'RefImpl'){
-          orig[k].value = v ?? orig[k].value;
-        }else if(
-          !orig[k].__v_isReadonly
-        ){
-          hydrateNested(orig[k],v);
-        }
-      }else{
-        orig[k] = v;
-      }
-    });
 
     // Utility function to handle parsing and hydrating blip arrays
     const hydrateEclipseBlipsArray = (targetArray, sourceArray) => {
@@ -643,6 +763,7 @@ export const useSheetStore = defineStore('sheet',() => {
     spell_attack_override.value = hydrateStore.spell_attack_override ?? spell_attack_override.value;
     spell_dc_override.value = hydrateStore.spell_dc_override ?? spell_dc_override.value;
     initiative_override.value = hydrateStore.initiative_override ?? initiative_override.value;
+    student_type.value = hydrateStore.student_type ?? student_type.value;
 
     interests.value = hydrateStore.interests ?? interests.value;
     virtues.value = hydrateStore.virtues ?? virtues.value;
@@ -665,18 +786,17 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateEclipseBlipsArray(eclipse_blips.value, hydrateStore.eclipse_blips);
     hydrateEclipseBlipsArray(eclipse.value, hydrateStore.eclipse);
 
-    hydrateNested(armor_weave,hydrateStore.armor_weave);
-    hydrateNested(soul_weapon,hydrateStore.soul_weapon);
-    hydrateNested(fate,hydrateStore.fate);
-    hydrateNested(student_ability,hydrateStore.student_ability);
-    hydrateNested(abilityScores,hydrateStore.abilityScores);
-    hydrateNested(skills,hydrateStore.skills);
-    hydrateNested(hp,hydrateStore.hp);
-    hydrateNested(mp,hydrateStore.mp);
-    hydrateNested(shp,hydrateStore.shp);
-    hydrateNested(crystal,hydrateStore.crystal);
-    // faction.value = hydrateStore.faction ?? faction.value
-    // traits.value = objectToArray(hydrateStore.traits) || traits.value
+    hydrateSkills(skills, hydrateStore.skills);
+    hydrateAbilityScores(abilityScores, hydrateStore.abilityScores);
+    hydrateHp(hp, hydrateStore.hp);
+    hydrateMp(mp, hydrateStore.mp);
+    hydrateShp(shp, hydrateStore.shp);
+    hydrateCrystal(crystal, hydrateStore.crystal);
+    hydrateStudentAbility(student_ability, hydrateStore.student_ability);
+    hydrateFate(fate, hydrateStore.fate);
+    hydrateArmorWeave(armor_weave, hydrateStore.armor_weave);
+    hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
+    
     Object.entries(sections).forEach(([name,obj]) => {
       obj.rows.value = objectToArray(hydrateStore[name]);
     });
@@ -685,7 +805,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const metaStore = useMetaStore();
   const rollAbility = (name) => {
     const rollObj = {
-      title: name,
+      title: toTitleCase(name),
       subtitle: 'Ability Check',
       characterName: metaStore.name,
       components: [
@@ -699,9 +819,10 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const rollSkill = (name) => {
     const abilityName = skills[name].ability.value;
+    const formattedTitle = toTitleCase(name.replace(/_/g, ' '));
     if (skills[name].overrideValue !== '' && skills[name].overrideValue !== undefined){
       const rollObj = {
-        title: name.replace(/_/g,' '),
+        title: formattedTitle,
         characterName: metaStore.name,
         components: [
           {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -711,7 +832,7 @@ export const useSheetStore = defineStore('sheet',() => {
       rollToChat({rollObj});
     }else{
       const rollObj = {
-        title: name.replace(/_/g,' '),
+        title: formattedTitle,
         characterName: metaStore.name,
         components: [
           {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -725,88 +846,156 @@ export const useSheetStore = defineStore('sheet',() => {
     }
   };
 
-  const rollWeapon = async (item,tier) => {
-    let abMod, abModName;
+  // const rollWeapon = async (item,tier) => {
+  //   let abMod, abModName;
 
-    if ((abilityScores.strength.mod.value || 0) > (abilityScores.dexterity.mod.value || 0)) {
-        abMod = abilityScores.strength.mod.value || 0;
-        abModName = abilityScores.strength.mod.value != 0 ? "Strength" : '';
-    } else {
-        abMod = abilityScores.dexterity.mod.value || 0;
-        abModName = abilityScores.dexterity.mod.value != 0 ? "Dexterity" : '';
+  //   if ((abilityScores.strength.mod.value || 0) > (abilityScores.dexterity.mod.value || 0)) {
+  //       abMod = abilityScores.strength.mod.value || 0;
+  //       abModName = abilityScores.strength.mod.value != 0 ? "Strength" : '';
+  //   } else {
+  //       abMod = abilityScores.dexterity.mod.value || 0;
+  //       abModName = abilityScores.dexterity.mod.value != 0 ? "Dexterity" : '';
+  //   }
+  //   const attackPromise = getRollResults(
+  //     [
+  //       {label:'Attack Roll: 1d20',sides:20,alwaysShowInBreakdown: true},
+  //       {label:'Mod', value:abMod,alwaysShowInBreakdown: true},
+  //       //{label:'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
+  //     ]
+  //   );
+  //   const promArr = [attackPromise];
+  //   if(soul_weapon.damage.value){
+  //     const damagePromise = getRollResults([{label:'damage',formula:soul_weapon.damage.value}]);
+  //     promArr.push(damagePromise);
+  //   }
+  //   const [
+  //     {total:attackResult,components:attackComp},
+  //     {total:damageResult,components:damageComp}
+  //   ] = await Promise.all(promArr);
+
+  //   if (damageResult && damageComp) 
+  //   {
+  //     // Format the breakdown of dice rolls for output
+  //     const diceRolls = damageComp[0].results.dice || []; // Safely get individual dice roll results
+  //     const modifier = abMod || 0;
+  //     const totalDamage = damageComp[0].results.result + abMod || 0;
+
+  //     var modifierUsed = damageResult - diceRolls.reduce((acc, curr) => acc + curr, 0);
+  //     var damageBreakdownRoll = `(${diceRolls.join(' + ')})`;
+  //     var damageBreakdownMod = `(${modifierUsed})`;
+  //     var damageBreakdownMam = `(${modifier})`;
+  //     var damageBreakdownTotal = `${totalDamage}`;
+  //     var damageFormula = `${damageComp[0].formula}`;
+  //   }
+
+  //   const rollObj = {
+  //     title: soul_weapon.name.value,
+  //     characterName: metaStore.name,
+  //     components:attackComp,
+  //     keyValues:{}
+  //   }
+  //   if(soul_weapon.range.value){
+  //     rollObj.keyValues.Range = soul_weapon.range.value;
+  //   }
+  //   if(soul_weapon.qualities.value){
+  //     rollObj.textContent = soul_weapon.qualities.value;
+  //   }
+  //   if(soul_weapon.damage.value){
+  //     rollObj.keyValues[soul_weapon.damage.value] = damageResult
+
+  //   if(item[`tier_${tier}_name`]){
+  //     rollObj.subtitle = item.name;
+  //   }
+  //   if(item.range){
+  //     rollObj.keyValues.Range = item.range;
+  //   }
+
+  //   if (damageFormula){
+  //     rollObj.keyValues[`Damage Roll`] = damageFormula;
+  //   }
+  //   if (damageBreakdownRoll){
+  //     rollObj.keyValues[`Roll`] = damageBreakdownRoll;
+  //   }
+  //   if (damageBreakdownMod){
+  //     rollObj.keyValues[`Proficiency Bonus`] = damageBreakdownMod;
+  //   }
+  //   if (damageBreakdownMam && abModName != '') 
+  //   rollObj.keyValues[`${abModName} Modifier`] = damageBreakdownMam;
+  //   if (damageBreakdownTotal){
+  //     rollObj.keyValues[`Total`] = damageBreakdownTotal;
+  //   }
+
+  //   }
+  //   rollToChat({rollObj});
+  // };
+ const studentAbilityToChat = () => {
+  return;
+ }
+
+  const regex = /(?:(\d*)[Dd](\d+))([+-]?\d+)?/;
+
+  const rollWeapon = async (notation) => {
+    let notationString = String(soul_weapon.damage.value || notation);
+    
+    // Parsing the dice notation, e.g., "1d20+2"
+    const match = notationString.match(regex);
+  
+    if (!match) {
+      return;
     }
-    const attackPromise = getRollResults(
-      [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-        {label:'Mod', value:abMod,alwaysShowInBreakdown: true},
-        {label:'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
-      ]
-    );
-    const promArr = [attackPromise];
-    if(soul_weapon.damage.value){
-      const damagePromise = getRollResults([{label:'damage',formula:soul_weapon.damage.value}]);
-      promArr.push(damagePromise);
+  
+    const diceCount = match[1] ? parseInt(match[1], 10) : 1; // default to 1 if not specified
+    const diceSides = parseInt(match[2], 10);
+    const modifier = match[3] ? parseInt(match[3], 10) : 0; // default to 0 if not specified
+  
+    // Roll each die individually and calculate the total
+    let rollTotal = 0;
+    const individualRolls = [];
+    for (let i = 0; i < diceCount; i++) {
+      const roll = Math.floor(Math.random() * diceSides) + 1;
+      individualRolls.push(roll);
+      rollTotal += roll;
     }
-    const [
-      {total:attackResult,components:attackComp},
-      {total:damageResult,components:damageComp}
-    ] = await Promise.all(promArr);
+  
+    // Create components for the roll breakdown
+    const components = [
+      {
+        label: `${diceCount}d${diceSides} ` + individualRolls.join(' + '), // Show each roll in the breakdown
+        value: rollTotal, // Total of the dice rolls
+        alwaysShowInBreakdown: true,
+      },
+    ];
+  
+        // Add modifier to total
+        rollTotal += modifier;
 
-    if (damageResult && damageComp) 
-    {
-      // Format the breakdown of dice rolls for output
-      const diceRolls = damageComp[0].results.dice || []; // Safely get individual dice roll results
-      const modifier = abMod || 0;
-      const totalDamage = damageComp[0].results.result + abMod || 0;
-
-      var modifierUsed = damageResult - diceRolls.reduce((acc, curr) => acc + curr, 0);
-      var damageBreakdownRoll = `(${diceRolls.join(' + ')})`;
-      var damageBreakdownMod = `(${modifierUsed})`;
-      var damageBreakdownMam = `(${modifier})`;
-      var damageBreakdownTotal = `${totalDamage}`;
-      var damageFormula = `${damageComp[0].formula}`;
+    // Adding modifier to components if it exists
+    if (modifier !== 0) {
+      components.push({
+        label: "Modifier",
+        value: modifier,
+        alwaysShowInBreakdown: true,
+      });
     }
-
+  
+    // Format the roll for chat
     const rollObj = {
       title: soul_weapon.name.value,
+      subtitle: `Range: ${soul_weapon.range.value}`,
       characterName: metaStore.name,
-      components:attackComp,
+      components: components,
+      total: Number(rollTotal),
       keyValues:{}
-    }
-    if(soul_weapon.range.value){
-      rollObj.keyValues.Range = soul_weapon.range.value;
-    }
-    if(soul_weapon.qualities.value){
-      rollObj.textContent = soul_weapon.qualities.value;
-    }
-    if(soul_weapon.damage.value){
-      rollObj.keyValues[soul_weapon.damage.value] = damageResult
+    };
 
-    if(item[`tier_${tier}_name`]){
-      rollObj.subtitle = item.name;
+    if (soul_weapon.qualities){
+      rollObj.keyValues[`Qualities`] = soul_weapon.qualities.value;
     }
-    if(item.range){
-      rollObj.keyValues.Range = item.range;
-    }
-
-    if (damageFormula){
-      rollObj.keyValues[`Damage Roll`] = damageFormula;
-    }
-    if (damageBreakdownRoll){
-      rollObj.keyValues[`Roll`] = damageBreakdownRoll;
-    }
-    if (damageBreakdownMod){
-      rollObj.keyValues[`Proficiency Bonus`] = damageBreakdownMod;
-    }
-    if (damageBreakdownMam && abModName != '') 
-    rollObj.keyValues[`${abModName} Modifier`] = damageBreakdownMam;
-    if (damageBreakdownTotal){
-      rollObj.keyValues[`Total`] = damageBreakdownTotal;
-    }
-
-    }
-    rollToChat({rollObj});
-  };
+  
+    rollToChat({ rollObj });
+  
+    return rollTotal;
+  }; 
 
   const rollSpell = async (item,tier) => {
     const abMod = abilityScores[mam.value]?.mod.value || 0;
@@ -887,7 +1076,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollKnightAttack = (name) => {
     const rollObj = {
       title: 'Attack Roll',
-      subtitle: 'Magi-Knight Form',
+      subtitle: 'Magi-Knight Persona',
       characterName: metaStore.name,
       components: [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -900,7 +1089,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollStudentAttack = (name) => {
     const rollObj = {
       title: 'Attack Roll',
-      subtitle: 'Student Form',
+      subtitle: 'Student Persona',
       characterName: metaStore.name,
       components: [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
@@ -914,7 +1103,6 @@ export const useSheetStore = defineStore('sheet',() => {
     let notationString = String(student_damage.value || notation);
     
     // Parsing the dice notation, e.g., "1d20+2"
-    const regex = /(?:(\d*)d(\d+))([+-]?\d+)?/;
     const match = notationString.match(regex);
   
     if (!match) {
@@ -958,7 +1146,7 @@ export const useSheetStore = defineStore('sheet',() => {
     // Format the roll for chat
     const rollObj = {
       title: 'Damage Roll',
-      subtitle: 'Student Form',
+      subtitle: 'Student Persona',
       characterName: metaStore.name,
       components: components,
       total: Number(rollTotal),
@@ -973,7 +1161,6 @@ export const useSheetStore = defineStore('sheet',() => {
     let notationString = String(knight_damage.value || notation);
     
     // Parsing the dice notation, e.g., "1d20+2"
-    const regex = /(?:(\d*)d(\d+))([+-]?\d+)?/;
     const match = notationString.match(regex);
   
     if (!match) {
@@ -1017,7 +1204,7 @@ export const useSheetStore = defineStore('sheet',() => {
     // Format the roll for chat
     const rollObj = {
       title: 'Damage Roll',
-      subtitle: 'Magi-Knight Form',
+      subtitle: 'Magi-Knight Persona',
       characterName: metaStore.name,
       components: components,
       total: Number(rollTotal),
@@ -1027,6 +1214,19 @@ export const useSheetStore = defineStore('sheet',() => {
   
     return rollTotal;
   }; 
+
+  const toTitleCase = (str) => {
+    const minorWords = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'by', 'with', 'in', 'of'];
+  
+    return str.split(' ').map((word, index, arr) => {
+      // Capitalize first and last words, or if word is not a minor word
+      if (index === 0 || index === arr.length - 1 || !minorWords.includes(word.toLowerCase())) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+      // Lowercase the minor words
+      return word.toLowerCase();
+    }).join(' ');
+  };
 
   return {
     sheet_mode,
@@ -1058,6 +1258,7 @@ export const useSheetStore = defineStore('sheet',() => {
     rested,
     fate,
     student_ability,
+    student_type,
     armor_weave,
     soul_weapon,
     gloom_gems:gloom,
