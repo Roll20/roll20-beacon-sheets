@@ -805,7 +805,14 @@ export const useSheetStore = defineStore('sheet',() => {
   const metaStore = useMetaStore();
   const rollAbility = (name) => {
     let rollToResist = 0;
-    if (name === roll_resist_proficiency.value.toLowerCase()) {
+    let elementToCheck = name;
+    let elementToUse = roll_resist_proficiency.value.toLowerCase();
+
+    if (elementToUse === 'using your magic ability modifier'){
+      elementToUse = mam.value.toLowerCase();
+    }
+
+    if (elementToCheck === elementToUse) {
       rollToResist = proficiency.value;
     }
     const rollObj = {
