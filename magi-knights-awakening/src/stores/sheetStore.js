@@ -804,6 +804,10 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const metaStore = useMetaStore();
   const rollAbility = (name) => {
+    let rollToResist = 0;
+    if (name === roll_resist_proficiency.value.toLowerCase()) {
+      rollToResist = proficiency.value;
+    }
     const rollObj = {
       title: toTitleCase(name),
       subtitle: 'Ability Check',
@@ -811,7 +815,7 @@ export const useSheetStore = defineStore('sheet',() => {
       components: [
         {label:'1d20',sides:20,alwaysShowInBreakdown: true},
         {label:'Mod', value:abilityScores[name].mod.value,alwaysShowInBreakdown: true},
-        {label: 'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
+        {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true}
       ]
     };
     rollToChat({rollObj});
