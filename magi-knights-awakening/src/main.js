@@ -7,7 +7,9 @@ import App from './App.vue';
 import router from './router';
 
 /*
-Welcome! If you are new to vue, this is the file that will render the vue app. This vue app is a quickstart guide,
+Welcome to the Magi-Knights Awakening sheet!
+
+If you are new to vue, this is the file that will render the vue app. This vue app is a quickstart guide,
 to help get you started and familiar with the new flow of sheet development with our beacon SDK.
 
 This vue app features one component, App.vue, that renders the entire sheet.
