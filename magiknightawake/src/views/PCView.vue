@@ -1,26 +1,30 @@
 <script setup>
+import { useMetaStore } from '@/stores/metaStore.js';
 import MasterHeader from '@/components/MasterHeader.vue';
 import HPContainer from '@/components/HPContainer.vue';
 import BaseSplit from '@/components/BaseSplit.vue';
 import KnightNav from '@/components/KnightNav.vue';
 import SkillSection from '@/components/SkillSection.vue';
+
+let permissions = useMetaStore().permissions;
+
 </script>
 
 <template>
-<div class="player-view">
-  <div class="top-section">
-    <MasterHeader />
-    <BaseSplit class="base-split" />
-    <KnightNav />
+  <div v-if="permissions.isOwner || permissions.isGM" class="player-view">
+    <div class="top-section">
+      <MasterHeader />
+      <BaseSplit class="base-split" />
+      <KnightNav />
+    </div>
+    <div class="column">
+      <HPContainer />
+      <SkillSection />
+    </div>
+    <div class="specific-view column">
+      <RouterView />
+    </div>
   </div>
-  <div class="column">
-    <HPContainer />
-    <SkillSection />
-  </div>
-  <div class="specific-view column">
-    <RouterView />
-  </div>
-</div>
 </template>
 
 <style lang="scss">
