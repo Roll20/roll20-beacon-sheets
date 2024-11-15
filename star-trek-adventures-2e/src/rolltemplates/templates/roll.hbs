@@ -1,15 +1,9 @@
-{{#> postWrapper type="roll" characterName=characterName }}
-  <ul class="roll__dice-results">
-    {{#each dice}}
-      <li>{{this}}</li>
-    {{/each}}
-  </ul>
-  <div class="roll__bottom-line">
-    <div class="roll__equation">
-      {{ equation }}
-    </div>
-    <div class="roll__successes">
-      Successes: {{ successes }}
-    </div>
+{{#> postWrapper type="roll" characterName=characterName bottomBarValues=bottomBarValues}}
+  <div class="roll">
+    <ul class="roll__dice-results">
+      {{#each dice}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
   </div>
 {{/ postWrapper }}

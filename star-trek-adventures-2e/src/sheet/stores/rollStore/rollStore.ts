@@ -49,10 +49,10 @@ export const useRollStore = defineStore("roll", () => {
     if (!checkPrepared(activeStats)) return;
     const dispatch: Dispatch = dispatchRef.value
 
-    const { results } = await dispatch.roll({rolls: {"roll": `2d20>${targetNumber.value}`}})
+    const { results } = await dispatch.roll({rolls: {"roll": `5d20<${targetNumber.value}`}})
+    const bottomBarValues = [results.roll.expression, `Successes: ${results.roll.results.result}`]
     const content = createRollTemplate({type: "roll", parameters: { 
-      equation: results.roll.expression, 
-      successes: results.roll.results.result,
+      bottomBarValues,
       dice: results.roll.results.dice,
       characterName: metaStore.name,
     }})

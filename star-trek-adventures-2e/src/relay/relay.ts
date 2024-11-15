@@ -9,7 +9,6 @@ import {
 import { debounce } from 'lodash';
 import type { PiniaPluginContext } from 'pinia';
 
-import { getAbilityScores, getBio, getLife, setLife } from '@/relay/handlers/computed';
 import { v4 as uuidv4 } from 'uuid';
 import { nextTick, reactive, ref, toRaw, watch, type App, type Ref } from 'vue';
 import {
@@ -20,6 +19,7 @@ import {
   onSharedSettingsChange,
   onTranslationsRequest,
 } from './handlers/handlers';
+import { type GMAttr, gmAttrs } from './computed/gm';
 
 /* 
 This is the configuration for the relay. It defines the handlers and actions that the sheet will use.
@@ -47,18 +47,14 @@ const relayConfig = {
 
   },
   computed: {
-    // These attributes allow dot notation in macros, and will not show up on token bar attributes
-    // EX: @{CHARACTER_NAME|abilityScores.Strength.current}
-    abilityScores: { tokenBarValue: false, get: getAbilityScores },
-    bio: { tokenBarValue: false, get: getBio },
-    // These are defined token bar attributes
-    life: { tokenBarValue: true, get: getLife, set: setLife },
+    ...gmAttrs(),
   },
 };
 
 export type SharedSettings = {
   momentum?: number;
   threat?: number;
+  gmID?: string;
 }
 
 // This is the typescript type for the initial values that the sheet will use when it starts.
@@ -140,16 +136,26 @@ export const createRelay = async ({
 }) => {
   // @ts-ignore
   const dispatch = await (devMode ? devRelay() : initRelay(relayConfig));
-  const relayPinia = (context: PiniaPluginContext) => {
+  const relayPinia = async (context: PiniaPluginContext) => {
     if (context.store.$id !== primaryStore) return;
     const store = context.store;
-
+    
     dispatchRef.value = dispatch;
-
+    
     // Init Store
     const { attributes, ...profile } = initValues.character;
     store.hydrateStore(attributes, profile);
-    store.gm.hydrate(initValues.sharedSettings)
+    const gmSheetID = initValues.sharedSettings.gmID;
+    const gmValues: Partial<Record<GMAttr, any>> = {}
+    if (gmSheetID) {
+      gmValues.momentum = await dispatch.getComputed({characterId: gmSheetID, property: "momentum"})
+      gmValues.threat = await dispatch.getComputed({characterId: gmSheetID, property: "threat"})
+      console.log(gmSheetID, gmValues.momentum)
+    }
+    store.gm.hydrate({
+      ...gmValues,
+      localSheetID: initValues.character.id
+    })
 
     // Beacon Provides access to settings, like campaign id for example
     store.setCampaignId(initValues.settings.campaignId);
@@ -169,9 +175,16 @@ export const createRelay = async ({
       blockUpdate.value = true;
       if (logMode) console.log('🔒🔴 locking changes');
       const { attributes, ...profile } = dispatch.characters[characterId];
+      console.log("pulse watcher",attributes)
       if (attributes.updateId === sheetId.value) {
         blockUpdate.value = false;
         return;
+      }
+      if (gmSheetID) {
+        // Object.assign(
+        //   attributes.gm, 
+        //   dispatch.characters[gmSheetID].attributes.gm
+        // )
       }
       store.hydrateStore(attributes, profile);
       await nextTick();

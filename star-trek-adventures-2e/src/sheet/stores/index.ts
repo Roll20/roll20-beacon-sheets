@@ -45,7 +45,7 @@ export const useStarTrekStore = defineStore('StarTrek', () => {
     character.attributes = {};
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];
     storeKeys.forEach((key) => {
-      if (key === "roll" || key === "gm") return;
+      if (key === "roll" ) return;
       if (key === 'meta') {
         const { name, bio, gmNotes, avatar } = stores.meta.dehydrate();
         character.name = name;
@@ -66,7 +66,6 @@ export const useStarTrekStore = defineStore('StarTrek', () => {
       storeRegistry.forEach((store) => {
         if (!partial[store] 
           || store === "roll" 
-          || store === "gm"
         ) return;
         stores[store].hydrate(partial[store]);
       });

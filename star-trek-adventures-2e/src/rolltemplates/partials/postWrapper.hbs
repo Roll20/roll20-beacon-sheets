@@ -1,8 +1,29 @@
 <rolltemplate class="sta2 sta2--{{type}}">
-  <div class="info">
-    {{#if characterName}}
-      <div class="info__name">{{characterName}}</div>
-    {{/if}}
+  <div class="lcars__top">
+    <ul class="lcars__top-sidebar">
+      {{#each topBarValues}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+    <div class="lcars__top-content">
+      <div class="info">
+        {{#if characterName}}
+          <div class="info__name">{{characterName}}</div>
+        {{/if}}
+      </div>
+    </div>
+    <div class="lcars__top-underbar"></div>
   </div>
-  {{> @partial-block }}
+  <div class="lcars__bottom">
+    <ul class="lcars__bottom-sidebar">
+      <div class="lcars__sidebar-spacer"></div>
+      {{#each bottomBarValues}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+    <div class="lcars__bottom-overbar"></div>
+    <div class="lcars__bottom-content">
+      {{> @partial-block }}
+    </div>
+  </div>
 </rolltemplate>

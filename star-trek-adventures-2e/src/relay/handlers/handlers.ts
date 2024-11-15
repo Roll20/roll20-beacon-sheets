@@ -9,6 +9,7 @@ export const onInit = ({ character, settings, sharedSettings, compendiumDropData
   initValues.settings = settings;
   initValues.sharedSettings.momentum = sharedSettings.momentum ?? 0;
   initValues.sharedSettings.threat = sharedSettings.threat ?? 0;
+  initValues.sharedSettings.gmID = sharedSettings.gmID;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
   console.log('onInit -> ST:Adventures 2e Relay');
 };
@@ -23,8 +24,8 @@ export const onChange = async ({ character }: { character: Record<string, any> }
 export const onSettingsChange = () => {};
 
 export const onSharedSettingsChange = (change: SharedSettingsChangeArgs) => {
-  const gmStore = useGMStore()
-  gmStore.updateGMResources(change.settings)
+  // const gmStore = useGMStore()
+  // gmStore.updateGMResources(change.settings)
 };
 
 export const onTranslationsRequest = () => ({});

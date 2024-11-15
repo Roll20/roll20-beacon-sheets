@@ -1,6 +1,13 @@
 <template>
   <div class="gm-sheet">
-    <div class="gm-sheet__main">
+    <header class="gm-sheet__header">
+      <button
+        @click="gmStore.registerAsGMSheet"
+      >
+        Register GM Sheet
+      </button>
+    </header>
+    <main class="gm-sheet__main">
       <div class="gm-sheet__resources">
         <ResourceCounter 
           id="Momentum"
@@ -15,7 +22,7 @@
           @update:modelValue="threat = $event.value"
         />
       </div>
-    </div>
+    </main>
   </div>
 </template>
 

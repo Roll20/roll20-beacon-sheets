@@ -17,8 +17,7 @@ type CommonParams = {
 type RollPost = {
   type: "roll",
   parameters: CommonParams & {
-    equation: string,
-    successes: number,
+    bottomBarValues: string[],
     dice?: number[],
   }
 };

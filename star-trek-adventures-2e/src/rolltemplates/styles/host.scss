@@ -2,26 +2,185 @@
 
 @use "./rolls.scss";
 
+@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+
 rolltemplate.sta2 {
+  --rolltemplate-background-color: black;
+  --roltemplate-text-color: #957055;
+  --lcars-sidebar-radius: min(64px, 100%);
+
+  --top-sidebar-item-1: #7851D9;
+  --top-sidebar-item-2: #693FD5;
+  --top-sidebar-item-3: #5B2DCF;
+  --top-sidebar-item-4: #5329BC;
+  --top-sidebar-item-5: #4B25A9;
+  --top-sidebar-item-6: #422197;
+
+  --bottom-sidebar-item-1: #D95178;
+  --bottom-sidebar-item-2: #D53F69;
+  --bottom-sidebar-item-3: #CF2D5B;
+  --bottom-sidebar-item-4: #BC2953;
+  --bottom-sidebar-item-5: #A9254B;
+  --bottom-sidebar-item-6: #972142;
+
   display: grid;
   width: 100%;
 
-  grid-template-columns: repeat(12, 1fr);
+  color: var(--rolltemplate-text-color);
+  font-family: "Antonio", "Arial Narrow";
 
-  background: var(--secondary-background-color);
+  grid-template-columns: repeat(4, 1fr);
 
-  padding: 8px;
+  background: var(--rolltemplate-background-color);
+
+  padding: 0 0 0px 8px;
 
   border-radius: 4px;
 
+  box-shadow: 0 0 2px 1px #fffc;
+  filter: brightness(1.125) contrast(150%);
+
   .info {
     display: grid;
-    grid-column: span 12;
+    grid-column: span 3;
+    margin: 8px 24px 0 0;
+    padding-bottom: 8px;
+    z-index: 1;
+    background-color: var(--rolltemplate-background-color);
+    border-radius: 0 0 0 1rem;
 
     &__name {
       display: flex;
-      grid-column: span 12;
-      justify-content: center;
+      grid-column: span 3;
+      justify-content: flex-end;
+      font-size: 1.25rem;
+      line-height: 1.25;
+    }
+  }
+
+  .lcars {
+    &__top,
+    &__bottom {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 4;
+    }
+
+    &__bottom {
+      grid-template-rows: min-content auto
+    }
+
+    &__top-sidebar {
+      grid-row: span 2;
+      border-radius: 0 0 0 var(--lcars-sidebar-radius);
+    }
+
+    &__top-underbar {
+      height: 1rem;
+      grid-column: span 3;
+    }
+
+    &__top-sidebar,
+    &__top-underbar {
+      background-color: #86d;
+      margin-bottom: 4px;
+    }
+
+    &__top-content {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 3;
+      position: relative;
+
+      &::after {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 1rem;
+        width: 1rem;
+        content: " ";
+        background-color: #86d;
+        background: linear-gradient(to top right, #86d 50%, black 50%);
+        z-index: 0;
+      }
+    }
+
+    &__bottom-sidebar {
+      justify-content:flex-end;
+      margin-bottom: 0;
+      grid-template-rows: repeat(5, max-content);
+      grid-row: span 2;
+
+      .lcars__sidebar-spacer {
+        border-radius: var(--lcars-sidebar-radius) 0 0 0;
+        grid-row: span 2;
+        height: 60px;
+      }
+    }
+
+    &__bottom-overbar {
+      height: 1rem;
+      grid-column: span 3;
+    }
+
+    &__bottom-corner,
+    &__bottom-sidebar,
+    &__bottom-overbar {
+      background-color: #d68;
+    }
+
+    &__top-sidebar,
+    &__bottom-sidebar {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: 1;
+      list-style: none;
+      margin-left: 0;
+
+      li {
+        width: 100%;
+        box-sizing: border-box;
+
+        text-align: center;
+        text-wrap: wrap;
+        padding: 2px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: black;
+
+        @for $n from 2 through 7 {
+          &:nth-child(#{$n}) {
+            border-top: 2px solid var(--rolltemplate-background-color);
+            background-color: var(--bottom-sidebar-item-#{$n});
+          }
+        }
+      }
+    }
+
+    &__bottom-content {
+      display: grid;
+      position: relative;
+      grid-template-columns: subgrid;
+      grid-column: 2/-1;
+      grid-row: 2/-1;
+
+      &::after {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 1rem;
+        width: 1rem;
+        content: " ";
+        background: linear-gradient(to bottom right, #d68 50%, black 50%);
+        z-index: 0;
+      }
+
+      &>*:first-child {
+        z-index: 1;
+        background-color: var(--rolltemplate-background-color);    
+        padding: 8px;
+        border-radius: 1rem 0 0 0;
+      }
     }
   }
 }
