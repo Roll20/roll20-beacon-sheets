@@ -41,6 +41,6 @@ jobs:
           gcloud storage rsync \
             --project=roll20-actual \
             ${{ runner.temp }}/sheet-fonts \
-            "gs://roll20-cdn/discord/fonts/roll20-beacon-sheets/fonts/$ENV_PATH" \
+            "gs://roll20-cdn/roll20-beacon-sheets/fonts/$ENV_PATH" \
             --recursive \
             --cache-control="no-cache"
