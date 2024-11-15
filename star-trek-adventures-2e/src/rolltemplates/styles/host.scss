@@ -29,7 +29,7 @@ rolltemplate.sta2 {
   color: var(--rolltemplate-text-color);
   font-family: "Antonio", "Arial Narrow";
 
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 
   background: var(--rolltemplate-background-color);
 
@@ -63,11 +63,11 @@ rolltemplate.sta2 {
     &__bottom {
       display: grid;
       grid-template-columns: subgrid;
-      grid-column: span 4;
+      grid-column: span 5;
     }
 
     &__bottom {
-      grid-template-rows: min-content auto
+      grid-template-rows: 1rem auto
     }
 
     &__top-sidebar {
@@ -113,6 +113,8 @@ rolltemplate.sta2 {
 
       .lcars__sidebar-spacer {
         border-radius: var(--lcars-sidebar-radius) 0 0 0;
+        background-color: #d68;
+        border-collapse: separate;
         grid-row: span 2;
         height: 60px;
       }
@@ -124,7 +126,6 @@ rolltemplate.sta2 {
     }
 
     &__bottom-corner,
-    &__bottom-sidebar,
     &__bottom-overbar {
       background-color: #d68;
     }
@@ -133,9 +134,14 @@ rolltemplate.sta2 {
     &__bottom-sidebar {
       display: grid;
       grid-template-columns: subgrid;
-      grid-column: 1;
+      grid-column: span 2;
       list-style: none;
       margin-left: 0;
+
+      * {
+        grid-template-columns: subgrid;
+        grid-column: span 2;
+      }
 
       li {
         width: 100%;
@@ -161,7 +167,7 @@ rolltemplate.sta2 {
       display: grid;
       position: relative;
       grid-template-columns: subgrid;
-      grid-column: 2/-1;
+      grid-column: 3/-1;
       grid-row: 2/-1;
 
       &::after {

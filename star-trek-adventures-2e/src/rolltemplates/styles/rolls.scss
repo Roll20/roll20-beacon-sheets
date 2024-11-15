@@ -2,15 +2,15 @@
   .roll {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: subgrid;
     grid-column: 1/-1;
     z-index: 1;
     background-color: var(--rolltemplate-background-color);
 
-    &__bottom-line {
-      display: grid;
-      grid-column: span 3;
-      grid-template-columns: subgrid;
+    &__title {
+      grid-column: span 6;
+      font-size: .8rem;
+      justify-self: center;
+      align-self: center;
     }
 
     &__dice-results{
@@ -23,20 +23,12 @@
       justify-items: center;
 
       li{
+        font-size: 1.25rem;
         grid-column: span 2;
-        &:nth-child(4),
-        &:nth-child(6),
-        &:nth-child(9) {
+        &:nth-child(5n-4) {
           grid-column: 2 / span 2;
         }
       }
-    }
-
-    &__equation,
-    &__successes {
-      display: flex;
-      justify-content: center;
-      grid-column: span 1;
     }
   }
 }
