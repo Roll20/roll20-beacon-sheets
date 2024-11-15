@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
         sheet: "src/main.js"
       },
       output: {
-        dir: "dist",
+        dir: `dist/${SHORT_NAME}`,
         compact: false,
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === "style.css") return "sheet.css";
