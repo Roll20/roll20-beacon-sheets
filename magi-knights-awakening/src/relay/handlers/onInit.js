@@ -1,4 +1,4 @@
-import { initValues } from '..';
+import { initValues } from '../';
 import { colorHandler } from './colorHandler';
 
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.
