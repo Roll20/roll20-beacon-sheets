@@ -1,0 +1,36 @@
+<div class='roll__components' style="display: flex;
+    flex-direction: column;">
+  {{#each components}}
+    {{#if (or (not (isEqual this.value 0)) this.alwaysShowInBreakdown)}}
+      
+          {{#unless @first}}
+          <div class='roll__component component' style="width: 100%;">
+          <hr>
+          <div style="
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    color:rgba(0,0,0,0.87);
+">
+            {{#if this.label}}
+            <span class='component__label'>
+              {{this.label}}
+            </span>
+          {{else}}
+            {{#if this.sides}}
+              <span class='component__label'>
+                {{this.count}}d{{this.sides}}
+              </span>
+            {{/if}}
+          {{/if}}
+          <span class='component__value'>
+            {{this.value}}
+          </span>
+          </div>
+      </div>
+          {{/unless}}
+          
+       
+    {{/if}}
+  {{/each}}
+</div>

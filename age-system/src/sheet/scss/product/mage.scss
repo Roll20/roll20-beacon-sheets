@@ -1,0 +1,168 @@
+@font-face {
+    font-family: 'Eternal Knight';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Eternal Knight'), url('https://fonts.cdnfonts.com/s/22066/eternalknight.woff') format('woff');
+}
+@font-face {
+    font-family: 'Eternal Knight Bold';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Eternal Knight Bold'), url('https://fonts.cdnfonts.com/s/22066/eternalknightbold.woff') format('woff');
+}
+@font-face {
+    font-family: 'Archive';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Archive'), url('https://fonts.cdnfonts.com/s/52090/Archive.woff') format('woff');
+}
+@font-face {
+    font-family: 'Archive';
+    font-style: italic;
+    font-weight: 400;
+    src: local('Archive'), url('https://fonts.cdnfonts.com/s/52090/ArchiveItalic.woff') format('woff');
+}
+@font-face {
+    font-family: 'Archive';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Archive'), url('https://fonts.cdnfonts.com/s/52090/ArchiveBold.woff') format('woff');
+}
+
+
+$ageMAGEColor: #027CAC;
+$ageMAGEColorLight: #ecfaff;
+
+body.modernAge {
+    background-color: #e6eaf2;
+    & h1, h2, h3, h4, h5, h6 {
+        font-family: 'Eternal Knight', sans-serif;
+        text-transform: lowercase;
+    }
+    & .age-header-btn {
+        & button {
+            border-color: $ageMAGEColor;
+            color: $ageMAGEColor;
+        }
+        & .age-toggle-btn-icon {
+            background-color:$ageMAGEColor;
+        }
+    }    
+    & .age-btn {
+        background-color: $ageMAGEColorLight;
+        border: 2px solid rgb(30, 78, 122);
+        color: $ageMAGEColor;
+        border-radius: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+    & .age-icon-btn {
+        background-color: none;
+        color: $ageMAGEColor;
+    }
+    & .age-input-label {
+        color: $ageMAGEColor;
+    }
+    & .age-level-label {
+        background:$ageMAGEColor;
+        color: #FFF;
+        font-family: 'Eternal Knight',sans-serif;
+    }
+    & .age-levelup-btn {
+        font-family: 'Eternal Knight', sans-serif;
+        text-transform: lowercase;
+        background:$ageMAGEColor;
+        color:#FFF;
+        margin:0px -5px;
+        border:none;
+        font-size:16px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        line-height: 100%;
+        padding:2px 5px;
+    }
+    & .age-label-heading, .age-container-heading {
+        font-family: 'Eternal Knight', sans-serif;
+        text-transform: lowercase;
+        background-color: $ageMAGEColor;
+    }
+    & .age-checkbox-toggle input:checked + .slider {
+        background-color: $ageMAGEColor;
+    }
+    
+    & .section-card {
+        & .age-container-content {
+            border-color: $ageMAGEColor;
+            & .age-container-heading {
+                padding: 0 0 2px;
+                margin-top: -2px;
+            }
+        }
+        & .age-container-content::before,.age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
+            display: none;
+          }
+        & .age-combat-unarmed .age-combat-unarmed__toggle, .age-tab .active .age-tab-icon {
+            background-color: $ageMAGEColor;
+        }
+        & .age-combat-section {
+            background-color: $ageMAGEColor;
+        }
+        & .age-tab {
+            & button {
+                display: flex;
+                border-color: $ageMAGEColor;               
+                color:$ageMAGEColor;
+                background: #FFF;
+                font-family:'Archive', serf;
+            text-transform: capitalize;
+            }
+            & .active {
+              background-color: $ageMAGEColor; 
+              & .age-tab-icon {
+                background-color:#FFF;
+              }
+            }
+            & .age-tab-icon {
+                background-color:$ageMAGEColor;
+            }
+            
+        } 
+        & .age-container-heading {
+            font-family:'Archive', serf;
+            text-transform: capitalize;
+        }
+        & .age-defense {
+            grid-template-columns: repeat(2, minmax(75px, 1fr));
+        }
+        & .age-actions-magic-mage {
+            grid-template-columns: repeat(3, minmax(75px, 1fr));
+            & .age-armor-stats {
+                grid-column: span 3;
+            }
+        }
+    }  
+    & .sidebar {
+        & .age-sidebar-list {
+            list-style: none;
+            padding-left: 5px;
+            font-size:1.05rem;
+            & li {
+                margin-bottom: 5px;
+            }
+            &__title {
+                font-family: 'Book Antiqua', Times, serif;
+                color: $ageMAGEColor;
+                font-weight: 600;
+                margin-right: 5px;
+                font-size: 1.25rem;
+            }
+        }
+      }  
+      & .confirm-btn {
+        background:$ageMAGEColor;
+      }
+}

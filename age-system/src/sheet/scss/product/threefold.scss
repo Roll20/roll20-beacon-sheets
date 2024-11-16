@@ -1,0 +1,62 @@
+@font-face {
+    font-family: 'Etherion FREE';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Etherion FREE'), url('https://fonts.cdnfonts.com/s/20270/Etherion FREE.woff') format('woff');
+}
+@font-face{
+    font-family:'UglyQua';
+    font-style:normal;
+    font-weight:500;
+    src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua.woff) format('woff')
+}
+
+@font-face{
+    font-family:'UglyQua';
+    font-style:italic;
+    font-weight:500;
+    src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua-Italic.woff) format('woff')
+}
+$ageThreeFoldColor: #09697e;
+
+body.threefold {
+    background: linear-gradient(rgba(255, 255, 255, 0.2),rgba(255, 255, 255, 0.2)),url('@/assets/background/threefold-light.png');
+    & h1, h2, h3, h4, h5, h6 {
+        font-family: 'Etherion FREE', sans-serif;
+        text-transform: lowercase;
+    }
+    & .age-header-btn {
+        & button {
+            border-color: $ageThreeFoldColor;
+            color: $ageThreeFoldColor;
+        }
+        & .age-toggle-btn-icon {
+            background-color:$ageThreeFoldColor;
+        }
+    } 
+    & .age-btn {
+        background-color: #ecf6ff;
+        border: 2px solid rgb(30, 78, 122);
+        color: $ageThreeFoldColor;
+    }
+    & .age-icon-btn {
+        background-color: none;
+        color: $ageThreeFoldColor;
+    }
+    & .age-label-heading, .age-container-heading {
+        font-family: 'Etherion FREE', sans-serif;
+        text-transform: lowercase;
+        background-color: $ageThreeFoldColor;
+    }
+    & .section-card {
+        & .age-container-content {
+            border-color: $ageThreeFoldColor;
+        }
+        & .age-container-content::before,.age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
+            display: none;
+          }
+        & .age-combat-unarmed .age-combat-unarmed__toggle, .age-tab .active .age-tab-icon {
+            background-color: $ageThreeFoldColor;
+        }
+    }
+}

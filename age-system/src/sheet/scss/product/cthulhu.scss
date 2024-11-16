@@ -1,0 +1,85 @@
+@font-face {
+    font-family: 'The Macabre';
+    font-style: normal;
+    font-weight: 400;
+    src: local('The Macabre'), url('https://fonts.cdnfonts.com/s/49504/The Macabre.woff') format('woff');
+}
+$ageCthulhuColor: #1D3729;
+
+body.cthulhu {
+    background:url('@/assets/background/cthulhuawakens.jpg');
+    & h1, h2, h3, h4, h5, h6 {
+        font-family: 'The Macabre', sans-serif;
+        text-transform: lowercase;
+    }
+    & .age-header-btn {
+        & button {
+            border-color: $ageCthulhuColor;
+            color: $ageCthulhuColor;
+        }
+        & .age-toggle-btn-icon {
+            background-color:$ageCthulhuColor;
+        }
+    }    
+    & .age-btn {
+        background-color: #ecf6ff;
+        border: 2px solid rgb(30, 78, 122);
+        color: $ageCthulhuColor;
+    }
+    & .age-icon-btn {
+        background-color: none;
+        color: $ageCthulhuColor;
+    }
+    & .age-level-label {
+        background:$ageCthulhuColor;
+        color: #FFF;
+        font-family: 'The Macabre',sans-serif;
+    }
+    & .age-levelup-btn {
+        font-family: 'The Macabre', sans-serif;
+        text-transform: lowercase;
+        background:$ageCthulhuColor;
+        color:#FFF;
+        margin:0px -5px;
+        border:none;
+        font-size:16px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        line-height: 100%;
+        padding:2px 5px;
+    }
+    & .age-label-heading, .age-container-heading {
+        font-family: 'The Macabre', sans-serif;
+        text-transform: lowercase;
+        background-color: $ageCthulhuColor;
+    }
+    & .age-checkbox-toggle input:checked + .slider {
+        background-color: $ageCthulhuColor;
+    }
+    
+    & .section-card {
+        & .age-container-content {
+            border-color: $ageCthulhuColor;
+        }
+        & .age-container-content {
+            // -webkit-mask-image: 
+            //         radial-gradient(circle 10px at 0 0, transparent 0, transparent 12px, black 12px)
+            //         radial-gradient(circle 10px at 100% 0, transparent 0, transparent 12px, black 12px),
+            //         radial-gradient(circle 10px at 0 100%, transparent 0, transparent 12px, black 12px),
+            //         radial-gradient(circle 10px at 100% 100%, transparent 0, transparent 12px, black 12px);
+            // --mask: radial-gradient(10px at 0 0,#0000 98%,#000);
+            // -webkit-mask: var(--mask);
+            //         mask: var(--mask);
+        }
+        & .age-container-content::before,.age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
+            display: none;
+          }
+        & .age-combat-unarmed .age-combat-unarmed__toggle, .age-tab .active .age-tab-icon {
+            background-color: $ageCthulhuColor;
+        }
+        & .age-combat-section {
+            background-color: $ageCthulhuColor;
+        }
+    }
+}

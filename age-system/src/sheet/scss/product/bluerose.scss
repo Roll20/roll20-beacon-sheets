@@ -1,0 +1,219 @@
+@font-face{
+    font-family:'Palatino';
+    font-style:normal;
+    font-weight:400;
+    src:local('Palatino'),url(https://fonts.cdnfonts.com/s/56559/palr45w.woff) format('woff')
+}
+@font-face{
+    font-family:'UglyQua';
+    font-style:normal;
+    font-weight:500;
+    src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua.woff) format('woff')
+}
+
+@font-face{
+    font-family:'UglyQua';
+    font-style:italic;
+    font-weight:500;
+    src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua-Italic.woff) format('woff')
+}
+$ageBlueRoseColor: #007bba;
+* {
+    // --background-image: url(/src/assets/background/bluerose-light.jpg);
+    --ease-all: all .25s ease-in-out;
+  }
+
+body.bluerose {
+    background:url(/src/assets/background/bluerose-light.jpg);
+
+    & h1, h2, h3, h4, h5, h6 {
+        font-family: 'Palatino', sans-serif;
+        text-transform: capitalize;
+    }
+    & .age-header-btn {
+        & button {
+            border-color: $ageBlueRoseColor;
+            color: $ageBlueRoseColor;
+            background-color: #ecf6ff;
+        }
+        & .age-toggle-btn-icon {
+            background-color:$ageBlueRoseColor;
+        }
+    } 
+    & .age-btn {
+        background-color: #ecf6ff;
+        border: 2px solid $ageBlueRoseColor;
+        color: $ageBlueRoseColor;
+        background-color: #ecf6ff;
+        border: 2px solid rgb(30, 78, 122);
+        color: $ageBlueRoseColor;
+        
+    }
+    & .age-icon-btn {
+        background-color: none;
+        color: $ageBlueRoseColor;
+    }
+    & .age-input-label {
+        color: $ageBlueRoseColor;
+    }
+    & .age-checkbox-toggle input:checked + .slider {
+        background-color: $ageBlueRoseColor;
+    }
+    & .player-sheet-wrapper {
+        & .section-card {
+            & .age-action-header .accordion-button:not(.collapsed)::after, .age-action-header .accordion-button::after {
+                background:#FFF;
+                mask-image: var(--bs-accordion-btn-active-icon);
+            }
+        }
+        & .age-character-bio-value {
+            color: $ageBlueRoseColor;
+        }  
+        & .age-container-content {
+            border-color: $ageBlueRoseColor;
+        }
+        & .age-container-content::before,.age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
+            display: none;
+          }
+        & .age-level-label {
+            background:$ageBlueRoseColor;
+            color: #FFF;
+            font-family: 'Tanglewood Tales NF',sans-serif;
+        }
+        & .age-levelup-btn {
+            font-family: 'Ringbearer', sans-serif;
+            text-transform: lowercase;
+            background:$ageBlueRoseColor;
+            color:#FFF;
+            margin:0px -5px;
+            border:none;
+            font-size:16px;        
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            line-height: 100%;
+            padding:4px 5px 0;
+        }
+        & .age-label-heading, .age-container-heading {
+            font-family: 'Ringbearer', sans-serif;
+            text-transform: lowercase;
+            background-color: $ageBlueRoseColor;
+        }
+        & .age-container-content::before, .age-container-content::after  {
+            content: '';
+            position: absolute;
+            width: 15px; /* Corner width */
+            height: 15px; /* Corner height */
+            // background-color: #292c41; 
+        }
+        /* Top-left and bottom-right corners */
+        & .age-container-content::before {
+        top: -8px;
+        left: -8px;
+        transform:rotate(135deg);
+        border-top: 3px solid $ageBlueRoseColor;
+    
+        }
+        & .age-container-content::after {
+            bottom: -8px;
+            right: -8px;
+            transform:rotate(-45deg);
+            border-top: 3px solid $ageBlueRoseColor;
+    
+        }
+        & .age-container-content-corner-top-right {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 15px;
+        height: 15px;
+        // background-color: #292c41;
+        transform:rotate(-135deg);
+        border-top: 3px solid $ageBlueRoseColor;
+    
+        } 
+        & .age-container-content-corner-bottom-left {
+            position: absolute;
+            bottom: -8px;
+            left: -8px;
+            width: 15px;
+            height: 15px;
+        //   background-color: #292c41;
+            transform:rotate(45deg);
+            border-top: 3px solid $ageBlueRoseColor;
+        }
+        & .age-tab {
+            & button {
+                display: flex;
+                border-color: $ageBlueRoseColor;               
+                color:$ageBlueRoseColor;
+                font-family:'Palatino';
+                text-transform: capitalize;
+            }
+            & .active {
+              background-color: $ageBlueRoseColor; 
+              & .age-tab-icon {
+                background-color:#FFF;
+              }
+            }
+            & .age-tab-icon {
+                background-color:$ageBlueRoseColor;
+            }
+            
+        } 
+        & .age-container-heading {
+            font-family:'Palatino';
+            text-transform: capitalize;
+        }
+          
+    }
+    & .age-defense {
+        grid-template-columns: repeat(3, minmax(75px, 1fr));
+    }
+    & .age-actions-magic-br {
+        grid-template-columns: repeat(2, minmax(75px, 1fr));
+        & .age-armor-stats {
+            grid-column: span 2;
+        }
+    }
+    & .sidebar {
+        & .age-sidebar-list {
+            list-style: none;
+            padding-left: 5px;
+            font-size:1.05rem;
+            & li {
+                margin-bottom: 5px;
+            }
+            &__title {
+                font-family: 'Book Antiqua', Times, serif;
+                color: $ageBlueRoseColor;
+                font-weight: 600;
+                margin-right: 5px;
+                font-size: 1.25rem;
+            }
+        }
+      }
+      & .confirm-btn {
+        background:$ageBlueRoseColor;
+      }
+  }
+
+body.sheet-darkmode.bluerose {
+    & .age-btn {
+        background-color: #282828;
+        border: 2px solid #aad3f9;
+        color: #aad3f9;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+    & .age-roll-initiative-btn {
+        background-color: #282828;
+        border: 2px solid #aad3f9;
+        color: #aad3f9;
+    }
+}
