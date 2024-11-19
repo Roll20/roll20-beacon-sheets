@@ -25,6 +25,9 @@ let permissions = useMetaStore().permissions;
       <RouterView />
     </div>
   </div>
+  <div v-else class="no-permissions">
+    <img class="centered-image" src="@/assets/no-character-access.png" alt="You do not have access to this character">
+  </div>
 </template>
 
 <style lang="scss">
@@ -70,5 +73,19 @@ let permissions = useMetaStore().permissions;
     align-self: center;
     background: var(--masterBack);
   }
+}
+
+.no-permissions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  background-color: #000; /* Optional background color */
+}
+
+.centered-image {
+  max-width: 80%; /* Ensure the image scales for smaller screens */
+  max-height: 80%;
+  object-fit: contain; /* Maintain aspect ratio */
 }
 </style>
