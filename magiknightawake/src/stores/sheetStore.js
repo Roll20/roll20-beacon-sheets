@@ -132,12 +132,14 @@ export const useSheetStore = defineStore('sheet',() => {
     const prof = ref(false);
     const defaultAbility = ref(skillDetails[skillName][0]);
     const abilitiesList = skillDetails[skillName];
+    const overrideValue = ref('');
 
     m[skillName] = {
       name:skillName,
       proficiency: prof,
       ability: defaultAbility,
       abilitiesList: abilitiesList,
+      overrideValue: overrideValue,
       value: computed(() => 
         abilityScores[defaultAbility.value].mod.value + (prof.value ? proficiency.value : 0))
     };
@@ -499,6 +501,7 @@ export const useSheetStore = defineStore('sheet',() => {
       dehydratedSkills[skillName] = {
         proficiency: skillData.proficiency.value,
         ability: skillData.ability.value,
+        overrideValue: skillData.overrideValue.value,
       };
     }
     return dehydratedSkills;
@@ -509,6 +512,7 @@ export const useSheetStore = defineStore('sheet',() => {
       if (skills[skillName]) {
         skills[skillName].proficiency.value = skillData.proficiency ?? skills[skillName].proficiency.value;
         skills[skillName].ability.value = skillData.ability ?? skills[skillName].ability.value;
+        skills[skillName].overrideValue.value = skillData.overrideValue ?? skills[skillName].overrideValue.value;
       }
     }
   }
@@ -831,13 +835,14 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollSkill = (name) => {
     const abilityName = skills[name].ability.value;
     const formattedTitle = toTitleCase(name.replace(/_/g, ' '));
-    if (skills[name].overrideValue !== '' && skills[name].overrideValue !== undefined){
+    var skillOverrideValue = skills[name].overrideValue.value;
+    if (skillOverrideValue !== '' && skillOverrideValue !== undefined){
       const rollObj = {
         title: formattedTitle,
         characterName: metaStore.name,
         components: [
           {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-          {label:'Skill Value Override', value:Number(skills[name].overrideValue),alwaysShowInBreakdown: true}
+          {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true}
         ]
       };
       rollToChat({rollObj});
@@ -851,7 +856,7 @@ export const useSheetStore = defineStore('sheet',() => {
         ]
       };
       if(skills[name].proficiency.value){
-        rollObj.components.push({label: 'Prof',value: proficiency.value,alwaysShowInBreakdown: true});
+        rollObj.components.push({label: 'Prof',value:Number(proficiency.value),alwaysShowInBreakdown: true});
       }
       rollToChat({rollObj});
     }
