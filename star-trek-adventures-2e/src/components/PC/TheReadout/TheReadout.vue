@@ -5,6 +5,19 @@
       'readout--active': formStarted
     }"
   >
+    <h2 class="readout__header">Task Manager</h2>
+    <aside class="readout__quick-roll-bar">
+      <div v-for="[key, item] in rollStore.savedRolls" :key="key">
+        <button> {{ key }} </button>
+      </div>
+      <button 
+        class="readout__quick-roll-button readout__quick-roll-button--save"
+        @click="rollStore.saveRoll"
+      >
+        <img src="../../../common/assets/add.svg" role="presentation">
+        <span> save </span>
+      </button>
+    </aside>
     <button 
       v-if="formStarted"
       type="reset"
@@ -19,6 +32,13 @@
     >
       Click an Attribute, Department, or Focus to start a roll!
     </span>
+    <label 
+    v-if="formStarted"
+      class="readout__entry"
+    >
+      <span>Attribute</span>
+      <input type="text" v-model="rollStore.activeName">
+    </label>
     <label 
       v-if="attribute"
       class="readout__entry"
@@ -95,9 +115,13 @@ const clearActiveStats = () => {
   .readout {
     display: grid;
     grid-column: span 12;
-    grid-row: span 2;
+    grid-row: span 3;
     grid-template-columns: subgrid;
     grid-template-rows: subgrid;
+
+    button {
+      cursor: pointer;
+    }
 
     button,
     &__empty,
@@ -136,12 +160,36 @@ const clearActiveStats = () => {
       }
     }
 
+    &__header,
     &__prompt {
       display: flex;
+      font-size: var(--subsection-header-size);
+      line-height: var(--subsection-header-size);
+      margin: 0;
+    };
+
+    &__header {
+      grid-column: span 3;
+      justify-content: flex-start;
+    }
+
+    &__prompt {
       grid-column: span 12;
       justify-content: center;
-      margin: 0;
-      font-size: .75rem;
+    }
+
+    &__quick-roll-bar {
+      grid-column: span 9;
+      display: flex;
+    }
+
+    &__quick-roll-button {
+      display: inline-flex;
+      justify-content: baseline;
+      img {
+        height: 1rem;
+        aspect-ratio: 1;
+      }
     }
   }
 </style>

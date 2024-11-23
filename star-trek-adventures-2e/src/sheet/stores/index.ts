@@ -45,28 +45,27 @@ export const useStarTrekStore = defineStore('StarTrek', () => {
     character.attributes = {};
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];
     storeKeys.forEach((key) => {
-      if (key === "roll" ) return;
       if (key === 'meta') {
         const { name, bio, gmNotes, avatar } = stores.meta.dehydrate();
         character.name = name;
         character.bio = bio;
         character.gmNotes = gmNotes;
         character.avatar = avatar;
-      } else {
+      } else if (key !== "gm") {
         character.attributes[key] = stores[key].dehydrate();
       }
     });
+    console.log("dehydrate last stop",character);
     return character;
   };
 
   // Loops through all stores and runs Hydrate.
   // Invoked every time anything in this sheet is updated.
   const hydrateStore = (partial: Record<string, any>, meta: MetaHydrate) => {
+    console.log("hydrate first stop", partial)
     if (partial) {
       storeRegistry.forEach((store) => {
-        if (!partial[store] 
-          || store === "roll" 
-        ) return;
+        if (!partial[store] || store === "gm") return;
         stores[store].hydrate(partial[store]);
       });
     }

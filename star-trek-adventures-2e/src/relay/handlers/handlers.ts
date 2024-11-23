@@ -1,4 +1,4 @@
-import { useGMStore } from '@/sheet/stores/gmStore/gmStore';
+import { updateGMResources, useGMStore } from '@/sheet/stores/gmStore/gmStore';
 import type { InitArgs, SharedSettingsChangeArgs } from '@roll20-official/beacon-sdk';
 import { beaconPulse, initValues } from '../relay';
 
@@ -24,8 +24,9 @@ export const onChange = async ({ character }: { character: Record<string, any> }
 export const onSettingsChange = () => {};
 
 export const onSharedSettingsChange = (change: SharedSettingsChangeArgs) => {
-  // const gmStore = useGMStore()
-  // gmStore.updateGMResources(change.settings)
+  if (initValues.id !== initValues.sharedSettings.gmID) {
+    updateGMResources(change.settings)
+  }
 };
 
 export const onTranslationsRequest = () => ({});

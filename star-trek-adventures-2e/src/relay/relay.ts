@@ -20,6 +20,8 @@ import {
   onTranslationsRequest,
 } from './handlers/handlers';
 import { type GMAttr, gmAttrs } from './computed/gm';
+import { useStarTrekStore } from '@/sheet/stores';
+import { updateGMResources } from '@/sheet/stores/gmStore/gmStore';
 
 /* 
 This is the configuration for the relay. It defines the handlers and actions that the sheet will use.
@@ -145,21 +147,12 @@ export const createRelay = async ({
     // Init Store
     const { attributes, ...profile } = initValues.character;
     store.hydrateStore(attributes, profile);
-    const gmSheetID = initValues.sharedSettings.gmID;
-    const gmValues: Partial<Record<GMAttr, any>> = {}
-    if (gmSheetID) {
-      gmValues.momentum = await dispatch.getComputed({characterId: gmSheetID, property: "momentum"})
-      gmValues.threat = await dispatch.getComputed({characterId: gmSheetID, property: "threat"})
-      console.log(gmSheetID, gmValues.momentum)
-    }
-    store.gm.hydrate({
-      ...gmValues,
-      localSheetID: initValues.character.id
-    })
 
     // Beacon Provides access to settings, like campaign id for example
     store.setCampaignId(initValues.settings.campaignId);
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
+
+    updateGMResources(initValues.sharedSettings)
 
     // Watch for changes
     store.$subscribe(() => {
@@ -179,12 +172,6 @@ export const createRelay = async ({
       if (attributes.updateId === sheetId.value) {
         blockUpdate.value = false;
         return;
-      }
-      if (gmSheetID) {
-        // Object.assign(
-        //   attributes.gm, 
-        //   dispatch.characters[gmSheetID].attributes.gm
-        // )
       }
       store.hydrateStore(attributes, profile);
       await nextTick();

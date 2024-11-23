@@ -3,18 +3,18 @@ import { StoreClass } from "./store";
 export type GMAttr = "momentum" | "threat";
 
 const getMomentum = (character: any) => {
+  console.log(character)
   const gmHydrate = character.character.attributes.gm;
   return gmHydrate.momentum;
 }
 const getThreat = (character: any) => {
   const gmHydrate = character.character.attributes.gm;
-  return gmHydrate.momentum;
+  return gmHydrate.threat;
 }
 
 
 export const gmAttrs = () => {
-  const attrs: Partial<Record<
-    GMAttr,
+  const attrs: Partial<Record< GMAttr,
     { get: (character: any)=> number, tokenBarValue?: boolean; }
   >> = {};
   attrs.momentum = {
