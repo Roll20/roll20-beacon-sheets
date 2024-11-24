@@ -67,7 +67,7 @@ rolltemplate.sta2 {
     }
 
     &__bottom {
-      grid-template-rows: 1rem auto
+      grid-template-rows: 1.125rem auto
     }
 
     &__top-sidebar {
@@ -76,7 +76,7 @@ rolltemplate.sta2 {
     }
 
     &__top-underbar {
-      height: 1rem;
+      height: 1.125rem;
       grid-column: span 3;
     }
 
@@ -121,8 +121,21 @@ rolltemplate.sta2 {
     }
 
     &__bottom-overbar {
-      height: 1rem;
+      height: 1.125rem;
       grid-column: span 3;
+      display: flex;
+      justify-content: center;
+      align-content: center;
+    }
+
+    &__roll-title {
+      width: max-content;
+      font-size: 1rem;
+      line-height: 1rem;
+      padding: 0 4px 0 4px;
+      border-left: 2px solid var(--rolltemplate-background-color);
+      border-right: 2px solid var(--rolltemplate-background-color);
+      color: black;
     }
 
     &__bottom-corner,

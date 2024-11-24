@@ -7,25 +7,37 @@
   >
     <h2 class="readout__header">Task Manager</h2>
     <aside class="readout__quick-roll-bar">
-      <div v-for="[key, item] in rollStore.savedRolls" :key="key">
-        <button> {{ key }} </button>
+      <div v-for="key in rollStore.savedRolls.keys()" :key="key">
+        <button 
+          @click="rollStore.handleSavedRollClick(key)"
+          :class="{
+            'readout__saved-roll-button': true,
+            'readout__saved-roll-button--active': rollStore.savedRollActive && key === rollStore.activeName,
+          }"
+        > 
+          {{ key }} 
+        </button>
       </div>
-      <button 
-        class="readout__quick-roll-button readout__quick-roll-button--save"
-        @click="rollStore.saveRoll"
-      >
-        <img src="../../../common/assets/add.svg" role="presentation">
-        <span> save </span>
-      </button>
     </aside>
-    <button 
+    <div 
       v-if="formStarted"
-      type="reset"
-      class="readout__clear-button"
-      @click="clearActiveStats"
+      class="readout__button-col"
     >
-      Clear
-    </button>
+      <button 
+        type="reset"
+        class="readout__clear-button"
+        @click="clearActiveStats"
+      >
+        Clear
+      </button>
+      <button 
+        v-if="rollStore.savedRollActive"
+        type="reset"
+        @click="deleteSavedRoll"
+      >
+        Delete Roll
+      </button>
+    </div>
     <span 
       v-else
       class="readout__prompt"
@@ -36,7 +48,7 @@
     v-if="formStarted"
       class="readout__entry"
     >
-      <span>Attribute</span>
+      <span>Name</span>
       <input type="text" v-model="rollStore.activeName">
     </label>
     <label 
@@ -66,13 +78,24 @@
       <span>Focus</span>
       <input type="text" disabled :value="focus">
     </label>
-    <button
+    <div 
       v-if="formStarted"
-      class="readout__roll-button"
-      @click="rollStore.doRoll"
+      class="readout__button-col"
     >
-      Roll
-    </button>
+      <button
+        class="readout__roll-button"
+        @click="rollStore.doRoll"
+      >
+        Roll
+      </button>
+      <button 
+          class="readout__save-button"
+          @click="rollStore.saveRoll"
+        >
+          <img src="../../../common/assets/add.svg" role="presentation">
+          <span> Save </span>
+      </button>
+    </div>
   </section>
 </template>
 
@@ -109,6 +132,10 @@ const clearActiveStats = () => {
   delete rollStore.activeStats.focus
 }
 
+const deleteSavedRoll = () => {
+  rollStore.savedRolls.delete(rollStore.activeName)
+  clearActiveStats();
+}
 </script>
 
 <style lang="scss">
@@ -121,9 +148,9 @@ const clearActiveStats = () => {
 
     button {
       cursor: pointer;
+      width: 100%;
     }
 
-    button,
     &__empty,
     &__entry {
       grid-row: span 2;
@@ -131,7 +158,7 @@ const clearActiveStats = () => {
 
     &__empty,
     &__entry {
-      grid-column: span 3;
+      grid-column: span 2;
     }
 
     &__empty {
@@ -149,14 +176,14 @@ const clearActiveStats = () => {
       grid-template-rows: subgrid;
 
       span {
-        grid-column: span 3;
+        grid-column: span 2;
         font-size: .75rem;
       }
 
       input {
         width: 100%;
         box-sizing: border-box;
-        grid-column: span 3;
+        grid-column: span 2;
       }
     }
 
@@ -183,12 +210,25 @@ const clearActiveStats = () => {
       display: flex;
     }
 
-    &__quick-roll-button {
+    &__save-button {
       display: inline-flex;
-      justify-content: baseline;
+      justify-content: center;
       img {
         height: 1rem;
         aspect-ratio: 1;
+      }
+    }
+
+    &__button-col {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 2;
+      grid-column: span 2;
+    }
+
+    &__clear-button {
+      &:last-child{
+        grid-row: 1/-1;
       }
     }
   }

@@ -1,6 +1,6 @@
 import { isAttributeKey, isDepartmentKey, type AttributeKey, type DepartmentKey } from "@/system/gameTerms";
 import { defineStore } from "pinia";
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, toRaw } from "vue";
 import { useStatsStore } from "../statsStore/statsStore";
 import { dispatchRef } from "@/relay/relay";
 import { type Dispatch } from "@roll20-official/beacon-sdk";
@@ -47,19 +47,25 @@ export const useRollStore = defineStore("roll", () => {
     return keys.reduce((total, stat) => total += stat, 0)
   });
 
+  const savedRollActive = computed(() => 
+    savedRolls.has(activeName.value)
+    && JSON.stringify(activeStats) === JSON.stringify(savedRolls.get(activeName.value))
+)
+
   const saveRoll = () => {
     if (!prepared.value) return;
-    savedRolls.set(activeName.value, activeStats);
+    savedRolls.set(activeName.value, {...activeStats});
   };
 
   const doRoll = async () => {
     if (!prepared.value) return;
     const dispatch: Dispatch = dispatchRef.value
 
-    const { results } = await dispatch.roll({rolls: {"roll": `5d20<${targetNumber.value}`}})
-    const bottomBarValues = [results.roll.expression, `Successes: ${results.roll.results.result}`]
+    const {results} = await dispatch.roll({rolls: {"roll": `2d20<${targetNumber.value}`}})
+    const bottomBarValues = [results.roll.expression.replace("<", " ≤ "), `Successes: ${results.roll.results.result}`]
     const content = createRollTemplate({type: "roll", parameters: { 
       ...activeStats,
+      rollTitle: `${activeStats.attribute} + ${activeStats.department}` ,
       bottomBarValues,
       dice: results.roll.results.dice,
       characterName: metaStore.name,
@@ -67,6 +73,16 @@ export const useRollStore = defineStore("roll", () => {
     dispatch.post({
       content
     })
+  }
+
+  const handleSavedRollClick = (clickedRollName: string) => {
+    const clickedRoll = savedRolls.get(clickedRollName);
+    if (activeName.value === clickedRollName && savedRollActive.value) {
+      doRoll()
+      return;
+    }
+    activeName.value = clickedRollName;
+    Object.assign(activeStats, {...clickedRoll});
   }
 
   const dehydrate = () => {
@@ -92,8 +108,10 @@ export const useRollStore = defineStore("roll", () => {
     activeName,
     activeStats,
     savedRolls,
+    savedRollActive,
     saveRoll,
     doRoll,
+    handleSavedRollClick,
     dehydrate,
     hydrate,
   }

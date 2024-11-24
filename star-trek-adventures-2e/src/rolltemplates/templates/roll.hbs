@@ -1,8 +1,5 @@
-{{#> postWrapper type="roll" characterName=characterName bottomBarValues=bottomBarValues}}
+{{#> postWrapper type="roll" characterName=characterName bottomBarValues=bottomBarValues rollTile=rollTitle}}
   <div class="roll">
-    <h4 class="roll__title">
-      {{attribute}} + {{department}}
-    </h4>
     <ul class="roll__dice-results">
       {{#each dice}}
         <li>{{this}}</li>

@@ -4,13 +4,57 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useRollStore } from "@/sheet/stores/rollStore/rollStore";
 import { setActivePinia } from "pinia";
 import { createTestingPinia } from "@pinia/testing";
-import { nextTick } from "vue";
+import { nextTick, ref } from "vue";
 import userEvent from "@testing-library/user-event";
+import { useStatsStore } from "@/sheet/stores/statsStore/statsStore";
 
 const doRender = () => {
   const mounted = render(TheReadout, {})
   return mounted
 };
+
+const fakeRollResult = {
+  "type": "rollResults",
+  "requestId": "92bd4a3f-1ef9-420e-8fc0-c431d2d0a890",
+  "messageId": "4dda4e66-bcf7-4104-9bbb-9c467bf958ed",
+  "results": {
+      "roll": {
+          "rollName": "roll",
+          "expression": "2d20<14",
+          "results": {
+              "result": 2,
+              "dice": [
+                  6,
+                  14
+              ],
+              "expression": "2d20<14",
+              "rolls": [
+                  {
+                      "sides": 20,
+                      "dice": 2,
+                      "results": [
+                          6,
+                          14
+                      ]
+                  }
+              ]
+          }
+      }
+  }
+}
+
+const mocks = vi.hoisted(() => ({
+  dispatchRef: {
+    value:{
+      roll: vi.fn(),
+      post: vi.fn(),
+    }
+  },
+}));
+
+vi.mock("@/relay/relay", () => ({
+  dispatchRef: mocks.dispatchRef
+}))
 
 describe("TheReadout", () => {
   beforeEach(() => {
@@ -59,7 +103,16 @@ describe("TheReadout", () => {
   })
 
   it("should have a roll button that rolls an assembled roll", async () => {
-    
+    const statsStore = useStatsStore();
+    statsStore.departmentFields.CONN.base = 4
+    statsStore.attributeFields.DARING.base = 10
+    const rollStore = useRollStore();
+    rollStore.activeStats.department = "CONN"
+    rollStore.activeStats.attribute = "DARING";
+    doRender();
+    mocks.dispatchRef.value.roll.mockResolvedValueOnce(fakeRollResult)
+    await userEvent.click(screen.getByRole("button", {name: "Roll"}))
+    expect(mocks.dispatchRef.value.roll).toHaveBeenCalledWith({rolls: {"roll": `2d20<14`}})
   })
 })
 
