@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
-const DISCORD_ACTIVITY_CLIENT_ID = process.env.DISCORD_ACTIVITY_CLIENT_ID || "1199270539278164008";
+const DISCORD_ACTIVITY_CLIENT_ID = process.env.DISCORD_ACTIVITY_CLIENT_ID || "1199271093882589195";
 const SHORT_NAME = process.env.VITE_SHEET_SHORT_NAME || 'magiknightawake';
 
 // https://vitejs.dev/config/
