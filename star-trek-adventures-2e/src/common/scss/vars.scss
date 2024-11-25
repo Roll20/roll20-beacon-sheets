@@ -34,4 +34,24 @@ html {
   --science: #{$federation-sci-blue};
 
   --subsection-header-size: .75rem;
+
+  --rolltemplate-background-color: black;
+  --rolltemplate-text-color: #FF7750;
+  --lcars-sidebar-radius: min(64px, 100%);
+
+  --top-sidebar: #86d;
+  --top-sidebar-item-1: #7851D9;
+  --top-sidebar-item-2: #693FD5;
+  --top-sidebar-item-3: #5B2DCF;
+  --top-sidebar-item-4: #5329BC;
+  --top-sidebar-item-5: #4B25A9;
+  --top-sidebar-item-6: #422197;
+
+  --bottom-sidebar: #d68;
+  --bottom-sidebar-item-1: #D95178;
+  --bottom-sidebar-item-2: #D53F69;
+  --bottom-sidebar-item-3: #CF2D5B;
+  --bottom-sidebar-item-4: #BC2953;
+  --bottom-sidebar-item-5: #A9254B;
+  --bottom-sidebar-item-6: #972142;
 }

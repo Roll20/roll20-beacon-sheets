@@ -4,24 +4,13 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
 
+.flyout {
+  right: 9px;
+  top: 7px;
+  color: var(--rolltemplate-text-color);
+}
+
 rolltemplate.sta2 {
-  --rolltemplate-background-color: black;
-  --roltemplate-text-color: #957055;
-  --lcars-sidebar-radius: min(64px, 100%);
-
-  --top-sidebar-item-1: #7851D9;
-  --top-sidebar-item-2: #693FD5;
-  --top-sidebar-item-3: #5B2DCF;
-  --top-sidebar-item-4: #5329BC;
-  --top-sidebar-item-5: #4B25A9;
-  --top-sidebar-item-6: #422197;
-
-  --bottom-sidebar-item-1: #D95178;
-  --bottom-sidebar-item-2: #D53F69;
-  --bottom-sidebar-item-3: #CF2D5B;
-  --bottom-sidebar-item-4: #BC2953;
-  --bottom-sidebar-item-5: #A9254B;
-  --bottom-sidebar-item-6: #972142;
 
   display: grid;
   width: 100%;
@@ -37,7 +26,12 @@ rolltemplate.sta2 {
 
   border-radius: 4px;
 
-  box-shadow: 0 0 2px 1px #fffc;
+
+  &:hover {
+    -webkit-text-stroke: 1px #fff4;
+    box-shadow: 0 0 2px 1px var(--rolltemplate-text-color);
+  }
+
   filter: brightness(1.125) contrast(150%);
 
   .info {
@@ -82,8 +76,13 @@ rolltemplate.sta2 {
 
     &__top-sidebar,
     &__top-underbar {
-      background-color: #86d;
+      background-color: var(--top-sidebar);
       margin-bottom: 4px;
+    }
+
+    &__top-content,
+    &__bottom-content {
+      filter:blur(0.01);
     }
 
     &__top-content {
@@ -92,6 +91,13 @@ rolltemplate.sta2 {
       grid-column: span 3;
       position: relative;
 
+      h6 {
+        margin: 0;
+        font-weight: 400;
+        color: var(--rolltemplate-text-color)
+
+      }
+
       &::after {
         position: absolute;
         left: 0;
@@ -99,10 +105,16 @@ rolltemplate.sta2 {
         height: 1rem;
         width: 1rem;
         content: " ";
-        background-color: #86d;
-        background: linear-gradient(to top right, #86d 50%, black 50%);
+        background-color: var(--top-sidebar);
         z-index: 0;
       }
+    }
+
+    &__bottom-sidebar,
+    &__bottom-overbar {
+
+      color:black;
+      -webkit-text-stroke: 0 currentColor;
     }
 
     &__bottom-sidebar {
@@ -113,7 +125,7 @@ rolltemplate.sta2 {
 
       .lcars__sidebar-spacer {
         border-radius: var(--lcars-sidebar-radius) 0 0 0;
-        background-color: #d68;
+        background-color: var(--bottom-sidebar);
         border-collapse: separate;
         grid-row: span 2;
         height: 60px;
@@ -140,7 +152,7 @@ rolltemplate.sta2 {
 
     &__bottom-corner,
     &__bottom-overbar {
-      background-color: #d68;
+      background-color: var(--bottom-sidebar);
     }
 
     &__top-sidebar,
@@ -190,7 +202,7 @@ rolltemplate.sta2 {
         height: 1rem;
         width: 1rem;
         content: " ";
-        background: linear-gradient(to bottom right, #d68 50%, black 50%);
+        background-color: var(--bottom-sidebar);
         z-index: 0;
       }
 

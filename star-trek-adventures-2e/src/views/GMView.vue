@@ -8,19 +8,41 @@
       </button>
     </header>
     <main class="gm-sheet__main">
-      <div class="gm-sheet__resources">
+      <div 
+        v-if="gmStore.localSheetID === initValsComputed.sharedSettings.gmID"
+        class="gm-sheet__resource-inputs"
+      >
         <ResourceCounter 
           id="Momentum"
           label="Momentum"
+          data-testid="momentum-input"
           :modelValue="{value: momentum}"
           @update:modelValue="momentum = $event.value"
         />
         <ResourceCounter 
           id="Threat"
           label="Threat"
+          data-testid="threat-input"
           :modelValue="{value: threat}"
           @update:modelValue="threat = $event.value"
         />
+      </div>
+      <div 
+        v-else
+        class="gm-sheet__resource-displays"
+      >
+        <div 
+          class="pc-header__resource-display" 
+          data-testid="momentum-display"
+        >
+          Momentum: {{ momentum }}
+        </div>
+        <div
+          class="pc-header__resource-display"
+          data-testid="threat-display"
+        >
+          Threat: {{ threat }}
+        </div>
       </div>
     </main>
   </div>
@@ -28,6 +50,7 @@
 
 <script setup lang="ts">
 import { ResourceCounter } from "@/components/GM/ResourceCounter";
+import { initValues } from "@/relay/relay";
 import { useGMStore } from "@/sheet/stores/gmStore/gmStore";
 import { computed } from "vue";
 
@@ -47,6 +70,8 @@ const threat = computed({
   }
 })
 
+const initValsComputed = computed(() => initValues)
+
 </script>
 
 <style lang="scss">
@@ -59,7 +84,8 @@ const threat = computed({
     margin-bottom: 1rem;
     grid-template-columns: repeat(12, 1fr);
   }
-  &__resources {
+  &__resource-inputs,
+  &__resource-displays {
     display: grid;
     grid-column: span 12;
     grid-template-columns: subgrid;

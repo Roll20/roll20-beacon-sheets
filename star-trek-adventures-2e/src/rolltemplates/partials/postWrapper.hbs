@@ -8,7 +8,7 @@
     <div class="lcars__top-content">
       <div class="info">
         {{#if characterName}}
-          <div class="info__name">{{characterName}}</div>
+          <h6 class="info__name">{{characterName}}</h6>
         {{/if}}
       </div>
     </div>
@@ -22,9 +22,9 @@
       {{/each}}
     </ul>
     <div class="lcars__bottom-overbar">
-      <div class="lcars__roll-title">
+      <h6 class="lcars__roll-title">
         {{ rollTitle }}
-      </div>
+      </h6>
     </div>
     <div class="lcars__bottom-content">
       {{> @partial-block }}

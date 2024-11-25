@@ -148,6 +148,8 @@ export const createRelay = async ({
     const { attributes, ...profile } = initValues.character;
     store.hydrateStore(attributes, profile);
 
+    console.log(JSON.stringify(initValues))
+
     // Beacon Provides access to settings, like campaign id for example
     store.setCampaignId(initValues.settings.campaignId);
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
