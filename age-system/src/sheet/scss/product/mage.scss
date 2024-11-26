@@ -147,6 +147,9 @@ body.modernAge {
                 grid-column: span 3;
             }
         }
+        & .age-orb-highlight {
+            background-color: $ageMAGEColor;
+        }
     }  
     & .sidebar {
         & .age-sidebar-list {

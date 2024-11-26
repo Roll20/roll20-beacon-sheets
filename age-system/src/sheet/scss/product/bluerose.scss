@@ -65,6 +65,9 @@ body.bluerose {
                 background:#FFF;
                 mask-image: var(--bs-accordion-btn-active-icon);
             }
+            & .age-orb-highlight {
+                background-color: $ageBlueRoseColor;
+            }
         }
         & .age-character-bio-value {
             color: $ageBlueRoseColor;
