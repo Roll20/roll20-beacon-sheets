@@ -78,39 +78,39 @@
     <div class="age-bio-appearance">
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Age</span>
-            <input type="number" class="form-control" placeholder="0" aria-label="Age" aria-describedby="basic-addon1" v-model="bio.age">
+            <input type="number" class="form-control" aria-label="Age" aria-describedby="basic-addon1" v-model="bio.age">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Height</span>
-            <input type="text" class="form-control" placeholder="A value" aria-label="Height" aria-describedby="basic-addon1" v-model="bio.height">
+            <input type="text" class="form-control" aria-label="Height" aria-describedby="basic-addon1" v-model="bio.height">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Weight</span>
-            <input type="text" class="form-control" placeholder="Mass" aria-label="Weight" aria-describedby="basic-addon1" v-model="bio.weight">
+            <input type="text" class="form-control" aria-label="Weight" aria-describedby="basic-addon1" v-model="bio.weight">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Gender</span>
-            <input type="text" class="form-control" placeholder="Guess?" aria-label="Gender" aria-describedby="basic-addon1" v-model="bio.gender">
+            <input type="text" class="form-control" aria-label="Gender" aria-describedby="basic-addon1" v-model="bio.gender">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Sex</span>
-            <input type="text" class="form-control" placeholder="Guess Again?" aria-label="Sex" aria-describedby="basic-addon1" v-model="bio.sex">
+            <input type="text" class="form-control" aria-label="Sex" aria-describedby="basic-addon1" v-model="bio.sex">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Pronouns</span>
-            <input type="text" class="form-control" placeholder="She/He/They/etc" aria-label="Pronouns" aria-describedby="basic-addon1" v-model="bio.pronouns">
+            <input type="text" class="form-control" aria-label="Pronouns" aria-describedby="basic-addon1" v-model="bio.pronouns">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Skin</span>
-            <input type="text" class="form-control" placeholder="A Color?" aria-label="Skin Color" aria-describedby="basic-addon1" v-model="bio.skin">
+            <input type="text" class="form-control" aria-label="Skin Color" aria-describedby="basic-addon1" v-model="bio.skin">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Eye</span>
-            <input type="text" class="form-control" placeholder="Also a color?" aria-label="Eye Color" aria-describedby="basic-addon1" v-model="bio.eyes">
+            <input type="text" class="form-control" aria-label="Eye Color" aria-describedby="basic-addon1" v-model="bio.eyes">
         </div>
         <div class="mb-3 col">
             <span class="age-input-label" id="basic-addon1">Hair</span>
-            <input type="text" class="form-control" placeholder="Colors!!" aria-label="Hair Color" aria-describedby="basic-addon1" v-model="bio.hair">
+            <input type="text" class="form-control" aria-label="Hair Color" aria-describedby="basic-addon1" v-model="bio.hair">
         </div>
     </div>
     </div>

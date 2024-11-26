@@ -283,9 +283,6 @@
 
         <div class="modal-footer-actions" v-if="mode === 'create'">
           <slot name="footer">
-              <button class="btn" title="Delete" @click="$emit('close')">
-                    Cancel
-                </button>
                 <div >
                   <button v-if="mode === 'create' && feature.type"
                 class="confirm-btn"
@@ -300,17 +297,17 @@
         </div>
         <div class="modal-footer-actions"  v-else>
           <slot name="footer">
-
-              <div class="delete-container">
-                <button class="delete-btn delete" title="Delete" @click="$emit('close');$emit('delete')">
-                    ✕ Delete 
-                    {{ feature.type }}
-                </button>
-            </div>
             <button 
               class="confirm-btn"
               @click="$emit('close')"
-            >OK</button>
+            >
+              OK
+            </button>
+            <div class="delete-container">
+              <button class="delete-icon-btn delete" title="Delete" @click="$emit('close');$emit('delete')" v-tippy="{ 'content': 'Delete Ability'}">
+                <font-awesome-icon :icon="['fa', 'trash-alt']" />
+              </button>
+            </div>
           </slot>
           </div>
       </div>

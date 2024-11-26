@@ -93,6 +93,12 @@ body {
   & .age-icon-btn:hover:not(:disabled) {
     filter: brightness(150%);
   }
+  & .delete-icon-btn {
+    background: none;
+    color: #dc3545;
+    border: none;
+    font-size: 16px;
+  }
   & .age-reset-btn {
     position: absolute;
     left: 0;
@@ -1514,6 +1520,7 @@ body.sheet-darkmode {
     margin: 5px 2px;
   & .header-section {
     grid-column: span 2;
+    gap: 15px;
   }
   & .player-sheet-wrapper {
       // grid-template-columns: 1fr 550px ;

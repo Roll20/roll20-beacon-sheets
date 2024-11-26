@@ -41,6 +41,9 @@
           <div class="age-character-bio-value" v-if="bio.background">
             {{ bio.background }}
         </div>
+        <div class="age-character-bio-value" v-if="bio.drive">
+            {{ bio.drive }}
+          </div>
         <div class="age-character-bio-container" v-if="bio.type === 'Animon'">
           <div class="age-character-bio-value">
             {{ bio.ancestry }}

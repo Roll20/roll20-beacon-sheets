@@ -103,15 +103,17 @@
 
         <div class="modal-footer-actions">
           <slot name="footer">
-            <div class="delete-container">
-                <button class="delete-btn delete" title="Delete" @click="$emit('close');$emit('delete')">
-                    ✕ Delete Attack
-                </button>
-            </div>
             <button
               class="confirm-btn"
               @click="$emit('close')"
-            >OK</button>
+            >
+              OK
+            </button>
+            <div class="delete-container">
+              <button class="delete-icon-btn delete" title="Delete" @click="$emit('close');$emit('delete')" v-tippy="{ 'content': 'Delete Attack'}">
+                <font-awesome-icon :icon="['fa', 'trash-alt']" />
+              </button>
+            </div>
           </slot>
         </div>
       </div>

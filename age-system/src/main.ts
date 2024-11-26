@@ -41,9 +41,11 @@ import { faGear,
          faSquarePlus,
          faSquareMinus,
         faCirclePlus,
-      faCircleXmark,
-    faKitMedical,
-  faCampground } from '@fortawesome/free-solid-svg-icons'
+        faCircleXmark,
+        faKitMedical,
+        faCampground,
+        faTrash,
+      faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 /* add icons to the library */
 library.add(faGear,
           faSheetPlastic,   
@@ -62,10 +64,12 @@ library.add(faGear,
           faBars,
           faSquarePlus,
           faSquareMinus,
-        faCirclePlus,
-      faCircleXmark,
-    faKitMedical,
-  faCampground)
+          faCirclePlus,
+          faCircleXmark,
+          faKitMedical,
+          faCampground,
+          faTrash,
+        faTrashAlt)
 
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';

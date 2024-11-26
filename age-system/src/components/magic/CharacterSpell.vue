@@ -79,7 +79,7 @@
   <Teleport to="body">
     <!-- use the modal component, pass in the prop -->
     <SpellModal :show="showModal" @close="showModal = false;" :spell="spell"
-      :index="index" @delete="handleDelete()">
+      :index="index" :magicLabel="magicLabel" @delete="handleDelete()">
       <template #header>
         <h3 class="age-spell-details-header">Spell Details</h3>
       </template>

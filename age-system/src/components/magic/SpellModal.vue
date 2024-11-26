@@ -177,38 +177,34 @@
                       placeholder: magicLabel + ' Description',scrollingContainer: true}" v-model:content="spell.description" />
                     </div>
                     </div>
-                    <!-- <textarea class="form-control" data-testid="test-spell-description"
-                    placeholder="Description"
-                    :id="`description-${spell._id}`"
-                    v-model="spell.description" /> -->
                 </div>
                 </div>
             </div>
         
             <div class="modal-footer-actions" v-if="mode === 'create'">
           <slot name="footer">
-              <button class="btn" title="Delete" @click="$emit('close')">
-                    Cancel
-                </button>
-            <button 
-              class="confirm-btn"
-              @click="spellStore.addSpell(spell);$emit('close')"
-            >Create</button>
+              <button 
+                class="confirm-btn"
+                @click="spellStore.addSpell(spell);$emit('close')"
+              >
+                Create
+              </button>
           </slot>
         </div>
         <div class="modal-footer-actions"  v-else>
           <slot name="footer">
-
+              <button 
+                class="confirm-btn"
+                @click="$emit('close')"
+              >
+                OK
+              </button>
               <div class="delete-container">
-                <button class="delete-btn delete" title="Delete" @click="$emit('close');$emit('delete')">
-                    ✕ Delete 
-                    {{ spell.type }}
+                <button class="delete-icon-btn delete" title="Delete" @click="$emit('close');$emit('delete')" v-tippy="{ 'content': 'Delete Spell'}">
+                  <font-awesome-icon :icon="['fa', 'trash-alt']" />
                 </button>
-            </div>
-            <button 
-              class="confirm-btn"
-              @click="$emit('close')"
-            >OK</button>
+              </div>
+              
           </slot>
           </div>
       </div>
@@ -227,6 +223,7 @@ const props = defineProps({
   mode: String,
   magicLabel:String
 })
+console.log(props.magicLabel)
 const settings = useSettingsStore();
 const magicTypes = ref();
 switch(settings.gameSystem){

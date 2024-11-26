@@ -72,7 +72,7 @@
                 </label>
                 <span class="age-toggle-label">Use Daring</span>
               </div>               
-              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
+              <div class=" input-group" v-if="settings.cthulhuMythos">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.showFear" />
                     <span class="slider round" ></span>
@@ -187,6 +187,8 @@
             <div>
               <p>Fantasy AGE RPG is ©2015 Green Ronin Publishing, LLC.</p>
               <p>Beacon SDK AGE System Sheet created by Don White/Web Lynx ©2024</p>
+            <a href="https://ko-fi.com/J3J614QOV1" target="_blank" class="myButton"><img style="width: 24px;margin-right: 10px;" src="/src/assets/lynx/kofi_symbol.png" />Support Don on ko-fi</a>
+
             </div>
             <div>
               <img src="/src/assets/logos/greenronin-circle.jpg" />
@@ -196,7 +198,6 @@
         </div>
         <div class="modal-footer-actions">
           <slot name="footer">
-            <a href="https://ko-fi.com/J3J614QOV1" target="_blank" class="myButton"><img style="width: 24px;margin-right: 10px;" src="/src/assets/lynx/kofi_symbol.png" />Support Don on ko-fi</a>
             <button
               class="confirm-btn"
               @click="$emit('close')"

@@ -118,7 +118,10 @@ body.modernAge {
                 color:$ageMAGEColor;
                 background: #FFF;
                 font-family:'Archive', serf;
-            text-transform: capitalize;
+                text-transform: capitalize;
+                & .age-tab-label {
+                    padding-top: 4px;
+                }
             }
             & .active {
               background-color: $ageMAGEColor; 

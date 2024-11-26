@@ -38,12 +38,12 @@ export const useSettingsStore = defineStore('settings', () => {
   const gameSystem = ref();
   const color = ref('#1e4e7a');
   const nameInRoll = ref(true);
-  const whisperRollsGM = ref('toggle');
+  const whisperRollsGM = ref('never');
   const whisperRollsGMToggle = ref(false);
-  const aimToggle = ref('toggle');
+  const aimToggle = ref('never');
   const aimValue = ref(1);
   const aim = ref(false);
-  const guardToggle = ref('toggle');
+  const guardToggle = ref('never');
   const guardValue = ref(1);
   const guard = ref(false);
   const rerollStunt = ref('never');

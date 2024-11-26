@@ -149,6 +149,9 @@ body.bluerose {
                 color:$ageBlueRoseColor;
                 font-family:'Palatino';
                 text-transform: capitalize;
+                & .age-tab-label {
+                    padding-top: 4px;
+                }
             }
             & .active {
               background-color: $ageBlueRoseColor; 

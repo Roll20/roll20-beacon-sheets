@@ -180,13 +180,14 @@
           
   
           <div class="modal-footer-actions">
-            <slot name="footer">
-              <button class="btn" @click="customStore.addCondition()">Add custom</button>
-              
+            <slot name="footer">              
               <button
                 class="confirm-btn"
                 @click="$emit('close')"
-              >OK</button>
+              >
+                OK
+              </button>
+              <button class="btn" @click="customStore.addCondition()">Add custom</button>
             </slot>
           </div>
         </div>

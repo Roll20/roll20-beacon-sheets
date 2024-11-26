@@ -195,9 +195,9 @@
   
             <div class="modal-footer-actions" v-if="mode === 'create'">
           <slot name="footer">
-              <button class="btn" title="Delete" @click="$emit('close')">
+              <!-- <button class="btn" title="Delete" @click="$emit('close')">
                     Cancel
-                </button>
+                </button> -->
             <button 
               class="confirm-btn"
               @click="useInventoryStore().addItem(item);$emit('close')"
@@ -208,18 +208,18 @@
           </slot>
         </div>
         <div class="modal-footer-actions"  v-else>
-          <slot name="footer">
-
-              <div class="delete-container">
-                <button class="delete-btn delete" title="Delete" @click="$emit('close');$emit('delete')">
-                    ✕ Delete 
-                    {{ item.type }}
-                </button>
-            </div>
+          <slot name="footer">             
             <button 
               class="confirm-btn"
               @click="$emit('close')"
-            >OK</button>
+            >
+              OK
+            </button>
+            <div class="delete-container">
+              <button class="delete-icon-btn delete" title="Delete" @click="$emit('close');$emit('delete')" v-tippy="{ 'content': 'Delete Inventory Item'}">
+                <font-awesome-icon :icon="['fa', 'trash-alt']" />
+              </button>
+            </div>
           </slot>
           </div>
         </div>

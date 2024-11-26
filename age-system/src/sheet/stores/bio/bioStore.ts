@@ -10,7 +10,7 @@ export type BioHydrate = {
     ancestry: string;
     customAncestry:string;
     profession: string;
-    age: number;
+    age: number | undefined;
     height: string;
     weight: string;    
     gender: string;
@@ -25,6 +25,7 @@ export type BioHydrate = {
     threat?:string;
     aliases?:string;
     type: string;
+    drive?:string;
   };
 };
 
@@ -35,7 +36,7 @@ export const useBioStore = defineStore('bio', () => {
   const ancestry = ref('');
   const customAncestry = ref('');
   const profession = ref('');
-  const age = ref(0);
+  const age = ref();
   const height = ref('');
   const weight = ref('');
   const gender = ref('');
@@ -50,6 +51,7 @@ export const useBioStore = defineStore('bio', () => {
   const threat = ref('');
   const aliases = ref('');
   const type = ref('Character')
+  const drive = ref('');
 
   const dehydrate = () => {
     return {
@@ -75,6 +77,7 @@ export const useBioStore = defineStore('bio', () => {
         threat: threat.value,
         aliases: aliases.value,
         type: type.value,
+        drive: drive.value,
       },
     };
   };
@@ -101,6 +104,7 @@ export const useBioStore = defineStore('bio', () => {
     threat.value = hydrateStore.bio.threat ?? threat.value;
     aliases.value = hydrateStore.bio.aliases ?? aliases.value;
     type.value = hydrateStore.bio.type ?? type.value;
+    drive.value = hydrateStore.bio.drive ?? drive.value;
   };
 
   return {
@@ -125,7 +129,7 @@ export const useBioStore = defineStore('bio', () => {
     threat,
     aliases,
     type,
-
+    drive,
     dehydrate,
     hydrate,
   };
