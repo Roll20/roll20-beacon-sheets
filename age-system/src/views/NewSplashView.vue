@@ -17,28 +17,14 @@
 </template>
 <script setup>
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import { productLineStyle } from '@/utility/productLineStyle';
+
 const settings = useSettingsStore();
 
 const selectSystem = (system) => {
     settings.gameSystem = system;
-    switch(settings.gameSystem){
-        case 'fage1e':
-        case 'fage2e':
-            document.getElementsByTagName('body')[0].classList += ' fantasyAge';
-        break;
-        case 'mage':
-            document.getElementsByTagName('body')[0].classList +=(' modernAge');
-        break;
-        case 'blue rose':
-            document.getElementsByTagName('body')[0].classList +=(' bluerose');
-        break;
-        case 'threefold':
-            document.getElementsByTagName('body')[0].classList +=(' threefold');
-        break;
-        case 'cthulhu':
-            document.getElementsByTagName('body')[0].classList +=(' cthulhu');
-        break;
-    };
+    const colorTheme = initValues.settings.colorTheme;
+    productLineStyle(settings.gameSystem,colorTheme);
 }
 </script>
 <style scoped lang="scss">

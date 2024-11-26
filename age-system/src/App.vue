@@ -162,6 +162,7 @@ import SettingsView from './views/SettingsView.vue';
 import { settingsSheet } from '@/relay/relay';
 import SidebarSection from './components/SidebarSection.vue';
 import NewSplashView from './views/NewSplashView.vue';
+import { productLineStyle } from '@/utility/productLineStyle';
 
 const showModal = ref(false)
 
@@ -171,48 +172,8 @@ const settings = useSettingsStore();
 const campaignId = store.meta.campaignId;
 const colorTheme = initValues.settings.colorTheme;
 const isGM = computed(() => meta.permissions.isGM);
+if(settings.gameSystem) productLineStyle(settings.gameSystem,colorTheme);
 
-if(colorTheme === 'dark'){
-  document.getElementsByTagName('body')[0].classList = 'sheet-darkmode';
-}
-switch(settings.gameSystem){
-  case 'fage1e':
-  case 'fage2e':
-    document.getElementsByTagName('body')[0].classList += ' fantasyAge';
-  break;
-  case 'mage':
-    document.getElementsByTagName('body')[0].classList +=(' modernAge');
-  break;
-  case 'blue rose':
-    document.getElementsByTagName('body')[0].classList +=(' bluerose');
-  break;
-  case 'threefold':
-    document.getElementsByTagName('body')[0].classList +=(' threefold');
-  break;
-  case 'cthulhu':
-    document.getElementsByTagName('body')[0].classList +=(' cthulhu');
-  break;
-}
-watch(() => settings.gameSystem, (newVal, oldVal) => {
-//   switch(settings.gameSystem){
-//   case 'fage1e':
-//   case 'fage2e':
-//     document.getElementsByTagName('body')[0].classList += ' fantasyAge';
-//   break;
-//   case 'mage':
-//     document.getElementsByTagName('body')[0].classList +=(' modernAge');
-//   break;
-//   case 'blue rose':
-//     document.getElementsByTagName('body')[0].classList +=(' bluerose');
-//   break;
-//   case 'threefold':
-//     document.getElementsByTagName('body')[0].classList +=(' threefold');
-//   break;
-//   case 'cthulhu':
-//     document.getElementsByTagName('body')[0].classList +=(' cthulhu');
-//   break;
-// }
-});
 function closeModal() {
   showModal.value = false;
 }

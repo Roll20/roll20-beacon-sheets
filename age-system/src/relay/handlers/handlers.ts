@@ -1,13 +1,14 @@
 import type { InitArgs } from '@roll20-official/beacon-sdk';
 import { initValues, beaconPulse, dispatchRef } from '../relay';
 import type { Dispatch } from '@roll20-official/beacon-sdk';
+import { lightDarkMode } from '@/utility/darkMode';
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.
 export const onInit = ({ character, settings, compendiumDropData }: InitArgs) => {
   initValues.id = character.id;
   initValues.character = character;
   initValues.settings = settings;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
-  // console.log('onInit -> Example Sheet Relay');
+  lightDarkMode(initValues.settings.colorTheme);
 };
 
 // onChange is called when the character data is updated. This is where you will update the sheet with the new data.
@@ -17,7 +18,7 @@ export const onChange = async ({ character }: { character: Record<string, any> }
   console.log('onChange -> Example Sheet Relay', character);
 };
 
-export const onSettingsChange = () => {};
+export const onSettingsChange = (e:any) => { Object.assign(initValues.settings, e.settings);lightDarkMode(e.settings.colorTheme)};
 
 export const onSharedSettingsChange = () => {};
 

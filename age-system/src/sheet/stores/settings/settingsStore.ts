@@ -27,6 +27,9 @@ export type SettingsHydrate = {
     showArcana:boolean;
     cyberpunk:boolean;
     technofantasy:boolean;
+    showFear:boolean;
+    showAlienation:boolean;
+    showCybernetics:boolean;
   };
 };
 
@@ -55,6 +58,9 @@ export const useSettingsStore = defineStore('settings', () => {
   const showArcana = ref(false);
   const cyberpunk = ref(false);
   const technofantasy = ref(false);
+  const showFear = ref(false);
+  const showAlienation = ref(false);
+  const showCybernetics = ref(false);
 
   const dehydrate = () => {
     return {
@@ -82,7 +88,10 @@ export const useSettingsStore = defineStore('settings', () => {
         daring:daring.value,
         showArcana:showArcana.value,
         cyberpunk:cyberpunk.value,
-        technofantasy: technofantasy.value
+        technofantasy: technofantasy.value,
+        showFear: showFear.value,
+        showAlienation: showAlienation.value,
+        showCybernetics: showCybernetics.value,
       },
     };
   };
@@ -112,6 +121,9 @@ export const useSettingsStore = defineStore('settings', () => {
     showArcana.value = hydrateStore.settings.showArcana ?? showArcana.value
     cyberpunk.value = hydrateStore.settings.cyberpunk ?? cyberpunk.value
     technofantasy.value = hydrateStore.settings.technofantasy ?? technofantasy.value
+    showFear.value = hydrateStore.settings.showFear ?? showFear.value
+    showAlienation.value = hydrateStore.settings.showAlienation ?? showAlienation.value
+    showCybernetics.value = hydrateStore.settings.showCybernetics ?? showCybernetics.value
   };
 
   return {
@@ -139,6 +151,9 @@ export const useSettingsStore = defineStore('settings', () => {
     showArcana,
     cyberpunk,
     technofantasy,
+    showFear,
+    showAlienation,
+    showCybernetics,
     dehydrate,
     hydrate,
   };

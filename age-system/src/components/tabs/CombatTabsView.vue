@@ -30,10 +30,11 @@
                             <span class="age-tab-label">Inventory</span>                                
                         </button>
                     </li>
-                    <li class="nav-item age-tab" role="presentation" v-if="settings.cyberpunk">
+                    <li class="nav-item age-tab" role="presentation" v-if="settings.showCybernetics">
                         <button class="nav-link" id="inventory" data-bs-toggle="tab" data-bs-target="#augmentations-pane" type="button" role="tab" aria-controls="augmentations-pane" aria-selected="false">
                             <div class="age-tab-icon age-augmentations-icon"></div>
-                            <span class="age-tab-label">Augmentations</span>                                
+                            <span class="age-tab-label" v-if="settings.cyberpunk">Augmentations</span>                                
+                            <span class="age-tab-label" v-if="settings.technofantasy">Cybernetics</span>                                
                         </button>
                     </li>
                 </ul>

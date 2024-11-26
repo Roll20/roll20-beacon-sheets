@@ -10,10 +10,29 @@
     font-weight: 400;
     src: local('Tanglewood Tales NF'), url('https://fonts.cdnfonts.com/s/54733/TanglewoodTalesNF.woff') format('woff');
 }
+@font-face {
+    font-family: 'Sanitarium BB';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Sanitarium BB'), url('https://fonts.cdnfonts.com/s/27991/SanitariumBB.woff') format('woff');
+}
+@font-face {
+    font-family: 'Technovia';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Technovia'), url('https://fonts.cdnfonts.com/s/60189/technott.woff') format('woff');
+}
+@font-face {
+    font-family: 'American Captain';
+    font-style: normal;
+    font-weight: 400;
+    src: local('American Captain'), url('https://fonts.cdnfonts.com/s/13747/American Captain.woff') format('woff');
+}
 
 $ageFAGE2eColor: #1e4e7a;
 $ageFAGE2eLightColor: #3e79af;
-
+$ageFAGE2eTechnofantasy: #9d3916;
+$ageFAGE2eCthulhu: #005a3f;
 * {
     // --background-image: url('https://i.ibb.co/8z6wS4c/4.png');
     --ease-all: all .25s ease-in-out;

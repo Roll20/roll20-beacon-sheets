@@ -21,33 +21,6 @@
               </select>
             </div>              
           </div>
-          <div class="row age-modal-row">
-            <h4>System Options</h4>
-            <div style="display: grid;grid-template-columns: repeat(3,1fr);">
-              <div class=" input-group">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.showArcana" />
-                    <span class="slider round" ></span>
-                </label>
-                <span class="age-toggle-label">Display {{ settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose' ? 'Arcana' : 'Powers' }}</span>
-              </div>
-              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.peril" />
-                    <span class="slider round" ></span>
-                </label>
-                <span class="age-toggle-label">Use Peril</span>
-              </div>
-              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.daring" />
-                    <span class="slider round" ></span>
-                </label>
-                <span class="age-toggle-label">Use Daring</span>
-              </div>               
-              
-            </div>
-          </div>  
           <!-- // TODO Items unique to genre slices. Technofantasy, Cthulhu Awakens, Cyberpunk, etc. -->
           <!-- <div class="row age-modal-row"  v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'mage'">
             <h4>Genre Slices</h4>
@@ -75,6 +48,54 @@
               </div>
             </div>
           </div> -->
+          <div class="row age-modal-row">
+            <h4>System Options</h4>
+            <div style="display: grid;grid-template-columns: repeat(3,1fr);">
+              <div class=" input-group">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.showArcana" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Display {{ settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose' ? 'Arcana' : 'Powers' }}</span>
+              </div>
+              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.peril" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Use Peril</span>
+              </div>
+              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.daring" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Use Daring</span>
+              </div>               
+              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.showFear" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Show Fear</span>
+              </div>        
+              <div class=" input-group" v-if="settings.cthulhuMythos">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.showAlienation" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Show Alienation</span>
+              </div>        
+              <div class=" input-group" v-if="settings.technofantasy || settings.cyberpunk">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.showCybernetics" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Display Cybernetics</span>
+              </div>        
+            </div>
+          </div>  
+          
           <!-- <div class="row age-modal-row">
 
             <div class=" input-groupcol">
@@ -190,34 +211,16 @@
 <script setup>
 import { initValues } from '@/relay/relay';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import { productLineStyle } from '@/utility/productLineStyle';
+
 const props = defineProps({
   show: Boolean
 })
 const settings = useSettingsStore();
 
 const updateGameSystem = () => {
-  const colorTheme = initValues.settings.colorTheme === 'dark' ? 'sheet-darkmode ' : '';
-  if(colorTheme === 'dark'){
-  document.getElementsByTagName('body')[0].classList = 'sheet-darkmode';
-}
-  switch(settings.gameSystem){
-  case 'fage1e':
-  case 'fage2e':
-    document.getElementsByTagName('body')[0].classList =colorTheme + ' fantasyAge';
-  break;
-  case 'mage':
-    document.getElementsByTagName('body')[0].classList =colorTheme + ' modernAge';
-  break;
-  case 'threefold':
-    document.getElementsByTagName('body')[0].classList =colorTheme + ' threefold';
-  break;
-  case 'cthulhu':
-    document.getElementsByTagName('body')[0].classList =colorTheme + ' cthulhu';
-  break;
-  case 'blue rose':
-    document.getElementsByTagName('body')[0].classList +=(' bluerose');
-  break;
-}
+  const colorTheme = initValues.settings.colorTheme;
+  productLineStyle(settings.gameSystem,colorTheme);
 }
 </script>
 
