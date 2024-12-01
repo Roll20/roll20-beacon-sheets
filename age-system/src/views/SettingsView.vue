@@ -27,21 +27,21 @@
             <div style="display: grid;grid-template-columns: repeat(2,1fr);">
               <div class=" input-group" v-if="settings.gameSystem === 'mage'">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.cyberpunk" />
+                    <input type="checkbox"  v-model="settings.cyberpunk" @change="updateGameSystem" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Use Cyberpunk</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu'">
               <label class="age-checkbox-toggle" style="margin:1rem;">
-                  <input type="checkbox"  v-model="settings.cthulhuMythos" />
+                  <input type="checkbox"  v-model="settings.cthulhuMythos" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
               <span class="age-toggle-label">Use Cthulhu Mythos</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
               <label class="age-checkbox-toggle" style="margin:1rem;">
-                  <input type="checkbox"  v-model="settings.technofantasy" />
+                  <input type="checkbox"  v-model="settings.technofantasy" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
               <span class="age-toggle-label">Use Technofantasy</span>
@@ -221,7 +221,7 @@ const settings = useSettingsStore();
 
 const updateGameSystem = () => {
   const colorTheme = initValues.settings.colorTheme;
-  productLineStyle(settings.gameSystem,colorTheme);
+  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk});
 }
 </script>
 

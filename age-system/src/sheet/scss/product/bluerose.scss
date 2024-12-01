@@ -17,7 +17,7 @@
     font-weight:500;
     src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua-Italic.woff) format('woff')
 }
-$ageBlueRoseColor: #007bba;
+$ageBlueRoseColor: var(--theme-primary);
 * {
     // --background-image: url(/src/assets/background/bluerose-light.jpg);
     --ease-all: all .25s ease-in-out;

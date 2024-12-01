@@ -29,7 +29,7 @@
     src: local('American Captain'), url('https://fonts.cdnfonts.com/s/13747/American Captain.woff') format('woff');
 }
 
-$ageFAGE2eColor: #1e4e7a;
+$ageFAGE2eColor: var(--theme-primary);
 $ageFAGE2eLightColor: #3e79af;
 $ageFAGE2eTechnofantasy: #9d3916;
 $ageFAGE2eCthulhu: #005a3f;

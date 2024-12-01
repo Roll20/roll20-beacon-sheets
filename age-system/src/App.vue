@@ -172,7 +172,7 @@ const settings = useSettingsStore();
 const campaignId = store.meta.campaignId;
 const colorTheme = initValues.settings.colorTheme;
 const isGM = computed(() => meta.permissions.isGM);
-if(settings.gameSystem) productLineStyle(settings.gameSystem,colorTheme);
+if(settings.gameSystem) productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk});
 
 function closeModal() {
   showModal.value = false;

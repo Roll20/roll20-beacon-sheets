@@ -223,7 +223,7 @@ const props = defineProps({
   mode: String,
   magicLabel:String
 })
-console.log(props.magicLabel)
+
 const settings = useSettingsStore();
 const magicTypes = ref();
 switch(settings.gameSystem){
