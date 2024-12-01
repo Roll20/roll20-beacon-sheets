@@ -7,13 +7,13 @@
             <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
 
             </div>
-            <div class="modal-body" style="display: flex;gap:20px;max-width: fit-content;">
+            <div class="modal-body" style="display: flex;max-width: fit-content;">
               <div style="flex:1;min-width: 300px;">
                 <div class="row" style="margin:0">
                   <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Item Name</span>
                     <div>
-                      <input type="text" class="form-control" placeholder="Name" aria-label="Item Name" v-model="item.name"  aria-describedby="basic-addon1">
+                      <input type="text" class="form-control" aria-label="Item Name" v-model="item.name"  aria-describedby="basic-addon1">
                     </div>
                   </div>
                 </div>
@@ -28,11 +28,11 @@
                               v-model="item.type"
                               @change="setConfigurability"
                           >
-                            <option value="item">Item</option>
-                            <option value="consumable">Consumable</option>
-                            <option value="weapon">Weapon</option>
                             <option value="armor">Armor</option>
+                            <option value="consumable">Consumable</option>
+                            <option value="item">Item</option>
                             <option value="shield">Shield</option>
+                            <option value="weapon">Weapon</option>
                           </select>
                       </div>
                           
@@ -40,21 +40,15 @@
                   <div class="mb-3 col-4">
                     <span class="age-input-label" id="basic-addon1">Quantity</span>
                     <div>
-                      <input type="number" class="form-control" placeholder="1" aria-label="Quantity" v-model="item.quantity"  aria-describedby="basic-addon1">
+                      <input type="number" class="form-control" aria-label="Quantity" v-model="item.quantity"  aria-describedby="basic-addon1">
                     </div>
                   </div>
                 </div>
                 <div class="row" style="margin:0">
                   <div class="mb-3 col">
-                    <span class="age-input-label" id="basic-addon1">Min Str</span>
-                    <div>
-                      <input type="number" class="form-control" placeholder="-" aria-label="Min Str" v-model="item.minStr"  aria-describedby="basic-addon1">
-                    </div>
-                  </div>
-                  <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Cost</span>
                     <div>
-                      <input type="text" class="form-control" placeholder="0 sp" aria-label="Quantity" v-model="item.cost"  aria-describedby="basic-addon1">
+                      <input type="text" class="form-control" aria-label="Quantity" v-model="item.cost"  aria-describedby="basic-addon1">
                     </div>
                   </div>
                 </div>
@@ -63,7 +57,7 @@
                   <div class="mb-3 col" v-if="isArmor">
                     <span class="age-input-label" id="basic-addon1">Armor Rating</span>
                     <div>
-                    <input type="number" class="form-control" placeholder="0" aria-label="Armor Rating" v-model="item.defenseMod"  aria-describedby="basic-addon1">
+                    <input type="number" class="form-control" aria-label="Armor Rating" v-model="item.defenseMod"  aria-describedby="basic-addon1">
 
                     </div>
                     </div>
@@ -71,14 +65,20 @@
 
                     <span class="age-input-label" id="basic-addon1">Armor Penalty</span>
                     <div>
-                    <input type="number" class="form-control" placeholder="0" aria-label="Armor Penalty" v-model="item.armorPenalty"  aria-describedby="basic-addon1">
+                    <input type="number" class="form-control" aria-label="Armor Penalty" v-model="item.armorPenalty"  aria-describedby="basic-addon1">
                     </div>
 
+                  </div>
+                  <div class="mb-3 col" v-if="isArmor && settings.showArcana">
+                    <span class="age-input-label" id="basic-addon1">Strain</span>
+                    <div>
+                    <input type="number" class="form-control" aria-label="Strain" v-model="item.strain"  aria-describedby="basic-addon1">
+                    </div>
                   </div>
                   <div class="mb-3 col" v-if="isShield">
                     <span class="age-input-label" id="basic-addon1">Shield Bonus</span>
                     <div>
-                      <input type="number" class="form-control" placeholder="0" aria-label="Shield Bonus" v-model="item.defenseMod"  aria-describedby="basic-addon1">
+                      <input type="number" class="form-control" aria-label="Shield Bonus" v-model="item.defenseMod"  aria-describedby="basic-addon1">
 
                     </div>
                   </div>
@@ -101,15 +101,9 @@
                               },
                           },
                       },
-                      placeholder: 'Item Description',scrollingContainer: true}" v-model:content="item.description" />
+                      scrollingContainer: true}" v-model:content="item.description" />
 
                     </div>
-                    
-
-                    <!-- <textarea class="form-control" data-testid="test-attack-description"
-                    placeholder="Description"
-                    v-model="item.description"
-                     /> -->
                      </div>
               </div>
               <div v-if="item.type === 'weapon'" style="flex:1;min-width: 300px;">
@@ -143,25 +137,59 @@
                 </div>
                 </div>
                 <div class="row" style="margin:0">
-
-                <div class="mb-3 col">
-                    <span class="age-input-label" id="basic-addon1">Damage</span>
-                    <input type="text" class="form-control" placeholder="1d6" aria-label="Weapon Damage" 
-                      aria-describedby="basic-addon1" v-model="item.damage">
+                  <div class="mb-3 col">
+                    <span class="age-input-label" id="basic-addon1">Min Str</span>
+                    <div>
+                      <input type="number" class="form-control" aria-label="Min Str" v-model="item.minStr"  aria-describedby="basic-addon1">
+                    </div>
+                  </div>
+               
+                  <div class="mb-3 col">
+                      <span class="age-input-label" id="basic-addon1">Damage</span>
+                      <input type="text" class="form-control" aria-label="Weapon Damage" 
+                        aria-describedby="basic-addon1" v-model="item.damage">
+                  </div>
                 </div>
+                <div class="row" style="margin:0">
+                  <div class="mb-3 col" v-if="settings.gameSystem === 'mage'">
+                    <span class="age-input-label" id="basic-addon1">Damage Source</span>
+                        <select
+                         class="age-atk-select form-select"
+                            data-testid="test-attack-weaponGroup-input"
+                            v-model="item.damageSource"
+
+                        >
+                          <option value="I">Impact</option>
+                          <option value="P">Penetrating</option>
+                          <option value="B">Ballistic</option>
+                        </select>
+                  </div>
+                  <div class="mb-3 col" v-if="settings.gameSystem === 'mage'">
+                    <span class="age-input-label" id="basic-addon1">Damage Type</span>
+                        <select
+                         class="age-atk-select form-select"
+                            data-testid="test-attack-weaponGroup-input"
+                            v-model="item.damageType"
+
+                        >
+                          <option value="S">Stun</option>
+                          <option value="W">Wound</option>
+                        </select>
+                  </div>
                 </div>
                 <div class="row" style="margin:0">
 
-                    <div class="mb-3 col" v-if="item.weaponType === 'Ranged'">
+                    <div class="mb-3 col" v-if="item.weaponType === 'Ranged' && settings.gameSystem !== 'mage'">
                         <span class="age-input-label" id="basic-addon1">Short Range</span>
                         <div>
-                          <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="item.shortRange" aria-describedby="basic-addon1">
+                          <input type="text" class="form-control" aria-label="Character Name" v-model="item.shortRange" aria-describedby="basic-addon1">
                         </div>
                     </div>
                     <div class="mb-3 col" v-if="item.weaponType === 'Ranged'">
-                        <span class="age-input-label" id="basic-addon1">Long Range</span>
+                        <span class="age-input-label" id="basic-addon1" v-if="settings.gameSystem !== 'mage'">Long Range</span>
+                        <span class="age-input-label" id="basic-addon1" v-if="settings.gameSystem === 'mage'">Range</span>
                         <div>
-                          <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="item.longRange" aria-describedby="basic-addon1">
+                          <input type="text" class="form-control" aria-label="Character Name" v-model="item.longRange" aria-describedby="basic-addon1">
                         </div>
                     </div>
                     <div class="mb-3 col" v-if="item.weaponType === 'Ranged'">
@@ -182,7 +210,7 @@
                 <div v-if="item.weaponType === 'Spell Ranged'">
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Range</span>
-                        <input type="text" class="form-control" placeholder="0" aria-label="Character Name" v-model="item.longRange"  aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" aria-label="Character Name" v-model="item.longRange"  aria-describedby="basic-addon1">
                     </div>
                 </div>
                 
@@ -226,18 +254,28 @@
       </div>
     </Transition>
   </template>
-  <script setup>
-import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import { computed, ref } from 'vue';
-import { fage2eWG } from '../attack/weaponGroups';
-
+<script setup>
+  import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
+  import { computed, ref } from 'vue';
+  import { fage2eWG,mageWG } from '../attack/weaponGroups';
+  import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
 
   const props = defineProps({
     show: Boolean,
     item: { type: Object },
     mode: String
   })
-const weaponGroups = ref(fage2eWG)
+
+  const settings = useSettingsStore();
+  const weaponGroups = ref(fage2eWG)
+  switch(settings.gameSystem){
+    case 'mage':
+      weaponGroups.value = mageWG;
+    break;
+    default:
+      weaponGroups.value = fage2eWG;
+    break;
+  }
 
   const isArmor = computed(() => {
   return props.item.type === 'armor';

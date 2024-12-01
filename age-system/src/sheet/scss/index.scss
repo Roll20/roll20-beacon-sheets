@@ -367,8 +367,6 @@ body {
         }
         & h3.age-bio-header {
           font-size: 1.25rem;
-          text-transform: lowercase;
-          font-family: 'Ringbearer', sans-serif;
           padding: 10px 0 0;
         }
         & .age-bio-appearance {
@@ -490,12 +488,7 @@ body {
             /* width:70px; */
             text-align: center;
         }
-        }
-        & .age-accordion-collapse h1,.age-accordion-collapse h2,.age-accordion-collapse h3,.age-accordion-collapse h4 {
-          text-transform: lowercase;
-          font-family: 'Ringbearer', sans-serif;
-    
-        }
+        }        
         .age-input {
           width: 55px;
           font-size: 24px;
@@ -577,8 +570,6 @@ body {
             display: grid;
             grid-template-columns: 25px 1fr;
             border-radius: 15px;
-            font-family: 'Ringbearer', sans-serif;
-            text-transform: lowercase;
             font-size: 1.25rem;
             border:1px solid;
             padding: 2px 10px;
@@ -659,7 +650,6 @@ body {
             border-radius: 50%;
             font-size: 2rem;
             font-weight: 600;
-            font-family: 'Ringbearer', sans-serif;
             line-height: 1.75;
             color: rgba(0, 0, 0, 0.7);
             &__value {
@@ -734,8 +724,6 @@ body {
           align-items: center;
           color: #fff;
           width: 100%;
-          text-transform: lowercase;
-          font-family: 'Ringbearer', sans-serif;
           height: 100%;
           font-size: 1.4rem;
           padding-top: 2px;
@@ -788,7 +776,6 @@ body {
         white-space: nowrap;
       }
       & .active {
-        border: 2px solid rgb(30, 78, 122);
         color: #ecf6ff;
         & .age-toggle-btn-icon {
           background-color: #FFF;
@@ -809,8 +796,6 @@ body {
     & .age-modal-header, .age-modal-details-header {
       display: flex;
       justify-content: space-between;
-      font-family: 'Ringbearer';
-      text-transform: lowercase;
       & h3 {
         font-size: 2rem;
       }
@@ -1164,8 +1149,6 @@ body.sheet-darkmode {
         width: 100%;
         text-align: center;
         padding: 2px 2px;
-        text-transform: lowercase;
-        font-family: 'Ringbearer', sans-serif;
       }
       
       & .age-num-input {

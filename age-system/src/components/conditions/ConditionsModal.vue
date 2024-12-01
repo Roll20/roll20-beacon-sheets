@@ -90,7 +90,7 @@
                                       },
                                   },
                                 },
-                                placeholder: 'Condition Description',scrollingContainer: true}" v-model:content="condition.description" />
+                                scrollingContainer: true}" v-model:content="condition.description" />
                           </div>
                           <div class="age-quality-modifiers">
 

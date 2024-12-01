@@ -37,12 +37,15 @@ export type Weapon = Item & {
   reload?:string;
   configurable:boolean
   minStr?: number;
+  damageType?:string;
+  damageSource?:string;
 };
 
 export type Armor = Item & {
   equipped: boolean;
   defenseMod: number;
   armorPenalty: number;
+  strain:number;
 };
 
 export type AnyItem = Item | Weapon | Armor;

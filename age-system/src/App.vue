@@ -143,7 +143,7 @@
                         },
                     },
                 },
-                placeholder: 'Game Notes!',scrollingContainer: true}"  v-model:content="meta.bio" />
+                scrollingContainer: true}"  v-model:content="meta.bio" />
     </SidebarSection>
     </Teleport>
 </template>

@@ -9,10 +9,10 @@
             </div>
 
             <div class="modal-body">
-              <div class="row" style="margin:0">
+              <div class="row">
                 <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Name</span>
-                    <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="attack.name"  aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" aria-label="Character Name" v-model="attack.name"  aria-describedby="basic-addon1">
                 </div>
                 <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Type</span>
@@ -27,7 +27,7 @@
                 </div>
               </div>
              
-              <div class="row" style="margin:0">
+              <div class="row">
                 
                 <div class="mb-3 col"  v-if="attack.weaponType === 'Ranged' || attack.weaponType === 'Melee'">
                     <span class="age-input-label" id="basic-addon1">Weapon Group</span>
@@ -43,18 +43,18 @@
                 </div>
                 <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Damage</span>
-                    <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" :id="`damage-${attack._id}`"
+                    <input type="text" class="form-control" aria-label="Character Name" :id="`damage-${attack._id}`"
                     v-model="attack.damage"  aria-describedby="basic-addon1">
                 </div>
               </div>
-              <div class="row" style="margin:0" v-if="attack.weaponType === 'Ranged'">
+              <div class="row" v-if="attack.weaponType === 'Ranged'">
                     <div class="mb-3 col">
                         <span class="age-input-label" id="basic-addon1">Short Range</span>
-                        <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="attack.shortRange"  aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" aria-label="Character Name" v-model="attack.shortRange"  aria-describedby="basic-addon1">
                     </div>
                     <div class="mb-3 col">
                         <span class="age-input-label" id="basic-addon1">Long Range</span>
-                        <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="attack.longRange"  aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" aria-label="Character Name" v-model="attack.longRange"  aria-describedby="basic-addon1">
                     </div>
                     <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Reload</span>
@@ -69,13 +69,13 @@
                         </select>
                 </div>
                 </div>
-                <div class="row" style="margin:0" v-if="attack.weaponType === 'Spell Ranged'">
+                <div class="row" v-if="attack.weaponType === 'Spell Ranged'">
                     <div class="mb-3 col">
                         <span class="age-input-label" id="basic-addon1">Range</span>
                         <input type="text" class="form-control" placeholder="0" aria-label="Character Name" v-model="attack.longRange"  aria-describedby="basic-addon1">
                     </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row">
                  <div class="col" style="min-height: 100px;padding-bottom: 20px;">
                   <span class="age-input-label">Description</span>
                     <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
@@ -93,7 +93,7 @@
                             },
                         },
                       },
-                      placeholder: 'Attack Description',scrollingContainer: true}" v-model:content="attack.description" />
+                      scrollingContainer: true}" v-model:content="attack.description" />
                  </div>
                   
                 </div>
@@ -122,13 +122,24 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import { fage2eWG } from './weaponGroups';
+import { fage2eWG, mageWG } from './weaponGroups';
+import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
 
 const props = defineProps({
   show: Boolean,
   attack: { type: Object },
 })
-const weaponGroups = ref(fage2eWG)
+const settings = useSettingsStore();
+
+const weaponGroups = ref(fage2eWG);
+switch(settings.gameSystem){
+  case 'mage':
+    weaponGroups.value = mageWG;
+  break;
+  default:
+    weaponGroups.value = fage2eWG;
+  break;
+};
 const setWeaponGroupAbility = () => {
     switch(props.item.weaponGroup){
       // ACCURACY

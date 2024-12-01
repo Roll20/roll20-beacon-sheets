@@ -6,7 +6,7 @@
           </button>
         </div>
     <div v-for="quality in qualitiesArray" :key="quality" >
-      <h3 class="age-bio-header">{{ quality }}</h3>
+      <h5 class="mt-3">{{ quality }}</h5>
       <div class="accordion age-accordion">
         
       <CharacterQualitiesView

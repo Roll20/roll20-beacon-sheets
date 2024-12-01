@@ -36,6 +36,10 @@ body.bluerose {
             color: $ageBlueRoseColor;
             background-color: #ecf6ff;
         }
+        & .active {
+            background-color: $ageBlueRoseColor;
+            border: 2px solid $ageBlueRoseColor;
+        }
         & .age-toggle-btn-icon {
             background-color:$ageBlueRoseColor;
         }

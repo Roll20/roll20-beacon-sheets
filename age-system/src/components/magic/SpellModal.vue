@@ -8,7 +8,7 @@
             </div>
         <div class="modal-body">
           <div >
-            <div class="row" style="margin:0"> 
+            <div class="row"> 
               <div class="mb-3 col">
                 <span class="age-input-label" id="basic-addon1">Spell Name</span>
                 <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="spell.name"  aria-describedby="basic-addon1">
@@ -25,7 +25,7 @@
                           </select>
               </div>
               </div>
-              <div class="row" style="margin:0">
+              <div class="row">
                 <div v-if="spell.arcanaType === 'custom'" class="mb-3 col">
                           <span class="age-input-label" id="basic-addon1">MP Cost</span>
                           <input type="number" class="form-control" placeholder="Name" aria-label="Character Name" v-model="spell.mpCost"  aria-describedby="basic-addon1">
@@ -65,7 +65,7 @@
                           <input type="number" class="form-control" placeholder="0" aria-label="Magic Point Cost" v-model="spell.mpCost"  aria-describedby="basic-addon1">
                       </div>
             </div>
-            <div class="row" style="margin:0">
+            <div class="row">
               
                       
               <!-- <div class="mb-3 col">
@@ -154,7 +154,7 @@
 
           </div>
 
-          <div class="row" style="margin:0">  
+          <div class="row">  
                 <div class="mb-3 col">
                   <span class="age-input-label" style="min-width: 100px;">Description</span>
                   <div>
@@ -174,7 +174,7 @@
                             },
                         },
                       },
-                      placeholder: magicLabel + ' Description',scrollingContainer: true}" v-model:content="spell.description" />
+                      scrollingContainer: true}" v-model:content="spell.description" />
                     </div>
                     </div>
                 </div>

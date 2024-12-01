@@ -153,7 +153,7 @@
                             },
                         },
                       },
-                      placeholder: feature.type + ' Description',scrollingContainer: true}" v-model:content="feature.description" />
+                      scrollingContainer: true}" v-model:content="feature.description" />
                 </div>
                </div>
               
@@ -176,7 +176,7 @@
                               },
                           },
                         },
-                        placeholder: 'Novice Level Details',scrollingContainer: true}" v-model:content="feature.qualityNovice" />
+                        scrollingContainer: true}" v-model:content="feature.qualityNovice" />
                 </div>
               </div>
               <div class="row" style="margin:0">
@@ -197,7 +197,7 @@
                             },
                         },
                       },
-                      placeholder: 'Expert Level Details',scrollingContainer: true}" v-model:content="feature.qualityExpert" />
+                      scrollingContainer: true}" v-model:content="feature.qualityExpert" />
                 </div>
               </div>
               <div class="row" style="margin:0">
@@ -218,7 +218,7 @@
                             },
                         },
                       },
-                      placeholder: 'Master Level Details',scrollingContainer: true}" v-model:content="feature.qualityMaster" />
+                      scrollingContainer: true}" v-model:content="feature.qualityMaster" />
                 </div>
               </div>
             </div>

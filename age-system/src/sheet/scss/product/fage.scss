@@ -50,6 +50,10 @@ body.fantasyAge {
             color: $ageFAGE2eColor;
             background-color: #ecf6ff;
         }
+        & .active {
+            background-color: $ageFAGE2eColor;
+            border: 2px solid $ageFAGE2eColor;
+        }
         & .age-toggle-btn-icon {
             background-color:$ageFAGE2eColor;
         }
@@ -164,7 +168,8 @@ body.fantasyAge {
               display: flex;
               border-color: $ageFAGE2eColor;               
               color:$ageFAGE2eColor;
-
+              font-family: 'Ringbearer', sans-serif;
+              text-transform: lowercase;
             }
             & .active {
               background-color: $ageFAGE2eColor; 

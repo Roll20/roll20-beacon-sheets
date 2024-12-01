@@ -16,6 +16,13 @@
           <div class="age-combat-section age-combat-spears-icon" v-if="attack.weaponGroup === 'Spears'"></div>
           <div class="age-combat-section age-combat-staves-icon" v-if="attack.weaponGroup === 'Staves'"></div>
           <div class="age-combat-section age-combat-magic-icon" v-if="attack.weaponType === 'Spell Ranged'"></div>
+          <div class="age-combat-section age-combat-pistols-icon" v-if="attack.weaponGroup === 'Pistols'"></div>
+          <div class="age-combat-section age-combat-longarms-icon" v-if="attack.weaponGroup === 'Long Arms'"></div>
+          <div class="age-combat-section age-combat-shotguns-icon" v-if="attack.weaponGroup === 'Shotguns'"></div>
+          <div class="age-combat-section age-combat-assaultrifles-icon" v-if="attack.weaponGroup === 'Assault Rifles'"></div>
+          <div class="age-combat-section age-combat-smgs-icon" v-if="attack.weaponGroup === 'SMGs'"></div>
+          <div class="age-combat-section age-combat-grenades-icon" v-if="attack.weaponGroup === 'Grenades'"></div>
+
           </div>        
           <div class="age-combat-section age-combat-natural-icon" v-if="attack.weaponType === 'Natural'"></div>
           </div>

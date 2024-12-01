@@ -11,6 +11,12 @@
     src: local('Eternal Knight Bold'), url('https://fonts.cdnfonts.com/s/22066/eternalknightbold.woff') format('woff');
 }
 @font-face {
+    font-family: 'Eternal Knight Condensed';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Eternal Knight Condensed'), url('https://fonts.cdnfonts.com/s/22066/eternalknightcond.woff') format('woff');
+}
+@font-face {
     font-family: 'Archive';
     font-style: normal;
     font-weight: 400;
@@ -43,6 +49,10 @@ body.modernAge {
         & button {
             border-color: $ageMAGEColor;
             color: $ageMAGEColor;
+        }
+        & .active {
+            background-color: $ageMAGEColor;
+            border: 2px solid $ageMAGEColor;
         }
         & .age-toggle-btn-icon {
             background-color:$ageMAGEColor;
@@ -95,6 +105,10 @@ body.modernAge {
     }
     
     & .section-card {
+        & h1,h2,h3,h4,h5 {
+        font-family: 'Eternal Knight Condensed', sans-serif;
+
+        }
         & .age-container-content {
             border-color: $ageMAGEColor;
             & .age-container-heading {

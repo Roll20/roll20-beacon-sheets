@@ -20,6 +20,18 @@ export const fageArcana = [
     'Wood'
   ];
 
+  export const fageTechnoArcana = [
+    'Digital',
+    'Machine'
+  ]
+
+  export const fageMythosArcana = [
+    'Astral',
+    'Draining',
+    'Radiant',
+    'Spatial'
+  ]
+
   export const magePowers = [
     'Cryokinesis',
     'Digital',

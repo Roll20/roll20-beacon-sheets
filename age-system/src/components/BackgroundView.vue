@@ -18,7 +18,7 @@
                         },
                     },
                 },
-                placeholder: 'Details about your character\'s History',scrollingContainer: true}" v-model:content="bio.detailsHistory" />
+                scrollingContainer: true}" v-model:content="bio.detailsHistory" />
         </div>
         <!-- <textarea class="form-control age-bio-textarea" data-testid="test-attack-description"
         placeholder="Description" v-model="bio.detailsHistory" rows="5" />
@@ -43,7 +43,7 @@
                         },
                     },
                 },
-            placeholder: 'Details about your character\'s Relationships',scrollingContainer: true}" v-model:content="bio.relationships" />
+            scrollingContainer: true}" v-model:content="bio.relationships" />
         </div>
         <!-- <textarea class="form-control age-bio-textarea" data-testid="test-attack-description"
         placeholder="Description" v-model="bio.relationships" rows="5" /> -->
@@ -68,7 +68,7 @@
                         },
                     },
                 },
-                placeholder: 'Details about your character\'s Goals and Ties',scrollingContainer: true}" v-model:content="bio.goalsTies" />
+                scrollingContainer: true}" v-model:content="bio.goalsTies" />
          </div>
         <!-- <textarea class="form-control age-bio-textarea" data-testid="test-attack-description"
         placeholder="Description" v-model="bio.goalsTies" rows="5" /> -->
