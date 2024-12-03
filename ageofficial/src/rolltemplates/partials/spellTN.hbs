@@ -1,0 +1,23 @@
+<div>
+    {{#if (isEqualGreater total spellTN)}}
+         <div class="age-spell-success">
+            Your casting was a success!
+        </div>
+    {{else}}
+    <div class="age-spell-failure">
+        Your casting was unsuccessful
+    </div>
+    {{/if}} 
+</div>
+<style>
+    .age-spell-success {
+        color:green;
+        text-align: center;
+        font-weight: 600; 
+    }
+    .age-spell-failure {
+        color:red;
+        text-align: center;
+        font-weight: 600; 
+    }
+</style>

@@ -1,0 +1,27 @@
+{{#> wrapper type="chat" }}
+  {{> header characterName=characterName title=title subtitle=subtitle}}
+  {{#if keyValues}}
+    {{> keyValues keyValues=keyValues }}
+  {{/if}}
+  <div class="body">
+
+    {{#if textContent}}
+      {{> textContent textContent=textContent }}
+    {{/if}}
+    {{!-- {{#if description }} --}}
+    <div>
+      {{{description}}}
+    </div>
+    {{!-- {{/if}} --}}
+    {{#if traits}}
+      <hr>
+      <div class="trait-list">
+        {{#each traits as |trait|}}
+          <div class="trait">
+            {{ capitalize trait}}
+          </div>
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+{{/ wrapper }}

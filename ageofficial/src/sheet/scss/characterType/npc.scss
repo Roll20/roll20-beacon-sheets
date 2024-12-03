@@ -1,0 +1,116 @@
+body {
+    & main {
+        & .npc-sheet-wrapper {
+            width: 100%;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr ;
+            align-items: stretch;
+            gap: 24px;
+            & .column-1-wrapper {
+              display: block;
+            }
+            & .header-section {
+              grid-template-columns: 1fr;
+              grid-column: auto;
+            }
+            & .section-card {
+              // display: flex;        
+              & .age-character-bio {
+                flex:1;
+              }
+              & .age-character-bio {
+                display: grid;
+                grid-template-columns: 75px 1fr;
+                flex:2;
+                & .age-level-label {
+                  display: none;
+                }
+                & .bio__avatar {
+                  padding:5px;
+                  width: 75px;
+                }
+                & .age-character-details {
+                  padding: 5px 0;
+                }
+                & h1.age-character-name {
+                  padding-bottom: 0;
+                }
+                & .age-character-bio-container {
+                  display: grid;
+                  grid-template-columns: repeat(2,1fr);
+                }
+              }
+              & .age-stats {
+                flex: 1;
+                padding: 0 10px;
+                flex-direction: column;
+                justify-content: center;
+                display: flex;
+              }
+              & .age-abilities-btn {
+                & .age-container-content {
+                    border:none;
+                    display: flex;
+                    border-bottom: 1px solid transparent;
+                    & .age-container-heading {
+                        color:#000;
+                    }
+                  }
+                  & .age-container-content:hover {
+                    border-bottom: 1px solid gray;    
+                  }
+                  & .age-container-content::before,.age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
+                    display: none;
+                  }
+                  & .age-num-value {
+                    font-size: 14px;
+                    line-height: 14px;
+                  }
+              }
+              
+            }
+            
+            & .age-actions-section {
+              display: grid;
+              grid-template-columns: 1fr 3fr;
+              width: 100%;
+              & .age-roll-initiative {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-direction: column;
+                margin: 10px;
+                & .age-roll-initiative-btn {
+                  font-size: 1rem;
+                }
+              }      
+              & .age-label {
+                clip-path: none;
+                background: none;
+                line-height: inherit;
+                & .age-label-heading {
+                  background: none;
+                  color:rgba(0,0,0,0.87);
+                  text-align: left;
+                }
+                & .age-label-content {
+                  clip-path: none;
+                  background: none;
+                  display: flex;
+                  flex-direction: column-reverse;
+                  text-align: center;
+                  & .age-label-heading {
+                    text-align: center;
+                  }
+                  & .age-content .age-ability-value {
+                    font-size: 14px;
+                    line-height: initial;
+                    padding-bottom: 0;
+                  }
+                }
+              }
+            }
+          }
+    }
+}

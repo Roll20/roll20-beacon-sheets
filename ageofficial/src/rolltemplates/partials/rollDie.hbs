@@ -1,0 +1,38 @@
+<div class="age-roll {{#if resultType}}roll__total--{{resultType}}{{/if}}">
+  {{#each components}}
+    {{#each this.dice as |die|}}
+      <div class="dice">
+         {{#if (isEqual die 1)}}
+            <span style="font-family:dicefontd6;">
+              a
+            </span>
+            {{/if}}
+            {{#if (isEqual die 2)}}
+            <span style="font-family:dicefontd6;">
+              b
+            </span>
+            {{/if}}
+            {{#if (isEqual die 3)}}
+            <span style="font-family:dicefontd6;">
+              c
+            </span>
+            {{/if}}
+            {{#if (isEqual die 4)}}
+            <span style="font-family:dicefontd6;">
+              d
+            </span>
+            {{/if}}
+            {{#if (isEqual die 5)}}
+            <span style="font-family:dicefontd6;">
+              e
+            </span>
+            {{/if}}
+            {{#if (isEqual die 6)}}
+            <span style="font-family:dicefontd6;">
+              f
+            </span>
+          {{/if}}
+        </div>
+      {{/each}}
+    {{/each}}
+</div>
