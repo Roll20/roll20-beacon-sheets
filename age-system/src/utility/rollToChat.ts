@@ -33,7 +33,7 @@ export default async (args: RollToChatTemplate['parameters'], customDispatch?: D
     characterId: initValues.character.id,
     content: rollTemplate,
     options: {
-      whisper: useSettingsStore().whisperRollsGMToggle ? 'gm' : undefined,
+      whisper: (useSettingsStore().whisperRollsGM === 'always' || useSettingsStore().whisperRollsGMToggle) ? 'gm' : undefined,
       secret: undefined,
     },
   });

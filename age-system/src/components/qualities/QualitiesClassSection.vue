@@ -20,7 +20,7 @@
     </div>
   </div>
   <Teleport to="body">
-    <QualitiesModal :show="showModal" @close="showModal = false;resetFeature()" :feature="featureNew" :mode="'create'" :qualityOptions="['Ability Focus', 'Ancestry', 'Class', 'Favored Stunt']">
+    <QualitiesModal :show="showModal" @close="showModal = false;resetFeature()" :feature="featureNew" :mode="'create'" :qualityOptions="qualitOptions">
       <template #header>
         <h3 class="age-modal-details-header">Create Character Quality</h3>
       </template>
@@ -29,17 +29,22 @@
 </template>
 
 <script setup>
-import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { ref } from 'vue';
+import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
+import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import QualitiesModal from './QualitiesModal.vue';
 import CharacterQualitiesView from './CharacterQualitiesView.vue';
 const props = defineProps({
   aim: { type: Boolean },
   aimValue: { type: Number },
 });
-const qualitiesArray = ['Ancestry & Class','Ability Focus',
-// 'Talent','Specialization',
-'Favored Stunt'];
+const settings = useSettingsStore();
+const qualitiesArray = ref(['Ancestry & Class','Ability Focus','Favored Stunt']);
+const qualitOptions = ref(['Ability Focus','Ancestry','Class','Favored Stunt']);
+if(settings.gameSystem === 'mage'){
+  qualitiesArray.value = ['Ability Focus','Favored Stunt'];
+  qualitOptions.value = ['Ability Focus','Favored Stunt'];
+}
 const emit = defineEmits(['update:modelValue'])
 const showModal = ref(false)
 let featureNew = ref({

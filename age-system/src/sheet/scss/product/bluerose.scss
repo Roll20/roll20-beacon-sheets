@@ -1,22 +1,3 @@
-@font-face{
-    font-family:'Palatino';
-    font-style:normal;
-    font-weight:400;
-    src:local('Palatino'),url(https://fonts.cdnfonts.com/s/56559/palr45w.woff) format('woff')
-}
-@font-face{
-    font-family:'UglyQua';
-    font-style:normal;
-    font-weight:500;
-    src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua.woff) format('woff')
-}
-
-@font-face{
-    font-family:'UglyQua';
-    font-style:italic;
-    font-weight:500;
-    src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua-Italic.woff) format('woff')
-}
 $ageBlueRoseColor: var(--theme-primary);
 * {
     // --background-image: url(/src/assets/background/bluerose-light.jpg);
@@ -34,7 +15,7 @@ body.bluerose {
         & button {
             border-color: $ageBlueRoseColor;
             color: $ageBlueRoseColor;
-            background-color: #ecf6ff;
+            background-color: var(--theme-secondary);
         }
         & .active {
             background-color: $ageBlueRoseColor;
@@ -45,11 +26,8 @@ body.bluerose {
         }
     } 
     & .age-btn {
-        background-color: #ecf6ff;
         border: 2px solid $ageBlueRoseColor;
-        color: $ageBlueRoseColor;
-        background-color: #ecf6ff;
-        border: 2px solid rgb(30, 78, 122);
+        background-color: var(--theme-secondary);
         color: $ageBlueRoseColor;
         
     }
@@ -78,6 +56,7 @@ body.bluerose {
         }  
         & .age-container-content {
             border-color: $ageBlueRoseColor;
+            border-radius: 4px;
         }
         & .age-container-content::before,.age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
             display: none;

@@ -1,41 +1,3 @@
-@font-face {
-    font-family: 'Eternal Knight';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Eternal Knight'), url('https://fonts.cdnfonts.com/s/22066/eternalknight.woff') format('woff');
-}
-@font-face {
-    font-family: 'Eternal Knight Bold';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Eternal Knight Bold'), url('https://fonts.cdnfonts.com/s/22066/eternalknightbold.woff') format('woff');
-}
-@font-face {
-    font-family: 'Eternal Knight Condensed';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Eternal Knight Condensed'), url('https://fonts.cdnfonts.com/s/22066/eternalknightcond.woff') format('woff');
-}
-@font-face {
-    font-family: 'Archive';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Archive'), url('https://fonts.cdnfonts.com/s/52090/Archive.woff') format('woff');
-}
-@font-face {
-    font-family: 'Archive';
-    font-style: italic;
-    font-weight: 400;
-    src: local('Archive'), url('https://fonts.cdnfonts.com/s/52090/ArchiveItalic.woff') format('woff');
-}
-@font-face {
-    font-family: 'Archive';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Archive'), url('https://fonts.cdnfonts.com/s/52090/ArchiveBold.woff') format('woff');
-}
-
-
 $ageMAGEColor: var(--theme-primary);
 $ageMAGEColorLight: #ecfaff;
 
@@ -59,8 +21,8 @@ body.modernAge {
         }
     }    
     & .age-btn {
-        background-color: $ageMAGEColorLight;
-        border: 2px solid rgb(30, 78, 122);
+        background-color: var(--theme-secondary);
+        border: 2px solid var(--theme-primary);
         color: $ageMAGEColor;
         border-radius: 0;
         font-weight: 600;

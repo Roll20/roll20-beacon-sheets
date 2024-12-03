@@ -21,7 +21,7 @@
     </div>
   </div>
   <Teleport to="body">    
-    <QualitiesModal :show="showModal" @close="showModal = false;resetFeature()" :feature="featureNew" :mode="'create'" :qualityOptions="['Specialization', 'Talent']">
+    <QualitiesModal :show="showModal" @close="showModal = false;resetFeature()" :feature="featureNew" :mode="'create'" :qualityOptions="qualitiesArray">
       <template #header>
         <h3 class="age-modal-details-header">Create Character Expertise</h3>
       </template>

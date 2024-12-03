@@ -106,7 +106,7 @@
               </select>
             </div>
           </div>           -->
-          <!-- <div class="row age-modal-row">
+          <div class="row age-modal-row">
             <div class="col">
               <span class="age-input-label" id="basic-addon1">Whisper Rolls to GM</span>
               <select  id="settings.aimToggle" v-model="settings.whisperRollsGM" class="age-selectt form-select">
@@ -125,7 +125,7 @@
                 <option value="always">Always use Reroll Stunt Die</option>
               </select>
             </div>
-          </div>     -->
+          </div>    
                   
           <div class="row age-modal-row">
             <div class="col">

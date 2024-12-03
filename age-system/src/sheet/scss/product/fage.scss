@@ -1,34 +1,3 @@
-@font-face {
-    font-family: 'Ringbearer';
-    font-style: normal;
-    font-weight: 500;
-    src: local('Ringbearer'), url('https://fonts.cdnfonts.com/s/8406/RINGM___.woff') format('woff');
-  }
-  @font-face {
-    font-family: 'Tanglewood Tales NF';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Tanglewood Tales NF'), url('https://fonts.cdnfonts.com/s/54733/TanglewoodTalesNF.woff') format('woff');
-}
-@font-face {
-    font-family: 'Sanitarium BB';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Sanitarium BB'), url('https://fonts.cdnfonts.com/s/27991/SanitariumBB.woff') format('woff');
-}
-@font-face {
-    font-family: 'Technovia';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Technovia'), url('https://fonts.cdnfonts.com/s/60189/technott.woff') format('woff');
-}
-@font-face {
-    font-family: 'American Captain';
-    font-style: normal;
-    font-weight: 400;
-    src: local('American Captain'), url('https://fonts.cdnfonts.com/s/13747/American Captain.woff') format('woff');
-}
-
 $ageFAGE2eColor: var(--theme-primary);
 $ageFAGE2eLightColor: #3e79af;
 $ageFAGE2eTechnofantasy: #9d3916;
@@ -48,7 +17,7 @@ body.fantasyAge {
         & button {
             border-color: $ageFAGE2eColor;
             color: $ageFAGE2eColor;
-            background-color: #ecf6ff;
+            background-color: var(--theme-secondary);
         }
         & .active {
             background-color: $ageFAGE2eColor;
@@ -59,12 +28,9 @@ body.fantasyAge {
         }
     } 
     & .age-btn {
-        background-color: #ecf6ff;
         border: 2px solid $ageFAGE2eColor;
         color: $ageFAGE2eColor;
-        background-color: #ecf6ff;
-        border: 2px solid rgb(30, 78, 122);
-        color: $ageFAGE2eColor;
+        background-color: var(--theme-secondary);
         
     }
     & .age-icon-btn {
