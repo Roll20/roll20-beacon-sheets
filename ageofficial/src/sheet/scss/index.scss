@@ -1,0 +1,1676 @@
+@use '/src/common/scss/vars';
+
+@use 'scale/ecv';
+@use 'scale/vtt';
+
+@use 'inputs';
+
+@use 'characterType/npc.scss';
+@use 'characterType/pc.scss';
+
+@use 'icons/combat';
+@use 'icons/tabs';
+@use 'icons/inventory';
+@use 'icons/headerToggles';
+@use 'icons/qualities.scss';
+@use 'product/fage.scss';
+@use 'product/mage.scss';
+@use 'product/bluerose.scss';
+
+@use 'fonts';
+// TODO IN FUTURE?
+// @use 'product/threefold.scss';
+// @use 'product/titansgrave.scss';
+// @use 'product/cthulhu.scss';
+
+
+// $ageFAGE2eColor: #1e4e7a;
+// $ageCthulhuColor: #1D3729;
+// $ageBlueRoseColor: #007bba;
+// $ageMAGEColor: #027CAC;
+// $ageThreeFoldColor: #09697e;
+// $ageFifthEdColor: #7f0000;
+// $ageExpanseColor: #3c002d;
+// $ageThreeFold2Color:#585183;
+* {
+  scrollbar-width: thin;
+  --theme-color:#1e4e7a;
+  // --background-image: url('https://i.ibb.co/8z6wS4c/4.png');
+}
+html {
+  font-size: 14px;
+  font-family: 'Graphik', Helvetica, Arial, sans-serif;
+}
+body {
+  background-size:unset;  
+  scrollbar-width:thin;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  height: min-content;
+  overflow-x: hidden;
+  font-family: 'Graphik', Helvetica, Arial, sans-serif;
+  & .age-btn {
+    line-height: 100%;
+    padding: 4px;
+    border-radius: 8px;
+    font-weight: 600;    
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 12px;
+    transition: var(--ease-all);
+  }  
+  & .age-btn:hover:not(:disabled) {
+    filter: brightness(102%);
+  }
+  & .age-icon-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    transition: var(--ease-all);
+  }
+  & .age-icon-btn:hover:not(:disabled) {
+    filter: brightness(150%);
+  }
+  & .delete-icon-btn {
+    background: none;
+    color: #dc3545;
+    border: none;
+    font-size: 16px;
+  }
+  & .age-reset-btn {
+    position: absolute;
+    left: 0;
+    top:24%;
+  }
+  & .age-btn-disabled {
+    color: #FFF;
+    pointer-events: none;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    opacity: 0.65;
+  }
+  & .age-toggle-label {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+  }
+  & .age-toggle-label-disabled {
+    opacity: .5;
+  }
+  & .age-input-label {
+    font-weight: 500;
+  }
+  & main {
+    transition: var(--ease-all);
+    margin:1rem;
+    & .age-header-menu {
+      display: none;
+    }
+    & .age-sheet{
+      max-width: 1440px;
+      place-self: center;
+    }
+    & .age-conditions {
+      padding: 4px 30px;
+      font-size: 12px;
+    }
+    & .age-conditions-main {
+      display: none;
+    }
+    & .age-conditions-secondary {
+      display: block;
+    }    
+    & .header-section {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }      
+    & .section-card {
+        background-color: rgba(255, 255, 255, 0.75);
+        border-radius: 12px;
+        position: relative;
+        width: 100%;   
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        & .age-character-bio-container {
+          height: 90px;
+          & .age-character-bio-value {
+            font-size: clamp(14px, 1.15rem, 1rem);
+            font-weight: bold;
+            padding: 2px 0;
+          }  
+        }
+        & .nav-tabs {
+          
+        }
+        & .age-character-bio {
+          & .age-level-label {
+            font-size:18px;
+            text-align: center;
+            width: 30px;
+            position: absolute;
+            bottom: 10px;
+            left: 5px;
+            clip-path: polygon(
+              10px 0px,
+              /* Top left corner */ calc(100% - 10px) 0px,
+              /* Top right corner */ 100% 10px,
+              /* Right top corner */ 100% calc(100% - 10px),
+              /* Right bottom corner */ calc(100% - 10px) 100%,
+              /* Bottom right corner */ 10px 100%,
+              /* Bottom left corner */ 0px calc(100% - 10px),
+              /* Left bottom corner */ 0px 10px
+            );
+          }
+          & .bio__avatar {
+            padding: 5px 0 0;
+            & img {
+              max-height: 140px;
+            }
+          }
+        }
+        // AGE Border with Octogon Shape
+        & .age-container-wrap {
+          width:200px;
+          height:200px;
+          float: left;
+          position: relative;
+          overflow: hidden;
+        }
+        & .age-container-content {
+          position: relative;
+          box-sizing: border-box;
+          border: 3px solid;
+          background: #FFF;
+          text-align: center;
+          & .age-container-heading {
+            color: #fff;
+            width: 100%;
+            text-align: center;
+            white-space: pre;
+          }
+          
+          & .age-num-input {
+            padding: 8px 0 8px 10px;
+            margin-left: 6px;
+          }
+          & .age-num-value {
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 26px;
+            padding: 2px 0;
+            position: relative;
+            overflow: hidden;
+            display: block;
+            width: 100%;
+            & .age-ability-primary {
+              height: 90px;
+              width: 90px;
+              position: absolute;
+              left: calc(50% - 45px);
+              top: calc(50% - 45px);
+              z-index: 1;
+              opacity: 0.15;
+              background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23000" d="M298.736 21.016c-99.298 0-195.928 104.647-215.83 233.736-7.074 45.887-3.493 88.68 8.512 124.787-4.082-6.407-7.92-13.09-11.467-20.034-16.516-32.335-24.627-65.378-25-96.272-11.74 36.254-8.083 82.47 14.482 126.643 27.7 54.227 81.563 91.94 139.87 97.502 5.658.725 11.447 1.108 17.364 1.108 99.298 0 195.93-104.647 215.83-233.736 9.28-60.196.23-115.072-22.133-156.506 21.625 21.867 36.56 45.786 44.617 69.496.623-30.408-14.064-65.766-44.21-95.806-33.718-33.598-77.227-50.91-114.995-50.723-2.328-.118-4.67-.197-7.04-.197zm-5.6 36.357c40.223 0 73.65 20.342 95.702 53.533 15.915 42.888 12.51 108.315.98 147.858-16.02 54.944-40.598 96.035-79.77 126.107-41.79 32.084-98.447 24.39-115.874-5.798-1.365-2.363-2.487-4.832-3.38-7.385 11.724 14.06 38.188 14.944 61.817 1.3 25.48-14.71 38.003-40.727 27.968-58.108-10.036-17.384-38.826-19.548-64.307-4.837-9.83 5.676-17.72 13.037-23.14 20.934.507-1.295 1.043-2.59 1.626-3.88-18.687 24.49-24.562 52.126-12.848 72.417 38.702 45.923 98.07 25.503 140.746-6.426 37.95-28.392 72.32-73.55 89.356-131.988 1.265-4.34 2.416-8.677 3.467-13.008-.286 2.218-.59 4.442-.934 6.678-16.807 109.02-98.412 197.396-182.272 197.396-35.644 0-65.954-15.975-87.74-42.71-26.492-48.396-15.988-142.083 4.675-185.15 26.745-55.742 66.133-122.77 134.324-116.804 46.03 4.027 63.098 58.637 39.128 116.22-8.61 20.685-21.192 39.314-36.21 54.313 24.91-16.6 46.72-42.13 59.572-73 23.97-57.583 6.94-113.422-39.13-116.805-85.737-6.296-137.638 58.55-177.542 128.485-9.21 19.9-16.182 40.35-20.977 60.707.494-7.435 1.312-14.99 2.493-22.652C127.67 145.75 209.275 57.373 293.135 57.373z"/></svg>');
+            }
+          }
+        }
+        & .age-container-content::before, .age-container-content::after  {
+          content: '';
+          position: absolute;
+          width: 15px; /* Corner width */
+          height: 15px; /* Corner height */
+          background-color: white; 
+        }
+        /* Top-left and bottom-right corners */
+        & .age-container-content::before {
+          top: -8px;
+          left: -8px;
+          transform:rotate(135deg);
+          border-top: 3px solid;
+    
+        }
+        & .age-container-content::after {
+            bottom: -8px;
+            right: -8px;
+            transform:rotate(-45deg);
+            border-top: 3px solid;
+    
+        }
+        & .age-container-content-corner-top-right {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          width: 15px;
+          height: 15px;
+          background-color: white;
+          transform:rotate(-135deg);
+          border-top: 3px solid;
+    
+        } 
+        & .age-container-content-corner-bottom-left {
+            position: absolute;
+            bottom: -8px;
+            left: -8px;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            transform:rotate(45deg);
+            border-top: 3px solid ;
+        }
+        & .bio-sub-section {
+          display: grid; 
+          grid-template-columns: 1fr 1fr 80px;
+          flex: 1 1 auto;
+          gap: 20px;
+          padding: 0 22px;
+          margin-bottom: -6px;
+          & .age-subsection-header {
+            text-align: center;
+            margin-bottom: 0;
+          }
+        }
+        & .age-activity-accordon-row {
+          margin:-7px -7px;
+          position: relative;
+        }
+        & .age-ability-scores-container {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-gap: 10px;
+          & button {
+            background: none;
+            border: none;
+            width: 100%;
+            padding: 0;
+          }
+        }
+        & .age-combat-accordion-header {
+          & .age-weapon-name {
+            font-weight: 500;
+            font-size: 1.1rem;
+          }
+          & .age-combat-icon {
+            grid-area: icon;
+          }
+          & .age-combat-name {
+            grid-area: name;
+          }
+          & .age-combat-range {
+            grid-area: range;
+          }
+          & .age-combat-attack {
+            grid-area: attack;
+          }
+          & .age-combat-damage {
+            grid-area: damage;
+          }
+          & .age-combat-details {
+            grid-area: details;
+          }
+          & .age-combat-config {
+            grid-area: edit;
+          }
+          & .age-combat-accordion {
+            grid-area: accordion;
+          }
+        }
+        & .age-orb-container {
+          display: grid;
+          align-items: center;
+          grid-template-columns: 1fr 1fr 1fr;
+          height: 100%;
+          & .age-orb{
+            background-color:rgba(0,0,0,0.2);
+            height: 20px;
+            width: 20px;
+            margin-right: 6px;
+            margin-top: -2px;
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23fff" d="M256 23.05C127.5 23.05 23.05 127.5 23.05 256S127.5 488.9 256 488.9 488.9 384.5 488.9 256 384.5 23.05 256 23.05z"/></svg>');
+          }
+          & .age-orb-highlight {
+          }
+        }    
+        & .age-biography-section {
+          padding:5px;
+          display: flex;
+          flex-direction: column;
+          & .age-bio-textarea {
+            width: 100%;
+          }
+        }
+        & h3.age-bio-header {
+          font-size: 1.25rem;
+          padding: 10px 0 0;
+        }
+        & .age-bio-appearance {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          grid-gap: 5px;
+        }
+        & .age-section-header {
+          font-size: 1.7rem;
+          padding: 0 10px;
+        }
+        & .age-label {
+          // background-color: $ageFAGE2eColor;
+          // clip-path: polygon(
+          //   10px 0px,
+          //   /* Top left corner */ calc(100% - 10px) 0px,
+          //   /* Top right corner */ 100% 10px,
+          //   /* Right top corner */ 100% calc(100% - 10px),
+          //   /* Right bottom corner */ calc(100% - 10px) 100%,
+          //   /* Bottom right corner */ 10px 100%,
+          //   /* Bottom left corner */ 0px calc(100% - 10px),
+          //   /* Left bottom corner */ 0px 10px
+          // );
+          position: relative;
+          padding:2px;
+          & .age-label-content {
+            color: #000;
+            background: #fff;
+            // clip-path: polygon(
+            //   10px 0px,
+            //   /* Top left corner */ calc(100% - 10px) 0px,
+            //   /* Top right corner */ 100% 10px,
+            //   /* Right top corner */ 100% calc(100% - 10px),
+            //   /* Right bottom corner */ calc(100% - 10px) 100%,
+            //   /* Bottom right corner */ 10px 100%,
+            //   /* Bottom left corner */ 0px calc(100% - 10px),
+            //   /* Left bottom corner */ 0px 10px
+            // );
+            & .age-content-value {
+              font-size: 24px;
+              font-weight: bold;
+              text-align: center;
+              line-height: 26px;
+              padding-bottom: 5px;
+              position: relative;
+              overflow: hidden;
+            }
+          }
+          
+        }
+        & .age-character-bio {
+          & .age-character-details {
+            padding: 5px 0;
+          }
+          & .age-character-name {
+            font-size: 2rem;
+          }
+           
+        }
+        // & .age-ability-scores-container {
+        //   display: grid;
+        //   grid-template-columns: repeat(3, minmax(0, 1fr));
+        //   grid-gap: 10px;
+        //   padding: 10px;
+        // }
+        & .age-ability-scores-container-npc {
+          & .age-label {
+          clip-path: none;
+          background: none;
+          line-height: inherit;
+          & .age-label-heading {
+            background: none;
+            color:rgba(0,0,0,0.87);
+            text-align: left;
+            & .accordion-button::after {
+              background: #FFF;
+              mask-image: var(--bs-accordion-btn-active-icon);
+            }
+            & .accordion-button:not(.collapsed)::after {
+              background: #FFF;
+              mask-image: var(--bs-accordion-btn-active-icon);
+            }
+          }
+          & .age-label-content {
+            clip-path: none;
+            background: none;
+            display: grid;
+            grid-template-columns: 1fr 25px;
+            grid-template-rows: repeat(1, 14px);
+            & .age-content .age-ability-value {
+              font-size: 14px;
+              line-height: initial;
+              padding-bottom: 0;
+            }
+          }
+          }
+        }
+        & .hpmp-container {
+          font-size: 24px;
+          font-weight: 600;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) min-content minmax(0, 1fr);
+          & .hpmp-current {
+            display: flex;
+            justify-content: center;
+          }
+          & .hpmp-current input::-webkit-outer-spin-button,
+          .hpmp-current input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+          
+          /* Firefox */
+          & .hpmp-current input[type=number] {
+            -moz-appearance: textfield;
+            padding-bottom: 0;
+          }
+          .hpmp-max {
+            /* width:70px; */
+            text-align: center;
+        }
+        }        
+        .age-input {
+          width: 55px;
+          font-size: 24px;
+          font-weight: 600;
+          text-align: center;
+          line-height: 26px;
+          padding-bottom: 5px;
+          border: none;
+          background: none;
+        }
+        & .age-ability-scores {
+          padding:2px;
+          & .age-ability-value {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 26px;
+            padding-bottom: 5px;
+            position: relative;
+            overflow: hidden;
+            & .age-ability-primary {
+              height: 90px;
+              width: 90px;
+              position: absolute;
+              left: calc(50% - 45px);
+              top: calc(50% - 45px);
+              z-index: 1;
+              opacity: 0.15;
+              background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23000" d="M298.736 21.016c-99.298 0-195.928 104.647-215.83 233.736-7.074 45.887-3.493 88.68 8.512 124.787-4.082-6.407-7.92-13.09-11.467-20.034-16.516-32.335-24.627-65.378-25-96.272-11.74 36.254-8.083 82.47 14.482 126.643 27.7 54.227 81.563 91.94 139.87 97.502 5.658.725 11.447 1.108 17.364 1.108 99.298 0 195.93-104.647 215.83-233.736 9.28-60.196.23-115.072-22.133-156.506 21.625 21.867 36.56 45.786 44.617 69.496.623-30.408-14.064-65.766-44.21-95.806-33.718-33.598-77.227-50.91-114.995-50.723-2.328-.118-4.67-.197-7.04-.197zm-5.6 36.357c40.223 0 73.65 20.342 95.702 53.533 15.915 42.888 12.51 108.315.98 147.858-16.02 54.944-40.598 96.035-79.77 126.107-41.79 32.084-98.447 24.39-115.874-5.798-1.365-2.363-2.487-4.832-3.38-7.385 11.724 14.06 38.188 14.944 61.817 1.3 25.48-14.71 38.003-40.727 27.968-58.108-10.036-17.384-38.826-19.548-64.307-4.837-9.83 5.676-17.72 13.037-23.14 20.934.507-1.295 1.043-2.59 1.626-3.88-18.687 24.49-24.562 52.126-12.848 72.417 38.702 45.923 98.07 25.503 140.746-6.426 37.95-28.392 72.32-73.55 89.356-131.988 1.265-4.34 2.416-8.677 3.467-13.008-.286 2.218-.59 4.442-.934 6.678-16.807 109.02-98.412 197.396-182.272 197.396-35.644 0-65.954-15.975-87.74-42.71-26.492-48.396-15.988-142.083 4.675-185.15 26.745-55.742 66.133-122.77 134.324-116.804 46.03 4.027 63.098 58.637 39.128 116.22-8.61 20.685-21.192 39.314-36.21 54.313 24.91-16.6 46.72-42.13 59.572-73 23.97-57.583 6.94-113.422-39.13-116.805-85.737-6.296-137.638 58.55-177.542 128.485-9.21 19.9-16.182 40.35-20.977 60.707.494-7.435 1.312-14.99 2.493-22.652C127.67 145.75 209.275 57.373 293.135 57.373z"/></svg>');
+            }
+          }
+          & .age-abilities-btn {
+            background: none;
+            border:none;
+            padding: 0;
+            width: 100%;
+          }
+        }
+        & .age-actions, .age-defense, .age-movement {
+          display: grid;    
+          // grid-template-columns: repeat(3, minmax(75px, 1fr));
+          grid-gap: 10px;
+          padding: 2px 10px;
+          & .age-stunt-content {
+            text-align: center;
+            padding-left: 16px;
+          }
+          & .age-stunt-input {
+            width: 100%;
+            border: none;
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: bold;
+          }
+          & .age-armor-stats {
+            grid-column: span 2;
+          }
+        }
+        & .age-movement { 
+          grid-template-columns: repeat(3, minmax(75px, 1fr));
+        }
+        & .age-actions-mage {
+          display: grid;    
+          grid-template-columns: repeat(2, minmax(75px, 1fr));
+          grid-gap: 10px;
+          padding: 10px;
+          // & .age-actions-spellpower {
+          //   grid-column: span 2;
+          // }
+        }
+        & .age-tabs-container {
+          flex-wrap: nowrap;
+          border-bottom:none;
+          gap:5px;
+          margin-left: 10px;
+        }
+        & .age-tab {
+          & button {
+            display: grid;
+            grid-template-columns: 25px 1fr;
+            border-radius: 15px;
+            font-size: 1.25rem;
+            border:1px solid;
+            padding: 2px 10px;
+            background: #FFF;
+            & .age-tab-label {
+              line-height: 100%;
+              padding-top: 5px;
+            }
+          }
+          & .active {
+            color:#FFF;            
+          }
+          & .age-tab-icon {
+            margin-top:0;
+          }
+        } 
+        & .age-combat-unarmed {
+          display: flex;
+          justify-content: flex-end;
+          padding:0 5px 5px;
+          & .age-combat-unarmed__toggle {
+            height: 25px;
+            width: 25px;
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23fff" d="M91.773 25.994C189.313 167.854 104.52 157.17 65.64 169.2c38.8 52.918 16.554 102.644-44.503 133.788 52.5 21.085 122.25 30.452 42.027 141.707 79.578-45.024 134.707-48.82 127.13 53.15 57.795-58.495 133.043-87.973 208.054-38.53-8.558-73.916 12.66-106.284 86.88-74.4-79.58-73.01-46.696-116.363.458-158.83-81.492-3.232-92.92-65.497-89.922-139.92-49.183 53.518-86.497 47.756-104.002-56.962-33.806 76.857-79.335 125.91-199.99-3.21zM202.15 135.336c16.1.356 25.565 12.198 34.666 24.678L177.312 263.08c-20.422 1.985-35.31-4.577-41.787-24.123l59.51-103.074c1.93-.326 3.772-.503 5.537-.545.534-.013 1.06-.014 1.578-.002zm69.037 11.197c16.1.352 25.567 12.2 34.668 24.676L238.947 290.24c-20.423 1.985-35.31-4.586-41.785-24.127l66.91-119.03c1.93-.327 3.772-.507 5.537-.55.533-.013 1.058-.013 1.577-.002zm58.704 32.05c16.102.357 25.567 12.198 34.67 24.673l-65.945 117.547c-20.423 1.98-35.31-4.58-41.783-24.123l65.94-117.55c1.93-.325 3.773-.502 5.54-.544.532-.013 1.06-.013 1.58-.002zm46.342 55.233c16.773.098 26.746 11.977 36.354 24.485l-55.557 96.227c-20.026 1.297-34.856-5.367-41.786-24.125l55.56-96.224c1.887-.255 3.693-.372 5.428-.362zM127.55 271.713l105.83 47.52c3.015 21.69-2.782 38.788-21.958 48.91L105.588 320.62c-4.508-21.618 8.273-35.485 21.96-48.907z"/></svg>');
+            background-color: var(--theme-primary);
+          }
+          & .age-checkbox-toggle {
+            margin-top: 4px;
+          }
+        }
+        & .filtered-list-enter-active, .filtered-list-leave-active {
+          transition: max-height 0.4s ease, opacity 0.4s ease;
+        }
+        
+        & .filtered-list-enter, .filtered-list-leave-to {
+          max-height: 0;
+          opacity: 0;
+        }
+        
+        & .filtered-list-enter-to {
+          max-height: 200px;
+          opacity: 1;
+        }
+        
+        & .no-results {
+          margin-top: 10px;
+          font-size: 1rem;
+          color: #666;
+        }
+        & .age-currency-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr; 
+          padding: 5px;
+          position: relative;
+          grid-gap: 15px;
+          height:50px;
+          margin-bottom: 10px;
+          width: min-content;
+          min-width: 100%;
+          &__coin {
+            position: relative;
+            height: 25px;
+            border-radius: 0.5rem;
+            padding-left: 50px;
+            margin-left: 10px;
+          }
+          & .currency {
+            overflow: hidden;
+            position: absolute;
+            color: #000;
+            font-size: 1.5rem;
+            transform: rotate(-45deg);
+            width: 98%;
+            height: 105%;
+            text-align: center;
+            /* text-shadow: 0 3px 0 #cb7407; */
+            z-index: 3;
+            border-radius: 50%;
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1.75;
+            color: rgba(0, 0, 0, 0.7);
+            &__value {
+              background: none;
+              border:none;
+              height: 100%;
+              font-weight: bold;
+              width: 100%;
+              color:#FFF;
+              font-size: 1.5rem;
+            }
+            & input::-webkit-outer-spin-button,
+            & input::-webkit-inner-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+            }
+            
+            /* Firefox */
+            & input[type=number] {
+              -moz-appearance: textfield;
+            }
+          }
+        }   
+      
+      & .age-dmg-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+        padding: 5px;
+        & .age-dmg-label {
+          vertical-align: middle;
+          line-height: 25px;
+          font-weight: 500;
+        }
+      }
+      & .age-combat-footer {
+        display: grid;
+        grid-template-columns: 1fr 75px;
+        & .age-combat-wg {
+          display: flex;
+          align-items: center;
+          height: 100%;
+          flex-wrap: wrap;
+          background: #fff;
+          padding: 0 5px;
+        }
+      }
+      & .age-label-black {
+        // width: 100%; /* or any other percentage based on your layout */
+        // padding: 2px 0;
+        background-color: rgba(0,0,0,0.87);
+        border-color: rgba(0,0,0,0.87);
+        // clip-path: polygon(
+        //   10px 0px,
+        //   /* Top left corner */ calc(100% - 10px) 0px,
+        //   /* Top right corner */ 100% 10px,
+        //   /* Right top corner */ 100% calc(100% - 10px),
+        //   /* Right bottom corner */ calc(100% - 10px) 100%,
+        //   /* Bottom right corner */ 10px 100%,
+        //   /* Bottom left corner */ 0px calc(100% - 10px),
+        //   /* Left bottom corner */ 0px 10px
+        // );
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(75px, 150px) 1fr;
+        padding: 0;
+        // background: #FFF;
+        grid-gap: 5px;
+        border-style: solid;
+        & .age-label-side-heading-black {
+          display: grid;
+          align-items: center;
+          color: #fff;
+          width: 100%;
+          height: 100%;
+          font-size: 1.4rem;
+          padding-top: 2px;
+        }
+      }
+      & .age-search-input {
+        min-width: 200px;
+        max-width: 50%;
+        position: relative;
+        & .age-search-input-clear-btn {
+          color:rgba(0,0,0,0.3);
+          position: absolute;
+          right: 0;
+          top: 1px;   
+        }
+      }
+    }
+    & .accordion-body {
+      width: min-content;
+      min-width: 100%;
+    }
+  }
+  & .age-btn {
+    border-radius: 4px;
+    font-weight: bold;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    white-space: nowrap;
+}
+  & .system-header {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    // place-self: center;
+    // min-width: calc(100% - 125px);
+  }
+  & .age-header-btn-container {
+    display: flex;
+    gap: 20px;
+    margin:0 0 0 20px;
+    max-height: 25px;
+    & .age-header-btn {
+      flex:1;
+      & button {
+        font-weight: 500;
+        height: 100%;
+        font-size: 12px;
+        display: flex;
+        justify-content: center;
+        white-space: nowrap;
+      }
+      & .active {
+        color: #ecf6ff;
+        & .age-toggle-btn-icon {
+          background-color: #FFF;
+        }
+      }
+    }
+  }
+  & .age-modal {
+    min-width: 300px;
+    width: 100%;
+    max-width: fit-content;
+    margin: auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    transition: all 0.3s ease;
+    & .age-modal-header, .age-modal-details-header {
+      display: flex;
+      justify-content: space-between;
+      & h3 {
+        font-size: 2rem;
+      }
+    }
+    & .age-modal-container {
+      row-gap: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      max-height: 70vh;
+      overflow-x: hidden;
+    }
+    
+    & .age-input-group {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      width: auto;
+    }
+    & .age-ability-scores {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      grid-gap: 0 20px;
+      & .age-input-label {
+        width: 125px;
+      }
+    }
+    & .age-select {
+      height: auto;
+    }
+    & .age-spell-modal-body {
+      display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+    }
+  }
+  & .age-checkbox-toggle {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 18px;
+    & input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    & .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+    
+    & .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    & .slider.round {
+      border-radius: 34px;
+    }
+    & input:checked + .slider {
+    }
+    
+    & input:focus + .slider {
+    }
+    
+    & input:checked + .slider:before {
+      -webkit-transform: translateX(18px);
+      -ms-transform: translateX(18px);
+      transform: translateX(18px);
+    }
+  }
+  & .modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    transition: opacity 0.3s ease;
+    & .modal-container {
+      min-width: 300px;
+      width: fit-content;
+      margin: auto;
+      padding: 20px 30px;
+      background-color: #fff;
+      border-radius: 2px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+      transition: all 0.3s ease;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 75vw;
+    }
+    & .age-qualities-modal {
+      width:70vw;
+      transition: all .5s linear;
+    }
+    & .age-magic-modal {
+      width:70vw;
+      transition: all .5s linear;
+    }
+    & .modal-header h3 {
+      margin-top: 0;
+      color: #42b983;
+    }
+    
+    & .modal-body {
+      margin: 20px 0;
+      overflow-y: auto;
+      max-height: 70vh;
+      overflow-x: hidden;
+    }
+    & .age-quality-modifiers {
+      padding: 15px 0;
+    }
+    & .age-wg-list {
+      display: grid;
+      grid-template-columns: repeat(5,1fr);
+      grid-gap: 10px 20px;
+      & .age-wg-item {
+        display: flex;
+        align-items: center;
+        font-size: 1.15rem;
+        font-weight: 500;
+        & input {
+          margin-right: 5px;
+          margin-bottom: 2px;
+        }
+      }
+    }
+    & .modal-default-button {
+      float: right;
+    }
+    
+    /*
+     * The following styles are auto-applied to elements with
+     * transition="modal" when their visibility is toggled
+     * by Vue.js.
+     *
+     * You can easily play with the modal transition by editing
+     * these styles.
+     */
+    
+    & .modal-enter-from {
+      opacity: 0;
+    }
+    
+    & .modal-leave-to {
+      opacity: 0;
+    }
+    
+    & .modal-enter-from .modal-container,
+    .modal-leave-to .modal-container {
+      -webkit-transform: scale(1.1);
+      transform: scale(1.1);
+    }
+  }
+  & .snackbar-mask {
+    position: fixed;
+    z-index: 9998;
+    bottom: 25px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    transition: opacity 0.3s ease;
+    & .snackbar-container {
+      width: fit-content;
+      margin: auto;
+      padding: 5px 10px;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      border-radius: 2px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 50px;
+      width: 400px;
+      border-radius: 5px;
+      & .snackbar-content {
+        display: grid;
+        grid-template-columns: 1fr 75px 75px; 
+        grid-gap: 10px;
+        align-items: center;
+        height: 100%;
+        & p {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }  
+  & .age-atk-select {
+      height: auto;
+  }
+  /* Sidebar styling */
+  & .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #FFF;
+    color: rgba(0,0,0,0.87);
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    transition: 0.4s;
+    transition-timing-function: ease-out;
+  }
+  & .age-notes {
+    width:50%;
+    
+  }    
+  & .sidebar-hidden {
+    transform: translateX(130%);
+    transition-timing-function: ease-in;
+    transition: 0.4s;
+    /* transform: translateX(100%); */
+    box-shadow: none;
+  }
+  /* Close button */
+  & .close-btn {
+    background: none;
+    color: #000;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    float: right;
+  }    
+  /* Overlay styling */
+  & .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+  }    
+  /* Transition for sliding effect */
+  & .slide-enter-active,
+  & .slide-leave-active {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  & .slide-enter {
+    transform: translateX(100%);
+  }
+  
+  & .slide-leave-to {
+    transform: translateX(100%);
+  }
+  & .config-container {
+    position: absolute;
+    right: 0;
+    top:0;
+  }
+  & .config-btn {
+    border: none;
+    background: none;
+    width: fit-content;
+    font-size: 16px;  
+  }
+  & .age-roll-initiative {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    & .age-roll-initiative-btn {
+      font-weight: bold;
+      width: 100%;
+      padding: 6px;
+      font-size: 18px;
+    }
+  }
+}
+body.sheet-darkmode {
+  background: #282828;
+  background-size:unset; 
+  color:#E0E0E0; 
+  & .form-control, .form-select {
+      background-color: #282828;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    color: #E0E0E0;
+
+  }
+  & .form-control::placeholder {
+    color: #E0E0E0;
+
+  }
+  & .age-icon-btn {
+    color:#a5a5a5;
+  }
+  & h1 {
+    color: #E0E0E0;
+  }
+  & .section-card {
+    backdrop-filter: blur(4px) saturate(180%);
+    -webkit-backdrop-filter: blur(4px) saturate(180%);
+    // background-color: rgba(17, 25, 40, 0.75);
+    background-color: #292c41;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    & .accordion {
+      --bs-accordion-border-color:#292c41;
+    }
+    & .age-tab {
+      & button {
+        display: flex;
+        background-color: #292c41;
+
+        color:#E0E0E0;
+      }
+      & .active {
+        color:#E0E0E0;
+        border-color: #292c41;
+        background-color: #282828;
+
+        & .age-tab-icon {
+        }
+      }
+    } 
+    & .age-character-bio .age-character-bio-value.age-character-bio-value {
+      color: #E0E0E0;
+    }
+    & .age-container-content {
+      position: relative;
+      box-sizing: border-box;
+      border: 3px solid;
+      background: #292c41;
+      text-align: center;
+      & .age-container-heading {
+        color: #fff;
+        width: 100%;
+        text-align: center;
+        padding: 2px 2px;
+      }
+      
+      & .age-num-input {
+        padding:8px 0 8px 15px;
+      }
+      & .age-num-value {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 26px;
+        padding-bottom: 5px;
+        position: relative;
+        overflow: hidden;
+        display: block;
+        width: 100%;
+        color:#E0E0E0;
+        & .age-ability-primary {
+          height: 90px;
+          width: 90px;
+          position: absolute;
+          left: calc(50% - 45px);
+          top: calc(50% - 45px);
+          z-index: 1;
+          opacity: 0.15;
+          background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23000" d="M298.736 21.016c-99.298 0-195.928 104.647-215.83 233.736-7.074 45.887-3.493 88.68 8.512 124.787-4.082-6.407-7.92-13.09-11.467-20.034-16.516-32.335-24.627-65.378-25-96.272-11.74 36.254-8.083 82.47 14.482 126.643 27.7 54.227 81.563 91.94 139.87 97.502 5.658.725 11.447 1.108 17.364 1.108 99.298 0 195.93-104.647 215.83-233.736 9.28-60.196.23-115.072-22.133-156.506 21.625 21.867 36.56 45.786 44.617 69.496.623-30.408-14.064-65.766-44.21-95.806-33.718-33.598-77.227-50.91-114.995-50.723-2.328-.118-4.67-.197-7.04-.197zm-5.6 36.357c40.223 0 73.65 20.342 95.702 53.533 15.915 42.888 12.51 108.315.98 147.858-16.02 54.944-40.598 96.035-79.77 126.107-41.79 32.084-98.447 24.39-115.874-5.798-1.365-2.363-2.487-4.832-3.38-7.385 11.724 14.06 38.188 14.944 61.817 1.3 25.48-14.71 38.003-40.727 27.968-58.108-10.036-17.384-38.826-19.548-64.307-4.837-9.83 5.676-17.72 13.037-23.14 20.934.507-1.295 1.043-2.59 1.626-3.88-18.687 24.49-24.562 52.126-12.848 72.417 38.702 45.923 98.07 25.503 140.746-6.426 37.95-28.392 72.32-73.55 89.356-131.988 1.265-4.34 2.416-8.677 3.467-13.008-.286 2.218-.59 4.442-.934 6.678-16.807 109.02-98.412 197.396-182.272 197.396-35.644 0-65.954-15.975-87.74-42.71-26.492-48.396-15.988-142.083 4.675-185.15 26.745-55.742 66.133-122.77 134.324-116.804 46.03 4.027 63.098 58.637 39.128 116.22-8.61 20.685-21.192 39.314-36.21 54.313 24.91-16.6 46.72-42.13 59.572-73 23.97-57.583 6.94-113.422-39.13-116.805-85.737-6.296-137.638 58.55-177.542 128.485-9.21 19.9-16.182 40.35-20.977 60.707.494-7.435 1.312-14.99 2.493-22.652C127.67 145.75 209.275 57.373 293.135 57.373z"/></svg>');
+        }
+      }
+    }
+    & .age-container-content::before, .age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
+      background-color: #292c41;
+    }
+    & .age-stunts .age-stunt-input {
+      color: #E0E0E0;
+      background: #000;
+    }
+    & .hpmp-container {
+      color: #E0E0E0;
+      & .hpmp-current input[type=number] {
+        color: #E0E0E0;
+      }
+    }
+    & .age-combat-footer {
+      display: grid;
+      grid-template-columns: 1fr 75px;
+      & .age-combat-wg {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        flex-wrap: wrap;
+        background: #292c41;
+        color: #E0E0E0;
+        padding: 0 5px;
+      }
+      & .age-combat-unarmed__toggle {
+          background-color: #E0E0E0;
+      }
+    }
+  }
+  & .accordion-button:not(.collapsed) {
+    background-color: transparent;
+  }
+  & .accordion-button::after {
+    background-color: #E0E0E0;
+    background-image: none;
+    mask: var(--bs-accordion-btn-icon);
+
+  }
+  & .age-activity-accordion, .age-accordion {
+    --bs-accordion-bg:#292c41;
+    --bs-accordion-border-color:#191b28;
+    --bs-accordion-btn-color: #E0E0E0;
+    --bs-accordion-color: #E0E0E0;
+    --bs-accordion-border-color:#292c41;
+  }
+  & .age-activity-accordion-row {
+    background-color: #292c41;
+    color: #E0E0E0;
+    
+    & .accordion-button {
+    background-color: #292c41;
+    color: #E0E0E0;
+    }
+    & .accordion-button::after {
+      background-color: #E0E0E0;
+      background-image: none;
+      mask: var(--bs-accordion-btn-icon);
+
+    }
+  }
+  & .age-label {
+    & .age-label-content {
+      color: #E0E0E0;
+      background: #000;
+      clip-path: polygon(
+        10px 0px,
+        /* Top left corner */ calc(100% - 10px) 0px,
+        /* Top right corner */ 100% 10px,
+        /* Right top corner */ 100% calc(100% - 10px),
+        /* Right bottom corner */ calc(100% - 10px) 100%,
+        /* Bottom right corner */ 10px 100%,
+        /* Bottom left corner */ 0px calc(100% - 10px),
+        /* Left bottom corner */ 0px 10px
+      );
+      
+    }
+  }  
+  & .age-input {
+    color:#E0E0E0;
+  }
+  & .age-bio-textarea {
+    background: rgba(0, 0, 0, 0.87);
+    border: rgba(0, 0, 0, 0.87);
+    color: #E0E0E0;
+  }
+  & .modal-mask {
+    & .age-modal-header h3 {
+      color: #E0E0E0;
+    }
+    & .age-modal-header .btn-close {
+      --bs-btn-close-color: #E0E0E0;
+      background: #E0E0E0;      
+      mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+    }
+    & .modal-container {
+      background-color: #282828;
+      & .accordion-item {
+        background-color: #282828;
+        color: #E0E0E0;
+        & .accordion-button {
+          background-color: #282828;
+          color: #E0E0E0;
+          }
+      }
+      & .input-group-text {
+        background:#292c41;
+        border-color:#292c41;
+        color: #E0E0E0;
+      }
+      & input, select {
+        background: rgba(0, 0, 0, 0.35);
+        border: rgba(0, 0, 0, 0.87);
+        color: #E0E0E0;
+      }
+    }
+  }
+  & .sidebar {
+    background-color: #282828;
+    border-color:#292c41;
+    color: #E0E0E0;
+  }
+}
+
+
+.age-bio-input {
+  height: 22px;
+  border-bottom: none;
+  margin: 3px 0 -2px;
+}
+.age-action.header {
+  margin: -6px;
+}
+.age-action-header .nav-link, .age-action-header .nav-link:hover,.age-action-header .nav-link:focus {
+  color:#FFF;
+}
+.age-action-content {
+  margin-top: -2px;
+}
+.delete-btn {
+  text-align: center;
+  line-height: 30px;
+  color: #fff;
+  background: #F34541;
+  border: none;
+  font-weight: 500;
+  border-radius: 4px;
+  min-width:100px;
+  text-transform: capitalize;
+}
+.confirm-btn {
+  text-align: center;
+  line-height: 30px;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  border-radius: 4px;
+  min-width:100px;
+}
+.age-attack-details-header {
+}
+.modal-footer-actions {
+  display: flex;
+  justify-content: space-between;
+}
+@media (min-width: 1440px) {
+  main {
+    & .player-sheet-wrapper {
+      grid-template-columns: 1fr 1fr 1fr;
+      & .age-action-con-section {
+        display: flex;gap: 15px; flex-direction: column;
+      }
+      & .age-combat-skill-section {
+        grid-column: span 3;display: flex;gap: 25px;
+      }
+      & .section-card {
+        & .age-actions-mage {
+          display: grid;    
+          grid-template-columns: repeat(2, minmax(75px, 1fr));
+          grid-gap: 10px;
+          padding: 10px;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 1439px) {
+  main {
+    & .player-sheet-wrapper {
+      grid-template-columns: 1fr 2fr ;
+      & .age-combat-skill-section, .age-action-con-section {
+        display: flex;gap: 15px; flex-direction: column;
+      }
+      & .age-conditions-main {
+        display: block;
+      }
+      & .age-conditions-secondary {
+        display: none;
+      }
+    }
+    & .section-card {
+     & .age-actions-mage {
+        display: grid;    
+        grid-template-columns: repeat(2, minmax(75px, 1fr));
+        grid-gap: 10px;
+        padding: 10px;
+        & .age-actions-spellpower {
+          grid-column: span 3;
+        }
+      }
+    }
+  }
+}
+@media (min-width: 968px) { 
+  main {  
+    & .age-expand-btn {
+      width: 55px;
+      height: 103%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: none;
+      border: none;
+      border-radius: 0;
+      color: #FFF;
+    }
+    & .age-expand-btn:not(.collapsed) {
+      background: none;
+    }
+    & .age-combat-accordion-header {
+      display:grid;
+      grid-template-columns:40px 2fr 1fr 50px 75px 25px 25px 55px;
+      grid-template-areas: 'icon name range attack damage details edit accordion';
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
+
+    }  
+    & .age-spell-accordion-header {
+      display:grid;
+      // grid-template-columns:2fr 1fr 1fr 1fr 40px 40px 25px 25px 55px;
+      grid-template-columns:2fr 1fr 40px 40px 25px 25px 55px;
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
+
+    }
+    & .age-qualities-accordion-header {
+      display:grid;
+      grid-template-columns:40px 3fr 1fr 1fr 25px 25px 55px;
+      align-items: center;
+      min-width: 100%;
+      grid-gap: 5px;
+    }
+    & .age-inventory-accordion-header {
+      display:grid;
+      grid-template-columns: 25px 2fr 1.25fr 1fr 1fr 25px 25px 55px;
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
+      position: relative;
+    }
+  } 
+}
+@media (max-width: 967px) {  
+  main {    
+    & .age-expand-btn {
+      width: 40px;
+      height: 103%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: none;
+      border: none;
+      border-radius: 0;
+      color: #FFF;
+    }
+    & .age-expand-btn:not(.collapsed) {
+      background: none;
+    }
+    & .age-combat-accordion-header {
+      display:grid;
+      grid-template-columns:40px 2fr 1fr 50px 75px 25px 25px 40px;
+      grid-template-areas: 'icon name range attack damage details edit accordion';
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
+    }
+    & .age-spell-accordion-header {
+      display:grid;
+      // grid-template-columns:2fr 1fr 1fr 1fr 40px 40px 25px 25px 40px;
+      grid-template-columns:2fr 1fr 40px 40px 25px 25px 40px;
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
+
+    }
+    & .age-qualities-accordion-header {
+      display:grid;
+      grid-template-columns:40px 3fr 1fr 1fr 25px 25px 40px;
+      align-items: center;
+      min-width: 100%;
+      grid-gap: 5px;
+    }
+    & .age-inventory-accordion-header {
+      display:grid;
+      grid-template-columns: 25px 2fr 1.25fr 1fr 1fr 25px 25px 40px;
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
+      position: relative;
+    }
+  }
+}
+@media (max-width: 800px) {  
+  main {
+    grid-template-columns: 1fr;
+    margin: 5px 2px;
+  & .header-section {
+    grid-column: span 2;
+    gap: 15px;
+  }
+  & .player-sheet-wrapper {
+      // grid-template-columns: 1fr 550px ;
+      & .column-1-wrapper {
+        display: none;
+      }
+      
+  }
+  & .section-card {
+    & .age-ability-scores-container {
+      // display: flex;
+      // flex-wrap: wrap;
+      // gap: 10px;
+      & .age-ability-scores {
+        flex: 1;
+        border-right: none;
+        & button:hover {
+          border-bottom: 1px solid;
+        }
+      }
+    }
+    & .age-actions-mage {
+      display: grid;    
+      grid-template-columns: repeat(2, minmax(75px, 1fr));
+      grid-gap: 10px;
+      padding: 10px;
+    }
+  }
+  & .npc-sheet-wrapper {
+    width: 100%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr ;
+    align-items: stretch;
+    gap: 24px;
+    & .column-1-wrapper {
+      display: block;
+    }
+    & .header-section {
+      grid-template-columns: 1fr;
+    }
+    & .section-card {
+      display: flex;
+      flex-direction: column;
+      & .age-character-bio {
+        display: grid;
+        grid-template-columns: 75px 1fr;
+        flex:2;
+        & .age-level-label {
+          display: none;
+        }
+        & .bio__avatar {
+          padding:5px;
+          width: 75px;
+        }
+        & .age-character-details {
+          padding: 5px 0;
+        }
+        & h1.age-character-name {
+          padding-bottom: 0;
+        }
+        & .age-character-bio-container {
+          display: grid;
+          grid-template-columns: repeat(2,1fr);
+        }
+      }
+      & .age-stats {
+        flex: 1;
+      }
+    }
+  }
+}
+@media (max-width: 650px){
+  main {
+    grid-template-columns: 1fr;
+    & .age-combat-accordion-header {
+      display:grid;
+      grid-template-columns: 40px 1fr 1fr;
+      grid-template-areas:
+        "icon name range range range accordion"
+        "icon attack damage none details edit";
+    }
+  }
+}
+@media (max-width: 450px){
+  body {
+  & main {
+    grid-template-columns: 1fr;
+    margin: 0;
+    transition: var(--ease-all);
+    display: grid;
+    & .system-header {
+      & .age-header-options {
+        display: none;
+      }
+      & .age-header-menu {
+        display: block;
+      }
+    }
+    & .age-sheet{
+      max-width: 1440px;
+      place-self: center;
+    }
+    & .player-sheet-wrapper {
+      // grid-template-columns: 1fr;
+      display: block;
+      // flex-direction: column;
+      & section {
+        display: flex !important;
+        flex-direction: column;
+      }
+    }
+    
+    
+  }
+  & main.npc-sheet-wrapper {
+    & .header-section {
+      grid-column: 1
+    }
+    & .section-card {
+      & .age-character-bio {
+        grid-template-columns: 1fr;
+        & .bio__avatar {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          & img {
+            width: auto;
+            max-height: 140px;
+          }
+        
+        }
+        & .age-stats {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+      }
+      & .age-action-content {
+        display: flex;
+        flex-direction: column;
+      }
+      & .age-ability-scores-container-npc {
+        display: flex;
+        flex-wrap: wrap;
+      }
+    }
+  }  
+  }
+  
+}
+}
+.input-group-text {
+  flex:0.5;
+}
+.input-group {
+  flex-wrap: nowrap;
+}
+.ql-toolbar {
+  display:none;
+}
+.ql-container.ql-snow {
+  // width: min-content;
+  // min-width: 100%;
+  border-top:1px solid rgb(209, 213, 219) !important;
+  // max-width: 500px;
+  flex: 2;
+  width: 100%;
+
+}
+.age-bio-quill .ql-editor {
+  max-height: 175px;
+  & p {
+    padding-bottom: 15px;
+  }
+}
+.age-notes {
+  .ql-container.ql-snow {
+    height:90vh;
+  }
+}
+.age-side-info {
+  width: 40% !important;
+  & ul {
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+}

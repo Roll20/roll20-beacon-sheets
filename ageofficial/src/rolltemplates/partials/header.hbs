@@ -1,0 +1,100 @@
+{{#if (isEqual "attack" rollType)}}
+<div class="header">
+  {{#if characterName}}
+    <div class="header__character-name">{{characterName}}</div>
+  {{/if}}
+  {{#if @partial-block}}
+    <div class="header__group">
+      {{> @partial-block }}
+      <div class="header__sub-group">
+        <div class="header__title">{{title}}</div>
+        {{#if subtitle}}
+          <div class="header__subtitle">{{subtitle}}</div>
+        {{/if}}
+      </div>
+    </div>
+  {{else}}
+    <div class="header__sub-group">
+      <div class="header__title">{{title}}</div>
+      {{#if subtitle}}
+        <div class="header__subtitle">{{ capitalize subtitle}}</div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+{{/if}}
+{{#if (isEqual "standard" rollType)}}
+<div class="header">
+  {{#if characterName}}
+    <div class="header__character-name">{{characterName}}</div>
+  {{/if}}
+  {{#if @partial-block}}
+    <div class="header__group">
+      {{> @partial-block }}
+      <div class="header__sub-group">
+        <div class="header__title">{{title}}</div>
+        {{#if subtitle}}
+          <div class="header__subtitle">{{subtitle}}</div>
+        {{/if}}
+      </div>
+    </div>
+  {{else}}
+    <div class="header__sub-group">
+      <div class="header__title">{{title}}</div>
+      {{#if subtitle}}
+        <div class="header__subtitle">{{ capitalize subtitle}}</div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+{{/if}}
+{{#if (isEqual "damage" rollType)}}
+<div class="damage-header">
+  {{#if characterName}}
+    <div class="damage-header__character-name">{{characterName}} | </div>
+  {{/if}}
+  {{#if @partial-block}}
+    <div class="damage-header__group">
+      {{> @partial-block }}
+      <div class="damage-header__sub-group">
+        <div class="damage-header__title">{{title}}</div>
+        {{#if subtitle}}
+          <div class="damage-header__subtitle">{{subtitle}}</div>
+        {{/if}}
+      </div>
+    </div>
+  {{else}}
+    <div class="damage-header__sub-group">
+      <div class="damage-header__title">{{title}}</div>
+      {{#if subtitle}}
+        <div class="damage-header__subtitle">{{ capitalize subtitle}}</div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+{{/if}}
+{{#if (isEqual "spellDamage" rollType)}}
+<div class="damage-header">
+  {{#if characterName}}
+    <div class="damage-header__character-name">{{characterName}} | </div>
+  {{/if}}
+  {{#if @partial-block}}
+    <div class="damage-header__group">
+      {{> @partial-block }}
+      <div class="damage-header__sub-group">
+        <div class="damage-header__title">{{title}}</div>
+        {{#if subtitle}}
+          <div class="damage-header__subtitle">{{subtitle}}</div>
+        {{/if}}
+      </div>
+    </div>
+  {{else}}
+    <div class="damage-header__sub-group">
+      <div class="damage-header__title">{{title}}</div>
+      {{#if subtitle}}
+        <div class="damage-header__subtitle">{{ capitalize subtitle}}</div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+{{/if}}

@@ -1,0 +1,207 @@
+$ageFAGE2eColor: var(--theme-primary);
+$ageFAGE2eLightColor: #3e79af;
+$ageFAGE2eTechnofantasy: #9d3916;
+$ageFAGE2eCthulhu: #005a3f;
+* {
+    // --background-image: url('https://i.ibb.co/8z6wS4c/4.png');
+    --ease-all: all .25s ease-in-out;
+  }
+
+body.fantasyAge {
+    background:url(/src/assets/background/fagebg.png);
+    & h1, h2, h3, h4, h5, h6 {
+        font-family: 'Ringbearer', sans-serif;
+        text-transform: lowercase;
+    }
+    & .age-header-btn {
+        & button {
+            border-color: $ageFAGE2eColor;
+            color: $ageFAGE2eColor;
+            background-color: var(--theme-secondary);
+        }
+        & .active {
+            background-color: $ageFAGE2eColor;
+            border: 2px solid $ageFAGE2eColor;
+        }
+        & .age-toggle-btn-icon {
+            background-color:$ageFAGE2eColor;
+        }
+    } 
+    & .age-btn {
+        border: 2px solid $ageFAGE2eColor;
+        color: $ageFAGE2eColor;
+        background-color: var(--theme-secondary);
+        
+    }
+    & .age-icon-btn {
+        background-color: none;
+        color: $ageFAGE2eColor;
+    }
+    & .age-input-label {
+        color: $ageFAGE2eColor;
+    }
+    & .age-checkbox-toggle input:checked + .slider {
+        background-color: $ageFAGE2eColor;
+    }
+    & .player-sheet-wrapper {
+        & .section-card {
+            & .age-action-header .accordion-button:not(.collapsed)::after, .age-action-header .accordion-button::after {
+                background:#FFF;
+                mask-image: var(--bs-accordion-btn-active-icon);
+            }
+            & .age-container-content {
+                border-color: $ageFAGE2eColor;
+            }
+            & .age-currency-container__coin {
+                background-color: $ageFAGE2eColor;
+            }
+            & .age-orb-highlight {
+                background-color: $ageFAGE2eColor;
+            }
+        }
+        & .age-character-bio-value {
+            color: $ageFAGE2eColor;
+        }   
+        & .age-level-label {
+            background:$ageFAGE2eColor;
+            color: #FFF;
+            font-family: 'Tanglewood Tales NF',sans-serif;
+        }
+        & .age-levelup-btn {
+            font-family: 'Ringbearer', sans-serif;
+            text-transform: lowercase;
+            background:$ageFAGE2eColor;
+            color:#FFF;
+            margin:0px -5px;
+            border:none;
+            font-size:16px;        
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            line-height: 100%;
+            padding:4px 5px 0;
+        }
+        & .age-label-heading, .age-container-heading {
+            font-family: 'Ringbearer', sans-serif;
+            text-transform: lowercase;
+            background-color: $ageFAGE2eColor;
+        }
+        & .age-container-content::before, .age-container-content::after  {
+            content: '';
+            position: absolute;
+            width: 15px; /* Corner width */
+            height: 15px; /* Corner height */
+            // background-color: #292c41; 
+        }
+        /* Top-left and bottom-right corners */
+        & .age-container-content::before {
+        top: -8px;
+        left: -8px;
+        transform:rotate(135deg);
+        border-top: 3px solid $ageFAGE2eColor;
+    
+        }
+        & .age-container-content::after {
+            bottom: -8px;
+            right: -8px;
+            transform:rotate(-45deg);
+            border-top: 3px solid $ageFAGE2eColor;
+    
+        }
+        & .age-container-content-corner-top-right {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 15px;
+        height: 15px;
+        // background-color: #292c41;
+        transform:rotate(-135deg);
+        border-top: 3px solid $ageFAGE2eColor;
+    
+        } 
+        & .age-container-content-corner-bottom-left {
+            position: absolute;
+            bottom: -8px;
+            left: -8px;
+            width: 15px;
+            height: 15px;
+        //   background-color: #292c41;
+            transform:rotate(45deg);
+            border-top: 3px solid $ageFAGE2eColor;
+        }
+        & .age-tab {
+            & button {
+              display: flex;
+              border-color: $ageFAGE2eColor;               
+              color:$ageFAGE2eColor;
+              font-family: 'Ringbearer', sans-serif;
+              text-transform: lowercase;
+            }
+            & .active {
+              background-color: $ageFAGE2eColor; 
+              & .age-tab-icon {
+                background-color:#FFF;
+              }
+            }
+            & .age-tab-icon {
+                background-color:$ageFAGE2eColor;
+            }
+            
+        } 
+        & .age-defense {
+            grid-template-columns: repeat(3, minmax(75px, 1fr));
+        }
+        & .age-actions-magic-fage {
+            grid-template-columns: repeat(2, minmax(75px, 1fr));
+            & .age-armor-stats {
+                grid-column: span 2;
+            }
+        }
+    }
+    & .sidebar {
+        & .age-sidebar-list {
+            list-style: none;
+            padding-left: 5px;
+            font-size:1.05rem;
+            & li {
+                margin-bottom: 5px;
+            }
+            &__title {
+                font-family: 'Book Antiqua', Times, serif;
+                color: $ageFAGE2eColor;
+                font-weight: 600;
+                margin-right: 5px;
+                font-size: 1.25rem;
+            }
+        }
+      }
+      & .confirm-btn {
+        background:$ageFAGE2eColor;
+      }
+  }
+
+body.sheet-darkmode.fantasyAge {
+    & .age-btn {
+        background-color: #282828;
+        border: 2px solid #aad3f9;
+        color: #aad3f9;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+    & .age-roll-initiative-btn {
+        background-color: #282828;
+        border: 2px solid #aad3f9;
+        color: #aad3f9;
+    }
+    & .age-input-label, .age-sidebar-list__title {
+    filter: brightness(150%);
+    }
+    & .age-toggle-btn-icon, .age-tab-icon {
+        filter: brightness(200%);
+    }
+}

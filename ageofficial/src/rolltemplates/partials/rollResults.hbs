@@ -1,0 +1,27 @@
+Rolling {{#each components}}
+        {{#if dice}}{{count}}d{{sides}} (
+            {{#each dice}}
+                {{this}}
+                {{#unless @last}}+{{/unless}}
+            {{/each}}
+        ){{/if}}
+    {{/each}} 
+    {{#each components}}
+        {{#unless dice}}
+            {{#if value}}+ {{value}} = {{sumComponents ../components multiplier}}{{/if}}
+        {{/unless}}
+    {{/each}}
+
+{{!-- Rolling {{#each components}}
+  {{#if dice}}
+    {{count}}d{{sides}} (
+    {{#each dice}}
+      <span style="{{#if (isEqual this 1)}}color:red{{/if}} {{#if (isEqual this ../sides)}}color:green{{/if}}">
+        {{this}}
+      </span>{{#unless @last}}+{{/unless}}
+    {{/each}})
+  {{/if}}
+{{/each}} 
+{{#each components}}
+  {{#unless dice}}{{#if value}} + {{value}}{{/if}}{{/unless}}
+{{/each}} --}}
