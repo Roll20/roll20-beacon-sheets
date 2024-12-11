@@ -43,7 +43,7 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import ConditionsModal from '@/components/conditions/conditionsModal.vue'
+import ConditionsModal from '@/components/conditions/ConditionsModal.vue'
 import { useConditionsStore } from '../../sheet/stores/conditions/conditionsStore';
 import { useCustomConditionsStore } from '@/sheet/stores/conditions/customConditionsStore';
 import { useModifiersStore } from '@/sheet/stores/modifiers/modifiersStore';
