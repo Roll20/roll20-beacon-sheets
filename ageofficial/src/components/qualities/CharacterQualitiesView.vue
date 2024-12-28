@@ -92,7 +92,7 @@
     <div>
       <h3>Description</h3>
       <div v-html="feature.description"></div>
-      {{ feature }}
+      <!-- {{ feature }} -->
     </div>
     <div v-html="feature.qualityNovice"></div>
     <div v-html="feature.qualityMaster"></div>
