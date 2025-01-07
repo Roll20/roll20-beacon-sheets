@@ -2,13 +2,13 @@
     <div class="age-splash-screen">
         <h1>Select your game's ruleset</h1>
         <div class="age-splash-rulesets">
-            <button class="age-ruleset-btn" aria-label="Fantasy AGE Ruleset" @click="selectSystem('fage2e')">
-                <img src="/src//assets/logos/fantasyage.png" alt="Fantasy AGE" role="presentation">
+            <button class="age-ruleset-btn" aria-label="Fantasy AGE Ruleset" @click="selectSystem('fage2e');$emit('close')">
+                <img src="/src/assets/logos/fantasyage.png" alt="Fantasy AGE" role="presentation">
             </button>
-            <button class="age-ruleset-btn" aria-label="Modern AGE Ruleset" @click="selectSystem('mage')">
+            <button class="age-ruleset-btn" aria-label="Modern AGE Ruleset" @click="selectSystem('mage');$emit('close')">
                 <img src="/src/assets/logos/modernage.png"  alt="Modern AGE" role="presentation">
             </button>
-            <button class="age-ruleset-btn" aria-label="Blue Rose AGE Ruleset" @click="selectSystem('blue rose')">
+            <button class="age-ruleset-btn" aria-label="Blue Rose AGE Ruleset" @click="selectSystem('blue rose');$emit('close')">
                 <img src="/src/assets/logos/bluerose.png" alt="Blue Rose AGE" role="presentation">
             </button>
         </div>
@@ -23,8 +23,6 @@ const settings = useSettingsStore();
 
 const selectSystem = (system) => {
     settings.gameSystem = system;
-    const colorTheme = initValues.settings.colorTheme;
-    productLineStyle(settings.gameSystem,colorTheme);
 }
 </script>
 <style scoped lang="scss">

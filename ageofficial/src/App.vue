@@ -1,7 +1,7 @@
 <template>
   <!-- {{ settings.gameSystem = undefined }} -->
   <transition name="fade">
-    <NewSplashView v-if="!settings.gameSystem" />
+    <NewSplashView v-if="!settings.gameSystem" @close="setTheme" />
   </transition>
   <main v-if="settings.gameSystem" >
     <div class="system-header">
@@ -187,6 +187,11 @@ const sidebarRef = ref(null);
 const openSidebar = () => {
   sidebarRef.value?.openSidebar(); // Optional chaining ensures sidebarRef is defined
 };
+
+const setTheme = () => {
+  const colorTheme = initValues.settings.colorTheme;
+  productLineStyle(settings.gameSystem,colorTheme);
+}
 </script>
 
 <style scoped lang="scss">

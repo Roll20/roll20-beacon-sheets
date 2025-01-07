@@ -5,7 +5,7 @@ export function productLineStyle(gameSystem:string,lightDark:string,args?:any){
     lightDarkMode(lightDark);
     switch(gameSystem){
         case 'fage1e':
-        case 'fage2e':
+        case 'fage2e':            
             document.body.classList.add("fantasyAge");
             if(args?.cthulhuMythos){
                 document.documentElement.style.setProperty('--theme-primary', '#005a3f');
