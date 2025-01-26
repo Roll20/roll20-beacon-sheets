@@ -6,6 +6,7 @@ import { useStatsStore } from './statsStore/statsStore';
 import { useGMStore } from './gmStore/gmStore';
 import { useUIStore } from './uiStore/uiStore';
 import { useRollStore } from './rollStore/rollStore';
+import { useMilestoneStore } from './milestoneStore/milestoneStore';
 
 
 export const useStarTrekStore = defineStore('StarTrek', () => {
@@ -13,6 +14,7 @@ export const useStarTrekStore = defineStore('StarTrek', () => {
   const stores = {
     gm: useGMStore(),
     meta: useMetaStore(),
+    milestones: useMilestoneStore(),
     roll: useRollStore(),
     stats: useStatsStore(),
     ui: useUIStore(),

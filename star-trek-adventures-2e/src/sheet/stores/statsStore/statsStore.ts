@@ -5,11 +5,13 @@ import type {
   DepartmentKey,
   DepartmentValue
 } from "@/system/gameTerms"
-import { 
-  AttributesEnum , 
-  DepartmentsEnum, 
-  isAttributeValue, 
-  isDepartmentValue 
+import {
+  AttributesEnum,
+  DepartmentsEnum,
+  isAttributeKey,
+  isAttributeValue,
+  isDepartmentKey,
+  isDepartmentValue
 } from "@/system/gameTerms";
 import { type ModifierKey, ModifierOperations } from "@/system/logicTerms";
 import { defineStore } from "pinia";
@@ -35,7 +37,7 @@ export type AttributeField = StatField & {
   label: AttributeValue;
 }
 const isAttributeField = (stat: StatField)
-  : stat is AttributeField  => isAttributeValue(stat.label)
+  : stat is AttributeField => isAttributeValue(stat.label)
 
 export type AttributeDictionary = Record<AttributeKey, AttributeField>
 
@@ -43,7 +45,7 @@ export type DepartmentField = StatField & {
   label: DepartmentValue;
 }
 const isDepartmentField = (stat: StatField)
-  : stat is DepartmentField  => isDepartmentValue(stat.label)
+  : stat is DepartmentField => isDepartmentValue(stat.label)
 
 export type DepartmentDictionary = Record<DepartmentKey, DepartmentField>
 
@@ -51,7 +53,7 @@ export const useStatsStore = defineStore("stats", () => {
   const evaluateModifiers = (base: number, modifiers: StatModifier[]) => {
     let total = base;
     if (modifiers && modifiers.length > 0) {
-      modifiers.forEach((modifier)=> {
+      modifiers.forEach((modifier) => {
         total = ModifierOperations[modifier.operation](total, modifier.value)
       })
     }
@@ -148,22 +150,26 @@ export const useStatsStore = defineStore("stats", () => {
     }
   }
 
-  const hydrate = (hydrateStore: Record<AttributeKey | DepartmentKey,StatField>) => {
+  const hydrate = (hydrateStore: Record<AttributeKey | DepartmentKey, StatField>) => {
     const attributes: Partial<AttributeDictionary> = {};
     const departments: Partial<DepartmentDictionary> = {};
-    for(const [key, field] of Object.entries(hydrateStore)) {
-      if (isAttributeField(field)) { 
-        attributes[key as AttributeKey] = field;
+    for (const [key, field] of Object.entries(hydrateStore)) {
+      if (isAttributeKey(key) && isAttributeField(field)) {
+        attributes[key] = field;
       }
-      else if (isDepartmentField(field)) {
-        departments[key as DepartmentKey] = field
+      else if (isDepartmentKey(key) && isDepartmentField(field)) {
+        departments[key] = field
+      }
+      else {
+        console.error("Invalid Stat: ", key)
+        console.table(toRaw(field))
       }
     }
 
     Object.assign(attributeFields, attributes)
     Object.assign(departmentFields, departments)
   };
-  
+
 
   return {
     attributeFields,
