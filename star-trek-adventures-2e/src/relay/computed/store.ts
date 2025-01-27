@@ -3,7 +3,7 @@ import { createPinia } from "pinia";
 
 export class StoreClass {
   static store: any;
-  constructor() {};
+  constructor() {}
 
   static getInstance(storeHydrate: any): ReturnType<typeof useStarTrekStore> {
     if (!this.store) {

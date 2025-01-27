@@ -4,7 +4,7 @@
     :class="`stats-section--${editMode}`"
   >
     <h2>Departments</h2>
-    <StatInterfaceBlock statType="Department" />
+    <StatInterfaceBlock stat-type="Department" />
   </section>
 </template>
 

@@ -1,15 +1,31 @@
 <template>
   <div class="settings">
     SETTINGS
-    <button @click="goBack" class="big-button">Back</button>
-    <button class="big-button" :disabled="!(isOwner || isGM)" @click="loadExampleData">
+    <button
+      class="big-button"
+      @click="goBack"
+    >
+      Back
+    </button>
+    <button
+      class="big-button"
+      :disabled="!(isOwner || isGM)"
+      @click="loadExampleData"
+    >
       Add mock data
     </button>
     <div class="settings__main">
-      <label class="settings__item" for="encumbrance-penalty">
+      <label
+        class="settings__item"
+        for="encumbrance-penalty"
+      >
         <span class="settings__item__name">Encumbrance penalty</span>
         <span class="settings__item__desc">(Added to ability rolls when over-encumbered)</span>
-        <input class="settings__item__input" type="number" v-model="settings.encumbrancePenalty" />
+        <input
+          v-model="settings.encumbrancePenalty"
+          class="settings__item__input"
+          type="number"
+        >
       </label>
     </div>
   </div>

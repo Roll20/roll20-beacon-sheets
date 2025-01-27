@@ -2,14 +2,23 @@
   <div class="star-trek-adventures-2e">
     <div class="header">
       <div class="section__body tabs">
-        <router-link :to="{ name: 'gm' }">GM Tab</router-link>
-        <router-link :to="{ name: 'pc' }">PC Tab</router-link>
-        <div class="campaignId" v-if="campaignId">Campaign ID: {{ campaignId }}</div>
+        <router-link :to="{ name: 'gm' }">
+          GM Tab
+        </router-link>
+        <router-link :to="{ name: 'pc' }">
+          PC Tab
+        </router-link>
+        <div
+          v-if="campaignId"
+          class="campaignId"
+        >
+          Campaign ID: {{ campaignId }}
+        </div>
       </div>
     </div>
     <router-view v-slot="{ Component }">
       <transition name="fade">
-      <component :is="Component" />
+        <component :is="Component" />
       </transition>
     </router-view>
   </div>

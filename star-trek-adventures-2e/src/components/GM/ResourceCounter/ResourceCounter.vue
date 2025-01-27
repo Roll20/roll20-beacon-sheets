@@ -1,24 +1,28 @@
 <template>
-  <div class="resource-counter" data-testid="resource-counter">
-    <label class="resource-counter__label" :for="id ?? label"> {{ label }}</label>
+  <div
+    class="resource-counter"
+    data-testid="resource-counter"
+  >
+    <label
+      class="resource-counter__label"
+      :for="id ?? label"
+    > {{ label }}</label>
     <button 
       class="resource-counter__button resource-counter__button--subtract"
       aria-label="subtract"
       @click="decrement"
-    >
-    </button>
+    />
     <input 
-    :id="id ?? label"
-    class="resource-counter__input"
-    type="number"
-    v-model="model"
+      :id="id ?? label"
+      v-model="model"
+      class="resource-counter__input"
+      type="number"
     >
     <button 
       class="resource-counter__button resource-counter__button--add"
       aria-label="add"
       @click="increment"
-    >
-    </button>
+    />
   </div>
 </template>
 

@@ -1,64 +1,61 @@
 <template>
   <button 
     v-if="!editing"
-    @click="setActiveToStat()"
     class="stat-view"
-    :class="`stat-view--${stat.toLowerCase()}`"
+    :class="`stat-view--${stat.toLowerCase()}`" 
+    @click="setActiveToStat()"
   >
-      <label 
-        class="stat-view__label"
-        :for="`stat-view-${stat.toLowerCase()}`"
-      >
-        {{ label }}
-      </label>
-      <span 
-        class="stat-view__total"
-        data-testid="stat-view-total"
-      >
-        {{ total }}
-      </span>
+    <label
+      class="stat-view__label"
+      :for="`stat-view-${stat.toLowerCase()}`"
+    >
+      {{ label }}
+    </label>
+    <span
+      class="stat-view__total"
+      data-testid="stat-view-total"
+    >
+      {{ total }}
+    </span>
   </button>
-  <div 
+  <div
     v-else
     class="stat-edit"
     :class="`stat-edit--${stat.toLowerCase()}`"
   >
-    <label
+
+<!-- For button below once modifiers are installed
+      @mouseover="showTooltip = true"
+      @focus="showTooltip = true"
+      @blur="showTooltip = false"
+      @mouseleave="showTooltip = false" -->
+    <button
+      ref="reference"
       class="stat-edit__label"
-      >
-      {{ label }} Base:
-    </label>
-    <input 
-      class="stat-edit__base"
+      :for="`stat-edit-${stat.toLowerCase()}`"
+      @click="setModifyingToStat()"
+    >
+      {{ label }}:
+    </button>
+    <input
       v-model="statBase"
+      class="stat-edit__base"
       type="number"
     >
-    <button 
-      @click="setModifyingToStat()"
-      @mouseover="showTooltip = true"
-      @focus="showTooltip=true"
-      @blur="showTooltip=false"
-      @mouseleave="showTooltip = false"
-      ref="reference"
-      class="icon-button icon-button--calculate stat-edit__modifiers-button"
-    >
-      <label class="sr-only">
-        Modifiers
-      </label>
-    </button>
-    <ul 
+    <ul
       v-if="showTooltip"
       ref="floating"
       :style="floatingStyles"
       class="modifiers-display"
       data-testid="modifiers-tooltip"
     >
-      <li 
-        v-for="modifier, index in modifiers"
+      <li
+        v-for="(modifier, index) in modifiers"
+        :key = index
         :data-testid="`popover-modifier-${index}`"
         class="modifiers-display__modifier-wrapper"
-        >
-        <div 
+      >
+        <div
           v-if="'operation' in modifier && modifier.value"
           class="modifiers-display__modifier-value"
           :data-testid="`popover-modifier-${index}-value`"
@@ -70,16 +67,15 @@
           :data-testid="`popover-modifier-${index}-note`"
           class="modifiers-display__note"
         >
-          {{ modifier.note ?? "Custom Value" }}
+          {{ modifier.note ?? 'Custom Value' }}
         </div>
       </li>
     </ul>
   </div>
-
 </template>
 
 <script setup lang="ts">
-import type { AttributeKey, DepartmentKey, } from '@/system/gameTerms';
+import type { AttributeKey, DepartmentKey } from '@/system/gameTerms';
 import { isAttributeKey, isDepartmentKey } from '@/system/gameTerms';
 import { MessageModifier, StatModifier, useStatsStore } from '@/sheet/stores/statsStore/statsStore';
 import { useUIStore } from '@/sheet/stores/uiStore/uiStore';
@@ -89,8 +85,8 @@ import { computed, ref } from 'vue';
 import { useRollStore } from '@/sheet/stores/rollStore/rollStore';
 
 export type StatInterfaceProps = {
-  stat: AttributeKey | DepartmentKey
-}
+  stat: AttributeKey | DepartmentKey;
+};
 
 const props = defineProps<StatInterfaceProps>();
 
@@ -99,73 +95,69 @@ const statsStore = useStatsStore();
 const rollStore = useRollStore();
 
 const editing = computed(() => {
-  return uiStore.editMode
+  return uiStore.editMode;
 });
 
-const {stat} = props;
+const { stat } = props;
 
 const isAttribute = isAttributeKey(stat);
 const isDepartment = isDepartmentKey(stat);
-const total = computed(() => statsStore[stat])
+const total = computed(() => statsStore[stat]);
 const label = computed(() => {
-  if (isAttribute) {
-    return statsStore.attributeFields[stat].label
-  }
-  else if (isDepartment) {
-    return statsStore.departmentFields[stat].label
-  }
-})
-const modifiers = computed<(StatModifier|MessageModifier)[]>(() => {
+  if (isAttribute) 
+    return statsStore.attributeFields[stat].label;
+  if (isDepartment) 
+    return statsStore.departmentFields[stat].label;
+  console.error("Stat unrecognized: ", stat)
+  return "Error"
+});
+const modifiers = computed<(StatModifier | MessageModifier)[]>(() => {
   let statField;
   if (isAttribute) {
     statField = statsStore.attributeFields[stat];
   }
   if (isDepartment) {
-    statField = statsStore.departmentFields[stat]; 
+    statField = statsStore.departmentFields[stat];
   }
-  if (statField?.modifiers && statField.modifiers.length > 0) return statField.modifiers
-  return [{note: `No ${label.value} Modifiers. Click to add some!`}]
-}
-)
+  if (statField?.modifiers && statField.modifiers.length > 0) return statField.modifiers;
+  return [{ note: `No ${label.value} Modifiers. Click to add some!` }];
+});
 
 const statBase = computed({
   get: () => {
-    if (isAttribute) return statsStore.attributeFields[stat].base
-    if (isDepartment) return statsStore.departmentFields[stat].base
+    if (isAttribute) return statsStore.attributeFields[stat].base;
+    if (isDepartment) return statsStore.departmentFields[stat].base;
+    console.error("Stat unrecognized: ", stat)
+    return -1
   },
   set: (newValue) => {
-    if (isAttribute) statsStore.attributeFields[stat].base  = newValue ?? 0
-    if (isDepartment) statsStore.departmentFields[stat].base  = newValue ?? 0
-  }
-})
-
-
+    if (isAttribute) statsStore.attributeFields[stat].base = newValue ?? 0;
+    if (isDepartment) statsStore.departmentFields[stat].base = newValue ?? 0;
+  },
+});
 
 const setModifyingToStat = () => {
   uiStore.modifyingStat = stat;
-}
+};
 
 const setActiveToStat = () => {
-  if (isAttribute)
-    rollStore.activeStats.attribute = stat;
-  else if (isDepartment)
-    rollStore.activeStats.department = stat;
-}
+  if (isAttribute) rollStore.activeStats.attribute = stat;
+  else if (isDepartment) rollStore.activeStats.department = stat;
+};
 
 const reference = ref(null);
 const floating = ref(null);
-const showTooltip = ref(false)
+const showTooltip = ref(false);
 
-const {floatingStyles} = useFloating(reference, floating, {
-  placement: "right",
-  middleware: [offset(16)]
-})
-
+const { floatingStyles } = useFloating(reference, floating, {
+  placement: 'right',
+  middleware: [offset(16)],
+});
 </script>
 
 <style lang="scss">
-@use "../../../common/scss/common.scss";
-@use "../../../common/scss/vars.scss";
+@use '../../../common/scss/common.scss';
+@use '../../../common/scss/vars.scss';
 
 .modifiers-display {
   padding: 8px;
@@ -206,8 +198,10 @@ const {floatingStyles} = useFloating(reference, floating, {
     border: none;
     padding: 0;
 
+    appearance: textfield;
     -moz-appearance: textfield;
-    &::-webkit-outer-spin-button
+
+    &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
       -webkit-appearance: none;
     }
@@ -221,6 +215,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--command);
     }
   }
+
   &--conn {
     border-color: var(--conn);
     color: var(--conn);
@@ -229,6 +224,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--conn);
     }
   }
+
   &--engineering {
     border-color: var(--engineering);
     color: var(--engineering);
@@ -237,6 +233,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--engineering);
     }
   }
+
   &--security {
     border-color: var(--security);
     color: var(--security);
@@ -245,6 +242,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--security);
     }
   }
+
   &--medicine {
     border-color: var(--medicine);
     color: var(--medicine);
@@ -253,6 +251,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--medicine);
     }
   }
+
   &--science {
     border-color: var(--science);
     color: var(--science);
@@ -265,27 +264,31 @@ const {floatingStyles} = useFloating(reference, floating, {
 
 .stat-edit {
   display: grid;
-  grid-column: span 6;
+  grid-column: span 2;
   grid-template-columns: subgrid;
 
   justify-items: center;
 
+  button {
+    appearance: none;
+    border: none;
+    background: transparent;
+  }
+
   &__label {
-    grid-column: span 3;
+    grid-column: span 1;
     color: var(--label-color);
+    width: 100%;
+    text-align: right;
   }
 
   &__base {
-    grid-column: span 2;
+    grid-column: span 1;
     width: 100%;
     box-sizing: border-box;
     text-align: center;
   }
 
-  &--command,
-  &--control {
-    grid-row: 2;
-  }
   &--command {
     border-color: var(--command);
     color: var(--command);
@@ -294,10 +297,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--command);
     }
   }
-  &--conn,
-  &--daring {
-    grid-row: 3;
-  }
+
   &--conn {
     border-color: var(--conn);
     color: var(--conn);
@@ -306,10 +306,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--conn);
     }
   }
-  &--engineering,
-  &--fitness {
-    grid-row: 4;
-  }
+
   &--engineering {
     border-color: var(--engineering);
     color: var(--engineering);
@@ -318,10 +315,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--engineering);
     }
   }
-  &--security,
-  &--insight {
-    grid-row: 5;
-  }
+
   &--security {
     border-color: var(--security);
     color: var(--security);
@@ -330,10 +324,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--security);
     }
   }
-  &--medicine,
-  &--presence {
-    grid-row: 6;
-  }
+
   &--medicine {
     border-color: var(--medicine);
     color: var(--medicine);
@@ -342,10 +333,7 @@ const {floatingStyles} = useFloating(reference, floating, {
       color: var(--medicine);
     }
   }
-  &--science,
-  &--reason {
-    grid-row: 7;
-  }
+
   &--science {
     border-color: var(--science);
     color: var(--science);

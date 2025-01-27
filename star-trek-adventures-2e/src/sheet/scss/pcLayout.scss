@@ -19,6 +19,20 @@
   }
 
   &--edit {
-    grid-row: span 8;
+    // grid-row: span 8;
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-section {
+    .stat-view,
+    .stat-edit {
+      grid-column: span 3;
+
+      &__base,
+      &__total {
+        grid-column: span 2;
+      }
+    }
   }
 }

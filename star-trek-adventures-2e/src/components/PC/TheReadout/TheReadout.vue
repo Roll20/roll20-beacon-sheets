@@ -5,15 +5,20 @@
       'readout--active': formStarted
     }"
   >
-    <h2 class="readout__header">Task Manager</h2>
+    <h2 class="readout__header">
+      Task Manager
+    </h2>
     <aside class="readout__quick-roll-bar">
-      <div v-for="key in rollStore.savedRolls.keys()" :key="key">
+      <div
+        v-for="key in rollStore.savedRolls.keys()"
+        :key="key"
+      >
         <button 
-          @click="rollStore.handleSavedRollClick(key)"
           :class="{
             'readout__saved-roll-button': true,
             'readout__saved-roll-button--active': rollStore.savedRollActive && key === rollStore.activeName,
           }"
+          @click="rollStore.handleSavedRollClick(key)"
         > 
           {{ key }} 
         </button>
@@ -45,20 +50,30 @@
       Click an Attribute, Department, or Focus to start a roll!
     </span>
     <label 
-    v-if="formStarted"
+      v-if="formStarted"
       class="readout__entry"
     >
       <span>Name</span>
-      <input type="text" v-model="rollStore.activeName">
+      <input
+        v-model="rollStore.activeName"
+        type="text"
+      >
     </label>
     <label 
       v-if="attribute"
       class="readout__entry"
     >
       <span>Attribute</span>
-      <input type="text" disabled :value="AttributesEnum[attribute]">
+      <input
+        type="text"
+        disabled
+        :value="AttributesEnum[attribute]"
+      >
     </label>
-    <span v-else-if="formStarted" class="readout__empty">
+    <span
+      v-else-if="formStarted"
+      class="readout__empty"
+    >
       Choose an attribute!
     </span>
     <label 
@@ -66,9 +81,16 @@
       class="readout__entry"
     >
       <span>Department</span>
-      <input type="text" disabled :value="DepartmentsEnum[department]">
+      <input
+        type="text"
+        disabled
+        :value="DepartmentsEnum[department]"
+      >
     </label>
-    <span v-else-if="formStarted" class="readout__empty">
+    <span
+      v-else-if="formStarted"
+      class="readout__empty"
+    >
       Choose a Department!
     </span>
     <label 
@@ -76,7 +98,11 @@
       class="readout__entry"
     >
       <span>Focus</span>
-      <input type="text" disabled :value="focus">
+      <input
+        type="text"
+        disabled
+        :value="focus"
+      >
     </label>
     <div 
       v-if="formStarted"
@@ -89,11 +115,14 @@
         Roll
       </button>
       <button 
-          class="readout__save-button"
-          @click="rollStore.saveRoll"
+        class="readout__save-button"
+        @click="rollStore.saveRoll"
+      >
+        <img
+          src="../../../common/assets/add.svg"
+          role="presentation"
         >
-          <img src="../../../common/assets/add.svg" role="presentation">
-          <span> Save </span>
+        <span> Save </span>
       </button>
     </div>
   </section>

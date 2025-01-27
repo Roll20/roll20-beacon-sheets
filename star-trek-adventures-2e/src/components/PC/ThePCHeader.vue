@@ -14,15 +14,14 @@
         v-model="editing"
         class="switch"
         :class="editing ? 'switch--enabled': ''"
-        >
+      >
         <span 
-        class="switch__handle"
-        :class="editing ? 'switch__handle--enabled': ''"
-        ></span>
+          class="switch__handle"
+          :class="editing ? 'switch__handle--enabled': ''"
+        />
       </Switch>
     </SwitchGroup>
   </header>
-
 </template>
 
 <script setup lang="ts">

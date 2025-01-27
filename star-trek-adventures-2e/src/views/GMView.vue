@@ -16,15 +16,15 @@
           id="Momentum"
           label="Momentum"
           data-testid="momentum-input"
-          :modelValue="{value: momentum}"
-          @update:modelValue="momentum = $event.value"
+          :model-value="{value: momentum}"
+          @update:model-value="momentum = $event.value"
         />
         <ResourceCounter 
           id="Threat"
           label="Threat"
           data-testid="threat-input"
-          :modelValue="{value: threat}"
-          @update:modelValue="threat = $event.value"
+          :model-value="{value: threat}"
+          @update:model-value="threat = $event.value"
         />
       </div>
       <div 
