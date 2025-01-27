@@ -32,13 +32,19 @@ describe("MilestoneGraphs", () => {
     })
     it("should be able to provide the latest step in a specified valuePath", () => {
       const graph = new MilestoneGraph({ startingValues: { "test": firstValuePath } });
-      expect(graph.getLatestValue("test")).toBe("example")
+      expect(graph.getLatestValueStep("test")).toBe("example")
+    })
+    it("should support adding a step to a specified valuePath", () => {
+      const graph = new MilestoneGraph({ startingValues: { "test": firstValuePath } })
+      expect(graph.getLatestValueStep("test")).toBe("example");
+      graph.addNewValueStep("test");
+      expect(graph.getLatestValueStep("test")).toBe("");
     })
     it("should support removing a step from a specified valuePath", () => {
       const graph = new MilestoneGraph({ startingValues: { "test": secondValuePath } });
-      expect(graph.getLatestValue("test")).toBe("this")
-      graph.removeLatestValue("test")
-      expect(graph.getLatestValue("test")).toBe("is")
+      expect(graph.getLatestValueStep("test")).toBe("this")
+      graph.removeLatestValueStep("test")
+      expect(graph.getLatestValueStep("test")).toBe("is")
     })
   })
 })

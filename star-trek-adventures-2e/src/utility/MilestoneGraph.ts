@@ -26,13 +26,20 @@ export class MilestoneGraph {
   removeValuePath(id: string) {
     this.characterValues.delete(id);
   }
-  getLatestValue(id: string) {
+  getLatestValueStep(id: string) {
     const path = this.characterValues.get(id)
     if (!path)
       return
     return path[path.length - 1]
   }
-  removeLatestValue(id: string) {
+  addNewValueStep(id: string) {
+    const path = this.characterValues.get(id);
+    if (!path)
+      this.characterValues.set(id, [""])
+    else
+      path.push("")
+  }
+  removeLatestValueStep(id: string) {
     const path = this.characterValues.get(id)
     if (!path)
       return
