@@ -91,6 +91,10 @@ export const useCharacterStore = defineStore('character', () => {
     // @ts-ignore
     xp.value = levelTable[newLevel].xp
   }
+  const levelSet = (newLevel:number)=> {
+    // @ts-ignore
+    xp.value = levelTable[newLevel].xp
+  }
   const resetStunts = () => {
     stunts.value = 0;
   }
@@ -259,6 +263,7 @@ export const useCharacterStore = defineStore('character', () => {
     // rollSpell,
     levelUp,
     levelDown,
+    levelSet,
     health,
     healthMax,
     magic,

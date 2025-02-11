@@ -33,6 +33,7 @@ import stuntDie from './partials/stuntDie.hbs?raw';
 import { isGreater } from './expressions/isGreater';
 import { isEqual } from './expressions/isEqual';
 import { isEqualGreater } from './expressions/isEqualGreater';
+import { isLesser } from './expressions/isLesser';
 import { sumComponents } from './expressions/sumComponents';
 import { getDice } from './expressions/getDice';
 import { isArray } from './expressions/isArray';
@@ -60,6 +61,7 @@ handlebars.registerHelper('sumComponents', sumComponents);
 handlebars.registerHelper('getDice', getDice);
 handlebars.registerHelper('isGreater', isGreater);
 handlebars.registerHelper('isEqual', isEqual);
+handlebars.registerHelper('isLesser', isLesser);
 handlebars.registerHelper('isArray', isArray);
 handlebars.registerHelper('capitalize', capitalize);
 handlebars.registerHelper('hasDuplicates', hasDuplicates);
@@ -88,7 +90,7 @@ export type DiceComponent = {
   /** The label to show where this came from, primarily used for static bonuses */
   label?: string;
   /** The numerical value that is the number rolled on the dice, or the value of the bonus */
-  value?: number;
+  value?: any;
   dice?:number[];
   /** Indicates whether or not to always show this component in the breakdown, even if it's 0 */
   alwaysShowInBreakdown?: boolean;

@@ -58,7 +58,7 @@
                 </label>
                 <span class="age-toggle-label">Display {{ settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose' ? 'Arcana' : 'Powers' }}</span>
               </div>
-              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
+              <!-- <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.peril" />
                     <span class="slider round" ></span>
@@ -71,7 +71,7 @@
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Use Daring</span>
-              </div>               
+              </div>                -->
               <div class=" input-group" v-if="settings.cthulhuMythos">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.showFear" />
@@ -106,7 +106,7 @@
               </select>
             </div>
           </div>           -->
-          <div class="row age-modal-row">
+          <!-- <div class="row age-modal-row">
             <div class="col">
               <span class="age-input-label" id="basic-addon1">Whisper Rolls to GM</span>
               <select  id="settings.aimToggle" v-model="settings.whisperRollsGM" class="age-selectt form-select">
@@ -125,7 +125,7 @@
                 <option value="always">Always use Reroll Stunt Die</option>
               </select>
             </div>
-          </div>    
+          </div>     -->
                   
           <div class="row age-modal-row">
             <div class="col">
@@ -185,9 +185,10 @@
           </div> -->
           <div style="display: grid;grid-template-columns: 2fr 135px;">
             <div>
-              <p>Fantasy AGE RPG is ©2015 Green Ronin Publishing, LLC.</p>
+              <p>Fantasy AGE Core Rulebook is ©2023 Green Ronin Publishing, LLC.</p>
+              <p>Blue Rose: The AGE Roleplaying Game of Romantic Fantasy is © 2017 Green Ronin Publishing, LLC.</p>
+              <p>Modern AGE Basic Rulebook is © 2018 Green Ronin Publishing, LLC.</p>
               <p>Beacon SDK AGE System Sheet created by Don White/Web Lynx ©2024</p>
-            <a href="https://ko-fi.com/J3J614QOV1" target="_blank" class="myButton"><img style="width: 24px;margin-right: 10px;" src="/src/assets/lynx/kofi_symbol.png" />Support Don on ko-fi</a>
 
             </div>
             <div>
@@ -202,6 +203,8 @@
               class="confirm-btn"
               @click="$emit('close')"
             >OK</button>
+            <a href="https://ko-fi.com/J3J614QOV1" target="_blank" class="myButton"><img style="width: 24px;margin-right: 10px;" src="/src/assets/lynx/kofi_symbol.png" />Support Don on ko-fi</a>
+
           </slot>
         </div>
     </div>

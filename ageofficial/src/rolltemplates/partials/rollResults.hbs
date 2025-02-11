@@ -8,7 +8,7 @@ Rolling {{#each components}}
     {{/each}} 
     {{#each components}}
         {{#unless dice}}
-            {{#if value}}+ {{value}} = {{sumComponents ../components multiplier}}{{/if}}
+            {{#if value}} {{#if (isGreater value 0)}}+{{/if}} {{value}} = {{sumComponents ../components multiplier}}{{/if}}
         {{/unless}}
     {{/each}}
 

@@ -32,7 +32,7 @@
           <div class="age-container-heading">
             Toughness
           </div>
-            <span class="age-num-value">{{ char.speed + speedMods  }}</span>
+            <span class="age-num-value">{{ ability.ConstitutionBase >= 0 ? ability.ConstitutionBase : 0 }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>

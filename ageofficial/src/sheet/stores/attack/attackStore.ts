@@ -144,18 +144,54 @@ export const useAttackStore = defineStore('attacks', () => {
     });
   }
   const printAttackDamage = async(attack: any)=> {
-    // const attack = attacks.value.find((item) => item._id === _id);
-    // if (!attack) return;
+    const baseDamage = ref('');
+    const secondaryDamage = ref('');
+    const modifier = ref(0);
+    const attackDamageOptions = attack.damage.split(/(?=[+-])/)
 
-    const diceRegex = /^(\d+)d(\d+)([+-]\d+)?$/;
-    const match = attack.damage.match(diceRegex);
-    const numberOfDice = parseInt(match![1]);
-    const sidesOfDice = parseInt(match![2])
-    const modifier = match![3] ? parseInt(match![3]) : 0;
-    const components = [
+    // Primary Damage
+    baseDamage.value = attackDamageOptions[0];
+
+    if(attackDamageOptions.length === 3){
+       secondaryDamage.value = attackDamageOptions[1];
+       modifier.value = parseInt(attackDamageOptions[2]);
+    } else {
+      modifier.value = parseInt(attackDamageOptions[1]);
+    }
+    console.log(baseDamage.value)
+    console.log(secondaryDamage.value)
+    console.log(modifier.value) 
+
+    const diceRegex: RegExp = /^(\d+)d(\d+)$/;
+    const parseDice = (diceString: string): string[] | null => {
+      const match = diceRegex.exec(diceString);
+      return match ? [match[1], match[2]] : null;
+    };
+    // const baseNumberOfDice = match![3] ? parseInt(match![3]) : 0;
+
+    // const baseNumberOfDice = parseInt(parseDice(baseDamage.value ? baseDamage.value[0]: 0));
+    // const baseSidesOfDice = baseDamage.value
+    // const match = baseDamage.value.match(diceRegex);
+    // console.log(parseDice(baseDamage.value))
+    // console.log(parseDice(secondaryDamage.value))
+
+    // const modifier = match![3] ? parseInt(match![3]) : 0;
+
+    const numberOfDice = parseDice(baseDamage.value)?.[0];
+    const sidesOfDice = parseDice(baseDamage.value)?.[1];
+    
+    const components:any = [
       { label: `Base Roll`, sides: sidesOfDice, count:numberOfDice, alwaysShowInBreakdown: true },
-      { label: 'Modifier', value: modifier },
     ];
+    if(secondaryDamage.value){
+      components.push(      
+        { label: `Bonus Roll`, sides: parseDice(secondaryDamage.value)?.[1], count:parseDice(secondaryDamage.value)?.[0], alwaysShowInBreakdown: true },
+      );
+    }
+    components.push(      
+      { label: 'Modifier', value: modifier.value },
+    );
+
     await rollToChat({
       characterName: useMetaStore().name,
       title: attack.name,
