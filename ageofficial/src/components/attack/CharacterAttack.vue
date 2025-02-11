@@ -200,8 +200,6 @@ const focus = useAbilityFocusesStore();
 let sfb = {}
 
 const checkFocusBonus = (objectsArray, weapon) => {
-  console.log(objectsArray)
-  console.log(weapon)
   const obj = objectsArray.find(obj => {
     if (obj.name === 'custom') {
       return obj.customName.toLowerCase() === weapon.name.toLowerCase();
@@ -255,7 +253,6 @@ const selectedAttack = () => {
 
 
 function mergeDice(rolls) {
-  // console.log(rolls)
   // Create an object to track the number of each type of dice
   const diceMap = {};
   let totalModifier = 0; // To track any numeric modifiers (e.g., +5)
@@ -271,7 +268,6 @@ function mergeDice(rolls) {
       const num = Number(match[1] || 1); // Number of dice (default 1 if empty)
       const sides = Number(match[2]);    // Number of sides on the dice
       const modifier = Number(match[3] || 0); // Modifier (default 0 if empty)
-
       // Accumulate the dice roll
       if (diceMap[sides]) {
         diceMap[sides] += num; // Add the number of dice if sides already exist
@@ -298,7 +294,7 @@ function mergeDice(rolls) {
     combinedDice.push(`${totalModifier}`);
   }
 
-  return combinedDice.join('+');
+  return combinedDice.join('+').replace('+-','-');
 }
 const totalBonus = ref(0);
 const count = ref(0);

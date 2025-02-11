@@ -2,6 +2,7 @@
 
 export const basicConditions = [
     { name: 'Defenseless', 
+      _id: 'c8d0181a-85f0-4929-925b-9f1af7285aab',
       description:`<p>A Defenseless character loses their Dexterity bonus to Defense and suffers an additional –3 penalty to their Defense.</p>
         <p><strong>Recovery:</strong> Based on circumstance. If an ability makes a target Defenseless and does not list a duration, they are Defenseless for 1 round.</p>
     `,
@@ -12,7 +13,8 @@ export const basicConditions = [
         {modifiedValue:'Defense', penalty:'Dexterity'}
       ]
     },
-    { name: 'Dying', 
+    { name: 'Dying',
+      _id: 'e2e3e031-443e-46b0-b6a2-c6f4fc9474c6',
       description:`<p>Your current Health drops to 0 if it is not at 0 already. If you are conscious, you can talk but can’t take any other actions. You risk death after 4 + Constitution rounds (at the end of the final
 round) unless you are healed to above 0 Health. At the end of the final round, make a TN 13 Constitution (Stamina) test. If you fail, you die. If you succeed, you are Unconscious (see Unconscious)
 for 1 hour (unless healed) but no longer Dying, at which point you must make another TN 13 Constitution (Stamina) test with the same results, except that if you generate stunt points on the
@@ -24,6 +26,7 @@ greater, or you make a successful Constitution (Stamina) check after an hour</p>
       show: false,
     },
     { name: 'Frightened', 
+      _id: '2bd73ea4-ca83-4811-a487-986dcd151edb',
       description:`<p>You are afraid of a specific person, place, or object. Until this fear subsides, you must use one of your actions to move away from the source of your fear each round or suffer a –3 penalty
                     to all ability tests, with the exception of any tests required to remove obstacles to your retreat. If you are cornered by the source of your fear, you do not suffer any penalty to your
                     actions as long as they’re intended to help defend you or find an escape route.</p>
@@ -44,6 +47,7 @@ greater, or you make a successful Constitution (Stamina) check after an hour</p>
       ]
     },
     { name: 'Helpless', 
+      _id: 'a0a44e00-dc54-447c-b815-1ed1e5136c97',
       description:`<p>You are conscious but can’t take minor or major actions, including
 those which require only mental effort, though you can take
 reactions (such as tests to avoid hazards) and free actions (such
@@ -54,6 +58,7 @@ as speaking). You can stagger or crawl 2 yards per round</p>
       show: false,
     },
     { name: 'Hindered', 
+      _id: '8c4acff1-a50c-4909-91ad-5a907fd69397',
       description:`<p>You lose one of your minor actions so that you may only take a single major or minor action on your turn.</p>
         <p><strong>Recovery:</strong> Based on circumstance.</p>
     `,
@@ -61,6 +66,7 @@ as speaking). You can stagger or crawl 2 yards per round</p>
       show: false,
     },
     { name: 'Prone', 
+      _id: 'e6dd2c39-0a21-4971-a358-eb993f106d7b',
       description:`<p>Prone characters can only crawl 1 + Dexterity (minimum 1)
 yards as their Move action unless they stand (see Recovery).
 Prone characters cannot use the Run major action on any turn
@@ -75,6 +81,7 @@ you to half your normal Move for the rest of that turn.</p>
       show: false,
     },
     { name: 'Slowed', 
+      _id: 'b8a660cb-9fb3-4ebc-a962-323861df14b3',
       description:`<p>Your Speed drops by half and you suffer a –3 to your current initiative rating.</p>
         <p><strong>Recovery:</strong> Based on circumstance.</p>
     `,
@@ -85,6 +92,7 @@ you to half your normal Move for the rest of that turn.</p>
       ]
     },
     { name: 'Stunned', 
+      _id: '68ed6283-819b-4f43-890c-8e48c9b26672',
       description:`<p>You lose your major action. You may only take one minor action each round.</p>
         <p><strong>Recovery:</strong> Based on circumstance.</p>
     `,
@@ -92,6 +100,7 @@ you to half your normal Move for the rest of that turn.</p>
       show: false,
     },
     { name: 'Unconscious', 
+      _id:'1432b8d1-c960-4462-938a-ff21a50176a8',
       description:`<p>You are unconscious and cannot take actions of any kind. You
 do not perceive any details of the events around you, though
 a successful Perception test at –10 allows you to notice particularly loud, sudden, or painful events (such as being slapped).</p>

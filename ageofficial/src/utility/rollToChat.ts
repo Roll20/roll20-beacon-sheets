@@ -8,7 +8,7 @@ import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 // import getStunt from '@/rolltemplates/expressions/getStunt';
 /* Example function for Rolling a basic check and showing the roll template. */
 export default async (args: RollToChatTemplate['parameters'], customDispatch?: Dispatch) => {
-  console.log(args)
+  // console.log(args)
   const dispatch = customDispatch || (dispatchRef.value as Dispatch); // Need a different Relay instance when handling sheet-actions
   // Use Beacon to make the rolls and calculations. We end up with a Roll Result.
   const { components, total } = await getRollResult(args.components, dispatch);

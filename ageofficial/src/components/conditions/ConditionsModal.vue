@@ -36,7 +36,20 @@
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#conditionCollapse' + i"  aria-expanded="true" aria-controls="collapseOne"></button>
                         </div>
                         <div :id="'conditionCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body" v-html="condition.description"></div>
+                        <div class="accordion-body">
+                          <div v-html="condition.description"></div>
+                          <div class="age-condition-modifiers">
+                          <h4 style="display: flex;">
+                            <span>Modifiers</span>   
+                          </h4>
+                          <div v-for="mod in condition.modifiers" :key="mod">
+                            {{ mod.modifiedValue }} | {{ mod.modifiedOption }} | {{ mod.conditionalCheck }} {{ mod.conditional }} | {{ mod.penalty }}
+                          </div>
+                        <!-- {{ condition.modifiers }} -->
+
+                        </div>
+                        </div>
+                        
                         <!-- {{ condition.modifiers }} -->
 
                         </div>
@@ -65,114 +78,118 @@
                             <button type="button" class="age-icon-btn" data-bs-toggle="collapse" :data-bs-target="'#conditionEditCollapse' + i"  aria-expanded="true" aria-controls="collapseOne">
                               <font-awesome-icon :icon="['fa', 'pen']" />                              
                             </button>
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#conditionCollapse' + i"  aria-expanded="true" aria-controls="collapseOne"></button>
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#customConditionCollapse' + i"  aria-expanded="true" aria-controls="collapseOne"></button>
                         </div>
                         <div :id="'conditionEditCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                          <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1">Condition Name</span>
-                            <input type="text" class="form-control" placeholder="0" aria-label="Character Name" v-model="condition.name"  aria-describedby="basic-addon1">
-                          </div>
-                          <div class="input-group" style="display: grid;grid-template-columns: 1fr 2fr;">
-                              <span class="input-group-text">Description</span>
-                              <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
-                                modules: {
-                                  keyboard: {
-                                      bindings: {
-                                          enter: {
-                                              key: 13, // 'Enter' key
-                                              handler: (range, context) => {
-                                              // Default behavior of Quill (inserts a single paragraph)
-                                              const quill = this.$refs.quillEditor.quill;
-                                              quill.formatLine(range.index, 1, 'block', true);
-                                              },
-                                          },
-                                      },
+                          <div class="accordion-body">
+                            <div class="input-group mb-3">
+                              <span class="input-group-text" id="basic-addon1">Condition Name</span>
+                              <input type="text" class="form-control" placeholder="0" aria-label="Character Name" v-model="condition.name"  aria-describedby="basic-addon1">
+                            </div>
+                            <div class="input-group" style="display: grid;grid-template-columns: 1fr 2fr;">
+                                <span class="input-group-text">Description</span>
+                                <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
+                                  modules: {
+                                    keyboard: {
+                                        bindings: {
+                                            enter: {
+                                                key: 13, // 'Enter' key
+                                                handler: (range, context) => {
+                                                // Default behavior of Quill (inserts a single paragraph)
+                                                const quill = this.$refs.quillEditor.quill;
+                                                quill.formatLine(range.index, 1, 'block', true);
+                                                },
+                                            },
+                                        },
+                                    },
                                   },
-                                },
-                                scrollingContainer: true}" v-model:content="condition.description" />
-                          </div>
-                          <div class="age-quality-modifiers">
-
-               <h3 style="display: flex;">
-                  <span>Modifiers</span>                  
-                  <button class="link-btn" @click="mods.addModifier({_id:condition._id,enabled:condition.enabled,type:'Condition'})" 
-                    style="background: none; font-weight: bold;border:none; font-size: 14px;" v-tippy="{ content: 'Add Modifier' }">
-                    <font-awesome-icon :icon="['fa', 'plus']" />                  
-                  </button>
-                </h3>
-                  <div class="mb-2" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index" style="display:flex;gap:10px;">
-                  <BaseModView :mod="mod" :modOptions="['Ability', 'Damage', 'Defense', 'Speed']" />
-                </div>
-                
-                <!-- <div v-for="(mod,index) in condition.modifiers" :key="mod" style="display:flex;gap:10px;">
-                  <div>
-                    <select
-                      class="age-atk-select form-select"
-                        data-testid="test-spell-weaponType-input"
-                        :id="`weaponType-${condition._id}`"
-                        v-model="mod.modifiedType"
-                    >
-                      <option value="Ability">Ability</option>
-                      <option value="Defense">Defense</option>
-                      <option value="Speed">Speed</option>
-                      <option value="Damage">Damage</option>
-                    </select>
-                  </div>
-                  <div v-if="mod.modifiedType === 'Ability'">
-                    <AbilityModView :mod="mod" />
-                  </div>
-                  <div v-else-if="mod.modifiedType === 'Spell'">
-                    <SpellModView :mod="mod" />
-                  </div>
-                  <div v-if="mod.option === 'Ability'">
-                    <AbilityModView :mod="mod" />
-                  </div>
-                  <div v-if="mod.option === 'Ability Penaltyy'">
-                    <AbilityModView :mod="mod" :type="'penalty'" />
-                  </div>
-                  <div v-else>
-                    <select class="age-atk-select form-select"
-                        data-testid="test-spell-weaponType-input"
-                        v-model="mod.modifiedOption"
-                      > 
-                        <option value="Bonus">Bonus</option>
-                        <option value="Penalty">Penalty</option>
-                        <option value="Roll">Roll</option>
-                      </select>
-                      
-                    <input type="number"  class="form-control" placeholder="0"  v-model="mod.variable" v-if="mod.option && mod.option !== 'Damage'" />
-                  </div>
-                  <div v-if="mod.modifiedType === 'Damage' || mod.modifiedType === 'Defense'">
-                    <div v-if="mod.modifiedOption === 'Bonus'">
-                        <input type="number"  class="form-control" placeholder="0" min="0" v-model="mod.bonus" />
-                      </div>
-                      <div v-if="mod.modifiedOption === 'Penalty'">
-                        <input type="number"  class="form-control" placeholder="0" max="0"  v-model="mod.penalty" />
-                      </div>
-                      <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.roll" v-if="mod.modifiedOption === 'Roll'" />
-                  </div>
-                  <div>
-                    <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.roll" v-if="mod.option === 'Damage'" />
-                  </div>
+                                  scrollingContainer: true}" v-model:content="condition.description" />
+                            </div>
+                            <div class="age-quality-modifiers">
+                              <h3 style="display: flex;">
+                                <span>Modifiers</span>                  
+                                <button class="link-btn" @click="mods.addModifier({_id:condition._id,enabled:condition.enabled,type:'Condition'})" 
+                                  style="background: none; font-weight: bold;border:none; font-size: 14px;" v-tippy="{ content: 'Add Modifier' }">
+                                  <font-awesome-icon :icon="['fa', 'plus']" />                  
+                                </button>
+                              </h3>
+                              <div class="mb-2" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index" style="display:flex;gap:10px;">
+                              <BaseModView :mod="mod" :modOptions="['Ability', 'Damage', 'Defense', 'Speed']" />
+                            </div>
                   
-                  <button class="link-btn" @click="customStore.removeModifier(condition._id,index)" 
-                  style="background: none; font-weight: bold;border:none;" v-tippy="{ content: 'Remove Modifier' }">
-                  <font-awesome-icon :icon="['fa', 'minus']" />
-                </button>
-                </div> -->
-
-              </div>
-                          <button class="delete-btn delete" title="Delete" @click="customStore.removeCondition(condition._id)">
-                              ✕ Delete Condition
-                          </button>
+                  <!-- <div v-for="(mod,index) in condition.modifiers" :key="mod" style="display:flex;gap:10px;">
+                    <div>
+                      <select
+                        class="age-atk-select form-select"
+                          data-testid="test-spell-weaponType-input"
+                          :id="`weaponType-${condition._id}`"
+                          v-model="mod.modifiedType"
+                      >
+                        <option value="Ability">Ability</option>
+                        <option value="Defense">Defense</option>
+                        <option value="Speed">Speed</option>
+                        <option value="Damage">Damage</option>
+                      </select>
+                    </div>
+                    <div v-if="mod.modifiedType === 'Ability'">
+                      <AbilityModView :mod="mod" />
+                    </div>
+                    <div v-else-if="mod.modifiedType === 'Spell'">
+                      <SpellModView :mod="mod" />
+                    </div>
+                    <div v-if="mod.option === 'Ability'">
+                      <AbilityModView :mod="mod" />
+                    </div>
+                    <div v-if="mod.option === 'Ability Penaltyy'">
+                      <AbilityModView :mod="mod" :type="'penalty'" />
+                    </div>
+                    <div v-else>
+                      <select class="age-atk-select form-select"
+                          data-testid="test-spell-weaponType-input"
+                          v-model="mod.modifiedOption"
+                        > 
+                          <option value="Bonus">Bonus</option>
+                          <option value="Penalty">Penalty</option>
+                          <option value="Roll">Roll</option>
+                        </select>
+                        
+                      <input type="number"  class="form-control" placeholder="0"  v-model="mod.variable" v-if="mod.option && mod.option !== 'Damage'" />
+                    </div>
+                    <div v-if="mod.modifiedType === 'Damage' || mod.modifiedType === 'Defense'">
+                      <div v-if="mod.modifiedOption === 'Bonus'">
+                          <input type="number"  class="form-control" placeholder="0" min="0" v-model="mod.bonus" />
                         </div>
-                          
-
+                        <div v-if="mod.modifiedOption === 'Penalty'">
+                          <input type="number"  class="form-control" placeholder="0" max="0"  v-model="mod.penalty" />
                         </div>
-                        <div :id="'conditionCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body" v-html="condition.description"></div>
-                        {{ condition.modifiers }}
+                        <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.roll" v-if="mod.modifiedOption === 'Roll'" />
+                    </div>
+                    <div>
+                      <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.roll" v-if="mod.option === 'Damage'" />
+                    </div>
+                    
+                    <button class="link-btn" @click="customStore.removeModifier(condition._id,index)" 
+                    style="background: none; font-weight: bold;border:none;" v-tippy="{ content: 'Remove Modifier' }">
+                    <font-awesome-icon :icon="['fa', 'minus']" />
+                  </button>
+                  </div> -->
+
+                </div>
+                            <button class="delete-btn delete" title="Delete" @click="customStore.removeCondition(condition._id)">
+                                ✕ Delete Condition
+                            </button>
+                          </div>  
+                        </div>
+                        <div :id="'customConditionCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div v-html="condition.description"></div>
+                          <h4 style="display: flex;">
+                              <span>Modifiers</span>   
+                            </h4>
+                          <div class="mb-2" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index" style="display:flex;gap:10px;">
+                            {{ mod.option }} {{ mod.modifiedValue }} {{ mod.bonus }} {{ mod.penalty }} {{ mod.roll }}
+                          </div>
+                          </div>
                         </div>
                     </div>                    
                 </div>
