@@ -16,7 +16,7 @@ export interface MilestoneGraphParts {
 }
 
 export interface LogEntryDetails {
-  /** index to find the correlating value step the invoked value path in a `MilestoneGraph`'s `characterValues` property */
+  /** index to find the correlating value step from the invoked value path in a `MilestoneGraph`'s `characterValues` property */
   index: number;
   /** The way the related value was invoked, per Milestone Entry directions (CRB p. 166) */
   invocation: ValueInvocationValue;
