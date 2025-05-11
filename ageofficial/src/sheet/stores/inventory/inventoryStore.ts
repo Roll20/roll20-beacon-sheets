@@ -7,6 +7,7 @@ import type { AbilityScore } from '@/sheet/stores/abilityScores/abilityScoresSto
 import { arrayToObject, objectToArray } from '@/utility/objectify';
 import { v4 as uuidv4 } from 'uuid';
 import sendToChat from '@/utility/sendToChat';
+import { useSettingsStore } from '../settings/settingsStore';
 
 /*
  * This store handles 2 "repeating"/lists of Items in the Inventory. Carried and Stowed.
@@ -159,6 +160,7 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   // Inserts a new blank item into either carried or stowed inventory.
   const addItem = (newItem:any) => {
+    const settings = useSettingsStore();
     const emptyItem: Item = {
       _id: uuidv4(),
       slots: 1,
@@ -181,6 +183,24 @@ export const useInventoryStore = defineStore('inventory', () => {
         reload:newItem ? newItem.reload : '',
         minStr: newItem.minStr || 0,
         configurable:true,
+      })
+      if(settings.gameSystem === 'mage'){
+        Object.assign(emptyItem,{
+          damageType: newItem ? newItem.damageType : '',
+          damageSource: newItem ? newItem.damageSource : '',
+        })
+      }
+    }
+    if(newItem.type === 'armor'){
+      Object.assign(emptyItem,{
+        defenseMod: newItem ? newItem.defenseMod : '',
+        armorPenalty: newItem ? newItem.armorPenalty : '',
+        strain: newItem ? newItem.strain : '',
+      })
+    }    
+    if(newItem.type === 'shield'){
+      Object.assign(emptyItem,{
+        defenseMod: newItem ? newItem.defenseMod : ''
       })
     }
     items.value.push(emptyItem);

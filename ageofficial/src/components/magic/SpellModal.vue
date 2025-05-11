@@ -122,6 +122,11 @@
                       <input type="text" class="form-control" placeholder="ex. 1d6" aria-label="Damage (Failure)" :id="`damage-${spell._id}`"
                       v-model="spell.damageMiss"  aria-describedby="basic-addon1">
                   </div>
+                  <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
+                      <span class="age-input-label" id="basic-addon1">Fatigue</span>
+                      <input type="text" class="form-control" aria-label="Fatigue" :id="`damage-${spell._id}`"
+                      v-model="spell.damageMiss"  aria-describedby="basic-addon1">
+                  </div>
                   <div v-if="spell.weaponType === 'ranged'">
                       <div class="mb-3 col">
                           <span class="age-input-label" id="basic-addon1">Short Range</span>

@@ -28,6 +28,7 @@ interface Spell {
   extendable:boolean;
   damageHit:string;
   damageMiss:string;
+  fatigue?:number;
 }
 
 export type SpellsHydrate = {
@@ -41,8 +42,7 @@ export const useSpellStore = defineStore('spells', () => {
   const spellsCount: ComputedRef<number> = computed(() => spells.value.length);
   let selectedSpell = {}
   const addSpell = (spell?:any) => {
-    // debugger
-    spells.value.push({
+    const newSpell = {
       _id: uuidv4(),
       name: spell ? spell?.name : '',
       arcanaType: spell ? spell?.arcanaType : '',
@@ -59,7 +59,11 @@ export const useSpellStore = defineStore('spells', () => {
       extendable:spell ? spell?.extendable : false,
       damageHit:spell ? spell?.damageHit : '',
       damageMiss:spell ? spell?.damageMiss : '',
-    });
+    }
+    if(spell.fatigue){
+      Object.assign(newSpell, { fatigue: spell.fatigue });
+    }
+    spells.value.push(newSpell);
   }
   const removeSpell = (_id: string) => {
     const indexToRemove = spells.value.findIndex((spells) => spells._id === _id);
@@ -119,8 +123,7 @@ export const useSpellStore = defineStore('spells', () => {
       title: spell.name,
       allowHeroDie: false,
       rollType:'spellDamage',
-      components,
-      secondaryComponents
+      components
     });
   }
   const setCurrentSpell = (_id: string) => {
