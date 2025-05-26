@@ -165,7 +165,7 @@ const setWeaponGroupAbility = () => {
         props.item.weaponGroupAbility = ''
       break;
     }
-  }
+}
 const weaponTypes = ['Melee','Natural','Ranged','Spell Melee','Spell Ranged']
 
 </script>

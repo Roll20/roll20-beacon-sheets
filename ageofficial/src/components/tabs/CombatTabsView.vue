@@ -31,10 +31,11 @@
                         </button>
                     </li>
                     <li class="nav-item age-tab" role="presentation" v-if="settings.showCybernetics">
-                        <button class="nav-link" id="inventory" data-bs-toggle="tab" data-bs-target="#augmentations-pane" type="button" role="tab" aria-controls="augmentations-pane" aria-selected="false">
+                        <button class="nav-link" id="inventory" data-bs-toggle="tab" data-bs-target="#enhancements-pane" type="button" role="tab" aria-controls="enhancements-pane" aria-selected="false">
                             <div class="age-tab-icon age-augmentations-icon"></div>
-                            <span class="age-tab-label" v-if="settings.cyberpunk">Augmentations</span>                                
-                            <span class="age-tab-label" v-if="settings.technofantasy">Cybernetics</span>                                
+                            <span class="age-tab-label">Enhancements</span>                                
+                            <!-- <span class="age-tab-label" v-if="settings.cyberpunk">Augmentations</span>                                
+                            <span class="age-tab-label" v-if="settings.technofantasy">Cybernetics</span>                                 -->
                         </button>
                     </li>
                 </ul>
@@ -95,8 +96,8 @@
                                             <div class="tab-pane fade" id="inventory-pane" role="tabpanel" aria-labelledby="inventory" tabindex="0">
                                                 <InventorySection />
                                             </div>
-                                            <div class="tab-pane fade" id="augmentations-pane" role="tabpanel" aria-labelledby="augmentations" tabindex="0">
-                                                Augmentations
+                                            <div class="tab-pane fade" id="enhancements-pane" role="tabpanel" aria-labelledby="enhancements" tabindex="0">
+                                                <EnhancementsSection />
                                             </div>
                                         </div>                     
                                     </div>
@@ -127,7 +128,7 @@ import MagicSection from '@/components/magic/MagicSection.vue';
 import InventorySection from '@/components/inventory/InventorySection.vue';
 import SidebarSection from '@/components/SidebarSection.vue';
 import { attackGearList } from '@/system/attackGear';
-
+import EnhancementsSection from '@/components/enhancements/EnhancementsSection.vue';
 const settings = useSettingsStore();
 const gameSystem = ref('fage')
 switch(settings.gameSystem){

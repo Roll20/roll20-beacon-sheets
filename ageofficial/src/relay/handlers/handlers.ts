@@ -42,7 +42,6 @@ export const onDropOver = async (e:any) => {
 }
 const dispatch = dispatchRef.value as Dispatch; // Need a different Relay instance when handling sheet-actions
 
-  console.log(e)
   // const dp = dispatch.compendiumRequest({ query: 'DD 5th Edition SRD'}) ;Promise<{
   //   data: Object
   //   errors: Array<Error>

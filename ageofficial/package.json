@@ -28,7 +28,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@popperjs/core": "^2.11.8",
-    "@roll20-official/beacon-sdk": "^0.0.22",
+    "@roll20-official/beacon-sdk": "^0.0.31",
     "@vueup/vue-quill": "^1.0.0-alpha.40",
     "bootstrap": "^5.3.3",
     "handlebars": "^4.7.7",

@@ -125,7 +125,7 @@ export const useAttackStore = defineStore('attacks', () => {
         { label: 'Aim', value: useSettingsStore().aimValue  }
       )  
     }
-    
+
     await rollToChat({
       characterName: useMetaStore().name,
       title: weapon.name,
@@ -158,9 +158,6 @@ export const useAttackStore = defineStore('attacks', () => {
     } else {
       modifier.value = parseInt(attackDamageOptions[1]);
     }
-    console.log(baseDamage.value)
-    console.log(secondaryDamage.value)
-    console.log(modifier.value) 
 
     const diceRegex: RegExp = /^(\d+)d(\d+)$/;
     const parseDice = (diceString: string): string[] | null => {
@@ -172,8 +169,6 @@ export const useAttackStore = defineStore('attacks', () => {
     // const baseNumberOfDice = parseInt(parseDice(baseDamage.value ? baseDamage.value[0]: 0));
     // const baseSidesOfDice = baseDamage.value
     // const match = baseDamage.value.match(diceRegex);
-    // console.log(parseDice(baseDamage.value))
-    // console.log(parseDice(secondaryDamage.value))
 
     // const modifier = match![3] ? parseInt(match![3]) : 0;
 

@@ -84,7 +84,6 @@ export const useItemStore = defineStore('quality', ()=>{
   const getItem = (_id: string) => {
     const i = items.value.findIndex((items) => items._id === _id);
       if (i >= 0) {
-        console.log(items.value[i])
         return items.value[i]};
     };
   const addModifier = (item:any) => {

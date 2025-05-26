@@ -10,16 +10,17 @@
           <div >
             <div class="row"> 
               <div class="mb-3 col">
-                <span class="age-input-label" id="basic-addon1">Spell Name</span>
+                <span class="age-input-label" id="basic-addon1">{{ magicLabel }} Name</span>
                 <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="spell.name"  aria-describedby="basic-addon1">
               </div>
               <div class="mb-3 col">
               <span class="age-input-label" id="basic-addon1">{{ magicLabel }}</span>
                           <select
-                          class="age-atk-select form-select"
+                              class="age-atk-select form-select"
                               data-testid="test-spell-weaponType-input"
                               :id="`weaponType-${spell._id}`"
                               v-model="spell.arcanaType"
+                              @change="setArcanaAbility"
                           >
                               <option v-for="mt in magicTypes" :key="mt" :value="mt">{{ mt }}</option>
                           </select>
@@ -241,30 +242,32 @@ switch(settings.gameSystem){
 }
 
 const spellStore = useSpellStore();
-const setWeaponGroupAbility = () => {
+const setArcanaAbility = () => {
   // debugger
-  switch(props.spell.weaponGroup){
-    // ACCURACY
-    case('black powder'):
-    case('bows'):
-    case('brawling'):
-    case('dueling'):
-    case('light blades'):
-    case('slings'):
-    case('staves'):
-      props.spell.weaponGroupAbility = 'Accuracy';
-    break;
-    // FIGHTING
-    case('axes'):
-    case('bludgeons'):
-    case('heavy blades'):
-    case('lances'):
-    case('polearms'):
-    case('spears'):
-      props.spell.weaponGroupAbility = 'Fighting';
+  switch(props.spell.arcanaType){
+    // WILLPOWER For Psychic
+    case('Apportation'):
+    case('Astral'):
+    case('Cryokinesis'):
+    case('Cyberkinesis'):
+    case('Dreaming'):
+    case('Electrokinesis'):
+    case('Empathy'):
+    case('Exrtasensory Perception'):
+    case('Nature Empathy'):
+    case('Photokinesis'):
+    case('Psychic Drain'):
+    case('Psychic Projection'):    
+    case('Pyrokinesis'):
+    case('Serendipity'):
+    case('Shielding'):
+    case('Somatic'):
+    case('Telekinesis'):
+    case('Telepathy'):
+      props.spell.ability = 'Willpower';
     break;
     default:
-      props.spell.weaponGroupAbility = ''
+      props.spell.ability = 'Intelligence';
     break;
   }
 }

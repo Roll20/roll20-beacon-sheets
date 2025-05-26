@@ -95,6 +95,7 @@ import SpellModal from './SpellModal.vue';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
 
 const bio = useBioStore();
 const char = useCharacterStore();
@@ -127,13 +128,22 @@ const toggleExpand = () => {
 const modalClosed = () => {
   showModal.value = false;
 };
+let toAttackRoll = 0
+
+const setAttackRoll = () => {
+  if(useAbilityScoreStore().abilityScores[props.spell.ability]){
+    toAttackRoll = useAbilityScoreStore().abilityScores[props.spell.ability].base;
+  }
+}
+setAttackRoll()
+
 const handleDelete = () => {
   const spellStore = useSpellStore();
   spellStore.removeSpell(props.spell._id);
 };
 const handlePrint = () => {
   const spellStore = useSpellStore();
-  spellStore.printSpell(props.spell._id);
+  spellStore.printSpell(props.spell._id,toAttackRoll);
 };
 const handleDamagePrint = () => {
   const spellStore = useSpellStore();

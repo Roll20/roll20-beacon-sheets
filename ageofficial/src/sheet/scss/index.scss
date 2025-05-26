@@ -1425,6 +1425,14 @@ body.sheet-darkmode {
       grid-gap: 5px;
       position: relative;
     }
+    & .age-enhancement-accordion-header {
+      display:grid;
+      grid-template-columns:2fr 25px 25px 55px;
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
+    }
   } 
 }
 @media (max-width: 967px) {  
@@ -1477,6 +1485,14 @@ body.sheet-darkmode {
       min-width: 100%;
       grid-gap: 5px;
       position: relative;
+    }
+    & .age-enhancement-accordion-header {
+      display:grid;
+      grid-template-columns:2fr 25px 25px 55px;
+      align-items: center;
+      width: max-content;
+      min-width: 100%;
+      grid-gap: 5px;
     }
   }
 }

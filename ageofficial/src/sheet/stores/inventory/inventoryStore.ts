@@ -240,7 +240,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       items.value.find((item) => item._id === _id) ||
       itemsStowed.value.find((item) => item._id === _id);
     if (!item) return;
-    console.log(item)
+    
     await sendToChat({
       title: item.name,
       subtitle: item.type,

@@ -44,11 +44,11 @@
                     </span>
                   </button>
                 </div> -->
-                <div class="age-header-btn">
+                <!-- <div class="age-header-btn">
                   <button class="age-btn" @click="openSidebar">
                       <span>Notes</span>
                    </button>
-                </div>
+                </div> -->
                 <div class="age-header-btn">
                   <button class="age-btn" @click="showModal = true">
                     <font-awesome-icon style="padding-right: 5px;" :icon="['fa', 'sheet-plastic']" />

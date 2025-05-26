@@ -226,9 +226,6 @@ export const damageBonus = computed(()=>{
           break;
         }
         // mods.modifiers.findIndex((submod) => submod._id === mod.parentId);
-//         console.log(submod._id)
-//         console.log(modIndex)
-// console.log(mods.modifiers[modIndex])
         // if (modIndex >= 0){
 // mod.
         // }
@@ -237,7 +234,6 @@ export const damageBonus = computed(()=>{
 
       }
     })
-    // console.log(totalBonus.value)
   return totalBonus.value
 })
 
