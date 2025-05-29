@@ -30,6 +30,7 @@ export type SettingsHydrate = {
     showFear:boolean;
     showAlienation:boolean;
     showCybernetics:boolean;
+    useFortune?: boolean;
   };
 };
 
@@ -61,6 +62,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const showFear = ref(false);
   const showAlienation = ref(false);
   const showCybernetics = ref(false);
+  const useFortune = ref(false);
 
   const dehydrate = () => {
     return {
@@ -92,6 +94,7 @@ export const useSettingsStore = defineStore('settings', () => {
         showFear: showFear.value,
         showAlienation: showAlienation.value,
         showCybernetics: showCybernetics.value,
+        useFortune: useFortune.value      
       },
     };
   };
@@ -124,6 +127,7 @@ export const useSettingsStore = defineStore('settings', () => {
     showFear.value = hydrateStore.settings.showFear ?? showFear.value
     showAlienation.value = hydrateStore.settings.showAlienation ?? showAlienation.value
     showCybernetics.value = hydrateStore.settings.showCybernetics ?? showCybernetics.value
+    useFortune.value = hydrateStore.settings.useFortune ?? useFortune.value
   };
 
   return {
@@ -154,6 +158,7 @@ export const useSettingsStore = defineStore('settings', () => {
     showFear,
     showAlienation,
     showCybernetics,
+    useFortune,
     dehydrate,
     hydrate,
   };

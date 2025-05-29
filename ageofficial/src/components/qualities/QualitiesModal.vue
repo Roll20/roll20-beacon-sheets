@@ -332,8 +332,7 @@ const props = defineProps({
   feature: { type: Object },
   mode: String,
   qualityOptions: { type: Array}
-})
-// console.log(props.qualityOptions)
+});
 const char = useCharacterStore();
 const mods = useModifiersStore();
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower']

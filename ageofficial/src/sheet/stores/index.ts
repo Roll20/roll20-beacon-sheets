@@ -14,6 +14,7 @@ import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useConditionsStore } from './conditions/conditionsStore';
 import { useCustomConditionsStore } from './conditions/customConditionsStore';
 import { useModifiersStore } from './modifiers/modifiersStore';
+import { useEnhancementStore } from './enhancements/enhancementsStore';
 
 /*
  * This is the master store for the entire character sheet.
@@ -36,7 +37,8 @@ export const useAgeSheetStore = defineStore('examplesheetStore', () => {
     quality: useItemStore(),
     conditions:useConditionsStore(),
     customConditions: useCustomConditionsStore(),
-    modifiers: useModifiersStore()
+    modifiers: useModifiersStore(),
+    enhancements: useEnhancementStore()
   };
 
   const pageLoading = ref(false);

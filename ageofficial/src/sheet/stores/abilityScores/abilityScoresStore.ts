@@ -138,7 +138,6 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
   const rollAbilityCheck = async (abilityScore: AbilityScore, proficient: boolean = false, abilityBonus?: number, focus?:any) => {
     // Score is the Ability Score value
     const score = abilityScores.value[abilityScore].base;
-    console.log(score)
     const { level } = useCharacterStore();
     const mods = useModifiersStore();
     const modResult = mods.modifiers.filter(mod => mod.option === 'Ability' && mod.modifiedValue === abilityScore && !mod.abilityFocus && mod.enabled).reduce(function (acc, obj) { return acc + (obj.bonus || obj.penalty || 0); }, 0)

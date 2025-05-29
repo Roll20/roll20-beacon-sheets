@@ -4,7 +4,7 @@
             <div class="label" data-testid="test-spell-header" style="flex:1;">{{ spell.name }}<br />({{ spell.requirements }})</div>     
         </div>
         <div>
-            <img v-if="spell.arcanaType" :src="'/src/assets/arcana/' + spell.arcanaType.toLowerCase() + '.png'" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' Arcana</span>'}" />
+            <img v-if="spell.arcanaType" :src="'/src/assets/arcana/' + spell.arcanaType.toLowerCase() + '.png'" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
         </div>   
         <!-- <div class="age-cost-tn-number" v-tippy="{ content: 'Magic Point Cost'}">
             <span>{{ spell.mpCost }}</span>
@@ -18,7 +18,7 @@
                 data-bs-target="#spellDetailsModal" 
                 data-bs-dismiss="showModal = false" 
                 data-bs-backdrop="static" 
-                v-tippy="{ content: 'Cast Arcana (' + spell.mpCost + 'MP)' }"
+                v-tippy="{ content: 'Cast '+magicLabel+' (' + spell.mpCost + ''+magicPoints+')' }"
                 @click="handlePrint"
                 :disabled="(char.magic < spell.mpCost)"
                 :class="{ 'spell-btn-disabled':(char.magic < spell.mpCost)}">
@@ -32,7 +32,7 @@
                 data-bs-target="#spellDetailsModal" 
                 data-bs-dismiss="showModal = false" 
                 data-bs-backdrop="static" 
-                v-tippy="{ content: 'Arcana Damage' }"
+                v-tippy="{ content: magicLabel+ ' Damage' }"
                 @click="handleDamagePrint"
                 :disabled="(char.magic < spell.mpCost)"
                 :class="{ 'spell-btn-disabled':(char.magic < spell.mpCost)}">
@@ -40,10 +40,10 @@
         </button>
         </div>
         
-        <button type="button" class="config-btn age-icon-btn" @click="handlePrint" v-tippy="{ content: 'Share Arcana in chat'}">
+        <button type="button" class="config-btn age-icon-btn" @click="handlePrint" v-tippy="{ content: 'Share '+magicLabel+' in chat'}">
           <font-awesome-icon :icon="['fa', 'comment']" />
         </button> 
-        <button type="button" class="config-btn age-icon-btn" @click="showModal = true" v-tippy="{ content: 'Edit Arcana'}">
+        <button type="button" class="config-btn age-icon-btn" @click="showModal = true" v-tippy="{ content: 'Edit '+magicLabel}">
             <font-awesome-icon :icon="['fa', 'gear']" />
         </button> 
         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapse' + index"  aria-expanded="true" aria-controls="collapseOne"></button>
@@ -64,7 +64,7 @@
                 <span>{{ spell.spellType }}</span>
               <span class="age-spell-details__label">Casting Time</span>
                 <span>{{ spell.castingTime + ' Action' }}</span>
-              <span class="age-spell-details__label">MP Cost</span>
+              <span class="age-spell-details__label">{{ magicPoints }} Cost</span>
                 <span>{{ spell.mpCost }}</span>
               <span class="age-spell-details__label">Target Number</span>
                 <span>{{ spell.targetNumber }}</span>
@@ -95,6 +95,7 @@ import SpellModal from './SpellModal.vue';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
 
 const bio = useBioStore();
 const char = useCharacterStore();
@@ -113,12 +114,15 @@ const props = defineProps({
 const expanded = ref(false);
 
 const magicLabel = ref('Arcana');
+const magicPoints = ref('MP');
 switch(settings.gameSystem){
   case 'mage':
     magicLabel.value = 'Power';
+    magicPoints.value = 'PP';
   break;
   default:
     magicLabel.value = 'Arcana';
+    magicPoints.value = 'MP';
   break;
 }
 const toggleExpand = () => {
@@ -127,13 +131,22 @@ const toggleExpand = () => {
 const modalClosed = () => {
   showModal.value = false;
 };
+let toAttackRoll = 0
+
+const setAttackRoll = () => {
+  if(useAbilityScoreStore().abilityScores[props.spell.ability]){
+    toAttackRoll = useAbilityScoreStore().abilityScores[props.spell.ability].base;
+  }
+}
+setAttackRoll()
+
 const handleDelete = () => {
   const spellStore = useSpellStore();
   spellStore.removeSpell(props.spell._id);
 };
 const handlePrint = () => {
   const spellStore = useSpellStore();
-  spellStore.printSpell(props.spell._id);
+  spellStore.printSpell(props.spell._id,toAttackRoll);
 };
 const handleDamagePrint = () => {
   const spellStore = useSpellStore();

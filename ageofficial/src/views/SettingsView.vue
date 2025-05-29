@@ -72,6 +72,13 @@
                 </label>
                 <span class="age-toggle-label">Use Daring</span>
               </div>                -->
+              <div class=" input-group" v-if="settings.gameSystem === 'mage'">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.useFortune" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Use Fortune</span>
+              </div>      
               <div class=" input-group" v-if="settings.cthulhuMythos">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.showFear" />
@@ -86,12 +93,13 @@
                 </label>
                 <span class="age-toggle-label">Show Alienation</span>
               </div>        
-              <div class=" input-group" v-if="settings.technofantasy || settings.cyberpunk">
+              <div class=" input-group">
+              <!-- <div class=" input-group" v-if="settings.technofantasy || settings.cyberpunk"> -->
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.showCybernetics" />
                     <span class="slider round" ></span>
                 </label>
-                <span class="age-toggle-label">Display Cybernetics</span>
+                <span class="age-toggle-label">Display Enhancements</span>
               </div>        
             </div>
           </div>  
@@ -192,7 +200,7 @@
 
             </div>
             <div>
-              <img src="/src/assets/logos/greenronin-circle.jpg" />
+              <img src="/src/assets/logos/roninlogo.png" class="gr-logo" />
             </div>
           </div>
           
@@ -294,5 +302,9 @@ const updateGameSystem = () => {
     filter: brightness(1.2);
     cursor: pointer;
   }
+}
+
+.gr-logo {
+  height: 150px;
 }
 </style>

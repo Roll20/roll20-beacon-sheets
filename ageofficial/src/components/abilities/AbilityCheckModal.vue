@@ -87,7 +87,6 @@ switch(useSettingsStore().gameSystem){
 //     });
 //   });
 // });
-// console.log(combinedArray)
 function focusBonus(obj){
   if (obj.doubleFocus) {
       return 4; // Return 4 if doubleFocus is true
@@ -108,8 +107,6 @@ const rollAbilityWithFocus = (focus) => {
     rollAbilityCheck(props.ability, true, focus.variable,focus)
 } else {
     // Your code here when the condition is false
-    // console.log(props.ability, true, focus.variable,focus)
-
     rollAbilityCheck(props.ability, true, focus.variable,focus)
 
 }

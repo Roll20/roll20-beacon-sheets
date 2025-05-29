@@ -94,7 +94,8 @@
         </div>
         <div class="row" style="margin:0">
           <div class="mb-3 col" style="flex-direction: column;padding: 0 2px;">
-            <span id="basic-addon1" class="age-input-label">Max Health</span>
+            <span id="basic-addon1" class="age-input-label" v-if="!settings.useFortune">Max Health</span>
+            <span id="basic-addon1" class="age-input-label" v-if="settings.useFortune">Max Fortune</span>
             <div>
               <input type="number" class="form-control" aria-label="Character Name" v-model="char.healthMax"  aria-describedby="basic-addon1">
 

@@ -26,6 +26,8 @@ export type CharacterHydrate = {
     weaponGroups:string;
     peril:number;
     daring:number;
+    fortuneInjured:boolean;
+    fortuneWounded:boolean;
   };
 };
 
@@ -79,6 +81,8 @@ export const useCharacterStore = defineStore('character', () => {
   //     profBonus.value +
   //     (inventory.equippedArmor?.defenseMod || 0),
   // );
+  const fortuneInjured = ref(false);
+  const fortuneWounded = ref(false);
   const peril = ref(0);
   const daring = ref(0);
   const levelUp = () => {
@@ -116,6 +120,8 @@ export const useCharacterStore = defineStore('character', () => {
         weaponGroups: weaponGroups.value,
         peril:peril.value,
         daring:daring.value,
+        fortuneInjured:fortuneInjured.value,
+        fortuneWounded:fortuneWounded.value,
         // We don't need to save the computed ones on Firebase as long as we have everything needed to calculate them.
       },
     };
@@ -138,6 +144,8 @@ export const useCharacterStore = defineStore('character', () => {
     weaponGroups.value = hydrateStore.character.weaponGroups ?? weaponGroups.value;
     peril.value = hydrateStore.character.peril ?? peril.value;
     daring.value = hydrateStore.character.daring ?? daring.value;
+    fortuneInjured.value = hydrateStore.character.fortuneInjured ?? fortuneInjured.value;
+    fortuneWounded.value = hydrateStore.character.fortuneWounded ?? fortuneWounded.value;
   };
 
   // Posts a message to chat with the "chat" template.

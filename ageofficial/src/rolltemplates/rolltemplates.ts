@@ -29,7 +29,9 @@ import rollResults from './partials/rollResults.hbs?raw';
 // @ts-ignore
 import spellTN from './partials/spellTN.hbs?raw';
 
+// @ts-ignore
 import stuntDie from './partials/stuntDie.hbs?raw';
+
 import { isGreater } from './expressions/isGreater';
 import { isEqual } from './expressions/isEqual';
 import { isEqualGreater } from './expressions/isEqualGreater';
@@ -131,7 +133,6 @@ export type AnyRollTemplate = SendToChatTemplate | RollToChatTemplate;
 
 // Returns the final HTML for a given template using all the required data.
 export const createRollTemplate = ({ type, parameters }: AnyRollTemplate) => {
-  console.log(parameters)
   if(!parameters.rollType){
     parameters.rollType = 'standard';
   }

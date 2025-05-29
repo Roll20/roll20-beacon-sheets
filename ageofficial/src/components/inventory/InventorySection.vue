@@ -104,8 +104,6 @@ const filteredItems = computed(() => {
     // Only include items where every word in searchQuery matches part of the name
     // return queryWords.every(word => (itemName.includes(word) && word.type === itemType));
     const matchesQuery = queryWords.every(word => itemName.includes(word));
-    // console.log(debouncedItemType.value)
-    // console.log(item.type)
     const matchesType = !debouncedItemType.value || item.type.toLowerCase() === debouncedItemType.value;
 
     return matchesQuery && matchesType;
