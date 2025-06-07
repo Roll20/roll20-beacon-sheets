@@ -68,3 +68,13 @@ export const fageArcana = [
     'Transmutation',
     'Virtual',
   ];
+
+  export const brArcana = [
+    'Animism',
+    'Healing',
+    'Meditative',
+    'Psychic',
+    'Shaping',
+    'Visionary',
+    'Sorcery'
+  ];

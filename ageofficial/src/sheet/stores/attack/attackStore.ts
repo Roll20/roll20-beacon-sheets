@@ -184,9 +184,9 @@ export const useAttackStore = defineStore('attacks', () => {
       );
     }
     components.push(      
-      { label: 'Modifier', value: modifier.value },
+      { label: 'Modifier', value: isNaN(modifier.value) ? 0 : modifier.value }, // Ensure modifier is a number
     );
-
+    console.log(components)
     await rollToChat({
       characterName: useMetaStore().name,
       title: attack.name,

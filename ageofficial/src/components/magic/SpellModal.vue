@@ -220,7 +220,7 @@
 <script setup>
 import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-import { fageArcana, magePowers } from './magicTypes';
+import { brArcana, fageArcana, magePowers } from './magicTypes';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -234,16 +234,18 @@ const settings = useSettingsStore();
 const magicTypes = ref();
 switch(settings.gameSystem){
   case 'fage2e':
-  case 'blue rose':
     magicTypes.value = fageArcana;
   break;
   case 'mage':
     magicTypes.value = magePowers;
+  break;
+  case 'blue rose':
+    magicTypes.value = brArcana
+  break;
 }
 
 const spellStore = useSpellStore();
 const setArcanaAbility = () => {
-  // debugger
   switch(props.spell.arcanaType){
     // WILLPOWER For Psychic
     case('Apportation'):
