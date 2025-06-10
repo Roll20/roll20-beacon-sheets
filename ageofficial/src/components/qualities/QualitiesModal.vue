@@ -9,7 +9,7 @@
 
             <div class="modal-body">
               <div v-if="mode === 'create' && !feature.type" style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 5px;">
-                <button v-for="qty in qualityOptions" :key="qty" class="age-quality-select-btn" @click="feature.type = qty">
+                <button v-for="qty in qualityOptions" :key="qty" class="age-quality-select-btn" @click="feature.type = qty;if(qty === 'Favored Stunt') feature.spCost = 1">
                   <div class="age-quality-section age-quality-class-icon" v-if="qty === 'Class'"></div>
                   <div class="age-quality-section age-quality-ancestry-icon" v-if="qty === 'Ancestry'"></div>
                   <div class="age-quality-section age-quality-focus-icon" v-if="qty === 'Ability Focus'"></div>
@@ -124,7 +124,7 @@
                 </div>
                 <div class="mb-3 col-2">
                   <span class="age-input-label" id="basic-addon1" v-if="feature.type === 'Favored Stunt'">SP Cost</span>
-                  <input type="number" class="form-control" placeholder="1" aria-label="Stunt Point Cost" v-model="feature.spCost"  aria-describedby="basic-addon1">
+                  <input type="number" class="form-control" placeholder="1" aria-label="Stunt Point Cost" v-model="feature.spCost"  aria-describedby="basic-addon1" min="1">
                 </div>
               </div>
               <div class="row" style="margin:0" v-if="feature.type === 'Ancestry' || feature.type === 'Class'">
