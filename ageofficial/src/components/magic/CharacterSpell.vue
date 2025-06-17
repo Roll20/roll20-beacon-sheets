@@ -18,7 +18,7 @@
                 data-bs-target="#spellDetailsModal" 
                 data-bs-dismiss="showModal = false" 
                 data-bs-backdrop="static" 
-                v-tippy="{ content: 'Cast '+magicLabel+' (' + spell.mpCost + ''+magicPoints+')' }"
+                v-tippy="{ content: settings.gameSystem === 'blue rose' ? 'Cast '+magicLabel : 'Cast '+magicLabel+' (' + spell.mpCost + ''+magicPoints+')' }"
                 @click="handlePrint"
                 :disabled="(char.magic < spell.mpCost)"
                 :class="{ 'spell-btn-disabled':(char.magic < spell.mpCost)}">
@@ -85,6 +85,14 @@
       </template>
     </SpellModal>
   </Teleport>
+  <Teleport to="body">
+    <SpellFamiliarityModal :show="showFamiliarityModal" @close="showFamiliarityModal = false;" :spell="spell"
+      :index="index" :magicLabel="magicLabel" @delete="handleDelete()">
+      <template #header>
+        <h3 class="age-spell-details-header">Familiarity</h3>
+      </template>
+    </SpellFamiliarityModal>
+  </Teleport>
 </template>
 
 <script setup>
@@ -96,11 +104,13 @@ import { useBioStore } from '@/sheet/stores/bio/bioStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
+import SpellFamiliarityModal from './SpellFamiliarityModal.vue';
 
 const bio = useBioStore();
 const char = useCharacterStore();
 const settings = useSettingsStore();
-const showModal = ref(false)
+const showModal = ref(false);
+const showFamiliarityModal = ref(false);
 const open = ref(false)
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -115,6 +125,16 @@ const expanded = ref(false);
 
 const magicLabel = ref('Arcana');
 const magicPoints = ref('MP');
+
+const familiarity = ref(0);
+const familiarityOptions = ref([
+  { value: 0, label: 'Present' },
+  { value: 2, label: 'Very Familiar' },
+  { value: 4, label: 'Familiar' },
+  { value: 6, label: 'Somewhat Familiar' },
+  { value: 8, label: 'Casually Familiar' },
+  { value: 10, label: 'Slightly Familiar' }
+]);
 switch(settings.gameSystem){
   case 'mage':
     magicLabel.value = 'Power';
@@ -146,7 +166,11 @@ const handleDelete = () => {
 };
 const handlePrint = () => {
   const spellStore = useSpellStore();
-  spellStore.printSpell(props.spell._id,toAttackRoll);
+  if(settings.gameSystem === 'blue rose'){
+    showFamiliarityModal.value = true;
+  } else {
+    spellStore.printSpell(props.spell._id,toAttackRoll);
+  }
 };
 const handleDamagePrint = () => {
   const spellStore = useSpellStore();

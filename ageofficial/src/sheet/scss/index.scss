@@ -897,6 +897,11 @@ body {
       width:70vw;
       transition: all .5s linear;
     }
+    & .age-familiarity-modal {
+      width: 15vw;
+      transition: all 0.5s linear;
+      min-width: 275px;
+    }
     & .modal-header h3 {
       margin-top: 0;
       color: #42b983;

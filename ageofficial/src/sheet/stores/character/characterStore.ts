@@ -28,6 +28,7 @@ export type CharacterHydrate = {
     daring:number;
     fortuneInjured:boolean;
     fortuneWounded:boolean;
+    fatigue?: number;
   };
 };
 
@@ -83,6 +84,8 @@ export const useCharacterStore = defineStore('character', () => {
   // );
   const fortuneInjured = ref(false);
   const fortuneWounded = ref(false);
+  const fatigue = ref(0);
+
   const peril = ref(0);
   const daring = ref(0);
   const levelUp = () => {
@@ -122,6 +125,7 @@ export const useCharacterStore = defineStore('character', () => {
         daring:daring.value,
         fortuneInjured:fortuneInjured.value,
         fortuneWounded:fortuneWounded.value,
+        fatigue: fatigue.value,
         // We don't need to save the computed ones on Firebase as long as we have everything needed to calculate them.
       },
     };
@@ -146,6 +150,7 @@ export const useCharacterStore = defineStore('character', () => {
     daring.value = hydrateStore.character.daring ?? daring.value;
     fortuneInjured.value = hydrateStore.character.fortuneInjured ?? fortuneInjured.value;
     fortuneWounded.value = hydrateStore.character.fortuneWounded ?? fortuneWounded.value;
+    fatigue.value = hydrateStore.character.fatigue ?? fatigue.value;
   };
 
   // Posts a message to chat with the "chat" template.
@@ -280,6 +285,9 @@ export const useCharacterStore = defineStore('character', () => {
     peril,
     daring,
     resetStunts,
+    fatigue,
+    fortuneInjured,
+    fortuneWounded,
     dehydrate,
     hydrate,
   };

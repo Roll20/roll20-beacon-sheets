@@ -29,6 +29,7 @@ interface Spell {
   damageHit:string;
   damageMiss:string;
   fatigue?:number;
+  resistance?:string;
 }
 
 export type SpellsHydrate = {
@@ -56,6 +57,7 @@ export const useSpellStore = defineStore('spells', () => {
       castingTime:spell ? spell?.castingTime : '',
       targetNumber:spell ? spell?.targetNumber : 0,
       spellTest:spell ? spell?.spellTest : '',
+      spellResistance:spell ? spell?.spellResistance : '',
       extendable:spell ? spell?.extendable : false,
       damageHit:spell ? spell?.damageHit : '',
       damageMiss:spell ? spell?.damageMiss : '',
@@ -70,11 +72,11 @@ export const useSpellStore = defineStore('spells', () => {
     if (indexToRemove >= 0) spells.value.splice(indexToRemove, 1);
   };
 
-  const printSpell = async (_id: string, bonus?:number) => {
+  const printSpell = async (_id: string, bonus?:number, familiarity:number = 0) => {
     const spell = spells.value.find((item) => item._id === _id);
     if (!spell) return;
     const modifier = ref(0);
-    
+
     const components:any[] = [
       { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
       { label: spell.ability, value: Number(bonus) },
@@ -85,19 +87,29 @@ export const useSpellStore = defineStore('spells', () => {
         { label: 'Aim', value: useSettingsStore().aimValue  }
       )  
     }
+    // if (familiarity) {
+    //   components.push(
+    //     { label: 'Familiarity', value: familiarity },
+    //   );
+    // }
     // components.push(      
     //   { label: 'Modifier', value: modifier.value },
     // );
-
-    spendMP(spell.mpCost);
+    const settings = useSettingsStore();
+    if (settings.gameSystem !== 'blue rose') {
+      spendMP(spell.mpCost);
+    }
     const ability = useAbilityScoreStore();
+    const spellResistance = spell.resistance ? spell.resistance : 'Spellpower ('+ (10 + Number(ability.WillpowerBase))+')';
+    const spellTest = spell.spellTest ? spell.spellTest + `<br /> vs. ${spellResistance}` : '';
+    
     await rollToChat({
       title: spell.name,
       subtitle: spell.spellType,
       characterName: useMetaStore().name,
       allowHeroDie: false,
-      textContent:spell.spellTest ? spell.spellTest + '<br /> vs. Spellpower ('+ (10 + Number(ability.WillpowerBase))+')' : '',
-      targetNumber:spell.targetNumber,
+      textContent: spellTest,
+      targetNumber:spell.targetNumber + familiarity,
       components
     });
   };
@@ -114,7 +126,7 @@ export const useSpellStore = defineStore('spells', () => {
     const missNumberOfDice = parseInt(miss![1]);
     const missSidesOfDice = parseInt(miss![2])
     const missModifier = miss![3] ? parseInt(miss![3]) : 0;
-    
+
     const components = [
       { label: `Base Roll`, sides: sidesOfDice, count:numberOfDice, alwaysShowInBreakdown: true },
       { label: 'Modifier', value: modifier },

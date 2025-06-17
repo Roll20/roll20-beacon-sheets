@@ -60,11 +60,16 @@
                   <div class="mb-3 col">
                           <span class="age-input-label" id="basic-addon1">Target Number</span>
                           <input type="number" class="form-control" placeholder="0" aria-label="Target Number" v-model="spell.targetNumber"  aria-describedby="basic-addon1">
-                      </div>
-                  <div class="mb-3 col">
+                  </div>
+                  <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
                           <span class="age-input-label" id="basic-addon1">MP Cost</span>
                           <input type="number" class="form-control" placeholder="0" aria-label="Magic Point Cost" v-model="spell.mpCost"  aria-describedby="basic-addon1">
-                      </div>
+                  </div>
+                  <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
+                      <span class="age-input-label" id="basic-addon1">Fatigue</span>
+                      <input type="text" class="form-control" aria-label="Fatigue" :id="`damage-${spell._id}`"
+                      v-model="spell.damageMiss"  aria-describedby="basic-addon1">
+                  </div>
             </div>
             <div class="row">
               
@@ -89,7 +94,10 @@
                       <span class="age-input-label" id="basic-addon1">Test</span>
                       <input type="text" class="form-control" placeholder="ex. Strength(Might)" aria-label="Spell Test" v-model="spell.spellTest"  aria-describedby="basic-addon1">
                   </div>
-                      
+                  <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
+                      <span class="age-input-label" id="basic-addon1">Resistance</span>
+                      <input type="text" class="form-control" placeholder="ex. Willpower(Self-Discipline)" aria-label="Spell Resistance" v-model="spell.resistance"  aria-describedby="basic-addon1">
+                  </div>
                   <div class="mb-3 col"  v-if="spell.weaponType === 'ranged' || spell.weaponType === 'melee'">
                       <span class="age-input-label" id="basic-addon1">Weapon Group</span>
                           <select
@@ -113,21 +121,16 @@
                               <option value="staves">Staves</option>
                           </select>
                   </div>
-                  <div class="mb-3 col">
+                  <div class="mb-3 col" v-if="spell.spellType === 'Attack'">
                       <span class="age-input-label" id="basic-addon1">Damage (Success)</span>
                       <input type="text" class="form-control" placeholder="ex. 1d6" aria-label="Damage (Success)" :id="`damage-${spell._id}`"
                       v-model="spell.damageHit"  aria-describedby="basic-addon1">
                   </div>
-                  <div class="mb-3 col">
+                  <div class="mb-3 col" v-if="spell.spellType === 'Attack'">
                       <span class="age-input-label" id="basic-addon1">Damage (Failure)</span>
                       <input type="text" class="form-control" placeholder="ex. 1d6" aria-label="Damage (Failure)" :id="`damage-${spell._id}`"
                       v-model="spell.damageMiss"  aria-describedby="basic-addon1">
-                  </div>
-                  <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
-                      <span class="age-input-label" id="basic-addon1">Fatigue</span>
-                      <input type="text" class="form-control" aria-label="Fatigue" :id="`damage-${spell._id}`"
-                      v-model="spell.damageMiss"  aria-describedby="basic-addon1">
-                  </div>
+                  </div>                  
                   <div v-if="spell.weaponType === 'ranged'">
                       <div class="mb-3 col">
                           <span class="age-input-label" id="basic-addon1">Short Range</span>
