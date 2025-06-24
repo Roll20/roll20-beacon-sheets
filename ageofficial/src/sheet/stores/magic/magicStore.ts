@@ -19,6 +19,7 @@ interface Spell {
   shortDescription: string;
   description: string;
   ability:string;
+  abilityFocus?:string;
   spellType:string;
   spellTypeBonus:number;
   mpCost:number;
@@ -51,6 +52,7 @@ export const useSpellStore = defineStore('spells', () => {
       shortDescription: spell ? spell?.shortDescription : '',
       description: spell ? spell?.description : '',
       ability:spell ? spell?.ability : '',
+      abilityFocus:spell ? spell?.abilityFocus : '',
       spellType:spell ? spell?.spellType : '',
       spellTypeBonus:spell ? spell?.spellTypeBonus : 0,
       mpCost:spell ? spell?.mpCost : 0,
@@ -100,8 +102,8 @@ export const useSpellStore = defineStore('spells', () => {
       spendMP(spell.mpCost);
     }
     const ability = useAbilityScoreStore();
-    const spellResistance = spell.resistance ? spell.resistance : 'Spellpower ('+ (10 + Number(ability.WillpowerBase))+')';
-    const spellTest = spell.spellTest ? spell.spellTest + `<br /> vs. ${spellResistance}` : '';
+    const spellResistance = settings.gameSystem === 'blue rose' ? spell.spellTest : 'Spellpower ('+ (10 + Number(ability.WillpowerBase))+')';
+    const spellTest = settings.gameSystem === 'blue rose' ? spell.ability + ` (${spell.abilityFocus}) <br /> vs. ${spellResistance}` : '';
     
     await rollToChat({
       title: spell.name,

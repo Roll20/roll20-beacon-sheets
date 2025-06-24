@@ -105,10 +105,12 @@ import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
 import SpellFamiliarityModal from './SpellFamiliarityModal.vue';
+import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 
 const bio = useBioStore();
 const char = useCharacterStore();
 const settings = useSettingsStore();
+const qualitiesStore = useItemStore();
 const showModal = ref(false);
 const showFamiliarityModal = ref(false);
 const open = ref(false)
@@ -158,8 +160,25 @@ const setAttackRoll = () => {
     toAttackRoll = useAbilityScoreStore().abilityScores[props.spell.ability].base;
   }
 }
-setAttackRoll()
+setAttackRoll();
 
+function focusBonus(){
+  const focusArray = qualitiesStore.items.filter(item => item.type === 'Ability Focus');
+  const obj = focusArray.find(obj => {
+    return (obj.name.toLowerCase() === props.spell.abilityFocus.toLowerCase());
+  });
+  if (!obj) {
+    return 0; // Return 0 if no matching focus is found
+  }
+  console.log(obj)
+  if (obj.doubleFocus) {
+      return 4; // Return 4 if doubleFocus is true
+    } else if (obj.focus) {
+      return 2; // Return 2 if only focus is true
+    } else {
+      return 0;
+    }
+}
 const handleDelete = () => {
   const spellStore = useSpellStore();
   spellStore.removeSpell(props.spell._id);
@@ -169,7 +188,7 @@ const handlePrint = () => {
   if(settings.gameSystem === 'blue rose'){
     showFamiliarityModal.value = true;
   } else {
-    spellStore.printSpell(props.spell._id,toAttackRoll);
+    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll));
   }
 };
 const handleDamagePrint = () => {

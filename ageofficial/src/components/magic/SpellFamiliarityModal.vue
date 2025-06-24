@@ -39,6 +39,7 @@ import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { brArcana, fageArcana, magePowers } from './magicTypes';
 import { ref } from 'vue';
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore'
+import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 
 const props = defineProps({
   show: Boolean,
@@ -46,6 +47,7 @@ const props = defineProps({
   mode: String,
   magicLabel:String
 })
+const qualitiesStore = useItemStore();
 const familiarity = ref(0);
 const familiarityOptions = ref([
   { value: 0, label: 'Present (+0)' },
@@ -76,10 +78,27 @@ const setAttackRoll = () => {
   }
 }
 setAttackRoll();
-
+function focusBonus(){
+  const focusArray = qualitiesStore.items.filter(item => item.type === 'Ability Focus');
+  const obj = focusArray.find(obj => {
+    return (obj.name.toLowerCase() === props.spell.abilityFocus.toLowerCase());
+  });
+  if (!obj) {
+    return 0; // Return 0 if no matching focus is found
+  }
+  
+    // Check if the object has doubleFocus or focus properties
+  if (obj.doubleFocus) {
+      return 4; // Return 4 if doubleFocus is true
+    } else if (obj.focus) {
+      return 2; // Return 2 if only focus is true
+    } else {
+      return 0;
+    }
+}
 const handlePrint = () => {
     const spellStore = useSpellStore();
-    spellStore.printSpell(props.spell._id,toAttackRoll, familiarity.value);
+    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll) + focusBonus(), familiarity.value);
     familiarity.value = 0; // Reset familiarity after printing
 };
 </script>

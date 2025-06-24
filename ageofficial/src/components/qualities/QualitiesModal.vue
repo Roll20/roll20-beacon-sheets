@@ -359,7 +359,7 @@ switch(useSettingsStore().gameSystem){
   case 'fage1e':
     filteredFocuses.value = fage1e;
   break;
-  case 'bluerose':
+  case 'blue rose':
     filteredFocuses.value = bluerose;
   break;
   case 'cthulhu':
