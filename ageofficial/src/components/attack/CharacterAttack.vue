@@ -207,7 +207,6 @@ const checkFocusBonus = (objectsArray, weapon) => {
       return (obj.name.toLowerCase() === weapon.weaponGroup.toLowerCase() && obj.weaponGroup === weapon.weaponGroup);
     }
   });
-  console.log('checkFocusBonus', obj, weapon);
   if (obj) {
     if (obj.doubleFocus) {
       return 4; // Return 4 if doubleFocus is true
