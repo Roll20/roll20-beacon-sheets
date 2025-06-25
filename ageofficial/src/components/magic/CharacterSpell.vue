@@ -165,12 +165,11 @@ setAttackRoll();
 function focusBonus(){
   const focusArray = qualitiesStore.items.filter(item => item.type === 'Ability Focus');
   const obj = focusArray.find(obj => {
-    return (obj.name.toLowerCase() === props.spell.abilityFocus.toLowerCase());
+    return (obj.name.toLowerCase() === props.spell.arcanaType.toLowerCase());
   });
   if (!obj) {
     return 0; // Return 0 if no matching focus is found
   }
-  console.log(obj)
   if (obj.doubleFocus) {
       return 4; // Return 4 if doubleFocus is true
     } else if (obj.focus) {
@@ -188,7 +187,7 @@ const handlePrint = () => {
   if(settings.gameSystem === 'blue rose'){
     showFamiliarityModal.value = true;
   } else {
-    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll));
+    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll) + focusBonus());
   }
 };
 const handleDamagePrint = () => {
