@@ -90,13 +90,56 @@
                               <option value="Major">Major Action</option>
                           </select>
                   </div>
-                  <div class="mb-3 col">
+                  <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
                       <span class="age-input-label" id="basic-addon1">Test</span>
                       <input type="text" class="form-control" placeholder="ex. Strength(Might)" aria-label="Spell Test" v-model="spell.spellTest"  aria-describedby="basic-addon1">
                   </div>
                   <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
+                      <span class="age-input-label" id="basic-addon1">Test</span>
+                      <div class="custom-select-wrapper" style="position: relative;">
+    <!-- Overlayed display when selected -->
+
+                      <div
+                         class="age-atk-select form-select" 
+                        v-if="selected"
+                        style="position: absolute; top: 2px; left: 1px; width:99%; border:transparent; padding: 4px; pointer-events: none; background: white;z-index: 2;"
+                      >
+                         {{ selected }}
+                      </div>
+                        <!-- Actual select dropdown -->
+                        <select class="age-atk-select form-select" v-model="selected" style="position: relative; background: transparent;"
+                        @change="setBRSpellTest(selected)">
+                          <option disabled value="">Select an option</option>
+                          <optgroup
+                            v-for="(options, group) in bluerose"
+                            :key="group"
+                            :label="group"
+                          >
+                            <option
+                              v-for="option in options"
+                              :key="option"
+                              :value="`${group} (${option})`"
+                            >
+                            {{ option }}
+                            </option>
+                          </optgroup>
+                        </select>
+                      </div>
+                      <!-- <select class="age-atk-select form-select" name="Spell Test" id="spellTest">
+                        <optgroup v-for="(options, group) in bluerose"
+                                  :key="group"
+                                  :label="group">
+                          <option v-for="option in options"
+                                  :key="option"
+                                  :value="option">
+                            {{ option }}
+                          </option>
+                        </optgroup>
+                      </select> -->
+                  </div>
+                  <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
                       <span class="age-input-label" id="basic-addon1">Resistance</span>
-                      <input type="text" class="form-control" placeholder="ex. Willpower(Self-Discipline)" aria-label="Spell Resistance" v-model="spell.resistance"  aria-describedby="basic-addon1">
+                      <input type="text" class="form-control" placeholder="ex. Willpower(Self-Discipline)" aria-label="Spell Resistance" v-model="spell.spellTest"  aria-describedby="basic-addon1">
                   </div>
                   <div class="mb-3 col"  v-if="spell.weaponType === 'ranged' || spell.weaponType === 'melee'">
                       <span class="age-input-label" id="basic-addon1">Weapon Group</span>
@@ -224,7 +267,8 @@
 import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { brArcana, fageArcana, magePowers } from './magicTypes';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { bluerose } from '../modifiers/focuses';
 
 const props = defineProps({
   show: Boolean,
@@ -246,7 +290,8 @@ switch(settings.gameSystem){
     magicTypes.value = brArcana
   break;
 }
-
+const selected = ref(props.spell.ability ? `${props.spell.ability} (${props.spell.abilityFocus})` : '');
+const abilityFocuses = ref(bluerose)
 const spellStore = useSpellStore();
 const setArcanaAbility = () => {
   switch(props.spell.arcanaType){
@@ -276,6 +321,16 @@ const setArcanaAbility = () => {
     break;
   }
 }
+const setBRSpellTest = (selectedOption) => {
+  const [group, option] = selected.value.split('(')
+  props.spell.ability = group.trim();
+  props.spell.abilityFocus = option.slice(0, -1);
+}
+const selectedOptionDisplay = computed(() => {
+  if (!selected.value) return ''
+  const [group, option] = selected.value.split('|')
+  return `${group} (${option})`
+})
 </script>
 <style>
 
