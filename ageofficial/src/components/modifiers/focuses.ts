@@ -55,5 +55,5 @@ export const fage2e = {
     Intelligence: ['Arcane Lore', 'Brewing', 'Cartography','Cryptography', 'Cultural Lore', 'Engineering', 'Evaluation','Healing', 'Heraldry', 'Historical Lore', 'Military Lore', 'Musical Lore', 'Natural Lore', 'Nautical Lore', 'Navigation', 'Religious Lore', 'Remote Weapons', 'Research','Shaping', 'Sorcery Lore', 'Writing'],
     Perception: ['Empathy', 'Hearing', 'Searching', 'Seeing', 'Smelling','Tasting', 'Touching', 'Tracking'],
     Strength: ['Climbing', 'Driving', 'Intimidation', 'Jumping','Might', 'Smithing'],
-    Willpower: ['Courage', 'Faith', 'Morale', 'Self-Discipline']
+    Willpower: ['Courage', 'Faith', 'Meditative', 'Morale', 'Purity', 'Self-Discipline']
   }

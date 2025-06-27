@@ -185,6 +185,9 @@ body.bluerose {
       & .confirm-btn {
         background:$ageBlueRoseColor;
       }
+    & .age-modal .age-modal-details-header{
+            text-transform: none;
+    }
   }
 
 body.sheet-darkmode.bluerose {
