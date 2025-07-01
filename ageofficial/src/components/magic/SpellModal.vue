@@ -83,7 +83,6 @@
                           <select
                           class="age-atk-select form-select"
                               data-testid="test-spell-weaponType-input"
-                              :id="`weaponType-${spell._id}`"
                               v-model="spell.castingTime"
                           >
                               <option value="Minor">Minor Action</option>
@@ -96,18 +95,48 @@
                   </div>
                   <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
                       <span class="age-input-label" id="basic-addon1">Test</span>
-                      <div class="custom-select-wrapper" style="position: relative;">
+                      <select
+                        class="age-atk-select form-select"
+                          data-testid="test-spell-weaponType-input"
+                          v-model="spell.ability"
+                          @change="onAbilityChange()">
+                        <option v-for="abl in abilities" :key="abl" :value="abl">{{ abl }}</option>
+                      </select>
+                      </div>
+                  <div class="mb-3 col align-content-end" v-if="settings.gameSystem === 'blue rose'">
+                      <span class="age-input-label" id="basic-addon1"></span>
+                        <select class="age-atk-select form-select"
+                                data-testid="test-spell-weaponType-input"
+                                v-model="spell.abilityFocus">
+                          <option v-for="mt in magicTypes" :key="mt" :value="mt">{{ mt }}</option>
+
+                          <!-- <option v-for="foci in filteredFocuses[spell.ability]" :key="foci" :value="foci">{{ foci }}</option> -->
+                          <!-- <option value="custom">Custom</option> -->
+                        </select>
+                      </div>
+                      <!-- <select class="age-atk-select form-select" name="Spell Test" id="spellTest">
+                        <optgroup v-for="(options, group) in bluerose"
+                                  :key="group"
+                                  :label="group">
+                          <option v-for="option in options"
+                                  :key="option"
+                                  :value="option">
+                            {{ option }}
+                          </option>
+                        </optgroup>
+                      </select>
+                      <div class="custom-select-wrapper" style="position: relative;"> -->
     <!-- Overlayed display when selected -->
 
-                      <div
+                      <!-- <div
                          class="age-atk-select form-select" 
                         v-if="selected"
                         style="position: absolute; top: 2px; left: 1px; width:99%; border:transparent; padding: 4px; pointer-events: none; background: white;z-index: 2;"
                       >
                          {{ selected }}
-                      </div>
+                      </div> -->
                         <!-- Actual select dropdown -->
-                        <select class="age-atk-select form-select" v-model="selected" style="position: relative; background: transparent;"
+                        <!-- <select class="age-atk-select form-select" v-model="selected" style="position: relative; background: transparent;"
                         @change="setBRSpellTest(selected)">
                           <option disabled value="">Select an option</option>
                           <optgroup
@@ -123,8 +152,8 @@
                             {{ option }}
                             </option>
                           </optgroup>
-                        </select>
-                      </div>
+                        </select> -->
+                      <!-- </div> -->
                       <!-- <select class="age-atk-select form-select" name="Spell Test" id="spellTest">
                         <optgroup v-for="(options, group) in bluerose"
                                   :key="group"
@@ -136,7 +165,7 @@
                           </option>
                         </optgroup>
                       </select> -->
-                  </div>
+                  <!-- </div> -->
                   <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
                       <span class="age-input-label" id="basic-addon1">Resistance</span>
                       <input type="text" class="form-control" placeholder="ex. Willpower(Self-Discipline)" aria-label="Spell Resistance" v-model="spell.spellTest"  aria-describedby="basic-addon1">
@@ -268,7 +297,7 @@ import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { brArcana, fageArcana, magePowers } from './magicTypes';
 import { computed, ref } from 'vue';
-import { bluerose } from '../modifiers/focuses';
+import { bluerose, cthulhu, fage1e, fage2e, mage } from '../modifiers/focuses';
 
 const props = defineProps({
   show: Boolean,
@@ -293,6 +322,30 @@ switch(settings.gameSystem){
 const selected = ref(props.spell.ability ? `${props.spell.ability} (${props.spell.abilityFocus})` : '');
 const abilityFocuses = ref(bluerose)
 const spellStore = useSpellStore();
+const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower'];
+const filteredFocuses = ref(fage2e)
+const arcanaFocuses = ref([]);
+switch(useSettingsStore().gameSystem){
+  case 'fage2e':
+    filteredFocuses.value = fage2e;
+    arcanaFocuses.value = fageArcana;
+  break;
+  case 'mage':
+    filteredFocuses.value = mage;
+    arcanaFocuses.value = magePowers;
+
+  break;
+  case 'fage1e':
+    filteredFocuses.value = fage1e;
+  break;
+  case 'blue rose':
+    filteredFocuses.value = bluerose;
+    arcanaFocuses.value = brArcana;
+  break;
+  case 'cthulhu':
+    filteredFocuses.value = cthulhu;
+  break;
+}
 const setArcanaAbility = () => {
   switch(props.spell.arcanaType){
     // WILLPOWER For Psychic

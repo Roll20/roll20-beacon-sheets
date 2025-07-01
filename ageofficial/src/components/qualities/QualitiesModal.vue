@@ -59,7 +59,7 @@
                     <!-- Arcana group first -->
                     <optgroup label="Arcana" v-if="feature.ability === 'Intelligence'">
                       <option
-                        v-for="option in fageArcana"
+                        v-for="option in arcanaFocuses"
                         :key="`Arcana-${option}`"
                         :value="`Arcana (${option})`"
                       >

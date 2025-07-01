@@ -59,7 +59,7 @@ import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import CharacterSpell from '@/components/magic/CharacterSpell.vue';
 import SpellModal from './SpellModal.vue';
 import { computed, ref, watch } from 'vue';
-import { fageArcana, magePowers } from './magicTypes';
+import { fageArcana, magePowers, brArcana } from './magicTypes';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 const props = defineProps({
   aim: { type: Boolean },
@@ -78,11 +78,14 @@ const debouncedItemSource = ref('');
 const magicTypes = ref();
 switch(settings.gameSystem){
   case 'fage2e':
-  case 'blue rose':
     magicTypes.value = fageArcana;
   break;
   case 'mage':
     magicTypes.value = magePowers;
+  break
+  case 'blue rose':
+    magicTypes.value = brArcana;
+  break;
 }
 const magicLabel = ref('Arcana');
 switch(settings.gameSystem){
