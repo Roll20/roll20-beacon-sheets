@@ -14,7 +14,8 @@
           <hr />
           <div v-for="focus in combineObjects(abilityFocusArray)" :key="focus">
             <button class="ability-check-btn" @click="rollAbilityWithFocus(focus);$emit('close')">
-              {{ focus.name || focus.focus }} ({{ focus.variable > 0 ? `+${focus.variable}` : focus.variable }})
+              {{ focus.customName }}
+              {{ (focus.customName ? focus.customName : focus.name) || focus.focus }} ({{ focus.variable > 0 ? `+${focus.variable}` : focus.variable }})
             </button>
           </div>
       </div>
@@ -145,7 +146,7 @@ function combineObjects(array) {
       } else {
         // Create a new object if none exists yet
         const variable = (item.variable || 0) + (item.focus ? 2 : 0) + (item.doubleFocus ? 4 : 0);
-        result.push({ ability: item.ability, name: item.name, variable });
+        result.push({ ability: item.ability, name: item.customName ? item.customName : item.name, variable });
       }
     } else if (item.ability && !item.name) {
       // If there is an ability but no name, store the variable for that ability

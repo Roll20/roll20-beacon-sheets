@@ -42,35 +42,30 @@
                   <div
                     class="age-atk-select form-select"
                     v-if="selected"
-                    style="position: absolute; top: 2px; left: 1px; width:99%; border:transparent; padding: 4px; pointer-events: none; background: white; z-index: 2;"
-                  >
+                    style="position: absolute; top: 1px; left: 1px; width:99%; border:transparent; padding: 4px; pointer-events: none; background: white; z-index: 2;height: 92%;text-transform: capitalize;">
                     {{ selected }}
                   </div>
-
                   <!-- Native select dropdown -->
-                  <select
-                    
-                    class="age-atk-select form-select"
+                  <select                    
+                    class="age-atk-select form-select"                    
                     v-model="selected"
                     style="position: relative; background: transparent;"
                     @change="setFocus(selected)">
-                    <option disabled value="">Select an option</option>
-
-                    <!-- Arcana group first -->
-                    <optgroup label="Arcana" v-if="feature.ability === 'Intelligence'">
-                      <option
-                        v-for="option in arcanaFocuses"
-                        :key="`Arcana-${option}`"
-                        :value="`Arcana (${option})`"
-                      >
-                        {{ option }}
-                      </option>
-                    </optgroup>
-                    <option v-for="foci in filteredFocuses[feature.ability]" :key="foci" :value="foci">{{ foci }}</option>
-
-    </select>
-  </div>
-</div>
+                      <option disabled value="">Select an option</option>
+                      <!-- Arcana group first -->
+                      <optgroup label="Arcana" v-if="feature.ability === 'Intelligence'">
+                        <option
+                          v-for="option in arcanaFocuses"
+                          :key="`Arcana-${option}`"
+                          :value="`Arcana (${option})`">
+                          {{ option }}
+                        </option>
+                      </optgroup>
+                      <option v-for="foci in filteredFocuses[feature.ability]" :key="foci" :value="foci">{{ foci }}</option>
+                      <option value="custom">Custom</option>
+                  </select>
+            </div>
+    </div>
                 <!-- <div class="mb-3 col">
                   <span class="age-input-label" id="basic-addon1">Focus Name</span>
                   <select class="age-atk-select form-select"
@@ -78,12 +73,12 @@
                           :id="`weaponType-${feature._id}`"
                           v-model="feature.name">
                     <option v-for="foci in filteredFocuses[feature.ability]" :key="foci" :value="foci">{{ foci }}</option>
-                    <option value="custom">Custom</option>
+                    <option value="Custom">Custom</option>
                   </select>
                 </div> -->
                 <div class="mb-3 col" v-if="feature.name === 'custom'">
                   <span class="age-input-label" id="basic-addon1">Custom Name</span>
-                  <input type="text" v-model="feature.customName" />
+                  <input class="form-control" type="text" v-model="feature.customName" />
                 </div>
                 <div class="age-focus-container">
                   <div class=" input-group">
@@ -404,9 +399,13 @@ switch(useSettingsStore().gameSystem){
   break;
 }
 const setFocus = (selectedOption) => {
-  const [group, option] = selected.value.split('(')
-  if(!option) return
-  props.feature.name = option.slice(0, -1).trim();  
+  const [group, option] = selected.value.split('(');
+  console.log('setFocus', selected.value, group, option);
+  if(option){
+    props.feature.name = option.slice(0, -1).trim(); 
+  } else {
+    props.feature.name = group === 'custom' ? 'custom' : group;
+  }
 }
 const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : props.feature.name || '');
 // const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? setFocus('Arcana',props.feature.name) : props.feature.name || '');
