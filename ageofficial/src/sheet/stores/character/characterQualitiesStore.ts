@@ -69,6 +69,11 @@ export const useItemStore = defineStore('quality', ()=>{
           })
         break;
       }
+    if (selectedItem && selectedItem.customName) {
+      Object.assign(newItem,{
+        customName:selectedItem.customName,
+      });
+    }
     items.value.push(newItem);
     return newItem;
   }
