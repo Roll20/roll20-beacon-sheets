@@ -385,7 +385,6 @@ switch(useSettingsStore().gameSystem){
   case 'mage':
     filteredFocuses.value = mage;
     arcanaFocuses.value = magePowers;
-
   break;
   case 'fage1e':
     filteredFocuses.value = fage1e;
@@ -400,7 +399,6 @@ switch(useSettingsStore().gameSystem){
 }
 const setFocus = (selectedOption) => {
   const [group, option] = selected.value.split('(');
-  console.log('setFocus', selected.value, group, option);
   if(option){
     props.feature.name = option.slice(0, -1).trim(); 
   } else {
@@ -408,7 +406,6 @@ const setFocus = (selectedOption) => {
   }
 }
 const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : props.feature.name || '');
-// const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? setFocus('Arcana',props.feature.name) : props.feature.name || '');
 
 const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 
 // 'Health Points', 'Magic Points',

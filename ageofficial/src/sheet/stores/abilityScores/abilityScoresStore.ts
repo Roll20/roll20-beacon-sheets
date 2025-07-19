@@ -7,6 +7,7 @@ import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useModifiersStore } from '../modifiers/modifiersStore';
+import { useItemStore } from '../character/characterQualitiesStore';
 
 // Type for All the Data coming from Firebase to hydrate this store.
 export type AbilityScoresHydrate = {
@@ -168,18 +169,32 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
       components,
     });
   };
+  function focusBonus(){
+    const qualitiesStore = useItemStore();
+    const focusArray = qualitiesStore.items.filter(item => item.type === 'Ability Focus');
+    const obj = focusArray.find(obj => {
+      return (obj.name.toLowerCase() === 'Initiative'.toLowerCase());
+    });
+    if (!obj) {
+      return 0; // Return 0 if no matching focus is found
+    }
+    if (obj.doubleFocus) {
+        return 4; // Return 4 if doubleFocus is true
+      } else if (obj.focus) {
+        return 2; // Return 2 if only focus is true
+      } else {
+        return 0;
+      }
+}
   const rollAbilityInitiative = async (abilityScore: AbilityScore, proficient: boolean = false) => {
     const score = abilityScores.value[abilityScore].base;
-    const { level } = useCharacterStore();
-
     // @ts-ignore
-    const profBonus = proficient ? levelTable[level].profBonus || 0 : 0; // Dynamically determined based on Level.
 
     // Base components in any ability roll.
     const components = [
       { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
       { label: 'Stat Mod', value: Number(score) },
-      { label: 'Proficiency', value: Number(profBonus) }
+      { label: 'Proficiency', value: Number(focusBonus()) }
     ];
     // Example of modifying the roll based on some rule.
     // In this case: if overburdened, apply a penalty based on the "encumbrancePenalty" setting.

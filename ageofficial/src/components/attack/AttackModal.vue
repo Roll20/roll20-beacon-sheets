@@ -109,7 +109,13 @@
             >
               OK
             </button>
-            <div class="delete-container">
+            <div class="delete-container" v-if="attack.equipped">
+              <button class="confirm-btn" @click="$emit('close');attack.equipped = false">
+                Return to Inventory
+              </button>
+
+            </div>
+            <div class="delete-container" v-if="!attack.equipped">
               <button class="delete-icon-btn delete" title="Delete" @click="$emit('close');$emit('delete')" v-tippy="{ 'content': 'Delete Attack'}">
                 <font-awesome-icon :icon="['fa', 'trash-alt']" />
               </button>
@@ -124,13 +130,14 @@
 import { ref } from 'vue';
 import { fage2eWG, mageWG } from './weaponGroups';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
+import { at } from 'lodash';
 
 const props = defineProps({
   show: Boolean,
   attack: { type: Object },
 })
 const settings = useSettingsStore();
-
+console.log(props.attack)
 const weaponGroups = ref(fage2eWG);
 switch(settings.gameSystem){
   case 'mage':
