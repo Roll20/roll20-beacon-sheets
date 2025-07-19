@@ -176,8 +176,9 @@ export const useAttackStore = defineStore('attacks', () => {
     const sidesOfDice = parseDice(baseDamage.value)?.[1];
     
     const components:any = [
-      { label: `Base Roll`, sides: sidesOfDice, count:numberOfDice, alwaysShowInBreakdown: true },
+      { label: `Base Roll`, sides: sidesOfDice, count:numberOfDice, alwaysShowInBreakdown: true, trained: attack.trained },
     ];
+
     if(secondaryDamage.value){
       components.push(      
         { label: `Bonus Roll`, sides: parseDice(secondaryDamage.value)?.[1], count:parseDice(secondaryDamage.value)?.[0], alwaysShowInBreakdown: true },
@@ -186,7 +187,6 @@ export const useAttackStore = defineStore('attacks', () => {
     components.push(      
       { label: 'Modifier', value: isNaN(modifier.value) ? 0 : modifier.value }, // Ensure modifier is a number
     );
-    console.log(components)
     await rollToChat({
       characterName: useMetaStore().name,
       title: attack.name,

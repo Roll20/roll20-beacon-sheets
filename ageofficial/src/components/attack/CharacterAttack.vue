@@ -43,7 +43,7 @@
         </div>        
       <div class="age-weapon-btn-container age-combat-attack">
         <button class="age-btn" @click="handlePrint">
-          {{ (attackHit > 0 ? `+` : '') + attackHit }}
+          {{ (attackHit > 0 ? `+` : '') + (attackHit + trained) }}
           <!-- <span v-if="!aim && aimOption !== 'always'">
             <span v-if="(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]?.base >= 0) + Number(checkFocusBonus(useAbilityFocusesStore().abilityFocuses,props.attack))">+</span>
             {{ Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]?.base) + Number(checkFocusBonus(useAbilityFocusesStore().abilityFocuses,props.attack)) }}
@@ -142,6 +142,8 @@ const conditions = useCustomConditionsStore();
 const damageMods = damageMod; 
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
+const trained = char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2
+
 const attackHit = ref(attackToHit(props.attack))
 
 const modsBonus = computed(() => {
@@ -191,7 +193,7 @@ let toAttackRoll = 0
 
 const setAttackRoll = () => {
   if(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]){
-    toAttackRoll = useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility].base
+    toAttackRoll = Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility].base) + trained;
   }
 }
 setAttackRoll()
@@ -236,6 +238,7 @@ const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   const attackStore = useAttackStore();
   const attackDamage = Object.assign({}, props.attack);
   attackDamage.damage = damageRoll;
+  attackDamage.trained = trained === 0 ? true : false;
   if(attackDmgLabel){
     attackDamage.damageLabel = attackDmgLabel.label;
     attackDamage.source = attackDmgLabel.source;
@@ -244,6 +247,7 @@ const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   if(attackDamage.spCost){
     char.stunts = char.stunts - attackDamage.spCost;
   }
+  console.log(attackDamage)
   attackStore.printAttackDamage(attackDamage); 
 }
 const selectedAttack = () => {
@@ -293,7 +297,6 @@ function mergeDice(rolls) {
   if (totalModifier !== 0) {
     combinedDice.push(`${totalModifier}`);
   }
-
   return combinedDice.join('+').replace('+-','-');
 }
 const totalBonus = ref(0);

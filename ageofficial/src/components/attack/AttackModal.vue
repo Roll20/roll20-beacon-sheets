@@ -137,7 +137,6 @@ const props = defineProps({
   attack: { type: Object },
 })
 const settings = useSettingsStore();
-console.log(props.attack)
 const weaponGroups = ref(fage2eWG);
 switch(settings.gameSystem){
   case 'mage':
