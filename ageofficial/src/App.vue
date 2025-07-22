@@ -9,7 +9,7 @@
             <img v-if="settings.gameSystem === 'mage'" src="/src/assets/logos/modernage.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
             <img v-if="settings.gameSystem === 'blue rose'" src="/src/assets/logos/bluerose.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
             <img v-if="settings.gameSystem === 'threefold'" src="/src/assets/logos/threefold.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
-            <img v-if="settings.gameSystem === 'expanse'" src="/src/assets/logos/expanse.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
+            <img v-if="settings.gameSystem === 'expanse'" src="/src/assets/logos/expansedark.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
             <!-- <img v-if="settings.gameSystem === 'cthulhu'" src="/src/assets/logos/cthulhu.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE"> -->
             <div class="age-header-options">
               <div class="age-header-btn-container">

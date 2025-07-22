@@ -1,17 +1,25 @@
 Rolling {{#each components}}
-        {{#if dice}}{{count}}d{{sides}} (
+          {{#if dice}}{{count}}d{{sides}} (
             {{#each dice}}
                 {{this}}
                 {{#unless @last}}+{{/unless}}
             {{/each}}
-        ){{/if}}
-    {{/each}} 
+          ){{/if}}
+        {{/each}} 
     {{#each components}}
-        {{#unless dice}}
-            {{#if value}} {{#if (isGreater value 0)}}+{{/if}} {{value}} = {{sumComponents ../components multiplier}}{{/if}}
-        {{/unless}}
+      {{#unless dice}}
+        {{#if value}} 
+          {{#if (isGreater value 0)}}+{{/if}} 
+          {{value}}  
+        {{/if}}
+      {{/unless}}
     {{/each}}
-
+    {{#each components}}
+      {{#if (isEqual trained false)}} / 2{{/if}} 
+      {{#unless dice}}
+        = {{sumComponents ../components multiplier}}
+      {{/unless}}
+{{/each}}
 {{!-- Rolling {{#each components}}
   {{#if dice}}
     {{count}}d{{sides}} (

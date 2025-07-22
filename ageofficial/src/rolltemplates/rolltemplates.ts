@@ -83,6 +83,7 @@ const rollTemplates = {
 // This corresponds to the data returned by Beacon when you ask it to roll dice for you.
 // You may want to re-use this to simplify crafting your own templates.
 export type DiceComponent = {
+  trained?: boolean;
   /** The number of sides the die has */
   sides?: number;
   /** The number of dice with the amount of sides */
@@ -125,7 +126,6 @@ export type RollToChatTemplate = {
     resultType?: 'crit-success' | 'crit-fail';
     allowHeroDie?: boolean;
     type?:string;
-    // secondaryComponents?: DiceComponent[];
   };
 };
 
