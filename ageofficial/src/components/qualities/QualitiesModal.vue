@@ -253,7 +253,7 @@
                 </div>
               </div>
             </div>
-              <div class="age-quality-modifiers"  v-if="feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization'">
+              <div class="age-quality-modifiers"  v-if="mode !== 'create' && (feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization')">
                <h3 style="display: flex;">
                   <span>Modifiers</span>                  
                   <button class="link-btn" @click="addModifier" 
