@@ -1,0 +1,288 @@
+@import 'base';
+
+$defaultPadding: 5px;
+
+.tg {
+    .h-full {
+        height: 100%;
+    }
+    .item-list .item-buttons span {
+        margin: 0 10px;
+    }
+    .form-fields {
+        margin-bottom: 2px;
+    }
+    header.actor-sheet-header {
+        flex: 0 0 312px;
+        align-items: flex-start;
+        margin-bottom: 0;
+        .header-fields {
+            flex: 1;
+            height: auto;
+        }
+    }
+    header.creature-sheet-header {
+        flex: 0 0 110px;
+        align-items: flex-start;
+        margin-bottom: 0;
+        .header-fields {
+            flex: 1;
+            height: auto;
+        }
+    }
+    #description {
+        resize: none;
+    }
+    aside {
+        &#ways {
+            height: 100%;
+            overflow-y: auto;
+        }
+        flex: 0 0 110px;
+        margin-right: 10px;
+        .profile-img {
+
+            //height: 110px;
+
+        }
+    }
+    .sanity-table {
+        tr {
+            td:nth-child(2n) {
+                border-right: 1px solid #aaa;
+            }
+        }
+    }
+    .ways {
+        text-align: center;
+        .form-fields {
+            margin-bottom: 4px;
+            border-bottom: 1px solid #aaa;
+        }
+    }
+    .domains-and-disciplines {
+        //padding: $defaultPadding;
+        > ul {
+            li {
+                break-inside: avoid;
+            }
+        }
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+                line-height: 2em;
+                .flexrow > .form-fields {
+                    text-wrap: nowrap;
+                    text-align: right;
+                    min-width: 86px;
+                }
+                .flexrow {
+                    justify-content: flex-end;
+                    padding: 2px 0;
+                }
+                span {
+                    overflow: hidden;
+                    text-wrap: nowrap;
+                    text-overflow: ellipsis;
+                }
+                label {
+                    padding: 0 5px;
+                }
+                input {
+                    max-width: 32px;
+                    text-align: center;
+                }
+                ul div.flexrow {
+                    padding-left: 10px;
+                    span {
+                        //color: var(--color-border-light-tertiary);
+                    }
+                }
+            }
+            li:nth-child(even) {
+                background: #cfcdc2;
+            }
+        }
+    }
+    .extra-sidebar {
+        //padding: 5px;
+    }
+    .tag {
+        display: inline-block;
+        margin: 0 2px 5px 0;
+        padding: 2px 3px;
+        font-size: 14px;
+        line-height: 16px;
+        border: 1px solid var(--color-border-light-tertiary);
+        border-radius: 3px;
+        background: rgba(0, 0, 0, 0.05);
+        i.fas:not(.fa-dice-d10) {
+            margin-left: 4px;
+        }
+    }
+}
+
+.tg.actor {
+    .domains-and-disciplines {
+        > ul {
+            column-count: 3;
+        }
+    }
+}
+
+.inventory-table {
+    tr td:first-child,
+    tr td:last-child {
+        width: 32px;
+    }
+    tr td:nth-child(2) {
+        width: calc(100% - 64px);
+    }
+    a[class^='rollable-'] img:hover {
+        box-shadow: 0 0 8px var(--color-shadow-primary);
+    }
+}
+
+.flavor-text {
+    margin-bottom: 0.5em;
+    img {
+        width: 50px;
+        height: 50px;
+    }
+    p {
+        margin: 0 0 0 0.5em;
+    }
+}
+
+
+/* start tijdelijke opmaak voor demo */
+.ascensionGaugeRadioValue:nth-child(1),
+.ascensionGaugeRadioValue:nth-child(15n+0),
+.ascensionGaugeRadioValue:nth-child(45) {
+    transform: scale(1.5);
+}
+
+textarea {
+    border: 1px solid var(--color-border-light-tertiary)
+}
+
+.fa-eye {
+    font-size: 13px;
+}
+
+aside {
+    .flex0 {
+        & > div.form-fields {
+            margin-bottom: 10px;
+        }
+    }
+    text-align: center;
+    .flexcol {
+        .form-fields {
+            margin: 5px 0;
+            padding-bottom: 5px;
+            span {
+                display: inline-block;
+                margin: 3px 0;
+            }
+        }
+    }
+}
+
+.creature {
+    .sheet-body {
+        overflow-y: scroll;
+    }
+}
+
+.actor-sheet-header .header-fields {
+    & > div.flexrow > div.flexcol {
+        padding: 2px;
+    }
+    .form-fields {
+        padding: 2px;
+    }
+}
+.tag-fields {
+    margin-bottom: 13px;
+    .tag {
+        padding: 3px 6px;
+        .fa-dice-d10 {
+            padding-right: 4px;
+        }
+        .fa-edit {
+            padding-left: 4px;
+        }
+    }
+}
+.sheet-body {
+    padding-top: 10px;
+    div[data-tab="combat"], div[data-tab="ascension"] {
+        .form-fields {
+            padding: 2px;
+        }
+    }
+}
+.column-p {
+    padding: 0 6px;
+}
+
+.px-2 {
+    padding: 0 2px;
+}
+
+.pb-10 {
+    padding-bottom: 10px;
+}
+
+.item-list {
+    margin-bottom: 15px !important;
+}
+
+.ascension-gauge-wrapper {
+    margin: 10px 0;
+}
+
+.creature-health {
+}
+
+.health-max-values {
+    line-height: 25px;
+    margin-bottom: 10px;
+}
+
+.creature-general-values {
+    margin: 6px 0;
+    padding: 0 2px;
+    .form-fields {
+        padding: 2px;
+    }
+}
+
+.health-divider {
+    &:first-child {
+        margin-left: 0;
+    }
+    &:last-child {
+        margin-right: 0;
+    }
+    margin: 0 5px !important;
+}
+
+.sheet.creature {
+    .tag-fields {
+        margin-bottom: 10px;
+    }
+}
+
+#domains-and-disciplines-modal {
+    tbody tr td:not(:first-child) {
+        padding: 3px;
+    }
+    input {
+        text-align: center;
+    }
+}
+/* einde tijdelijke opmaak voor demo */

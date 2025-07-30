@@ -1,0 +1,291 @@
+.tg {
+    .window-content {
+        height: 100%;
+        padding: 5px;
+        overflow-y: hidden;
+    }
+
+    form {
+        height: 100%;
+    }
+
+    .sheet-header {
+        flex: 0 0 110px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin-bottom: 10px;
+
+        .profile-img {
+            flex: 0 0 110px;
+            height: 110px;
+            margin-right: 10px;
+        }
+
+        .header-fields {
+            flex: 1;
+            height: 100px;
+        }
+
+        h1.charname {
+            height: 50px;
+            padding: 0px;
+            margin: 5px 0;
+            border-bottom: 0;
+            input {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+        }
+    }
+
+    .resource {
+        width: 50%;
+        height: 40px;
+        margin-top: 10px;
+        float: left;
+        text-align: center;
+        input {
+            width: 100px;
+            height: 28px;
+        }
+    }
+
+    /* Sheet Tabs */
+    .tabs {
+        flex: 0 0 20px;
+        border-top: 1px solid #aaa;
+        border-bottom: 1px solid #aaa;
+
+        .item {
+            line-height: 20px;
+            font-weight: bold;
+        }
+
+        .item.active {
+            text-decoration: underline;
+            text-shadow: none;
+        }
+    }
+
+    .sheet-body {
+        overflow: hidden;
+        .tab {
+            height: 100%;
+            overflow-y: auto;
+        }
+    }
+
+    .editor,
+    .editor-content {
+        height: 100%;
+    }
+
+    /* Items List */
+    .item-list {
+        list-style: none;
+        margin: 7px 0;
+        padding: 0;
+        overflow-y: auto;
+
+        .item {
+            min-height: 30px;
+            line-height: 24px;
+            padding: 3px 0;
+            border-bottom: 1px solid #bbb;
+            align-items: stretch;
+
+            img {
+                flex: 0 0 24px;
+                margin-right: 5px;
+            }
+        }
+
+        .item-name {
+            margin: 0;
+        }
+
+        .item-controls {
+            flex: 0 0 48px;
+        }
+
+        .item-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            align-items: center;
+            flex: 2;
+            justify-content: flex-start;
+        }
+
+        .item-button {
+            line-height: 1;
+            font-size: 11px;
+            flex: none;
+            width: auto;
+        }
+    }
+
+    /* Attributes */
+    .attributes {
+        position: relative;
+
+        .attribute-control,
+        .group-control {
+            flex: 0 0 20px;
+            text-align: center;
+            line-height: 28px;
+            border: none;
+        }
+
+        .attribute-roll {
+            flex: 0 0 20px;
+            text-align: center;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .group-prefix {
+            height: 31px;
+            margin-right: 10px;
+        }
+
+        .button {
+            width: 100%;
+            flex: 1;
+            margin: 0;
+            background: rgba(0, 0, 0, 0.1);
+            border: 2px groove #f0f0e0;
+            border-radius: 3px;
+            font-size: 14px;
+            line-height: 28px;
+            display: block;
+        }
+
+        .attribute-key {
+            background: transparent;
+            border: none;
+        }
+    }
+
+    .attributes-header {
+        position: sticky;
+        top: 0;
+        left: 0;
+        align-items: center;
+        padding: 0 5px;
+        margin: 5px 0;
+        background: #cfcdc2;
+        border: 1px solid #aaa;
+        border-radius: 2px;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .attributes-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li > * {
+            margin: 0 3px;
+            height: 28px;
+            line-height: 24px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            border-bottom: 1px solid #aaa;
+        }
+
+        .attribute-col {
+            label {
+                font-size: 10px;
+                text-align: center;
+                line-height: 1;
+            }
+
+            input {
+                font-size: 11px;
+                text-align: center;
+                line-height: 1;
+                height: 50%;
+            }
+        }
+    }
+
+    .attribute,
+    .group-header {
+        input[type='text'] {
+            &::placeholder {
+                opacity: 0;
+                transition: opacity 0.25s ease-in-out;
+            }
+
+            &:focus::placeholder {
+                opacity: 1;
+            }
+        }
+    }
+
+    .group-controls {
+        margin: 5px;
+    }
+
+    .groups-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .group {
+        margin: 5px 0 0;
+        padding: 0;
+    }
+
+    .group-header {
+        align-items: center;
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid #aaa;
+        border-radius: 2px;
+        padding: 2px 5px;
+    }
+
+    .group-key,
+    .group-label {
+        font-weight: bold;
+        border: none;
+        border-bottom: 1px solid #aaa;
+        background: transparent;
+        border-radius: 0;
+        margin-right: 6px;
+    }
+
+    .group-key {
+        opacity: 0.75;
+    }
+
+    .group-label {
+        flex: 2;
+    }
+
+    .group-dtype {
+        height: 24px;
+        flex: 0 0 116px;
+        margin: 0 5px;
+    }
+}
+
+.tg.sheet.actor {
+    min-width: 560px;
+    min-height: 420px;
+}
+
+.tg.sheet.item {
+    min-width: 460px;
+    min-height: 400px;
+}

@@ -1,0 +1,148 @@
+<div class='flexcol column-p'>
+    <h3>{{localize 'tg.common.ascension'}}</h3>
+    <div class='flexrow'>
+        <div class='flexcol'>
+            <div class='form-fields'>
+                <label for='quest"'>{{localize
+                        'tg.common.quest'
+                    }}:</label>
+                <input
+                    id='quest"'
+                    name='system.quest'
+                    type='text'
+                    value='{{data.system.quest}}'
+                />
+            </div>
+        </div>
+        <div class='flexcol'>
+            <div class='form-fields'>
+                <label for='ascensionPoints"'>{{localize
+                    'tg.common.ascensionPoints'
+                }}:</label>
+                <input
+                    id='ascensionPoints"'
+                    name='system.ascensionPoints'
+                    type='number'
+                    value='{{data.system.ascensionPoints}}'
+                />
+            </div>
+        </div>
+    </div>
+    <div class='flexrow'>
+        <div class='form-fields'>
+            <label for='act1'>{{localize
+                'tg.common.act1'
+            }}</label>
+            <textarea
+                name='system.act1'
+                id='act1'
+                cols='30'
+                rows='2'
+            >{{data.system.act1}}</textarea>
+        </div>
+        <div class='form-fields'>
+            <label for='act2'>{{localize
+                'tg.common.act2'
+            }}</label>
+            <textarea
+                name='system.act2'
+                id='act2'
+                cols='30'
+                rows='2'
+            >{{data.system.act2}}</textarea>
+        </div>
+        <div class='form-fields'>
+            <label for='act3'>{{localize
+                'tg.common.act3'
+            }}</label>
+            <textarea
+                name='system.act3'
+                id='act3'
+                cols='30'
+                rows='2'
+            >{{data.system.act3}}</textarea>
+        </div>
+    </div>
+    <div class='ascension-gauge-wrapper'>
+        <div class="form-fields flex0">
+            <h3>{{localize 'tg.common.ascensionGauge'}}</h3>
+            <table>
+                <tbody>
+                <tr>
+                    <td>
+						{{#times 45}}
+                        	<input class="ascensionGaugeRadioValue" type="radio" value="{{this}}" title="{{this}}" {{#compare data.system.ascensionGauge '>=' this}}checked{{/compare}} />
+						{{/times}}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class='flexrow'>
+        <div class='tag-fields column-p'>
+            <label for='premises'><h3>{{localize
+                'tg.common.premise'
+            }} <a class='openItemsModal' title='{{localize "tg.common.edit"}}' data-action='edit'><i class='fas fa-eye'></i></a></h3></label>
+            {{#each actor.system.premises as |premise key|}}
+                <span class='tag'>
+                    <a class="rollable-ascension-item" data-id='{{premise._id}}'>
+                        <i class="fas fa-dice-d10"></i>
+                    </a>
+                    {{premise.name}}<a
+                    class='ascension-item-control'
+                    title='{{localize "tg.common.dit"}}'
+                    data-id='{{premise._id}}'
+                ><i class='fas fa-edit'></i></a></span>
+            {{/each}}
+        </div>
+        <div class='tag-fields column-p'>
+            <label for='awakenings'><h3>{{localize
+                'tg.common.awakening'
+            }} <a class='openItemsModal' title='{{localize "tg.common.edit"}}' data-action='edit'><i class='fas fa-eye'></i></a></h3></label>
+            {{#each actor.system.awakenings as |awakening key|}}
+                <span class='tag'>
+                    <a class="rollable-ascension-item" data-id='{{awakening._id}}'>
+                        <i class="fas fa-dice-d10"></i>
+                    </a>
+                    {{awakening.name}}<a
+                    class='ascension-item-control'
+                    title='{{localize "tg.common.edit"}}'
+                    data-id='{{awakening._id}}'
+                ><i class='fas fa-edit'></i></a></span>
+            {{/each}}
+        </div>
+        <div class='tag-fields column-p'>
+            <label for='rises'><h3>{{localize
+                'tg.common.rise'
+            }} <a class='openItemsModal' title='{{localize "tg.common.edit"}}' data-action='edit'><i class='fas fa-eye'></i></a></h3></label>
+            {{#each actor.system.rises as |rise key|}}
+                <span class='tag'>
+                    <a class="rollable-ascension-item" data-id='{{rise._id}}'>
+                        <i class="fas fa-dice-d10"></i>
+                    </a>
+                    {{rise.name}}<a
+                    class='ascension-item-control'
+                    title='{{localize "tg.common.edit"}}'
+                    data-id='{{rise._id}}'
+                ><i class='fas fa-edit'></i></a></span>
+            {{/each}}
+        </div>
+        <div class='tag-fields column-p'>
+            <label for='ascensions'><h3>{{localize
+                'tg.common.ascension'
+            }} <a class='openItemsModal' title='{{localize "tg.common.edit"}}' data-action='edit'><i class='fas fa-eye'></i></a></h3></label>
+            {{#each actor.system.ascensions as |ascension key|}}
+                <span class='tag'>
+                    <a class="rollable-ascension-item" data-id='{{ascension._id}}'>
+                        <i class="fas fa-dice-d10"></i>
+                    </a>
+                    {{ascension.name}}<a
+                    class='ascension-item-control'
+                    title='{{localize "tg.common.edit"}}'
+                    data-id='{{ascension._id}}'
+                ><i class='fas fa-edit'></i></a></span>
+            {{/each}}
+        </div>
+    </div>
+</div>

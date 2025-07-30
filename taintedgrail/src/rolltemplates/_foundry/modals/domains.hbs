@@ -1,0 +1,38 @@
+<div class='flexrow'>
+    <div class='flexcol domains-and-disciplines' id='domains-and-disciplines-modal'>
+        <table>
+            <thead>
+                <tr>
+                    <th>{{localize 'tg.common.name'}}</th>
+                    <th width='10%'>{{localize 'tg.common.score'}}</th>
+                    <th width='10%'>{{localize 'tg.common.bonus'}}</th>
+                    <th width='20%'>{{localize 'tg.common.way'}}</th>
+                    <th width='10%'>{{localize 'tg.common.penalty'}}</th>
+                    <th width='10%'>{{localize 'tg.common.total'}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each data.system.domainsAndDisciplines as |domain domainKey|}}
+                    <tr>
+                        <td>{{localizeItem domainKey "domains"}}</td>
+                        <td><input id="{{domainKey}}Base" class='update-item' name="system.domainsAndDisciplines.{{domainKey}}.base" type="number" min="0" value="{{getObjectValue ../data.system.domainsAndDisciplines domainKey 'base'}}" /></td>
+                        <td><input id="{{domainKey}}Bonus" class='update-item' name="system.domainsAndDisciplines.{{domainKey}}.bonus" type="number" min="0" value="{{getObjectValue ../data.system.domainsAndDisciplines domainKey 'bonus'}}" /></td>
+                        <td><span>{{localizeItem domain.way.title "ways"}} {{getObjectValueByLowerCase ../data.system.ways domain.way.title}}</span></td>
+                        <td><input id="{{domainKey}}Penalty" class='update-item' name="system.domainsAndDisciplines.{{domainKey}}.penalty" type="number" min="0" value="{{getObjectValue ../data.system.domainsAndDisciplines domainKey 'penalty'}}" /></td>
+                        <td><input id="{{domainKey}}Total" name="system.domainsAndDisciplines.{{domainKey}}.total" type="number" min="0" value="{{getObjectValue ../data.system.domainsAndDisciplines domainKey 'total'}}" disabled /></td>
+                    </tr>
+                    {{#each domain.disciplines as |discipline id|}}
+                        <tr>
+                            <td>{{this.name}}</td>
+                            <td><input class="discipline-change" id="{{id}}Base" data-item-id="{{discipline._id}}" type="number" min="0" value="{{discipline.system.base}}" /></td>
+                            <td><input id="{{id}}Bonus" type="number" min="0" value="{{discipline.system.bonus}}" disabled /></td>
+                            <td><span>{{domain.way.title}} {{getObjectValueByLowerCase ../../data.system.ways domain.way.title}}</span></td>
+                            <td><input id="{{id}}Penalty" type="number" min="0" value="{{discipline.system.penalty}}" disabled  /></td>
+                            <td><input id="{{id}}Total" type="number" min="0" value="{{discipline.system.total}}" disabled  /></td>
+                        </tr>
+                    {{/each}}
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

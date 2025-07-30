@@ -1,0 +1,87 @@
+@use '../../common/scss/vars.scss';
+
+rolltemplate.taintedgrail {
+  display: block;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  background: white;
+  color: black;
+
+  .header {
+    background: var(--taintedgrail-primary);
+    text-align: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    color: white;
+    &__title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    &__subtitle {
+      font-size: 1rem;
+    }
+  }
+  .body {
+    padding: 0.5rem;
+
+    hr {
+      margin: 0.5rem 0;
+    }
+
+    .trait-list {
+      display: flex;
+      gap: 0.5rem;
+
+      .trait {
+        font-style: italic;
+      }
+    }
+  }
+
+  .key-values {
+    &__pair {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      gap: 0.5rem;
+    }
+    &__key {
+      font-weight: 600;
+    }
+  }
+
+  .roll {
+    &__total {
+      text-align: center;
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
+    }
+    &__components {
+      display: flex;
+      gap: 0.5rem;
+
+      .component {
+        &__value {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .hero-die {
+    text-align: center;
+    &__button {
+      display: inline-block;
+      padding: 0.25rem;
+      transition: background-color 0.2s ease-in-out;
+      border-radius: 0.25rem;
+      background-color: var(--taintedgrail-primary);
+      color: white;
+      &:hover {
+        background-color: var(--taintedgrail-secondary);
+        color: black;
+      }
+    }
+  }
+}

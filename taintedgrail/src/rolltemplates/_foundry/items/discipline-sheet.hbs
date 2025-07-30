@@ -1,0 +1,33 @@
+<form class='flexcol {{cssClass}}' autocomplete='off'>
+  <header class='flex0 sheet-header'>
+    <img class='profile-img' src='{{data.img}}' data-edit='img' title='{{data.name}}' />
+    <div class='header-fields'>
+      <h1 class='charname'>
+        <input name='name' type='text' value='{{data.name}}' placeholder='Name' />
+      </h1>
+    </div>
+  </header>
+  <section>
+    <h3>{{localize 'tg.common.domain'}}</h3>
+    <div class='flexcol'>
+      <div class='form-fields'>
+        <label for='parent'>{{localize 'tg.common.parent'}}:</label>
+        <select id='parent' name='system.parent'>
+          {{#select data.system.parent}}
+            {{#each domains}}
+              <option value='{{this}}'>{{localizeItem this 'domainsAndDisciplines'}}</option>
+            {{/each}}
+          {{/select}}
+        </select>
+      </div>
+    </div>
+    <h3>{{localize 'tg.common.description'}}</h3>
+    {{editor
+      descriptionHTML
+      target='system.description'
+      button=true
+      editable=editable
+      engine='prosemirror'
+    }}
+  </section>
+</form>
