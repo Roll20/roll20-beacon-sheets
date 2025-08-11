@@ -23,7 +23,7 @@ export const fage2e = {
   }
 
   export const mage = {
-    Accuracy: ['Assault Rifles', 'Black Power', 'Bows', 'Grenades', 'Longarms', 'Pistols', 'Shotguns', 'SMGs', 'Thrown'],
+    Accuracy: ['Assault Rifles', 'Black Power', 'Bows', 'Grenades', 'Longarms', 'Pistols', 'Shotguns', 'SMGs', 'Thrown','Unarmed'],
     Communication: ['Animal Handling', 'Bargaining', 'Deception','Disguise', 'Etiquette', 'Expression', 'Gambling', 'Investigation', 'Leadership','Performing', 'Persuasion', 'Seduction'],
     Constitution: ['Propelling', 'Running', 'Stamina', 'Swimming','Tolerance'],
     Dexterity: ['Acrobatics', 'Calligraphy', 'Crafting', 'Initiative', 'Legerdemain', 'Lock Picking', 'Riding', 'Sailing', 'Stealth', 'Traps'],

@@ -43,15 +43,7 @@
         </div>        
       <div class="age-weapon-btn-container age-combat-attack">
         <button class="age-btn" @click="handlePrint">
-          {{ (attackHit > 0 ? `+` : '') + (attackHit + trained) }}
-          <!-- <span v-if="!aim && aimOption !== 'always'">
-            <span v-if="(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]?.base >= 0) + Number(checkFocusBonus(useAbilityFocusesStore().abilityFocuses,props.attack))">+</span>
-            {{ Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]?.base) + Number(checkFocusBonus(useAbilityFocusesStore().abilityFocuses,props.attack)) }}
-          </span>
-          <span v-if="aim || aimOption === 'always'">
-            <span v-if="(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]?.base >= 0) + Number(checkFocusBonus(useAbilityFocusesStore().abilityFocuses,props.attack))">+</span>
-            {{ Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]?.base) + Number(checkFocusBonus(useAbilityFocusesStore().abilityFocuses,props.attack)) + aimValue }}
-          </span> -->
+          {{ (attackHit + trained > 0 ? `+` : '') + (attackHit + trained) }}
         </button>
       </div>
       <div class="age-weapon-btn-container age-combat-damage" v-if="filteredDamageMods.length === 0">  
@@ -142,10 +134,8 @@ const conditions = useCustomConditionsStore();
 const damageMods = damageMod; 
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
-const trained = char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2
-
-const attackHit = ref(attackToHit(props.attack))
-
+const trained = computed(() => char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2);
+const attackHit = computed(() => attackToHit(props.attack).value);
 const modsBonus = computed(() => {
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';
   const [base, mod] = props.attack.damage? props.attack.damage.split('+').map(part => part.trim()) : ['',''];
@@ -193,7 +183,7 @@ let toAttackRoll = 0
 
 const setAttackRoll = () => {
   if(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]){
-    toAttackRoll = Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility].base) + trained;
+    toAttackRoll = Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility].base) + trained.value;
   }
 }
 setAttackRoll()
@@ -238,7 +228,7 @@ const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   const attackStore = useAttackStore();
   const attackDamage = Object.assign({}, props.attack);
   attackDamage.damage = damageRoll;
-  attackDamage.trained = trained === 0 ? true : false;
+  attackDamage.trained = trained.value === 0 ? true : false;
   if(attackDmgLabel){
     attackDamage.damageLabel = attackDmgLabel.label;
     attackDamage.source = attackDmgLabel.source;
