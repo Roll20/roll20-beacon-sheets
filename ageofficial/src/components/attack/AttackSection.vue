@@ -32,7 +32,7 @@
         No results found.
       </div>             
     </div>
-    <div class="age-combat-footer">
+    <div class="age-combat-footer" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'">
       <button class="age-label-black" @click="showWeaponGroupModal = true">
           <div class="age-label-side-heading-black">Weapon Groups</div>
           <div class="age-combat-wg">
@@ -99,8 +99,8 @@ const allAttacks = computed(()=>{
   return [
           ...attackStore.attacks,
           ...inventoryStore.items.filter(item => (item.type === 'weapon' && item.equipped)),
-          ...qualities.items.flatMap(item => (item.modifiers || []).filter(modifier => modifier.option === 'Custom Attack').map(modifier => ({ ...modifier, description: item.description }))),
-          ...mods.modifiers.filter(mod => mod.option === 'Custom Attack').map(modifier => ({ ...modifier, description:qualities.items.filter(itm => itm._id === modifier.parentId)[0].description }))]
+          ...qualities.items.flatMap(item => (item.modifiers || []).filter(modifier => modifier.option === 'Custom Attack').map(modifier => ({ ...modifier, description: item?.description }))),
+          ...mods.modifiers.filter(mod => mod.option === 'Custom Attack').map(modifier => ({ ...modifier, description:qualities.items.filter(itm => itm._id === modifier.parentId)[0]?.description }))]
 })
 const modsBonus = computed(()=>{
   return useModifiersStore().modifiers

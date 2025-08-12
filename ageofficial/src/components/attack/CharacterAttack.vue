@@ -117,6 +117,8 @@ import {  attackFocus, attackToHit, damageMod } from '@/sheet/stores/modifiersCh
 import { useModifiersStore } from '@/sheet/stores/modifiers/modifiersStore';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useCustomConditionsStore } from '@/sheet/stores/conditions/customConditionsStore';
+import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+
 const showModal = ref(false)
 const open = ref(false)
 const emit = defineEmits(['update:modelValue'])
@@ -131,10 +133,11 @@ const char = useCharacterStore();
 const ability = useAbilityScoreStore();
 const qualities = useItemStore();
 const conditions = useCustomConditionsStore();
+const settings = useSettingsStore();
 const damageMods = damageMod; 
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
-const trained = computed(() => char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2);
+const trained = computed(() => (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2 : 0);
 const attackHit = computed(() => attackToHit(props.attack).value);
 const modsBonus = computed(() => {
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';
