@@ -1,6 +1,6 @@
 import type { Character, Dispatch } from '@roll20-official/beacon-sdk';
 import type { CharacterHydrate } from '@/sheet/stores/character/characterStore';
-import type { AbilityScoresHydrate } from '@/sheet/stores/abilityScores/abilityScoresStore';
+import type { AbilityScoresHydrate } from '@/sheet/stores/waysStore';
 import type { BioHydrate } from '@/sheet/stores/bio/bioStore';
 
 /*
@@ -36,7 +36,7 @@ export const getBio = ({ character }: { character: Character }) => {
 
 export const getLife = ({ character }: { character: Character }) => {
   if (!character.attributes?.character) return {};
-  const current = (character.attributes.character as CharacterHydrate).character.lifeCurrent;
+  const current = (character.attributes.character as CharacterHydrate).character.healthCurrent;
   return {
     current,
   };
@@ -54,7 +54,8 @@ export const setLife = (
 ) => {
   const newValue = args[0];
   const oldValue =
-    (character.attributes?.character as CharacterHydrate | undefined)?.character?.lifeCurrent ?? 0;
+    (character.attributes?.character as CharacterHydrate | undefined)?.character?.healthCurrent ??
+    0;
   const characterId = character.id;
   const finalValue = applyChange(oldValue, newValue);
   dispatch.update({
@@ -64,7 +65,7 @@ export const setLife = (
         updateId: 'TOKENCHANGE',
         character: {
           character: {
-            lifeCurrent: finalValue,
+            healthCurrent: finalValue,
           },
         },
       },

@@ -3,9 +3,11 @@
     <div class="section__body bio__body">
       <div class="bio__form">
         <div class="bio__fields">
-          <div class="bio__name">
-            <input id="name" v-model="meta.name" />
-          </div>
+			<div class="bio__row">	
+				<label for="name">
+					<input id="name" v-model="bio.name" />
+				</label>
+			</div>
           
           <div class="bio__row">
             <label for="player">
@@ -49,10 +51,8 @@
 </template>
 
 <script setup>
-import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
 
-const meta = useMetaStore();
 const bio = useBioStore();
 </script>
 
@@ -61,6 +61,7 @@ const bio = useBioStore();
   &__body {
     display: flex;
     gap: 0.5rem;
+	padding: 0 0.5rem;
   }
   
   &__form {
@@ -69,22 +70,7 @@ const bio = useBioStore();
     gap: 1rem;
     width: 100%;
   }
-  
-  &__name {
-    flex: 1;
-    width: 100%;
     
-    input {
-      width: 100% !important;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
-      padding: 0.5rem;
-      box-sizing: border-box;
-      flex: none;
-    }
-  }
-  
   &__fields {
     display: flex;
     flex-direction: column;
@@ -101,6 +87,13 @@ const bio = useBioStore();
       align-items: flex-start;
       gap: 0.25rem;
       flex: 1;
+
+	  #name {
+		padding: 1rem 0.25rem;
+		font-size: 1.2rem;
+		font-weight: bold;
+		text-align: center;
+	  }
       
       &:only-child {
         flex: 1;
@@ -117,12 +110,15 @@ const bio = useBioStore();
     flex: 1;
     min-width: 0;
     width: 100%;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid #7a7971;
+    border-radius: 2px;
+    padding: 0.25rem;
   }
   
   textarea {
     resize: vertical;
     min-height: 60px;
-    background: transparent;
     width: 100%;
   }
 }

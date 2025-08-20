@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import jp from 'jsonpath';
-import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
+
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
+import { useWaysStore } from '@/sheet/stores/waysStore';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
 import { v4 as uuidv4 } from 'uuid';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
+import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
 
 /*
  * This is the master store for the entire character sheet.
@@ -22,7 +23,7 @@ export const useExampleSheetStore = defineStore('taintedgrailStore', () => {
     meta: useMetaStore(),
     character: useCharacterStore(),
     bio: useBioStore(),
-    abilityScores: useAbilityScoreStore(),
+    ways: useWaysStore(),
     inventory: useInventoryStore(),
     traits: useTraitsStore(),
   };
@@ -55,12 +56,11 @@ export const useExampleSheetStore = defineStore('taintedgrailStore', () => {
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];
     storeKeys.forEach((key) => {
       //if (key === "rolls") return;
-      if (key === 'meta') {
-        const { name, bio, gmNotes, avatar } = stores.meta.dehydrate();
-        character.name = name;
-        character.bio = bio;
-        character.gmNotes = gmNotes;
-        character.avatar = avatar;
+      if (key === 'bio') {
+        const charBio = stores.bio.dehydrate();
+        character.name = charBio.bio.name;
+        character.player = charBio.bio.player;
+        character.avatar = charBio.bio.avatar;
       } else {
         character.attributes[key] = stores[key].dehydrate();
       }
@@ -79,7 +79,7 @@ export const useExampleSheetStore = defineStore('taintedgrailStore', () => {
       });
     }
     if (meta) {
-      stores.meta.hydrate(meta);
+      //   stores.meta.hydrate(meta);
     }
   };
 
@@ -96,21 +96,35 @@ export const useExampleSheetStore = defineStore('taintedgrailStore', () => {
   * Can invoke it from a button in the Settings tab.
   * */
   const loadExampleData = () => {
-    stores.meta.name = 'Kitten';
-    stores.meta.avatar = 'http://placekitten.com/200/200';
-    stores.abilityScores.abilityScores = {
-      Strength: { base: 1, current: 1 },
-      Endurance: { base: 0, current: 0 },
-      Agility: { base: 4, current: 4 },
-      Charisma: { base: 4, current: 4 },
-      Aura: { base: 1, current: 0 },
-      Thought: { base: 0, current: 0 },
+    stores.ways.waysScores = {
+      Combativeness: 1,
+      Creativity: 0,
+      Awareness: 4,
+      Reason: 4,
+      Conviction: 1,
+      domainsAndDisciplines: {
+        closeCombat: 0,
+        communication: 0,
+        compassion: 0,
+        craft: 0,
+        erudition: 0,
+        feats: 0,
+        healing: 0,
+        inspiration: 0,
+        leadership: 0,
+        magic: 0,
+        monsters: 0,
+        mountedCombat: 0,
+        naturalEnvironment: 0,
+        perception: 0,
+        performance: 0,
+        religion: 0,
+        shootingAndThrowing: 0,
+        stealth: 0,
+        travel: 0,
+        wyrdnessMysteries: 0,
+      },
     };
-    stores.bio.friends = 'My Human';
-    stores.bio.enemies = 'Dogs';
-    stores.bio.looks = 'Smol';
-    stores.bio.species = 'Cat';
-    stores.bio.likes = 'Fish, yarn';
     stores.character.xp = 6000;
     stores.character.heroDiceMod = 2;
     stores.inventory.items = [

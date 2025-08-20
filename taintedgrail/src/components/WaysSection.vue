@@ -3,7 +3,7 @@
 	  <div class="section__body ways__body">
 		<div class="ways__form">
 			<div class="ways__avatar">
-		  <img :src="meta.avatar || DEFAULT_AVATAR" />
+		  <img :src="bio.avatar || DEFAULT_AVATAR" />
 		</div>
 		<h3 class="ways__header">Color</h3>
 		<select :id="`color`" v-model="bio.color">
@@ -18,27 +18,27 @@
 		  <div class="ways__list">
 			<label for="combativeness">
 				<span class="label">Combativeness</span>
-				<input id="combativeness" v-model="bio.ways.combativeness" />
+				<input id="combativeness" v-model="waysStore.combativenessModel" type="number" min="0" />
 				<span class="label">Passion</span>
 			</label>
 			<label for="creativity">
 				<span class="label">Creativity</span>
-				<input id="creativity" v-model="bio.ways.creativity" />
+				<input id="creativity" v-model="waysStore.creativityModel" type="number" min="0" />
 				<span class="label">Subversion</span>
 			</label>
 			<label for="awareness">
 				<span class="label">Awareness</span>
-				<input id="awareness" v-model="bio.ways.awareness" />
+				<input id="awareness" v-model="waysStore.awarenessModel" type="number" min="0" />
 				<span class="label">Influence</span>
 			</label>
 			<label for="reason">
 				<span class="label">Reason</span>
-				<input id="reason" v-model="bio.ways.reason" />
+				<input id="reason" v-model="waysStore.reasonModel" type="number" min="0" />
 				<span class="label">Doubt</span>
 			</label>
 			<label for="conviction">
 				<span class="label">Conviction</span>
-				<input id="conviction" v-model="bio.ways.conviction" />
+				<input id="conviction" v-model="waysStore.convictionModel" type="number" min="0" />
 				<span class="label">Guilt</span>
 			</label>
 		  </div>
@@ -48,13 +48,13 @@
   </template>
   
   <script setup>
-  import { useMetaStore } from '@/sheet/stores/meta/metaStore';
   import { useBioStore } from '@/sheet/stores/bio/bioStore';
+  import { useWaysStore } from '@/sheet/stores/waysStore';
 
   const DEFAULT_AVATAR = new URL('@/assets/mystery-man.svg', import.meta.url).href;
 
-  const meta = useMetaStore();
   const bio = useBioStore();
+  const waysStore = useWaysStore();
   </script>
   
   <style scoped lang="scss">
@@ -71,10 +71,15 @@
 
 	&__header {
 		margin-top: 0.5rem;
+		margin-bottom: 1rem;
 	}
 
 	&__form {
 		width: 110px;
+
+		select {
+			margin-bottom: 1.1rem;
+		}
 	}
   
 	&__avatar {
@@ -110,6 +115,10 @@
 			width: 110px ;
 			box-sizing: border-box;
 			text-align: center;
+			background-color: rgba(0, 0, 0, 0.05);
+			border: 1px solid #7a7971;
+			border-radius: 3px;
+			padding: 0.25rem;
 		}
 	}
 	
@@ -119,15 +128,16 @@
 	}
 	
 	select {
-		background: transparent;
-		border: 1px solid #aaa;
+		background-color: rgba(0, 0, 0, 0.05);
+		border: 1px solid #7a7971;
+		border-radius: 2px;
 		text-align: center;
 		width: 100%;
-		padding: 2px;
+		padding: 0.25rem;
 		
 		&:focus {
 			outline: none;
-			background: rgba(255, 255, 255, 0.1);
+			background-color: rgba(0, 0, 0, 0.08);
 		}
 	}
   }

@@ -4,6 +4,8 @@ import { ref } from 'vue';
 /* Very simple store that just stores and syncs some strings with text-inputs on the sheet. */
 export type BioHydrate = {
   bio: {
+    avatar: string;
+    name: string;
     player: string;
     age: string;
     origin: string;
@@ -11,17 +13,19 @@ export type BioHydrate = {
     experience: string;
     description: string;
     color: string;
-	ways: {
-		combativeness: number;
-		creativity: number;
-		awareness: number;
-		reason: number;
-		conviction: number;
-	};
+    ways: {
+      combativeness: number;
+      creativity: number;
+      awareness: number;
+      reason: number;
+      conviction: number;
+    };
   };
 };
 
 export const useBioStore = defineStore('bio', () => {
+	const avatar = ref('');
+  const name = ref('');
   const player = ref('');
   const age = ref('');
   const origin = ref('');
@@ -34,12 +38,14 @@ export const useBioStore = defineStore('bio', () => {
     creativity: 0,
     awareness: 0,
     reason: 0,
-	conviction: 0,
+    conviction: 0,
   });
 
   const dehydrate = () => {
     return {
       bio: {
+        avatar: avatar.value,
+        name: name.value,
         player: player.value,
         age: age.value,
         origin: origin.value,
@@ -53,6 +59,8 @@ export const useBioStore = defineStore('bio', () => {
   };
 
   const hydrate = (hydrateStore: BioHydrate) => {
+	avatar.value = hydrateStore.bio.avatar ?? avatar.value;
+  name.value = hydrateStore.bio.name ?? name.value;
     player.value = hydrateStore.bio.player ?? player.value;
     age.value = hydrateStore.bio.age ?? age.value;
     origin.value = hydrateStore.bio.origin ?? origin.value;
@@ -64,6 +72,8 @@ export const useBioStore = defineStore('bio', () => {
   };
 
   return {
+    avatar,
+    name,
     player,
     age,
     origin,
@@ -71,7 +81,7 @@ export const useBioStore = defineStore('bio', () => {
     experience,
     description,
     color,
-	ways,
+    ways,
     dehydrate,
     hydrate,
   };

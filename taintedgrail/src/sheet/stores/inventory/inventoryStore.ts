@@ -2,11 +2,10 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { Ref } from 'vue';
-import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
-import type { AbilityScore } from '@/sheet/stores/abilityScores/abilityScoresStore';
 import { arrayToObject, objectToArray } from '@/utility/objectify';
 import { v4 as uuidv4 } from 'uuid';
 import sendToChat from '@/utility/sendToChat';
+import type { WaysScore } from '../waysStore';
 
 /*
  * This store handles 2 "repeating"/lists of Items in the Inventory. Carried and Stowed.
@@ -24,7 +23,7 @@ export type Item = {
 export type Weapon = Item & {
   equipped: boolean;
   damage: string;
-  abilityScore?: AbilityScore;
+  waysScore?: WaysScore;
 };
 
 export type Armor = Item & {
@@ -44,13 +43,7 @@ export type InventoryHydrate = {
 };
 
 export const useInventoryStore = defineStore('inventory', () => {
-  const abilityScoresStore = useAbilityScoreStore();
-
   const carryCapacityBonus: Ref<number> = ref(0);
-  // Example for a calculated field. Carrying capacity is 10 + Endurance + arbitrary bonus slots.
-  const carryCapacity: ComputedRef<number> = computed(
-    () => 10 + carryCapacityBonus.value + Number(abilityScoresStore.abilityScores.Endurance.base),
-  );
   const items: Ref<Array<AnyItem>> = ref([]);
   const itemsStowed: Ref<Array<AnyItem>> = ref([]);
   const cash = ref(0);
@@ -59,8 +52,6 @@ export const useInventoryStore = defineStore('inventory', () => {
   const totalEncumbrance = computed(() =>
     items.value.reduce((accum, item) => accum + item.slots, 0),
   );
-  // Calculating whether encumbrance exceeds carrying capacity.
-  const isOverburdened = computed(() => totalEncumbrance.value > carryCapacity.value);
 
   // This one checks if any weapon is marked as "equipped" and will treat it as the active weapon.
   const equippedWeapon: ComputedRef<Weapon | undefined> = computed(() => {
@@ -179,12 +170,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   };
 
   return {
-    carryCapacity,
     carryCapacityBonus,
     items,
     itemsStowed,
     totalEncumbrance,
-    isOverburdened,
     equippedWeapon,
     equippedArmor,
 

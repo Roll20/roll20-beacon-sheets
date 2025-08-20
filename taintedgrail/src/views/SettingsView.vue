@@ -17,17 +17,12 @@
 
 <script setup>
 import { useExampleSheetStore } from '@/sheet/stores';
-import { useMetaStore } from '@/sheet/stores/meta/metaStore';
+
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import router from '@/router';
-import { computed } from 'vue';
 
 const store = useExampleSheetStore();
-const meta = useMetaStore();
 const settings = useSettingsStore();
-
-const isOwner = computed(() => meta.permissions.isOwner);
-const isGM = computed(() => meta.permissions.isGM);
 
 const goBack = () => router.replace({ name: 'sheet' });
 

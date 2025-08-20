@@ -10,15 +10,15 @@
           <div class="taintedgrail__character">
             <BioSection />
           </div>
-          <div class="taintedgrail__ability-scores">
-            <AbilityScoresSection />
+          <div class="taintedgrail__health">
+            <HealthSection />
           </div>
           <div class="taintedgrail__traits">
             <TraitsSection />
           </div>
         </div>
-        <div class="taintedgrail__inventory">
-          <InventorySection />
+        <div class="taintedgrail__tabs">
+          <TabSection />
         </div>
       </div>
     </div>
@@ -27,10 +27,10 @@
 
 <script setup>
 import { useExampleSheetStore } from '@/sheet/stores';
-import AbilityScoresSection from '@/components/AbilityScoresSection.vue';
 import BioSection from '@/components/BioSection.vue';
-import InventorySection from '@/components/inventory/InventorySection.vue';
-import TraitsSection from '@/components/traits/TraitsSection.vue';
+import HealthSection from '@/components/HealthSection.vue';
+import TraitsSection from '@/components/TraitsSection.vue';
+import TabSection from '@/components/TabSection.vue';
 import WaysSection from '@/components/WaysSection.vue';
 
 useExampleSheetStore();
@@ -63,7 +63,7 @@ useExampleSheetStore();
     grid-template-columns: 1fr 1fr 1fr;
   }
 
-  &__inventory {
+  &__tabs {
     width: 100%;
   }
 }
