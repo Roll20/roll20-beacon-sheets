@@ -16,18 +16,18 @@
 </template>
 
 <script setup>
-import { useExampleSheetStore } from '@/sheet/stores';
+import { useTaintedGrailStore } from '@/sheet/stores';
 
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import router from '@/router';
 
-const store = useExampleSheetStore();
+// const store = useTaintedGrailStore();
 const settings = useSettingsStore();
 
 const goBack = () => router.replace({ name: 'sheet' });
 
 const loadExampleData = () => {
-  store.loadExampleData();
+  // store.loadExampleData();
   goBack();
 };
 </script>

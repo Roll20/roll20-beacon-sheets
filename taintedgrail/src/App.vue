@@ -18,9 +18,9 @@
 </template>
 
 <script setup>
-import { useExampleSheetStore } from './sheet/stores';
+import { useTaintedGrailStore } from './sheet/stores';
 
-const store = useExampleSheetStore();
+const store = useTaintedGrailStore();
 const campaignId = store.meta.campaignId;
 </script>
 

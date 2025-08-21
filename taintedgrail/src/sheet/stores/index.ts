@@ -17,7 +17,7 @@ import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
  * We are listening to changes in this object in other to trigger Dehydrates.
  * Most of this does not need to be changed if you're using Vue.
  * */
-export const useExampleSheetStore = defineStore('taintedgrailStore', () => {
+export const useTaintedGrailStore = defineStore('taintedgrailStore', () => {
   // List all the stores individually.
   const stores = {
     meta: useMetaStore(),
@@ -91,96 +91,6 @@ export const useExampleSheetStore = defineStore('taintedgrailStore', () => {
     stores.meta.campaignId = campaignId;
   };
 
-  /*
-  DEV METHOD used to fill the sheet with a lot of data without affecting how the stores are initialized.
-  * Can invoke it from a button in the Settings tab.
-  * */
-  const loadExampleData = () => {
-    stores.ways.waysScores = {
-      Combativeness: 1,
-      Creativity: 0,
-      Awareness: 4,
-      Reason: 4,
-      Conviction: 1,
-      domainsAndDisciplines: {
-        closeCombat: 0,
-        communication: 0,
-        compassion: 0,
-        craft: 0,
-        erudition: 0,
-        feats: 0,
-        healing: 0,
-        inspiration: 0,
-        leadership: 0,
-        magic: 0,
-        monsters: 0,
-        mountedCombat: 0,
-        naturalEnvironment: 0,
-        perception: 0,
-        performance: 0,
-        religion: 0,
-        shootingAndThrowing: 0,
-        stealth: 0,
-        travel: 0,
-        wyrdnessMysteries: 0,
-      },
-    };
-    stores.character.xp = 6000;
-    stores.character.heroDiceMod = 2;
-    stores.inventory.items = [
-      {
-        _id: uuidv4(),
-        slots: 1,
-        name: 'Yarn Ball',
-        description:
-          'Can be rolled to force all other cats that see it to roll a Difficulty 10 Aura check or run after it.',
-        type: 'item',
-        quantity: 1,
-      },
-      {
-        _id: uuidv4(),
-        slots: 0,
-        name: 'Claws',
-        description: '1d4 damage. Agile. Finesse.',
-        type: 'weapon',
-        quantity: 2,
-      },
-      {
-        _id: uuidv4(),
-        slots: 2,
-        name: 'Catplate Armor',
-        description: '+4 defense',
-        type: 'armor',
-        quantity: 1,
-      },
-    ];
-    stores.inventory.itemsStowed = [
-      {
-        _id: uuidv4(),
-        slots: 1,
-        name: 'Catnip',
-        description: '????',
-        type: 'item',
-        quantity: 3,
-      },
-    ];
-    stores.traits.traits = [
-      {
-        _id: uuidv4(),
-        name: 'Feline',
-        description: 'Proficient at jumping, hunting, stealth, acrobatics and climbing',
-        type: 'skill',
-      },
-      {
-        _id: uuidv4(),
-        name: 'Super Cute',
-        description:
-          'When targeted for a melee attack, they must attempt a Difficulty 8 Aura test or the attack is cancelled.',
-        type: 'power',
-      },
-    ];
-  };
-
   return {
     ...stores,
     storeRegistry,
@@ -192,6 +102,5 @@ export const useExampleSheetStore = defineStore('taintedgrailStore', () => {
     setPermissions,
     setCampaignId,
     pageLoading,
-    loadExampleData,
   };
 });

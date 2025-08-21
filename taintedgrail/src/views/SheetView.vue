@@ -26,14 +26,14 @@
 </template>
 
 <script setup>
-import { useExampleSheetStore } from '@/sheet/stores';
+import { useTaintedGrailStore } from '@/sheet/stores';
 import BioSection from '@/components/BioSection.vue';
 import HealthSection from '@/components/HealthSection.vue';
 import TraitsSection from '@/components/TraitsSection.vue';
 import TabSection from '@/components/TabSection.vue';
 import WaysSection from '@/components/WaysSection.vue';
 
-useExampleSheetStore();
+useTaintedGrailStore();
 </script>
 
 <style lang="scss">
@@ -41,13 +41,11 @@ useExampleSheetStore();
 
 .taintedgrail {
   &__main {
-    width: 1140px; // TODO: Remove!
-    height: 720px; // TODO: Remove!
     display: grid;
     gap: 1rem;
-	padding-top: 10px;
+    padding-top: 10px;
     margin-bottom: 1rem;
-    grid-template-columns: 110px calc(1140px - 110px - 1rem);
+    grid-template-columns: 110px calc(100% - 110px - 1rem);
     box-sizing: border-box;
   }
 

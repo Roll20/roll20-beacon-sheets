@@ -3,127 +3,412 @@ import { ref, computed } from 'vue';
 import levelTable from '@/system/levelTable';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import rollToChat from '@/utility/rollToChat';
+import { domainToFriendlyName } from '@/utility/formattedNames';
 
 export type WaysHydrate = {
   ways: {
-    Combativeness: number;
-    Creativity: number;
-    Awareness: number;
-    Reason: number;
-    Conviction: number;
+    combativeness: number;
+    creativity: number;
+    awareness: number;
+    reason: number;
+    conviction: number;
   };
+
   domainsAndDisciplines: {
-	closeCombat: number; // Combativeness
-	communication: number; // Creativity
-	compassion: number; // Conviction
-	craft: number; // Creativity
-	erudition: number; // Reason
-	feats: number; // Combativeness
-	healing: number; // Reason
-	inspiration: number; // Conviction
-	leadership: number; // Conviction
-	magic: number; // Reason
-	monsters: number; // Awareness
-	mountedCombat: number; // Combativeness
-	naturalEnvironment: number; // Reason
-	perception: number; // Awareness
-	performance: number; // Creativity
-	religion: number; // Conviction
-	shootingAndThrowing: number; // Combativeness
-	stealth: number; // Awareness
-	travel: number; // Reason
-	wyrdnessMysteries: number; // Creativity
-  }
+    closeCombat: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    communication: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    compassion: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    craft: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    erudition: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    feats: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    healing: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    inspiration: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    leadership: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    magic: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    monsters: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    mountedCombat: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    naturalEnvironment: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    perception: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    performance: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    religion: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    shootingAndThrowing: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    stealth: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    travel: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+    wyrdnessMysteries: {
+      way: {};
+      base: number;
+      bonus: number;
+      penalty: number;
+      total: number;
+      disciplines: [];
+    };
+  };
 };
 
-export type WaysScore = 'Combativeness' | 'Creativity' | 'Awareness' | 'Reason' | 'Conviction';
+export type WaysScore = 'combativeness' | 'creativity' | 'awareness' | 'reason' | 'conviction';
 
 export const useWaysStore = defineStore('ways', () => {
   // Initialize Ways Scores
-  const Combativeness = ref(0);
-  const Creativity = ref(0);
-  const Awareness = ref(0);
-  const Reason = ref(0);
-  const Conviction = ref(0);
-
-  // Initialize Domains and Disciplines Scores
-  const domainsAndDisciplines = ref({
-	closeCombat: 0,
-	communication: 0,
-	compassion: 0,
-	craft: 0,
-	erudition: 0,
-	feats: 0,
-	healing: 0,
-	inspiration: 0,
-	leadership: 0,
-	magic: 0,
-	monsters: 0,
-	mountedCombat: 0,
-	naturalEnvironment: 0,
-	perception: 0,
-	performance: 0,
-	religion: 0,
-	shootingAndThrowing: 0,
-	stealth: 0,
-	travel: 0,
-	wyrdnessMysteries: 0,
+  const ways = ref({
+    combativeness: 0,
+    creativity: 0,
+    awareness: 0,
+    reason: 0,
+    conviction: 0,
   });
 
-  // Map each Way to its affected domains
-  const mapWayToDomains = (way: WaysScore): string[] => {
-	switch (way) {
-		case 'Combativeness': return ['closeCombat', 'feats', 'mountedCombat', 'shootingAndThrowing'];
-		case 'Creativity': return ['communication', 'craft', 'performance', 'wyrdnessMysteries'];
-		case 'Awareness': return ['monsters', 'perception', 'stealth'];
-		case 'Reason': return ['erudition', 'healing', 'magic', 'naturalEnvironment', 'travel'];
-		case 'Conviction': return ['compassion', 'inspiration', 'leadership', 'religion'];
-		default: return [];
-	}
-  };
+  // Initialize Domain Scores
+  const domainsAndDisciplines = ref({
+    closeCombat: {
+      way: { title: 'combativeness', abbreviation: 'COMB' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    communication: {
+      way: { title: 'creativity', abbreviation: 'CREA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    compassion: {
+      way: { title: 'conviction', abbreviation: 'CONV' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    craft: {
+      way: { title: 'creativity', abbreviation: 'CREA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    erudition: {
+      way: { title: 'reason', abbreviation: 'REA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    feats: {
+      way: { title: 'combativeness', abbreviation: 'COMB' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    healing: {
+      way: { title: 'reason', abbreviation: 'REA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    inspiration: {
+      way: { title: 'conviction', abbreviation: 'CONV' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    leadership: {
+      way: { title: 'conviction', abbreviation: 'CONV' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    magic: {
+      way: { title: 'reason', abbreviation: 'REA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    monsters: {
+      way: { title: 'awareness', abbreviation: 'AWAR' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    mountedCombat: {
+      way: { title: 'combativeness', abbreviation: 'COMB' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    naturalEnvironment: {
+      way: { title: 'reason', abbreviation: 'REA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    perception: {
+      way: { title: 'awareness', abbreviation: 'AWAR' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    performance: {
+      way: { title: 'creativity', abbreviation: 'CREA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    religion: {
+      way: { title: 'conviction', abbreviation: 'CONV' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    shootingAndThrowing: {
+      way: { title: 'combativeness', abbreviation: 'COMB' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    stealth: {
+      way: { title: 'awareness', abbreviation: 'AWAR' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    travel: {
+      way: { title: 'reason', abbreviation: 'REA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+    wyrdnessMysteries: {
+      way: { title: 'creativity', abbreviation: 'CREA' },
+      base: 0,
+      bonus: 0,
+      penalty: 0,
+      total: 0,
+      disciplines: [],
+    },
+  });
 
   // Set a Way score and update all its affected domains
   const setWayScore = (way: WaysScore, score: number) => {
-	// Set the Way score
-	switch (way) {
-		case 'Combativeness': Combativeness.value = score; break;
-		case 'Creativity': Creativity.value = score; break;
-		case 'Awareness': Awareness.value = score; break;
-		case 'Reason': Reason.value = score; break;
-		case 'Conviction': Conviction.value = score; break;
-	}
-	
-	// Update all domains affected by this Way
-	const affectedDomains = mapWayToDomains(way);
-	affectedDomains.forEach(domain => {
-		domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value] = score;
-	});
+    // Set the Way score
+    switch (way) {
+      case 'combativeness':
+        ways.value.combativeness = score;
+        break;
+      case 'creativity':
+        ways.value.creativity = score;
+        break;
+      case 'awareness':
+        ways.value.awareness = score;
+        break;
+      case 'reason':
+        ways.value.reason = score;
+        break;
+      case 'conviction':
+        ways.value.conviction = score;
+        break;
+    }
+
+    // Update all domains affected by this Way
+    const affectedDomains = Object.values(domainsAndDisciplines.value).filter(
+      (domain) => domain.way.title === way,
+    );
+    affectedDomains.forEach((domain) => {
+      domain.total =
+        domain.base + domain.bonus + ways.value[domain.way.title as WaysScore] - domain.penalty;
+    });
   };
 
   // Individual computed models for each way that use setWayScore
   const combativenessModel = computed({
-    get: () => Combativeness.value,
-    set: (value) => setWayScore('Combativeness', Number(value) || 0)
+    get: () => ways.value.combativeness,
+    set: (value) => setWayScore('combativeness', Number(value) || 0),
   });
 
   const creativityModel = computed({
-    get: () => Creativity.value,
-    set: (value) => setWayScore('Creativity', Number(value) || 0)
+    get: () => ways.value.creativity,
+    set: (value) => setWayScore('creativity', Number(value) || 0),
   });
 
   const awarenessModel = computed({
-    get: () => Awareness.value,
-    set: (value) => setWayScore('Awareness', Number(value) || 0)
+    get: () => ways.value.awareness,
+    set: (value) => setWayScore('awareness', Number(value) || 0),
   });
 
   const reasonModel = computed({
-    get: () => Reason.value,
-    set: (value) => setWayScore('Reason', Number(value) || 0)
+    get: () => ways.value.reason,
+    set: (value) => setWayScore('reason', Number(value) || 0),
   });
 
   const convictionModel = computed({
-    get: () => Conviction.value,
-    set: (value) => setWayScore('Conviction', Number(value) || 0)
+    get: () => ways.value.conviction,
+    set: (value) => setWayScore('conviction', Number(value) || 0),
   });
 
   // It can be very convenient to make a Getter/Setter computed prop like this to read/write data into store.
@@ -131,46 +416,65 @@ export const useWaysStore = defineStore('ways', () => {
   const waysScores = computed({
     get() {
       return {
-        Combativeness: Combativeness.value,
-        Creativity: Creativity.value,
-        Awareness: Awareness.value,
-        Reason: Reason.value,
-        Conviction: Conviction.value,
-		domainsAndDisciplines: domainsAndDisciplines.value,
+        combativeness: ways.value.combativeness,
+        creativity: ways.value.creativity,
+        awareness: ways.value.awareness,
+        reason: ways.value.reason,
+        conviction: ways.value.conviction,
+        domainsAndDisciplines: domainsAndDisciplines.value,
       };
     },
     set(scores) {
-      Combativeness.value = scores.Combativeness || Combativeness.value;
-      Creativity.value = scores.Creativity || Creativity.value;
-      Awareness.value = scores.Awareness || Awareness.value;
-      Reason.value = scores.Reason || Reason.value;
-      Conviction.value = scores.Conviction || Conviction.value;
-	  domainsAndDisciplines.value = scores.domainsAndDisciplines || domainsAndDisciplines.value;
+      ways.value.combativeness = scores.combativeness || ways.value.combativeness;
+      ways.value.creativity = scores.creativity || ways.value.creativity;
+      ways.value.awareness = scores.awareness || ways.value.awareness;
+      ways.value.reason = scores.reason || ways.value.reason;
+      ways.value.conviction = scores.conviction || ways.value.conviction;
+      domainsAndDisciplines.value = scores.domainsAndDisciplines || domainsAndDisciplines.value;
     },
   });
-  // Example for how to make basic roll + some modifiers using a custom roll template.
-  const rollAbilityCheck = async (way: WaysScore, proficient: boolean = false) => {
-    const score = waysScores.value[way];
-    const { level } = useCharacterStore();
 
-    // @ts-ignore
-    const profBonus = proficient ? levelTable[level].profBonus || 0 : 0; // Dynamically determined based on Level.
+  const rollWay = async (way: WaysScore) => {
+    const score = ways.value[way];
+    const { rollHealthScore } = useCharacterStore();
+    const healthModifier = rollHealthScore();
+    const friendlyName = way.slice(0, 1).toUpperCase() + way.slice(1); // Capitalize the first letter
+    await rollToChat({
+      title: `Way Roll: ${friendlyName}`,
+      subtitle: '1d10 + Way - Health Modifier',
+      allowHeroDie: false,
+      components: [
+        { label: 'Base', sides: 10 },
+        { label: 'Way', value: score },
+        { label: 'Health Modifier', value: -healthModifier },
+      ],
+    });
+  };
 
-    // Base components in any ability roll.
-    const components = [
-      { label: `Base Roll`, sides: 20 },
-      { label: 'Stat Mod', value: score },
-      { label: 'Proficiency', value: profBonus },
-    ];
-    // Example of modifying the roll based on some rule.
-    // In this case: if overburdened, apply a penalty based on the "encumbrancePenalty" setting.
+  const rollDomain = async (domain: string) => {
+    const { rollHealthScore } = useCharacterStore();
+
+    const foundDomain =
+      domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
+    const base = foundDomain.base;
+    const bonus = foundDomain.bonus;
+    const way = ways.value[foundDomain.way.title as WaysScore] || 0;
+    const penalty = foundDomain.penalty;
+    const healthModifier = rollHealthScore();
+
+    const friendlyName = domainToFriendlyName(domain);
 
     await rollToChat({
-      title: `${way}`,
-      subtitle: 'Ability Check',
-      traits: ['Ability', 'Basic'],
-      allowHeroDie: true,
-      components,
+      title: `Domain Roll: ${friendlyName}`,
+      subtitle: '1d10 + Base + Bonus + Way - Penalty - Health Modifier',
+      allowHeroDie: false,
+      components: [
+        { label: 'Base', value: base },
+        { label: 'Bonus', value: bonus },
+        { label: 'Way', value: way },
+        { label: 'Penalty', value: penalty },
+        { label: 'Health Modifier', value: -healthModifier },
+      ],
     });
   };
 
@@ -183,27 +487,44 @@ export const useWaysStore = defineStore('ways', () => {
 
   // Hydrate determines how the store is updated when we receive updates from Firebase
   const hydrate = (hydrateStore: WaysHydrate) => {
-	// Set individual ways scores
-	Combativeness.value = hydrateStore.ways.Combativeness || Combativeness.value;
-	Creativity.value = hydrateStore.ways.Creativity || Creativity.value;
-	Awareness.value = hydrateStore.ways.Awareness || Awareness.value;
-	Reason.value = hydrateStore.ways.Reason || Reason.value;
-	Conviction.value = hydrateStore.ways.Conviction || Conviction.value;
-	
-	// Set domains and disciplines
-	domainsAndDisciplines.value = hydrateStore.domainsAndDisciplines || domainsAndDisciplines.value;
+    // Set individual ways scores
+    ways.value.combativeness = hydrateStore.ways.combativeness || ways.value.combativeness;
+    ways.value.creativity = hydrateStore.ways.creativity || ways.value.creativity;
+    ways.value.awareness = hydrateStore.ways.awareness || ways.value.awareness;
+    ways.value.reason = hydrateStore.ways.reason || ways.value.reason;
+    ways.value.conviction = hydrateStore.ways.conviction || ways.value.conviction;
+
+    // Set domains and disciplines
+    if (hydrateStore.domainsAndDisciplines) {
+      // Merge the hydrated data while preserving the existing structure
+      Object.keys(domainsAndDisciplines.value).forEach((domainKey) => {
+        const key = domainKey as keyof typeof domainsAndDisciplines.value;
+        const hydratedDomain = hydrateStore.domainsAndDisciplines[key];
+        if (hydratedDomain) {
+          domainsAndDisciplines.value[key] = {
+            ...domainsAndDisciplines.value[key],
+            ...hydratedDomain,
+            // Ensure way object has the required structure
+            way: {
+              ...domainsAndDisciplines.value[key].way,
+              ...hydratedDomain.way,
+            },
+          };
+        }
+      });
+    }
   };
 
   return {
     waysScores,
 
     // Expose these for convenience
-    Combativeness,
-    Creativity,
-    Awareness,
-    Reason,
-    Conviction,
-	domainsAndDisciplines,
+    combativeness: ways.value.combativeness,
+    creativity: ways.value.creativity,
+    awareness: ways.value.awareness,
+    reason: ways.value.reason,
+    conviction: ways.value.conviction,
+    domainsAndDisciplines,
 
     // Easy-to-use computed models
     combativenessModel,
@@ -212,7 +533,8 @@ export const useWaysStore = defineStore('ways', () => {
     reasonModel,
     convictionModel,
 
-    rollAbilityCheck,
+    rollWay,
+    rollDomain,
     setWayScore,
 
     dehydrate,
