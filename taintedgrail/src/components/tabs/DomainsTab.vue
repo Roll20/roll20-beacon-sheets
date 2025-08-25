@@ -1,14 +1,14 @@
 <template>
   <div class="domains-tab">
     <div class="domains-header">
-      <h3>Domains and Disciplines</h3>
+      <h3>Domains and Disciplines</h3> <img :src="eyeIcon" class="eye-icon" alt="Eye" title="Edit Domains and Disciplines" @click="showModal = true" />
     </div>
 
     <div class="domains-grid">
       <!-- First Column -->
       <div class="domain-column">
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('closeCombat')">
+          <span class="roll-icon" @click="ways.rollDomain('closeCombat')">
             <img :src="dieIcon" alt="Roll Close Combat" />
           </span>
           <span class="discipline-name">Close Combat</span>
@@ -16,13 +16,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.closeCombat.total"
+              :value="ways.domainsAndDisciplines.closeCombat.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('communication')">
+          <span class="roll-icon" @click="ways.rollDomain('communication')">
             <img :src="dieIcon" alt="Roll Communication" />
           </span>
           <span class="discipline-name">Communication</span>
@@ -30,13 +30,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.communication.total"
+              :value="ways.domainsAndDisciplines.communication.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('compassion')">
+          <span class="roll-icon" @click="ways.rollDomain('compassion')">
             <img :src="dieIcon" alt="Roll Compassion" />
           </span>
           <span class="discipline-name">Compassion</span>
@@ -44,13 +44,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.compassion.total"
+              :value="ways.domainsAndDisciplines.compassion.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('craft')">
+          <span class="roll-icon" @click="ways.rollDomain('craft')">
             <img :src="dieIcon" alt="Roll Craft" />
           </span>
           <span class="discipline-name">Craft</span>
@@ -58,13 +58,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.craft.total"
+              :value="ways.domainsAndDisciplines.craft.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('erudition')">
+          <span class="roll-icon" @click="ways.rollDomain('erudition')">
             <img :src="dieIcon" alt="Roll Erudition" />
           </span>
           <span class="discipline-name">Erudition</span>
@@ -72,13 +72,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.erudition.total"
+              :value="ways.domainsAndDisciplines.erudition.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('feats')">
+          <span class="roll-icon" @click="ways.rollDomain('feats')">
             <img :src="dieIcon" alt="Roll Feats" />
           </span>
           <span class="discipline-name">Feats</span>
@@ -86,13 +86,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.feats.total"
+              :value="ways.domainsAndDisciplines.feats.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('healing')">
+          <span class="roll-icon" @click="ways.rollDomain('healing')">
             <img :src="dieIcon" alt="Roll Healing" />
           </span>
           <span class="discipline-name">Healing</span>
@@ -100,7 +100,7 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.healing.total"
+              :value="ways.domainsAndDisciplines.healing.total"
               readonly
               class="total-input readonly"
           /></span>
@@ -110,7 +110,7 @@
       <!-- Second Column -->
       <div class="domain-column">
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('inspiration')">
+          <span class="roll-icon" @click="ways.rollDomain('inspiration')">
             <img :src="dieIcon" alt="Roll Inspiration" />
           </span>
           <span class="discipline-name">Inspiration</span>
@@ -118,13 +118,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.inspiration.total"
+              :value="ways.domainsAndDisciplines.inspiration.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('leadership')">
+          <span class="roll-icon" @click="ways.rollDomain('leadership')">
             <img :src="dieIcon" alt="Roll Leadership" />
           </span>
           <span class="discipline-name">Leadership</span>
@@ -132,13 +132,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.leadership.total"
+              :value="ways.domainsAndDisciplines.leadership.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('magic')">
+          <span class="roll-icon" @click="ways.rollDomain('magic')">
             <img :src="dieIcon" alt="Roll Magic" />
           </span>
           <span class="discipline-name">Magic</span>
@@ -146,13 +146,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.magic.total"
+              :value="ways.domainsAndDisciplines.magic.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('monsters')">
+          <span class="roll-icon" @click="ways.rollDomain('monsters')">
             <img :src="dieIcon" alt="Roll Monsters" />
           </span>
           <span class="discipline-name">Monsters</span>
@@ -160,13 +160,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.monsters.total"
+              :value="ways.domainsAndDisciplines.monsters.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('mountedCombat')">
+          <span class="roll-icon" @click="ways.rollDomain('mountedCombat')">
             <img :src="dieIcon" alt="Roll Mounted Combat" />
           </span>
           <span class="discipline-name">Mounted Combat</span>
@@ -174,13 +174,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.mountedCombat.total"
+              :value="ways.domainsAndDisciplines.mountedCombat.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('naturalEnvironment')">
+          <span class="roll-icon" @click="ways.rollDomain('naturalEnvironment')">
             <img :src="dieIcon" alt="Roll Natural Environment" />
           </span>
           <span class="discipline-name">Natural Environment</span>
@@ -188,13 +188,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.naturalEnvironment.total"
+              :value="ways.domainsAndDisciplines.naturalEnvironment.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('perception')">
+          <span class="roll-icon" @click="ways.rollDomain('perception')">
             <img :src="dieIcon" alt="Roll Perception" />
           </span>
           <span class="discipline-name">Perception</span>
@@ -202,7 +202,7 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.perception.total"
+              :value="ways.domainsAndDisciplines.perception.total"
               readonly
               class="total-input readonly"
           /></span>
@@ -212,7 +212,7 @@
       <!-- Third Column -->
       <div class="domain-column">
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('performance')">
+          <span class="roll-icon" @click="ways.rollDomain('performance')">
             <img :src="dieIcon" alt="Roll Performance" />
           </span>
           <span class="discipline-name">Performance</span>
@@ -220,13 +220,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.performance.total"
+              :value="ways.domainsAndDisciplines.performance.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('religion')">
+          <span class="roll-icon" @click="ways.rollDomain('religion')">
             <img :src="dieIcon" alt="Roll Religion" />
           </span>
           <span class="discipline-name">Religion</span>
@@ -234,13 +234,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.religion.total"
+              :value="ways.domainsAndDisciplines.religion.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('shootingAndThrowing')">
+          <span class="roll-icon" @click="ways.rollDomain('shootingAndThrowing')">
             <img :src="dieIcon" alt="Roll Shooting and Throwing" />
           </span>
           <span class="discipline-name">Shooting and Throwing</span>
@@ -248,13 +248,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.shootingAndThrowing.total"
+              :value="ways.domainsAndDisciplines.shootingAndThrowing.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('stealth')">
+          <span class="roll-icon" @click="ways.rollDomain('stealth')">
             <img :src="dieIcon" alt="Roll Stealth" />
           </span>
           <span class="discipline-name">Stealth</span>
@@ -262,13 +262,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.stealth.total"
+              :value="ways.domainsAndDisciplines.stealth.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('travel')">
+          <span class="roll-icon" @click="ways.rollDomain('travel')">
             <img :src="dieIcon" alt="Roll Travel" />
           </span>
           <span class="discipline-name">Travel</span>
@@ -276,13 +276,13 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.travel.total"
+              :value="ways.domainsAndDisciplines.travel.total"
               readonly
               class="total-input readonly"
           /></span>
         </div>
         <div class="discipline-row">
-          <span class="roll-icon" @click="waysStore.rollDomain('wyrdnessMysteries')">
+          <span class="roll-icon" @click="ways.rollDomain('wyrdnessMysteries')">
             <img :src="dieIcon" alt="Roll Wyrdness Mysteries" />
           </span>
           <span class="discipline-name">Wyrdness Mysteries</span>
@@ -290,7 +290,7 @@
             >Total:
             <input
               type="number"
-              :value="waysStore.domainsAndDisciplines.wyrdnessMysteries.total"
+              :value="ways.domainsAndDisciplines.wyrdnessMysteries.total"
               readonly
               class="total-input readonly"
           /></span>
@@ -298,19 +298,38 @@
       </div>
     </div>
   </div>
+
+  <Teleport to="body">
+    <DomainsAndDisciplinesModal v-if="showModal" :show="showModal" @close="closeModal">
+      <template #header>
+        <h3 class="domains-header">Domains and Disciplines</h3>
+      </template>
+    </DomainsAndDisciplinesModal>
+    </Teleport>
 </template>
 
 <script setup>
-import { useWaysStore } from '@/sheet/stores/waysStore';
+import { ref } from 'vue';
+import DomainsAndDisciplinesModal from '@/components/modals/DomainsAndDisciplinesModal.vue';
+import { useWaysStore } from '@/sheet/stores/ways/waysStore';
 
 const dieIcon = new URL('@/assets/d10.svg', import.meta.url).href;
+const eyeIcon = new URL('@/assets/eye.svg', import.meta.url).href;
 
-const waysStore = useWaysStore();
+const ways = useWaysStore();
+const showModal = ref(false);
+
+const closeModal = () => {
+  showModal.value = false;
+}
 </script>
 
 <style scoped lang="scss">
 .domains-tab {
   .domains-header {
+    display: flex;
+    align-items: center;
+	gap: 0.5rem;
     margin-bottom: 1rem;
 
     h3 {
@@ -319,7 +338,14 @@ const waysStore = useWaysStore();
       gap: 0.5rem;
       font-size: 1.2rem;
       font-weight: 600;
-      margin: 0 0 0.5rem 0;
+      margin: 0;
+    }
+
+    .eye-icon {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      font-size: 1rem;
     }
   }
 

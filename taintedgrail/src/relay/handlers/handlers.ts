@@ -7,14 +7,14 @@ export const onInit = ({ character, settings, compendiumDropData }: InitArgs) =>
   initValues.character = character;
   initValues.settings = settings;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
-  console.log('onInit -> Example Sheet Relay');
+  console.log('onInit -> Tainted Grail Relay');
 };
 
 // onChange is called when the character data is updated. This is where you will update the sheet with the new data.
 export const onChange = async ({ character }: { character: Record<string, any> }) => {
   const old = beaconPulse.value; // This is a way to trigger a re-render of the sheet, see relay.ts for more information.
   beaconPulse.value = old + 1;
-  console.log('onChange -> Example Sheet Relay', character);
+  console.log('onChange -> Tainted Grail Relay', character);
 };
 
 export const onSettingsChange = () => {};

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import levelTable from '@/system/levelTable';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import rollToChat from '@/utility/rollToChat';
@@ -354,9 +354,7 @@ export const useWaysStore = defineStore('ways', () => {
     },
   });
 
-  // Set a Way score and update all its affected domains
   const setWayScore = (way: WaysScore, score: number) => {
-    // Set the Way score
     switch (way) {
       case 'combativeness':
         ways.value.combativeness = score;
@@ -374,42 +372,55 @@ export const useWaysStore = defineStore('ways', () => {
         ways.value.conviction = score;
         break;
     }
+  };
 
-    // Update all domains affected by this Way
-    const affectedDomains = Object.values(domainsAndDisciplines.value).filter(
-      (domain) => domain.way.title === way,
-    );
-    affectedDomains.forEach((domain) => {
-      domain.total =
-        domain.base + domain.bonus + ways.value[domain.way.title as WaysScore] - domain.penalty;
+  // Setters
+  const setCombativeness = (value: number) => setWayScore('combativeness', Number(value) || 0);
+  const setCreativity = (value: number) => setWayScore('creativity', Number(value) || 0);
+  const setAwareness = (value: number) => setWayScore('awareness', Number(value) || 0);
+  const setReason = (value: number) => setWayScore('reason', Number(value) || 0);
+  const setConviction = (value: number) => setWayScore('conviction', Number(value) || 0);
+
+  // Computed getters
+  const combativeness = computed(() => ways.value.combativeness);
+  const creativity = computed(() => ways.value.creativity);
+  const awareness = computed(() => ways.value.awareness);
+  const reason = computed(() => ways.value.reason);
+  const conviction = computed(() => ways.value.conviction);
+
+  const calculateDomainTotals = () => {
+    Object.keys(domainsAndDisciplines.value).forEach((domainKey) => {
+      const key = domainKey as keyof typeof domainsAndDisciplines.value;
+      const domain = domainsAndDisciplines.value[key];
+      const wayScore = ways.value[domain.way.title as WaysScore] || 0;
+      domain.total = domain.base + domain.bonus + wayScore - domain.penalty;
     });
   };
 
-  // Individual computed models for each way that use setWayScore
-  const combativenessModel = computed({
-    get: () => ways.value.combativeness,
-    set: (value) => setWayScore('combativeness', Number(value) || 0),
-  });
+  // Watch for changes in ways scores and recalculate all domain totals
+  watch(ways, calculateDomainTotals, { deep: true });
+  
+  // Watch for changes in domain values and recalculate totals
+  watch(domainsAndDisciplines, calculateDomainTotals, { deep: true });
 
-  const creativityModel = computed({
-    get: () => ways.value.creativity,
-    set: (value) => setWayScore('creativity', Number(value) || 0),
-  });
+  // Calculate initial totals
+  calculateDomainTotals();
 
-  const awarenessModel = computed({
-    get: () => ways.value.awareness,
-    set: (value) => setWayScore('awareness', Number(value) || 0),
-  });
+  // Domain field setters
+  const setDomainBase = (domain: string, value: number) => {
+    const foundDomain = domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
+    if (foundDomain) foundDomain.base = value;
+  };
 
-  const reasonModel = computed({
-    get: () => ways.value.reason,
-    set: (value) => setWayScore('reason', Number(value) || 0),
-  });
+  const setDomainBonus = (domain: string, value: number) => {
+    const foundDomain = domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
+    if (foundDomain) foundDomain.bonus = value;
+  };
 
-  const convictionModel = computed({
-    get: () => ways.value.conviction,
-    set: (value) => setWayScore('conviction', Number(value) || 0),
-  });
+  const setDomainPenalty = (domain: string, value: number) => {
+    const foundDomain = domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
+    if (foundDomain) foundDomain.penalty = value
+  };
 
   // It can be very convenient to make a Getter/Setter computed prop like this to read/write data into store.
   // This will just read/write into the previously defined ability score fields.
@@ -442,8 +453,9 @@ export const useWaysStore = defineStore('ways', () => {
     await rollToChat({
       title: `Way Roll: ${friendlyName}`,
       subtitle: '1d10 + Way - Health Modifier',
-      allowHeroDie: false,
+      allowCrit: true,
       components: [
+		{ label: 'Roll', sides: 10 },
         { label: 'Base', sides: 10 },
         { label: 'Way', value: score },
         { label: 'Health Modifier', value: -healthModifier },
@@ -467,16 +479,19 @@ export const useWaysStore = defineStore('ways', () => {
     await rollToChat({
       title: `Domain Roll: ${friendlyName}`,
       subtitle: '1d10 + Base + Bonus + Way - Penalty - Health Modifier',
-      allowHeroDie: false,
+      allowCrit: true,
       components: [
+		{ label: 'Roll', sides: 10 },
         { label: 'Base', value: base },
         { label: 'Bonus', value: bonus },
         { label: 'Way', value: way },
-        { label: 'Penalty', value: penalty },
+        { label: 'Penalty', value: -penalty },
         { label: 'Health Modifier', value: -healthModifier },
       ],
     });
   };
+
+
 
   // Dehydrate determines how fields in Firebase are updated when there's a change in this store.
   // Everything that needs to be saved to Firebase should be defined here.
@@ -513,29 +528,35 @@ export const useWaysStore = defineStore('ways', () => {
         }
       });
     }
+    
+    // Recalculate all totals after hydration
+    calculateDomainTotals();
   };
 
   return {
     waysScores,
 
-    // Expose these for convenience
-    combativeness: ways.value.combativeness,
-    creativity: ways.value.creativity,
-    awareness: ways.value.awareness,
-    reason: ways.value.reason,
-    conviction: ways.value.conviction,
+    // Reactive individual way values
+    combativeness,
+    creativity,
+    awareness,
+    reason,
+    conviction,
     domainsAndDisciplines,
 
-    // Easy-to-use computed models
-    combativenessModel,
-    creativityModel,
-    awarenessModel,
-    reasonModel,
-    convictionModel,
+    // Way setter functions
+    setCombativeness,
+    setCreativity,
+    setAwareness,
+    setReason,
+    setConviction,
 
     rollWay,
     rollDomain,
     setWayScore,
+    setDomainBase,
+    setDomainBonus,
+    setDomainPenalty,
 
     dehydrate,
     hydrate,

@@ -5,8 +5,8 @@
   <div class="body">
     {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
 
-    {{#if allowHeroDie }}
-      {{> heroDie total=(sumComponents ../components multiplier) title=title }}
+    {{#if allowCrit }}
+	{{> critRoll resultType=resultType}}
     {{/if}}
     <details>
       {{> rollComponents components=components }}

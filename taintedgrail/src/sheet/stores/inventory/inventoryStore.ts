@@ -5,7 +5,7 @@ import type { Ref } from 'vue';
 import { arrayToObject, objectToArray } from '@/utility/objectify';
 import { v4 as uuidv4 } from 'uuid';
 import sendToChat from '@/utility/sendToChat';
-import type { WaysScore } from '../waysStore';
+import type { WaysScore } from '../ways/waysStore';
 
 /*
  * This store handles 2 "repeating"/lists of Items in the Inventory. Carried and Stowed.

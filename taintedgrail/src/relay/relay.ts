@@ -19,7 +19,7 @@ import {
 } from './handlers/handlers';
 import { reactive, ref, watch, nextTick, type Ref, type App, shallowRef } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import { getAbilityScores, getBio, getLife, setLife } from '@/relay/handlers/computed';
+import { setLife } from '@/relay/handlers/computed';
 
 /* 
 This is the configuration for the relay. It defines the handlers and actions that the sheet will use.
@@ -62,10 +62,8 @@ const relayConfig = {
   computed: {
     // These attributes allow dot notation in macros, and will not show up on token bar attributes
     // EX: @{CHARACTER_NAME|abilityScores.Strength.current}
-    abilityScores: { tokenBarValue: false, get: getAbilityScores },
-    bio: { tokenBarValue: false, get: getBio },
     // These are defined token bar attributes
-    life: { tokenBarValue: true, get: getLife, set: setLife },
+    life: { tokenBarValue: true, set: setLife },
   },
 };
 

@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import levelTable from '@/system/levelTable';
-import rollToChat from '@/utility/rollToChat';
 import sendToChat from '@/utility/sendToChat';
-import type { ComputedRef } from 'vue';
-import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import getRollResult from '@/utility/getRollResult';
-import { useWaysStore } from '@/sheet/stores/waysStore';
 
 export type CharacterHydrate = {
   character: {
-    title: string;
+    player: string;
+    age: string;
+    origin: string;
+    occupation: string;
+    experience: string;
+    description: string;
+    color: string;
     healthCondition: number;
     stamina: number;
     survival: number;
@@ -25,6 +25,13 @@ export type CharacterHydrate = {
 };
 
 export const useCharacterStore = defineStore('character', () => {
+  const player = ref('');
+  const age = ref('');
+  const origin = ref('');
+  const occupation = ref('');
+  const experience = ref('');
+  const description = ref('');
+  const color = ref('');
   const healthCondition = ref(1);
   const stamina = ref(0);
   const survival = ref(0);
@@ -59,6 +66,13 @@ export const useCharacterStore = defineStore('character', () => {
   const dehydrate = () => {
     return {
       character: {
+        player: player.value,
+        age: age.value,
+        origin: origin.value,
+        occupation: occupation.value,
+        experience: experience.value,
+        description: description.value,
+        color: color.value,
         healthCondition: healthCondition.value,
         stamina: stamina.value,
         survival: survival.value,
@@ -76,6 +90,13 @@ export const useCharacterStore = defineStore('character', () => {
 
   const hydrate = (hydrateStore: CharacterHydrate) => {
     // Should only need to hydrate the same attributes as in "dehydrate".
+    player.value = hydrateStore.character.player ?? player.value;
+    age.value = hydrateStore.character.age ?? age.value;
+    origin.value = hydrateStore.character.origin ?? origin.value;
+    occupation.value = hydrateStore.character.occupation ?? occupation.value;
+    experience.value = hydrateStore.character.experience ?? experience.value;
+    description.value = hydrateStore.character.description ?? description.value;
+    color.value = hydrateStore.character.color ?? color.value;
     healthCondition.value = hydrateStore.character.healthCondition ?? healthCondition.value;
     stamina.value = hydrateStore.character.stamina ?? stamina.value;
     survival.value = hydrateStore.character.survival ?? survival.value;
@@ -193,6 +214,13 @@ export const useCharacterStore = defineStore('character', () => {
   // };
 
   return {
+    player,
+    age,
+    origin,
+    occupation,
+    experience,
+    description,
+    color,
     healthCondition,
     stamina,
     survival,

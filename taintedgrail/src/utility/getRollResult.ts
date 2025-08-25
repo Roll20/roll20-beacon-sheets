@@ -5,21 +5,27 @@ import type { DiceComponent } from '@/rolltemplates/rolltemplates';
 type RollResults = {
   total: number;
   components: Array<DiceComponent>;
+  resultType?: 'crit-success' | 'crit-fail';
+  naturalRoll?: number;
+  confirmationRoll?: number;
 };
 // Adds together a series of dice components and outputs the result. Beacon handles the dice rolling to ensure randomness.
 export default async (
   components: Array<DiceComponent>,
   customDispatch?: Dispatch,
+  allowCrit?: boolean,
 ): Promise<RollResults> => {
   const dispatch = customDispatch || (dispatchRef.value as Dispatch); // Need a different Relay instance when handling sheet-actions
 
   const rolls: any = {};
+  let dieType = '';
   for (const i in components) {
     const component = components[i];
     if (component.sides) {
       const sides = component.sides;
       const dieCount = component.count ?? 1;
       rolls[`dice-${i}`] = `${dieCount}d${sides}`;
+      dieType = `dice-${i}`;
     }
   }
 
@@ -35,10 +41,10 @@ export default async (
     }
 
     /*
-				This utilizes the Beacon results to split the formula into it's individual
-				parts so that we don't need to write the formula parsing ourselves because
-				it's a complicated thing that Beacon already has to do as it is lol
-				*/
+	This utilizes the Beacon results to split the formula into it's individual
+	parts so that we don't need to write the formula parsing ourselves because
+	it's a complicated thing that Beacon already has to do as it is lol
+	*/
     if (component.rollFormula) {
       const rollParts: DiceComponent[] = [];
       const overallSum = component.value;
@@ -67,5 +73,33 @@ export default async (
   }
 
   const total = components.reduce((accum, next) => accum + (next?.value || 0), 0);
-  return { total, components };
+
+  let naturalRoll: number | undefined;
+  let resultType: 'crit-success' | 'crit-fail' | undefined;
+  let confirmationRoll: number | undefined;
+
+  if (allowCrit) {
+    naturalRoll = rollResult.results[dieType].results.result;
+
+    // Check if we need a confirmation roll (natural 1 or 10)
+    if (naturalRoll === 1 || naturalRoll === 10) {
+      // Roll confirmation die
+      const confirmationRollResult = await dispatch.roll({ rolls });
+      confirmationRoll = confirmationRollResult.results[dieType].results.result;
+
+      // Check if confirmation matches original roll
+      if (confirmationRoll === naturalRoll) {
+        if (naturalRoll === 10) {
+          resultType = 'crit-success';
+          console.log('CRIT SUCCESS');
+        } else if (naturalRoll === 1) {
+          resultType = 'crit-fail';
+          console.log('CRIT FAIL');
+        }
+      }
+      console.log('confirmationRoll', confirmationRoll);
+    }
+  }
+
+  return { total, components, resultType, naturalRoll, confirmationRoll };
 };

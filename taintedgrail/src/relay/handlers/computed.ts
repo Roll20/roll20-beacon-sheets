@@ -1,7 +1,5 @@
 import type { Character, Dispatch } from '@roll20-official/beacon-sdk';
 import type { CharacterHydrate } from '@/sheet/stores/character/characterStore';
-import type { AbilityScoresHydrate } from '@/sheet/stores/waysStore';
-import type { BioHydrate } from '@/sheet/stores/bio/bioStore';
 
 /*
 applyChange is a helper function that takes an old value and a new value and returns the new value.
@@ -23,25 +21,6 @@ const applyChange = (oldValue: number, newValue: number | string) => {
   }
 };
 
-export const getAbilityScores = ({ character }: { character: Character }, ...args: any) => {
-  console.log('You can pass args to dot notation computed values', args);
-  if (!character.attributes?.abilityScores) return {};
-  return (character.attributes.abilityScores as AbilityScoresHydrate).abilityScores;
-};
-
-export const getBio = ({ character }: { character: Character }) => {
-  if (!character.attributes?.bio) return {};
-  return (character.attributes.bio as BioHydrate).bio;
-};
-
-export const getLife = ({ character }: { character: Character }) => {
-  if (!character.attributes?.character) return {};
-  const current = (character.attributes.character as CharacterHydrate).character.healthCurrent;
-  return {
-    current,
-  };
-};
-
 export const setLife = (
   {
     character,
@@ -54,7 +33,7 @@ export const setLife = (
 ) => {
   const newValue = args[0];
   const oldValue =
-    (character.attributes?.character as CharacterHydrate | undefined)?.character?.healthCurrent ??
+    (character.attributes?.character as CharacterHydrate | undefined)?.character?.healthCondition ??
     0;
   const characterId = character.id;
   const finalValue = applyChange(oldValue, newValue);

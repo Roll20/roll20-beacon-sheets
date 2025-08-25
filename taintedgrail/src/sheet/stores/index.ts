@@ -3,11 +3,10 @@ import { ref } from 'vue';
 import jp from 'jsonpath';
 
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-import { useWaysStore } from '@/sheet/stores/waysStore';
+import { useWaysStore } from '@/sheet/stores/ways/waysStore';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
-import { v4 as uuidv4 } from 'uuid';
-import { useBioStore } from '@/sheet/stores/bio/bioStore';
+
 import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
 
 /*
@@ -22,7 +21,6 @@ export const useTaintedGrailStore = defineStore('taintedgrailStore', () => {
   const stores = {
     meta: useMetaStore(),
     character: useCharacterStore(),
-    bio: useBioStore(),
     ways: useWaysStore(),
     inventory: useInventoryStore(),
     traits: useTraitsStore(),
@@ -56,11 +54,12 @@ export const useTaintedGrailStore = defineStore('taintedgrailStore', () => {
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];
     storeKeys.forEach((key) => {
       //if (key === "rolls") return;
-      if (key === 'bio') {
-        const charBio = stores.bio.dehydrate();
-        character.name = charBio.bio.name;
-        character.player = charBio.bio.player;
-        character.avatar = charBio.bio.avatar;
+      if (key === 'meta') {
+        const { name, bio, gmNotes, avatar } = stores.meta.dehydrate();
+        character.name = name;
+        character.bio = bio;
+        character.gmNotes = gmNotes;
+        character.avatar = avatar;
       } else {
         character.attributes[key] = stores[key].dehydrate();
       }
@@ -79,7 +78,7 @@ export const useTaintedGrailStore = defineStore('taintedgrailStore', () => {
       });
     }
     if (meta) {
-      //   stores.meta.hydrate(meta);
+      stores.meta.hydrate(meta);
     }
   };
 

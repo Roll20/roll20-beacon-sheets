@@ -8,7 +8,11 @@ import getRollResult from '@/utility/getRollResult';
 export default async (args: RollToChatTemplate['parameters'], customDispatch?: Dispatch) => {
   const dispatch = customDispatch || (dispatchRef.value as Dispatch); // Need a different Relay instance when handling sheet-actions
   // Use Beacon to make the rolls and calculations. We end up with a Roll Result.
-  const { components, total } = await getRollResult(args.components, dispatch);
+  const { components, total, resultType, naturalRoll, confirmationRoll } = await getRollResult(
+    args.components,
+    dispatch,
+    args.allowCrit || false,
+  );
 
   // Pass in the roll result to Handlebars and get HTML to render the roll template
   const rollTemplate = createRollTemplate({
@@ -16,6 +20,9 @@ export default async (args: RollToChatTemplate['parameters'], customDispatch?: D
     parameters: {
       ...args,
       components,
+      resultType, // Pass the critical result type to the template
+      naturalRoll, // Pass the natural roll value for display
+      confirmationRoll, // Pass the confirmation roll value for display
     },
   });
 

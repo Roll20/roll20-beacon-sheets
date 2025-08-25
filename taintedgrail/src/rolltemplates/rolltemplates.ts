@@ -17,7 +17,7 @@ import rollTotal from './partials/rollTotal.hbs?raw';
 // @ts-ignore
 import header from './partials/header.hbs?raw';
 // @ts-ignore
-import heroDie from './partials/heroDie.hbs?raw';
+import critRoll from './partials/critRoll.hbs?raw';
 
 import { isGreater } from './expressions/isGreater';
 import { isEqual } from './expressions/isEqual';
@@ -35,7 +35,7 @@ handlebars.registerPartial('keyValues', keyValues);
 handlebars.registerPartial('rollTotal', rollTotal);
 handlebars.registerPartial('textContent', textContent);
 handlebars.registerPartial('rollComponents', rollComponents);
-handlebars.registerPartial('heroDie', heroDie);
+handlebars.registerPartial('critRoll', critRoll);
 
 // Helper functions for math/transformations
 handlebars.registerHelper('sumComponents', sumComponents);
@@ -93,7 +93,9 @@ export type RollToChatTemplate = {
     components: DiceComponent[];
     multiplier?: number;
     resultType?: 'crit-success' | 'crit-fail';
-    allowHeroDie?: boolean;
+    allowCrit?: boolean;
+    naturalRoll?: number;
+    confirmationRoll?: number;
   };
 };
 
