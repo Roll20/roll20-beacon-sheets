@@ -237,28 +237,27 @@ export const damageBonus = computed(()=>{
   return totalBonus.value
 })
 
-export const attackToHit = (attack:any) => {
+export const attackToHit = (attack: any) => {
   const settings = useSettingsStore();
   const ability = useAbilityScoreStore();
-  // const mods = useModifiersStore();
   const quals = useItemStore();
-  const abilityBase = ref(`${attack.weaponGroupAbility}Base`)
+  const abilityBase = ref(`${attack.weaponGroupAbility}Base`);
   return computed(() => {
-    const toHit = ref(0)
-    if(settings.aimToggle === 'always') toHit.value += settings.aimValue;
-    if(settings.aim) toHit.value += settings.aimValue;
+    let toHit = 0;
+    if (settings.aimToggle === 'always') toHit += settings.aimValue;
+    if (settings.aim) toHit += settings.aimValue;
     quals.items.forEach(qual => {
-      if(qual.type ===  'Ability Focus' && qual.name === attack.weaponGroup){
-        if(qual.doubleFocus){
-          toHit.value += 4
-        } else if(qual.focus){
-          toHit.value += 2
+      if (qual.type === 'Ability Focus' && qual.name === attack.weaponGroup) {
+        if (qual.doubleFocus) {
+          toHit += 4;
+        } else if (qual.focus) {
+          toHit += 2;
         }
       }
-    })
+    });
     // @ts-ignore
-    toHit.value += Number(ability[abilityBase.value] || 0);
-    return toHit.value
+    toHit += Number(ability[abilityBase.value] || 0);
+    return toHit;
   });
 };
 

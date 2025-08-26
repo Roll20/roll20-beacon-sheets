@@ -23,12 +23,12 @@ export const fage2e = {
   }
 
   export const mage = {
-    Accuracy: ['Assault Rifles', 'Black Power', 'Bows', 'Grenades', 'Longarms', 'Pistols', 'Shotguns', 'SMGs', 'Thrown'],
+    Accuracy: ['Assault Rifles', 'Black Power', 'Bows', 'Grenades', 'Longarms', 'Pistols', 'Shotguns', 'SMGs', 'Thrown','Unarmed'],
     Communication: ['Animal Handling', 'Bargaining', 'Deception','Disguise', 'Etiquette', 'Expression', 'Gambling', 'Investigation', 'Leadership','Performing', 'Persuasion', 'Seduction'],
     Constitution: ['Propelling', 'Running', 'Stamina', 'Swimming','Tolerance'],
     Dexterity: ['Acrobatics', 'Calligraphy', 'Crafting', 'Initiative', 'Legerdemain', 'Lock Picking', 'Riding', 'Sailing', 'Stealth', 'Traps'],
     Fighting: ['Brawling', 'Flexible Weapons', 'Grappling', 'Heavy Blades', 'Light Blades', 'Long Hafterd', 'Short Hafted'],
-    Intelligence: ['Anthropology', 'Art', 'Astronomy', 'Biology', 'Business', 'Cartography','Chemistry','Computers','Cryptography', 'Current Affiars', 'Earth Siciences', 'Engineering', 'Electronics', 'Evaluation','History','Homemaking','Law','Medicine','Navigation', 'Occultism', 'Physics','Research', 'Security', 'Tacticts', 'Theology', 'Tinkering'],
+    Intelligence: ['Anthropology', 'Art', 'Astronomy', 'Biology', 'Business', 'Cartography','Chemistry','Computers','Cryptography', 'Current Affiars', 'Earth Siciences', 'Engineering', 'Electronics', 'Evaluation','History','Homemaking','Law','Medicine','Navigation', 'Occultism', 'Physics','Research', 'Security', 'Tactics', 'Theology', 'Tinkering'],
     Perception: ['Empathy', 'Hearing', 'Searching', 'Seeing', 'Smelling','Tasting', 'Touching', 'Tracking'],
     Strength: ['Climbing', 'Intimidation', 'Jumping','Machining','Might', 'Steering'],
     Willpower: ['Courage', 'Faith', 'Morale', 'Self-Discipline']

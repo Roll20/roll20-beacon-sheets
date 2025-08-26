@@ -7,6 +7,7 @@
             <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
 
             </div>
+            
             <div class="modal-body" style="display: flex;max-width: fit-content;">
               <div style="flex:1;min-width: 300px;">
                 <div class="row" style="margin:0">
@@ -296,6 +297,17 @@
       case('Light Blades'):
       case('Slings'):
       case('Staves'):
+      case('Unarmed'):
+      case('Assault Rifles'):
+      case('Flexible'):
+      case('Grenades'):
+      case('Long Hafted'):
+      case('Longarms'):
+      case('Pistols'):
+      case('SMGs'):
+      case('Short Hafted'):
+      case('Shotguns'):
+      case('Thrown'):
         props.item.weaponGroupAbility = 'Accuracy';
       break;
       // FIGHTING
@@ -304,7 +316,7 @@
       case('Heavy Blades'):
       case('Lances'):
       case('Polearms'):
-      case('Spears'):
+      case('Spears'):      
         props.item.weaponGroupAbility = 'Fighting';
       break;
       default:
