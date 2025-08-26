@@ -14,7 +14,7 @@
           <div class="age-container-heading">
             Speed
           </div>
-            <span class="age-num-value">{{ char.speed + speedMods + ability.DexterityBase + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0)  }}</span>
+            <span class="age-num-value">{{ char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0)  }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
@@ -23,7 +23,7 @@
           <div class="age-container-heading">
             Charge
           </div>
-            <span class="age-num-value">{{ Math.ceil((char.speed + speedMods + ability.DexterityBase + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0))/2)  }}</span>
+            <span class="age-num-value">{{ Math.ceil((char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0))/2)  }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
@@ -32,7 +32,7 @@
           <div class="age-container-heading">
             Run
           </div>
-            <span class="age-num-value">{{ (char.speed + speedMods + ability.DexterityBase + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0)) * 2  }}</span>
+            <span class="age-num-value">{{ (char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0)) * 2  }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
