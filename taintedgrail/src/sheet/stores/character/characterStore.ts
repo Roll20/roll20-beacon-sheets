@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import sendToChat from '@/utility/sendToChat';
+import { useWaysStore } from '@/sheet/stores/ways/waysStore';
 
 export type CharacterHydrate = {
   character: {
@@ -9,33 +10,36 @@ export type CharacterHydrate = {
     origin: string;
     occupation: string;
     experience: string;
+    riches: number;
     description: string;
     color: string;
     healthCondition: number;
     stamina: number;
     survival: number;
-    mentalResistance: string;
     quest: string;
     ascensionPoints: string;
     act1: string;
     act2: string;
     act3: string;
     ascensionGauge: number;
+    fightingStance: string;
   };
 };
 
 export const useCharacterStore = defineStore('character', () => {
+  const waysStore = useWaysStore();
+
   const player = ref('');
   const age = ref('');
   const origin = ref('');
   const occupation = ref('');
   const experience = ref('');
+  const riches = ref(0);
   const description = ref('');
   const color = ref('');
   const healthCondition = ref(1);
   const stamina = ref(0);
   const survival = ref(0);
-  const mentalResistance = ref('');
 
   // Ascension-related properties
   const quest = ref('');
@@ -44,6 +48,32 @@ export const useCharacterStore = defineStore('character', () => {
   const act2 = ref('');
   const act3 = ref('');
   const ascensionGauge = ref(0);
+
+  // Combat-related properties
+  const fightingStance = ref('standard');
+
+  // Potential: based on creativity score
+  const potential = computed(() => {
+    const creativity = waysStore.creativity;
+    if (creativity >= 5) return 3;
+    if (creativity >= 2) return 2;
+    return 1;
+  });
+
+  // Mental Resistance = Conviction + 5
+  const mentalResistance = computed(() => {
+    return waysStore.conviction + 5;
+  });
+
+  // Defense = reason + awareness + 5
+  const defense = computed(() => {
+    return waysStore.reason + waysStore.awareness + 5;
+  });
+
+  // Speed = combativeness + awareness
+  const speed = computed(() => {
+    return waysStore.combativeness + waysStore.awareness;
+  });
 
   // Check whether the health radio button is checked
   const isHealthChecked = computed(() => (value: number) => {
@@ -71,6 +101,7 @@ export const useCharacterStore = defineStore('character', () => {
         origin: origin.value,
         occupation: occupation.value,
         experience: experience.value,
+        riches: riches.value,
         description: description.value,
         color: color.value,
         healthCondition: healthCondition.value,
@@ -83,6 +114,7 @@ export const useCharacterStore = defineStore('character', () => {
         act2: act2.value,
         act3: act3.value,
         ascensionGauge: ascensionGauge.value,
+        fightingStance: fightingStance.value,
         // We don't need to save the computed ones on Firebase as long as we have everything needed to calculate them.
       },
     };
@@ -95,27 +127,19 @@ export const useCharacterStore = defineStore('character', () => {
     origin.value = hydrateStore.character.origin ?? origin.value;
     occupation.value = hydrateStore.character.occupation ?? occupation.value;
     experience.value = hydrateStore.character.experience ?? experience.value;
+    riches.value = hydrateStore.character.riches ?? riches.value;
     description.value = hydrateStore.character.description ?? description.value;
     color.value = hydrateStore.character.color ?? color.value;
     healthCondition.value = hydrateStore.character.healthCondition ?? healthCondition.value;
     stamina.value = hydrateStore.character.stamina ?? stamina.value;
     survival.value = hydrateStore.character.survival ?? survival.value;
-    mentalResistance.value = hydrateStore.character.mentalResistance ?? mentalResistance.value;
     quest.value = hydrateStore.character.quest ?? quest.value;
     ascensionPoints.value = hydrateStore.character.ascensionPoints ?? ascensionPoints.value;
     act1.value = hydrateStore.character.act1 ?? act1.value;
     act2.value = hydrateStore.character.act2 ?? act2.value;
     act3.value = hydrateStore.character.act3 ?? act3.value;
     ascensionGauge.value = hydrateStore.character.ascensionGauge ?? ascensionGauge.value;
-  };
-
-  // Posts a message to chat with the "chat" template.
-  const heroDiceFailure = async (title: string): Promise<void> => {
-    await sendToChat({
-      title,
-      subtitle: 'Failure!',
-      textContent: "Uh Oh! You've run out of Hero Dice!!",
-    });
+    fightingStance.value = hydrateStore.character.fightingStance ?? fightingStance.value;
   };
 
   const rollHealthScore = () => {
@@ -219,6 +243,7 @@ export const useCharacterStore = defineStore('character', () => {
     origin,
     occupation,
     experience,
+    riches,
     description,
     color,
     healthCondition,
@@ -235,53 +260,12 @@ export const useCharacterStore = defineStore('character', () => {
     ascensionGauge,
     isAscensionChecked,
     setAscensionGauge,
+    potential,
+    defense,
+    speed,
+    fightingStance,
     rollHealthScore,
     dehydrate,
     hydrate,
   };
 });
-
-/* After any Ability Roll you can choose to spend 1 hero die to roll 1d6 and add it to the total.
- * Follow-up Rolls need to be defined outside of the Store since it may not be available when clicking on the button
- *  */
-// export const addHeroDie = async (props: any, originalResult: number, originalTitle: string) => {
-//   // This follow-up roll subtracts 1 hero die then adds the result of 1d6 to the previous roll and re-posts the new total.
-//   const heroDiceCurrent = props?.character?.attributes?.character?.character?.heroDiceCurrent || -1;
-//   if (heroDiceCurrent < 0) {
-//     await sendToChat(
-//       {
-//         title: `Adding Hero Dice: ${originalTitle}`,
-//         subtitle: 'Failure!',
-//         textContent: "Uh Oh! You've run out of Hero Dice!!",
-//       },
-//       props.dispatch,
-//     );
-//     return;
-//   }
-//   await rollToChat(
-//     {
-//       title: `Adding Hero Dice: ${originalTitle}`,
-//       subtitle: 'New Total',
-//       allowHeroDie: false,
-//       components: [
-//         { label: `Original Roll`, value: originalResult },
-//         { label: 'Hero Die', sides: 6 },
-//       ],
-//     },
-//     props.dispatch,
-//   );
-
-//   // Since we can not access the Pinia store to update the store's value, we need to handle updating the values through the relay.
-//   props.dispatch.update({
-//     character: {
-//       id: props.character.id,
-//       attributes: {
-//         character: {
-//           character: {
-//             heroDiceCurrent: heroDiceCurrent - 1,
-//           },
-//         },
-//       },
-//     },
-//   });
-// };

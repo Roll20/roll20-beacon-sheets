@@ -25,6 +25,16 @@ const campaignId = store.meta.campaignId;
 </script>
 
 <style scoped lang="scss">
+.taintedgrail {
+  container-type: inline-size;
+  max-width: 1024px;
+  min-width: 1024px;
+  min-height: 768px;
+  max-height: 768px;
+  width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
 .header {
   margin-bottom: 0.5rem;
 

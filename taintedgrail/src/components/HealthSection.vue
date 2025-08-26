@@ -8,45 +8,121 @@
           <div class="condition-row">
             <span class="condition-label">Good</span>
             <div class="condition-circles">
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(1) }" @click="characterStore.setHealth(1)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(2) }" @click="characterStore.setHealth(2)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(3) }" @click="characterStore.setHealth(3)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(4) }" @click="characterStore.setHealth(4)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(5) }" @click="characterStore.setHealth(5)"></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(1) }"
+                @click="characterStore.setHealth(1)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(2) }"
+                @click="characterStore.setHealth(2)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(3) }"
+                @click="characterStore.setHealth(3)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(4) }"
+                @click="characterStore.setHealth(4)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(5) }"
+                @click="characterStore.setHealth(5)"
+              ></div>
             </div>
           </div>
           <div class="condition-row">
             <span class="condition-label">Okay</span>
             <div class="condition-circles">
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(6) }" @click="characterStore.setHealth(6)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(7) }" @click="characterStore.setHealth(7)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(8) }" @click="characterStore.setHealth(8)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(9) }" @click="characterStore.setHealth(9)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(10) }" @click="characterStore.setHealth(10)"></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(6) }"
+                @click="characterStore.setHealth(6)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(7) }"
+                @click="characterStore.setHealth(7)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(8) }"
+                @click="characterStore.setHealth(8)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(9) }"
+                @click="characterStore.setHealth(9)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(10) }"
+                @click="characterStore.setHealth(10)"
+              ></div>
             </div>
           </div>
           <div class="condition-row">
             <span class="condition-label">Bad</span>
             <div class="condition-circles">
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(11) }" @click="characterStore.setHealth(11)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(12) }" @click="characterStore.setHealth(12)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(13) }" @click="characterStore.setHealth(13)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(14) }" @click="characterStore.setHealth(14)"></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(11) }"
+                @click="characterStore.setHealth(11)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(12) }"
+                @click="characterStore.setHealth(12)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(13) }"
+                @click="characterStore.setHealth(13)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(14) }"
+                @click="characterStore.setHealth(14)"
+              ></div>
             </div>
           </div>
           <div class="condition-row">
             <span class="condition-label">Critical</span>
             <div class="condition-circles">
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(15) }" @click="characterStore.setHealth(15)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(16) }" @click="characterStore.setHealth(16)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(17) }" @click="characterStore.setHealth(17)"></div>
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(18) }" @click="characterStore.setHealth(18)"></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(15) }"
+                @click="characterStore.setHealth(15)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(16) }"
+                @click="characterStore.setHealth(16)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(17) }"
+                @click="characterStore.setHealth(17)"
+              ></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(18) }"
+                @click="characterStore.setHealth(18)"
+              ></div>
             </div>
           </div>
           <div class="condition-row">
             <span class="condition-label">Agony</span>
             <div class="condition-circles">
-              <div class="condition-circle" :class="{ checked: characterStore.isHealthChecked(19) }" @click="characterStore.setHealth(19)"></div>
+              <div
+                class="condition-circle"
+                :class="{ checked: characterStore.isHealthChecked(19) }"
+                @click="characterStore.setHealth(19)"
+              ></div>
             </div>
           </div>
         </div>
@@ -56,21 +132,11 @@
       <div class="health__stats">
         <div class="stat-group">
           <div class="stat-label">Stamina:</div>
-          <input 
-            type="number" 
-            v-model="characterStore.stamina" 
-            class="stat-input"
-            min="0"
-          />
+          <input type="number" v-model="characterStore.stamina" class="stat-input" min="0" />
         </div>
         <div class="stat-group">
           <div class="stat-label">Survival:</div>
-          <input 
-            type="number" 
-            v-model="characterStore.survival" 
-            class="stat-input"
-            min="0"
-          />
+          <input type="number" v-model="characterStore.survival" class="stat-input" min="0" />
         </div>
       </div>
 
@@ -80,11 +146,9 @@
         <div class="health__divider"></div>
         <div class="sanity-group">
           <div class="stat-label">Mental Resistance:</div>
-          <input 
-            type="text" 
-            v-model="characterStore.mentalResistance" 
-            class="mental-resistance-input"
-          />
+          <div class="mental-resistance-display">
+            {{ characterStore.mentalResistance }}
+          </div>
         </div>
       </div>
     </div>
@@ -105,32 +169,32 @@ const characterStore = useCharacterStore();
   &__condition-header {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
-	border-bottom: 1px solid #782e22;
+    border-bottom: 1px solid #782e22;
   }
 
   &__conditions {
-	border-top: 1px solid #7a7971;
-	border-bottom: 1px solid #7a7971;
+    border-top: 1px solid #7a7971;
+    border-bottom: 1px solid #7a7971;
     .condition-row {
       display: flex;
       align-items: center;
       margin-bottom: 0;
       padding: 0.25rem 0.5rem;
-      
+
       &:nth-child(odd) {
         background-color: rgba(0, 0, 0, 0.05);
       }
-      
+
       .condition-label {
         width: 50px;
         font-size: 1rem;
-		margin-right: 2rem;
+        margin-right: 2rem;
       }
-      
+
       .condition-circles {
         display: flex;
         gap: 0.5rem;
-        
+
         .condition-circle {
           width: 14px;
           height: 14px;
@@ -164,21 +228,21 @@ const characterStore = useCharacterStore();
     gap: 1.5rem;
     margin-bottom: 1rem;
     padding-right: 0.5rem;
-    
+
     .stat-group {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
       flex: 1;
-      
+
       .stat-label {
         font-weight: 600;
         font-size: 1rem;
       }
-      
+
       .stat-input {
         width: 100%;
-		font-weight: 500;
+        font-weight: 500;
         padding: 0.25rem;
         background-color: rgba(0, 0, 0, 0.05);
         border: 1px solid #7a7971;
@@ -196,18 +260,18 @@ const characterStore = useCharacterStore();
   }
 
   .sanity-group {
-	margin-top: 0.75rem;
+    margin-top: 0.75rem;
     display: flex;
     flex-direction: column;
-	padding-right: 0.5rem;
+    padding-right: 0.5rem;
     gap: 0.25rem;
-    
+
     .stat-label {
       font-weight: 600;
       font-size: 1rem;
     }
-    
-    .mental-resistance-input {
+
+    .mental-resistance-display {
       width: 100%;
       padding: 0.25rem;
       background-color: rgba(0, 0, 0, 0.05);

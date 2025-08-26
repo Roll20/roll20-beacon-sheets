@@ -399,7 +399,7 @@ export const useWaysStore = defineStore('ways', () => {
 
   // Watch for changes in ways scores and recalculate all domain totals
   watch(ways, calculateDomainTotals, { deep: true });
-  
+
   // Watch for changes in domain values and recalculate totals
   watch(domainsAndDisciplines, calculateDomainTotals, { deep: true });
 
@@ -408,18 +408,21 @@ export const useWaysStore = defineStore('ways', () => {
 
   // Domain field setters
   const setDomainBase = (domain: string, value: number) => {
-    const foundDomain = domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
+    const foundDomain =
+      domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
     if (foundDomain) foundDomain.base = value;
   };
 
   const setDomainBonus = (domain: string, value: number) => {
-    const foundDomain = domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
+    const foundDomain =
+      domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
     if (foundDomain) foundDomain.bonus = value;
   };
 
   const setDomainPenalty = (domain: string, value: number) => {
-    const foundDomain = domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
-    if (foundDomain) foundDomain.penalty = value
+    const foundDomain =
+      domainsAndDisciplines.value[domain as keyof typeof domainsAndDisciplines.value];
+    if (foundDomain) foundDomain.penalty = value;
   };
 
   // It can be very convenient to make a Getter/Setter computed prop like this to read/write data into store.
@@ -455,7 +458,7 @@ export const useWaysStore = defineStore('ways', () => {
       subtitle: '1d10 + Way - Health Modifier',
       allowCrit: true,
       components: [
-		{ label: 'Roll', sides: 10 },
+        { label: 'Roll', sides: 10 },
         { label: 'Base', sides: 10 },
         { label: 'Way', value: score },
         { label: 'Health Modifier', value: -healthModifier },
@@ -481,7 +484,7 @@ export const useWaysStore = defineStore('ways', () => {
       subtitle: '1d10 + Base + Bonus + Way - Penalty - Health Modifier',
       allowCrit: true,
       components: [
-		{ label: 'Roll', sides: 10 },
+        { label: 'Roll', sides: 10 },
         { label: 'Base', value: base },
         { label: 'Bonus', value: bonus },
         { label: 'Way', value: way },
@@ -490,8 +493,6 @@ export const useWaysStore = defineStore('ways', () => {
       ],
     });
   };
-
-
 
   // Dehydrate determines how fields in Firebase are updated when there's a change in this store.
   // Everything that needs to be saved to Firebase should be defined here.
@@ -528,7 +529,7 @@ export const useWaysStore = defineStore('ways', () => {
         }
       });
     }
-    
+
     // Recalculate all totals after hydration
     calculateDomainTotals();
   };

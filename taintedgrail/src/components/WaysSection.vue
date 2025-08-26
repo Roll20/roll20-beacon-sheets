@@ -3,16 +3,20 @@
     <div class="section__body ways__body">
       <div class="ways__form">
         <div class="ways__avatar">
-          <img v-if="meta.avatar && meta.avatar !== ''" :src="meta.avatar || DEFAULT_AVATAR_URL" />
+          <img :src="meta.avatar && meta.avatar !== '' ? meta.avatar : DEFAULT_AVATAR_URL" />
         </div>
         <h3 class="ways__header">Color</h3>
-        <select :id="`color`" v-model="character.color" :style="{ color: getColorValue(character.color), fontWeight: 'bold' }">
+        <select
+          :id="`color`"
+          v-model="character.color"
+          :style="{ color: getColorValue(character.color), fontWeight: 'bold' }"
+        >
           <option value="" disabled hidden>None</option>
-          <option value="blue" style="color: initial;">Blue</option>
-          <option value="brown" style="color: initial;">Brown</option>
-          <option value="gray" style="color: initial;">Gray</option>
-          <option value="green" style="color: initial;">Green</option>
-          <option value="red" style="color: initial;">Red</option>
+          <option value="blue" style="color: initial">Blue</option>
+          <option value="brown" style="color: initial">Brown</option>
+          <option value="gray" style="color: initial">Gray</option>
+          <option value="green" style="color: initial">Green</option>
+          <option value="red" style="color: initial">Red</option>
         </select>
         <h3 class="ways__header">Ways</h3>
         <div class="ways__list">
@@ -39,12 +43,12 @@
               </span>
               <span class="label">Creativity</span>
             </div>
-            <input 
-              id="creativity" 
-              :value="ways.creativity" 
-              @input="(event) => ways.setCreativity(Number((event.target as HTMLInputElement)?.value) || 0)" 
-              type="number" 
-              min="0" 
+            <input
+              id="creativity"
+              :value="ways.creativity"
+              @input="(event) => ways.setCreativity(Number((event.target as HTMLInputElement)?.value) || 0)"
+              type="number"
+              min="0"
             />
             <span class="label">Subversion</span>
           </label>
@@ -55,12 +59,12 @@
               </span>
               <span class="label">Awareness</span>
             </div>
-            <input 
-              id="awareness" 
-              :value="ways.awareness" 
-              @input="(event) => ways.setAwareness(Number((event.target as HTMLInputElement)?.value) || 0)" 
-              type="number" 
-              min="0" 
+            <input
+              id="awareness"
+              :value="ways.awareness"
+              @input="(event) => ways.setAwareness(Number((event.target as HTMLInputElement)?.value) || 0)"
+              type="number"
+              min="0"
             />
             <span class="label">Influence</span>
           </label>
@@ -71,12 +75,12 @@
               </span>
               <span class="label">Reason</span>
             </div>
-            <input 
-              id="reason" 
-              :value="ways.reason" 
-              @input="(event) => ways.setReason(Number((event.target as HTMLInputElement)?.value) || 0)" 
-              type="number" 
-              min="0" 
+            <input
+              id="reason"
+              :value="ways.reason"
+              @input="(event) => ways.setReason(Number((event.target as HTMLInputElement)?.value) || 0)"
+              type="number"
+              min="0"
             />
             <span class="label">Doubt</span>
           </label>
@@ -87,12 +91,12 @@
               </span>
               <span class="label">Conviction</span>
             </div>
-            <input 
-              id="conviction" 
-              :value="ways.conviction" 
-              @input="(event) => ways.setConviction(Number((event.target as HTMLInputElement)?.value) || 0)" 
-              type="number" 
-              min="0" 
+            <input
+              id="conviction"
+              :value="ways.conviction"
+              @input="(event) => ways.setConviction(Number((event.target as HTMLInputElement)?.value) || 0)"
+              type="number"
+              min="0"
             />
             <span class="label">Guilt</span>
           </label>
@@ -107,7 +111,6 @@ import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useWaysStore } from '@/sheet/stores/ways/waysStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 
-
 const DEFAULT_AVATAR_URL = new URL('@/assets/mystery-man.svg', import.meta.url).href;
 const dieIcon = new URL('@/assets/d10.svg', import.meta.url).href;
 
@@ -121,7 +124,7 @@ const getColorValue = (color: string) => {
     brown: '#8B4513',
     gray: '#666666',
     green: '#01B901',
-    red: 'red'
+    red: 'red',
   };
   return colorMap[color] || 'inherit';
 };

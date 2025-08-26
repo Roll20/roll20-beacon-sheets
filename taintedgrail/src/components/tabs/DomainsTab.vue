@@ -1,7 +1,14 @@
 <template>
   <div class="domains-tab">
     <div class="domains-header">
-      <h3>Domains and Disciplines</h3> <img :src="eyeIcon" class="eye-icon" alt="Eye" title="Edit Domains and Disciplines" @click="showModal = true" />
+      <h3>Domains and Disciplines</h3>
+      <img
+        :src="eyeIcon"
+        class="eye-icon"
+        alt="Eye"
+        title="Edit Domains and Disciplines"
+        @click="showModal = true"
+      />
     </div>
 
     <div class="domains-grid">
@@ -305,7 +312,7 @@
         <h3 class="domains-header">Domains and Disciplines</h3>
       </template>
     </DomainsAndDisciplinesModal>
-    </Teleport>
+  </Teleport>
 </template>
 
 <script setup>
@@ -321,7 +328,7 @@ const showModal = ref(false);
 
 const closeModal = () => {
   showModal.value = false;
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -329,7 +336,7 @@ const closeModal = () => {
   .domains-header {
     display: flex;
     align-items: center;
-	gap: 0.5rem;
+    gap: 0.5rem;
     margin-bottom: 1rem;
 
     h3 {

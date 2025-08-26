@@ -1,10 +1,10 @@
 {
   "authors": "W. Craanen (Monkey Ventures), T. Maaswinkel (Monkey Ventures), Studio Agate",
-  "roll20userid": "15529355",
-  "preview": "preview.jpg",
+  "roll20userid": "15529355, 268263",
+  "preview": "preview.png",
   "compendium": "",
   "instructions": "Official Tainted Grail Character Sheet",
-  "requestedSize": "1250x720",
+  "requestedSize": "1024x768",
   "advanced": true,
   "legacy": false
 }
