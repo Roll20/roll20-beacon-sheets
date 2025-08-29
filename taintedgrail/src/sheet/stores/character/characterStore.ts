@@ -10,7 +10,6 @@ export type CharacterHydrate = {
     origin: string;
     occupation: string;
     experience: string;
-    riches: number;
     description: string;
     color: string;
     healthCondition: number;
@@ -34,12 +33,11 @@ export const useCharacterStore = defineStore('character', () => {
   const origin = ref('');
   const occupation = ref('');
   const experience = ref('');
-  const riches = ref(0);
   const description = ref('');
   const color = ref('');
   const healthCondition = ref(1);
-  const stamina = ref(0);
-  const survival = ref(0);
+  const stamina = ref(10);
+  const survival = ref(3);
 
   // Ascension-related properties
   const quest = ref('');
@@ -101,7 +99,6 @@ export const useCharacterStore = defineStore('character', () => {
         origin: origin.value,
         occupation: occupation.value,
         experience: experience.value,
-        riches: riches.value,
         description: description.value,
         color: color.value,
         healthCondition: healthCondition.value,
@@ -127,7 +124,6 @@ export const useCharacterStore = defineStore('character', () => {
     origin.value = hydrateStore.character.origin ?? origin.value;
     occupation.value = hydrateStore.character.occupation ?? occupation.value;
     experience.value = hydrateStore.character.experience ?? experience.value;
-    riches.value = hydrateStore.character.riches ?? riches.value;
     description.value = hydrateStore.character.description ?? description.value;
     color.value = hydrateStore.character.color ?? color.value;
     healthCondition.value = hydrateStore.character.healthCondition ?? healthCondition.value;
@@ -155,95 +151,12 @@ export const useCharacterStore = defineStore('character', () => {
     }
   };
 
-  // const rollHeroDiceLife = async () => {
-  //   const title = 'Hero Dice Healing';
-  //   if (!heroDiceCurrent.value) return heroDiceFailure(title);
-  //   const result = await rollToChat({
-  //     title,
-  //     subtitle: 'Heal by total',
-  //     keyValues: { Actions: 1, Cost: '1 Hero Die' },
-  //     traits: ['Heroic'],
-  //     components: [{ label: 'Hero Die', sides: 6 }],
-  //   });
-  //   heroDiceCurrent.value--;
-  // };
-  // const rollHeroDiceMana = async () => {
-  //   const title = 'Hero Dice Healing';
-  //   if (!heroDiceCurrent.value) return heroDiceFailure(title);
-  //   const result = await rollToChat({
-  //     title,
-  //     subtitle: 'Recover Mana by total',
-  //     keyValues: { Actions: 1, Cost: '1 Hero Die' },
-  //     traits: ['Heroic'],
-  //     components: [{ label: 'Hero Die', sides: 6 }],
-  //   });
-  //   manaCurrent.value = Math.min(manaCurrent.value + result);
-  //   heroDiceCurrent.value--;
-  // };
-
-  // const rollHeroDiceRaw = async () => {
-  //   const title = 'Hero Die';
-  //   if (!heroDiceCurrent.value) return heroDiceFailure(title);
-  //   await rollToChat({
-  //     title: 'Rolling 1 Hero Die',
-  //     keyValues: { Actions: 1, Cost: '1 Hero Die' },
-  //     traits: ['Heroic'],
-  //     components: [{ label: 'Hero Die', sides: 6 }],
-  //   });
-  //   heroDiceCurrent.value--;
-  // };
-
-  // const rollAttack = async () => {
-  //   const waysScores = useWaysStore().waysScores;
-  //   const weapon = useInventoryStore().equippedWeapon;
-  //   const weaponName = weapon?.name;
-  //   const weaponAbilityScore = weapon?.waysScore || 'Combativeness';
-  //   const [diceAmount, diceSides] = (weapon?.damage || '1d3').split('d');
-  //   const { total: damage } = await getRollResult([
-  //     { count: Number(diceAmount), sides: Number(diceSides) },
-  //     { label: 'Prof Bonus', value: profBonus.value },
-  //   ]);
-  //   await rollToChat({
-  //     title: `Attack Using ${weaponAbilityScore} ${weaponName ? 'With ' + weaponName : ''}`,
-  //     keyValues: { Actions: 1, Damage: damage.toString() },
-  //     traits: ['Attack'],
-  //     allowHeroDie: true,
-  //     components: [
-  //       { label: `Base Roll`, sides: 20 },
-  //       { label: `${weaponAbilityScore} Bonus`, value: 0 },
-  //       { label: 'Proficiency', value: profBonus.value },
-  //     ],
-  //   });
-  // };
-
-  // const rollSpell = async () => {
-  //   const waysScores = useWaysStore().waysScores;
-  //   const thought = waysScores.Combativeness;
-  //   const [diceAmount, diceSides] = (`${thought}d6` || '1d3').split('d');
-  //   const { total: damage } = await getRollResult([
-  //     { count: Number(diceAmount), sides: Number(diceSides) },
-  //     { label: 'Prof Bonus', value: profBonus.value },
-  //   ]);
-  //   await rollToChat({
-  //     title: `Casting Spell`,
-  //     keyValues: { Actions: 1, Damage: damage.toString() },
-  //     traits: ['Spell'],
-  //     allowHeroDie: true,
-  //     components: [
-  //       { label: `Base Roll`, sides: 20 },
-  //       { label: 'Stat Mod', value: thought },
-  //       { label: 'Proficiency', value: profBonus.value },
-  //     ],
-  //   });
-  // };
-
   return {
     player,
     age,
     origin,
     occupation,
     experience,
-    riches,
     description,
     color,
     healthCondition,

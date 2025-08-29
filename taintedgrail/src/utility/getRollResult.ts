@@ -91,13 +91,10 @@ export default async (
       if (confirmationRoll === naturalRoll) {
         if (naturalRoll === 10) {
           resultType = 'crit-success';
-          console.log('CRIT SUCCESS');
         } else if (naturalRoll === 1) {
           resultType = 'crit-fail';
-          console.log('CRIT FAIL');
         }
       }
-      console.log('confirmationRoll', confirmationRoll);
     }
   }
 

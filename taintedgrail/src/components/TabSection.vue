@@ -8,7 +8,7 @@
           :key="tab.id"
           :class="['tab-btn', { active: activeTab === tab.id }]"
           @click="setActiveTab(tab.id, index)"
-          :ref="el => tabButtons[index] = el"
+          :ref="(el) => setTabButtonRef(el, index)"
         >
           <span class="tab-label">{{ tab.label }}</span>
         </button>
@@ -27,7 +27,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, nextTick, onMounted } from 'vue';
 import DomainsTab from './tabs/DomainsTab.vue';
 import CombatTab from './tabs/CombatTab.vue';
@@ -36,8 +36,8 @@ import AscensionTab from './tabs/AscensionTab.vue';
 import InventoryTab from './tabs/InventoryTab.vue';
 
 const activeTab = ref('domains');
-const tabNav = ref(null);
-const tabButtons = ref([]);
+const tabNav = ref<HTMLElement | null>(null);
+const tabButtons = ref<HTMLElement[]>([]);
 
 const slidingBorderStyle = reactive({
   left: '0px',
@@ -52,7 +52,13 @@ const tabs = [
   { id: 'inventory', label: 'Inventory' }
 ];
 
-const updateSlidingBorder = (index) => {
+const setTabButtonRef = (el: any, index: number) => {
+  if (el && el instanceof HTMLElement) {
+    tabButtons.value[index] = el;
+  }
+};
+
+const updateSlidingBorder = (index: number) => {
   const button = tabButtons.value[index];
   if (button) {
     slidingBorderStyle.left = `${button.offsetLeft}px`;
@@ -60,7 +66,7 @@ const updateSlidingBorder = (index) => {
   }
 };
 
-const setActiveTab = (tabId, index) => {
+const setActiveTab = (tabId: string, index: number) => {
   activeTab.value = tabId;
   nextTick(() => {
     updateSlidingBorder(index);

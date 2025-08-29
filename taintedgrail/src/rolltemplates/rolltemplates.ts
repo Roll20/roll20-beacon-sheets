@@ -68,6 +68,8 @@ export type DiceComponent = {
   label?: string;
   /** The numerical value that is the number rolled on the dice, or the value of the bonus */
   value?: number;
+  /** Indicates whether or not this value is negative (and should be shown in breakdown as -value) */
+  negative?: boolean;
   /** Indicates whether or not to always show this component in the breakdown, even if it's 0 */
   alwaysShowInBreakdown?: boolean;
 };

@@ -14,46 +14,87 @@
                 <th>Name</th>
                 <th class="align-input">Score</th>
                 <th class="align-input">Bonus</th>
-                <th>Way</th>
+                <th class="way-header">Way</th>
                 <th class="align-input">Penalty</th>
-                <th>Total</th>
+                <th class="align-input">Total</th>
+                <th class="actions-header"></th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(domain, domainKey) in ways.domainsAndDisciplines" :key="domainKey">
-                <td class="domain-name">{{ domainToFriendlyName(domainKey) }}</td>
-                <td>
-                  <input
-                    type="number"
-                    :value="domain.base"
-                    @input="(event) => ways.setDomainBase(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
-                    class="form-control"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    :value="domain.bonus"
-                    @input="(event) => ways.setDomainBonus(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
-                    class="form-control"
-                  />
-                </td>
-                <td class="way-info">
-					<span class="way-title">{{ capitalizeFirst(domain.way.title) }}</span>
-                  ({{ getWayScore(domain.way.title) }})
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    :value="domain.penalty"
-                    @input="(event) => ways.setDomainPenalty(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
-                    class="form-control"
-                  />
-                </td>
-                <td>
-                  <span class="total-readonly">{{ domain.total }}</span>
-                </td>
-              </tr>
+              <template v-for="(domain, domainKey) in domains" :key="domainKey">
+                <!-- Domain Row -->
+                <tr class="domain-row">
+                  <td class="domain-name">{{ domainToFriendlyName(domainKey) }}</td>
+                  <td>
+                    <input
+                      type="number"
+                      :value="domain.base"
+                      @input="(event) => setDomainBase(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
+                      class="form-control"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      :value="domain.bonus"
+                      @input="(event) => setDomainBonus(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
+                      class="form-control"
+                    />
+                  </td>
+                  <td class="way-info">
+                    <span class="way-title">{{ capitalizeFirstLetter(domain.way.title) }}</span>
+                    ({{ getWayScore(domain.way.title) }})
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      :value="domain.penalty"
+                      @input="(event) => setDomainPenalty(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
+                      class="form-control"
+                    />
+                  </td>
+                  <td>
+                    <span class="total-readonly">{{ domain.total }}</span>
+                  </td>
+                  <td class="domain-actions"></td>
+                </tr>
+
+                <!-- Discipline Rows -->
+                <tr v-for="discipline in getDisciplinesForDomain(domainKey)" :key="discipline._id" class="discipline-row">
+                  <td class="discipline-name">
+                    <span class="discipline-indent">└</span>
+                    {{ discipline.name }}
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      :value="discipline.base"
+                      @input="(event) => updateDisciplineScore(discipline._id, Number((event.target as HTMLInputElement)?.value) || 0)"
+                      class="form-control discipline-input"
+                    />
+                  </td>
+                  <td class="discipline-total">
+                    <span class="discipline-total-value">{{ getDomainBonus(discipline.parentDomain) }}</span>
+                  </td>
+                  <td class="way-info">
+                    <span class="way-title">{{
+                      capitalizeFirstLetter(domains[discipline.parentDomain as keyof typeof domains].way.title)
+                    }}</span>
+                    ({{ getWayScore(domains[discipline.parentDomain as keyof typeof domains].way.title) }})
+                  </td>
+                  <td class="discipline-total">
+                    <span class="discipline-total-value">{{ getDomainPenalty(discipline.parentDomain) }}</span>
+                  </td>
+                  <td class="discipline-total">
+                    <span class="discipline-total-value">{{ discipline.total }}</span>
+                  </td>
+                  <td class="discipline-actions">
+                    <button @click="removeDiscipline(discipline._id)" class="trash-btn" title="Delete discipline">
+                      <img :src="TRASH_ICON" alt="Delete discipline" />
+                    </button>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -63,18 +104,28 @@
 </template>
 
 <script setup lang="ts">
-import { useWaysStore } from '@/sheet/stores/ways/waysStore';
-import { domainToFriendlyName } from '@/utility/formattedNames';
+import { useWaysStore, type Discipline } from '@/sheet/stores/ways/waysStore';
+import { capitalizeFirstLetter, domainToFriendlyName } from '@/utility/formattedNames';
 
-const ways = useWaysStore();
+const TRASH_ICON = new URL('@/assets/trash.svg', import.meta.url).href;
+
+const { ways, disciplines, domains, removeDiscipline, setDomainBase, setDomainBonus, setDomainPenalty } = useWaysStore();
 
 const props = defineProps({
   show: Boolean,
 });
 
-// Helper function to capitalize first letter
-const capitalizeFirst = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+// Helper function to get disciplines for a specific domain
+const getDisciplinesForDomain = (domainKey: string) => {
+  return disciplines.filter((discipline) => discipline.parentDomain === domainKey);
+};
+
+const getDomainBonus = (parentDomain: string) => {
+  return domains[parentDomain as keyof typeof domains].bonus;
+};
+
+const getDomainPenalty = (parentDomain: string) => {
+  return domains[parentDomain as keyof typeof domains].penalty;
 };
 
 // Helper function to get way score safely
@@ -94,6 +145,13 @@ const getWayScore = (wayTitle: string) => {
       return 0;
   }
 };
+
+const updateDisciplineScore = (disciplineId: string, newScore: number) => {
+  const discipline = disciplines.find((d: Discipline) => d._id === disciplineId);
+  if (discipline) {
+    discipline.base = newScore;
+  }
+};
 </script>
 
 <style scoped>
@@ -111,7 +169,7 @@ const getWayScore = (wayTitle: string) => {
 }
 
 .modal-container {
-  width: 60%;
+  width: 70%;
   max-width: 1200px;
   background-color: #fff;
   border-radius: 8px;
@@ -195,6 +253,7 @@ const getWayScore = (wayTitle: string) => {
 .domains-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .domains-table th,
@@ -215,13 +274,78 @@ const getWayScore = (wayTitle: string) => {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.domain-row {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
 .domain-name {
   font-weight: 500;
   min-width: 150px;
 }
 
+.discipline-row {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+  border-left: 3px solid rgba(0, 0, 0, 0.1);
+}
+
+.discipline-name {
+  font-weight: 400;
+  color: #555;
+  min-width: 150px;
+  padding-left: 0.5rem;
+
+  .discipline-indent {
+    color: #999;
+    margin-right: 0.5rem;
+    font-family: monospace;
+  }
+}
+
+.discipline-input {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-color: #ccc;
+}
+
+.discipline-empty {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+.discipline-parent {
+  color: #666;
+  font-style: italic;
+}
+
+.discipline-total {
+  text-align: center;
+}
+
+.discipline-total-value {
+  display: inline-block;
+  font-weight: 600;
+  color: #666;
+  background-color: rgba(0, 0, 0, 0.03);
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  width: 50px;
+}
+
 .align-input {
-	width: 35px;
+  width: 60px;
+  text-align: center;
+}
+
+.actions-header {
+  width: 20px;
+  text-align: center;
+}
+
+.way-header {
+  width: 140px;
 }
 
 .way-info {
@@ -231,8 +355,8 @@ const getWayScore = (wayTitle: string) => {
 
   .way-title {
     min-width: 100px;
-	margin-right: 1rem;
-	display: inline-block;
+    margin-right: 1rem;
+    display: inline-block;
   }
 }
 
@@ -246,12 +370,12 @@ const getWayScore = (wayTitle: string) => {
   border-radius: 3px;
   padding: 0.25rem;
   font-size: 0.9rem;
-  width: 35px;
+  width: 50px;
   cursor: not-allowed;
 }
 
 .domains-table .form-control {
-  width: 35px;
+  width: 50px;
   padding: 0.25rem;
   font-size: 0.9rem;
   margin: 0;
@@ -265,7 +389,49 @@ const getWayScore = (wayTitle: string) => {
   vertical-align: middle;
 }
 
+.domains-table td:nth-child(2),
+.domains-table td:nth-child(3),
+.domains-table td:nth-child(5),
+.domains-table td:nth-child(6) {
+  text-align: center;
+}
+
 .domains-table td:last-child {
   text-align: center;
+}
+
+.domain-actions,
+.discipline-actions {
+  width: 30px;
+  text-align: center;
+  padding: 0px;
+}
+
+.trash-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+  vertical-align: middle;
+}
+
+.trash-btn:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.trash-btn img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+}
+
+.trash-btn:hover img {
+  opacity: 1;
 }
 </style>

@@ -7,6 +7,11 @@
           <span>Torments</span>
         </div>
         <div class="traits__divider"></div>
+        <div class="traits__content">
+          <div class="traits__item" v-for="torment in inventory.torments" :key="torment._id">
+            <Item :item="torment" :canRoll="false" :isCompact="true" />
+          </div>
+        </div>
       </div>
 
       <!-- Routs -->
@@ -15,6 +20,11 @@
           <span>Routs</span>
         </div>
         <div class="traits__divider"></div>
+        <div class="traits__content">
+          <div class="traits__item" v-for="rout in inventory.routs" :key="rout._id">
+            <Item :item="rout" :canRoll="false" :isCompact="true" />
+          </div>
+        </div>
       </div>
 
       <!-- Advantages -->
@@ -23,6 +33,11 @@
           <span>Advantages</span>
         </div>
         <div class="traits__divider"></div>
+        <div class="traits__content">
+          <div class="traits__item" v-for="advantage in inventory.advantages" :key="advantage._id">
+            <Item :item="advantage" :canRoll="false" :isCompact="true" />
+          </div>
+        </div>
       </div>
 
       <!-- Disadvantages -->
@@ -31,13 +46,21 @@
           <span>Disadvantages</span>
         </div>
         <div class="traits__divider"></div>
+        <div class="traits__content">
+          <div class="traits__item" v-for="disadvantage in inventory.disadvantages" :key="disadvantage._id">
+            <Item :item="disadvantage" :canRoll="false" :isCompact="true" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
+import Item from './parts/Item.vue';
 
+const inventory = useInventoryStore();
 </script>
 
 <style scoped lang="scss">
@@ -52,6 +75,18 @@
   &__group {
     display: flex;
     flex-direction: column;
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    &__item {
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+      background-color: #2c2c2c;
+    }
   }
 
   &__header {

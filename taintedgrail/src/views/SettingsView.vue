@@ -1,5 +1,5 @@
 <template>
-  <div class="settings">
+  <!-- <div class="settings">
     SETTINGS
     <button @click="goBack" class="big-button">Back</button>
     <button class="big-button" :disabled="!(isOwner || isGM)" @click="loadExampleData">
@@ -12,7 +12,7 @@
         <input class="settings__item__input" type="number" v-model="settings.encumbrancePenalty" />
       </label>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup>
@@ -22,14 +22,14 @@ import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import router from '@/router';
 
 // const store = useTaintedGrailStore();
-const settings = useSettingsStore();
+// const settings = useSettingsStore();
 
-const goBack = () => router.replace({ name: 'sheet' });
+// const goBack = () => router.replace({ name: 'sheet' });
 
-const loadExampleData = () => {
+// const loadExampleData = () => {
   // store.loadExampleData();
-  goBack();
-};
+//   goBack();
+// };
 </script>
 
 <style lang="scss" scoped>

@@ -22,7 +22,7 @@
         <div class="ways__list">
           <label for="combativeness">
             <div class="label-container">
-              <span class="roll-icon" @click="ways.rollWay('combativeness')">
+              <span class="roll-icon" @click="wayRoll('combativeness')">
                 <img :src="dieIcon" title="Roll Combativeness" />
               </span>
               <span class="label">Combativeness</span>
@@ -38,7 +38,7 @@
           </label>
           <label for="creativity">
             <div class="label-container">
-              <span class="roll-icon" @click="ways.rollWay('creativity')">
+              <span class="roll-icon" @click="wayRoll('creativity')">
                 <img :src="dieIcon" title="Roll Creativity" />
               </span>
               <span class="label">Creativity</span>
@@ -54,7 +54,7 @@
           </label>
           <label for="awareness">
             <div class="label-container">
-              <span class="roll-icon" @click="ways.rollWay('awareness')">
+              <span class="roll-icon" @click="wayRoll('awareness')">
                 <img :src="dieIcon" title="Roll Awareness" />
               </span>
               <span class="label">Awareness</span>
@@ -70,7 +70,7 @@
           </label>
           <label for="reason">
             <div class="label-container">
-              <span class="roll-icon" @click="ways.rollWay('reason')">
+              <span class="roll-icon" @click="wayRoll('reason')">
                 <img :src="dieIcon" title="Roll Reason" />
               </span>
               <span class="label">Reason</span>
@@ -86,7 +86,7 @@
           </label>
           <label for="conviction">
             <div class="label-container">
-              <span class="roll-icon" @click="ways.rollWay('conviction')">
+              <span class="roll-icon" @click="wayRoll('conviction')">
                 <img :src="dieIcon" title="Roll Conviction" />
               </span>
               <span class="label">Conviction</span>
@@ -110,6 +110,7 @@
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useWaysStore } from '@/sheet/stores/ways/waysStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
+import { wayRoll } from '@/system/rolls';
 
 const DEFAULT_AVATAR_URL = new URL('@/assets/mystery-man.svg', import.meta.url).href;
 const dieIcon = new URL('@/assets/d10.svg', import.meta.url).href;

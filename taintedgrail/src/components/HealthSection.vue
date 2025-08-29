@@ -5,123 +5,15 @@
       <div class="health__condition-section">
         <div class="health__condition-header">Health Condition</div>
         <div class="health__conditions">
-          <div class="condition-row">
-            <span class="condition-label">Good</span>
+          <div v-for="condition in healthConditions" :key="condition.label" class="condition-row">
+            <span class="condition-label">{{ condition.label }}</span>
             <div class="condition-circles">
               <div
+                v-for="index in condition.count"
+                :key="condition.startIndex + index - 1"
                 class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(1) }"
-                @click="characterStore.setHealth(1)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(2) }"
-                @click="characterStore.setHealth(2)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(3) }"
-                @click="characterStore.setHealth(3)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(4) }"
-                @click="characterStore.setHealth(4)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(5) }"
-                @click="characterStore.setHealth(5)"
-              ></div>
-            </div>
-          </div>
-          <div class="condition-row">
-            <span class="condition-label">Okay</span>
-            <div class="condition-circles">
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(6) }"
-                @click="characterStore.setHealth(6)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(7) }"
-                @click="characterStore.setHealth(7)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(8) }"
-                @click="characterStore.setHealth(8)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(9) }"
-                @click="characterStore.setHealth(9)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(10) }"
-                @click="characterStore.setHealth(10)"
-              ></div>
-            </div>
-          </div>
-          <div class="condition-row">
-            <span class="condition-label">Bad</span>
-            <div class="condition-circles">
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(11) }"
-                @click="characterStore.setHealth(11)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(12) }"
-                @click="characterStore.setHealth(12)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(13) }"
-                @click="characterStore.setHealth(13)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(14) }"
-                @click="characterStore.setHealth(14)"
-              ></div>
-            </div>
-          </div>
-          <div class="condition-row">
-            <span class="condition-label">Critical</span>
-            <div class="condition-circles">
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(15) }"
-                @click="characterStore.setHealth(15)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(16) }"
-                @click="characterStore.setHealth(16)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(17) }"
-                @click="characterStore.setHealth(17)"
-              ></div>
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(18) }"
-                @click="characterStore.setHealth(18)"
-              ></div>
-            </div>
-          </div>
-          <div class="condition-row">
-            <span class="condition-label">Agony</span>
-            <div class="condition-circles">
-              <div
-                class="condition-circle"
-                :class="{ checked: characterStore.isHealthChecked(19) }"
-                @click="characterStore.setHealth(19)"
+                :class="{ checked: characterStore.isHealthChecked(condition.startIndex + index - 1) }"
+                @click="characterStore.setHealth(condition.startIndex + index - 1)"
               ></div>
             </div>
           </div>
@@ -155,9 +47,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed } from 'vue';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
+
 const characterStore = useCharacterStore();
+
+const healthConditions = computed(() => [
+  { label: 'Good', startIndex: 1, count: 5 },
+  { label: 'Okay', startIndex: 6, count: 5 },
+  { label: 'Bad', startIndex: 11, count: 4 },
+  { label: 'Critical', startIndex: 15, count: 4 },
+  { label: 'Agony', startIndex: 19, count: 1 },
+]);
 </script>
 
 <style scoped lang="scss">

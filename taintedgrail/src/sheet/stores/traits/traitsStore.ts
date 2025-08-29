@@ -35,17 +35,6 @@ export const useTraitsStore = defineStore('traits', () => {
     if (indexToRemove >= 0) traits.value.splice(indexToRemove, 1);
   };
 
-  const printTrait = async (_id: string) => {
-    const trait = traits.value.find((item) => item._id === _id);
-    if (!trait) return;
-    await sendToChat({
-      title: trait.name,
-      subtitle: trait.type,
-      traits: ['Inventory', trait.type],
-      textContent: trait.description,
-    });
-  };
-
   /*
    * Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id
    * */
@@ -70,7 +59,6 @@ export const useTraitsStore = defineStore('traits', () => {
 
     addTrait,
     removeTrait,
-    printTrait,
 
     dehydrate,
     hydrate,

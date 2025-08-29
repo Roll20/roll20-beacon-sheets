@@ -5,11 +5,11 @@
       <div class="ascension-row">
         <div class="quest-group">
           <label class="quest-label">Quest:</label>
-          <input type="text" v-model="characterStore.quest" class="quest-input" />
+          <input type="text" v-model="character.quest" class="quest-input" />
         </div>
         <div class="points-group">
           <label class="points-label">Ascension Points:</label>
-          <input type="text" v-model="characterStore.ascensionPoints" class="points-input" />
+          <input type="text" v-model="character.ascensionPoints" class="points-input" />
         </div>
       </div>
     </div>
@@ -19,15 +19,15 @@
       <div class="acts-row">
         <div class="act-group">
           <label class="act-label">Act 1</label>
-          <textarea v-model="characterStore.act1" class="act-textarea" rows="2"></textarea>
+          <textarea v-model="character.act1" class="act-textarea" rows="2"></textarea>
         </div>
         <div class="act-group">
           <label class="act-label">Act 2</label>
-          <textarea v-model="characterStore.act2" class="act-textarea" rows="2"></textarea>
+          <textarea v-model="character.act2" class="act-textarea" rows="2"></textarea>
         </div>
         <div class="act-group">
           <label class="act-label">Act 3</label>
-          <textarea v-model="characterStore.act3" class="act-textarea" rows="2"></textarea>
+          <textarea v-model="character.act3" class="act-textarea" rows="2"></textarea>
         </div>
       </div>
     </div>
@@ -36,14 +36,13 @@
     <div class="ascension-gauge-section">
       <div class="gauge-header">Ascension Gauge</div>
       <div class="gauge-circles">
-        <!-- Generate 45 circles for the ascension gauge (0-44, starting at 0) -->
         <div
           v-for="i in 45"
-          :key="i - 1"
+          :key="i"
           class="gauge-circle"
-          :title="i - 1"
-          :class="{ checked: characterStore.isAscensionChecked(i - 1) }"
-          @click="characterStore.setAscensionGauge(i - 1)"
+          :title="i.toString()"
+          :class="{ checked: character.isAscensionChecked(i) }"
+          @click="handleAscensionClick(i)"
         ></div>
       </div>
 
@@ -53,20 +52,40 @@
           <div class="category-header">
             <span>Premise</span>
           </div>
+          <div class="category-content">
+            <div class="category-item" v-for="premise in inventory.premises" :key="premise._id">
+              <Item :item="premise" :canRoll="false" :isCompact="true" />
+            </div>
+          </div>
         </div>
         <div class="category-group">
           <div class="category-header">
             <span>Awakening</span>
+          </div>
+          <div class="category-content">
+            <div class="category-item" v-for="awakening in inventory.awakenings" :key="awakening._id">
+              <Item :item="awakening" :canRoll="false" :isCompact="true" />
+            </div>
           </div>
         </div>
         <div class="category-group">
           <div class="category-header">
             <span>Rise</span>
           </div>
+          <div class="category-content">
+            <div class="category-item" v-for="rise in inventory.rises" :key="rise._id">
+              <Item :item="rise" :canRoll="false" :isCompact="true" />
+            </div>
+          </div>
         </div>
         <div class="category-group">
           <div class="category-header">
             <span>Ascension</span>
+          </div>
+          <div class="category-content">
+            <div class="category-item" v-for="ascension in inventory.ascensions" :key="ascension._id">
+              <Item :item="ascension" :canRoll="false" :isCompact="true" />
+            </div>
           </div>
         </div>
       </div>
@@ -74,10 +93,25 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import Item from '@/components/parts/Item.vue';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
+import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 
-const characterStore = useCharacterStore();
+const character = useCharacterStore();
+const inventory = useInventoryStore();
+
+const handleAscensionClick = (value: number) => {
+  if (character.ascensionGauge === value) {
+    if (value === 1) {
+      character.setAscensionGauge(0);
+    } else {
+      character.setAscensionGauge(value - 1);
+    }
+  } else {
+    character.setAscensionGauge(value);
+  }
+};
 </script>
 
 <style scoped lang="scss">
@@ -175,7 +209,7 @@ const characterStore = useCharacterStore();
     .gauge-circles {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.30rem;
       justify-content: center;
       margin-bottom: 1rem;
       padding: 0.4rem;

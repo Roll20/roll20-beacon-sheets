@@ -4,7 +4,7 @@
     <div class="riches-section">
       <div class="riches-container">
         <h3>Riches</h3>
-        <input type="number" id="riches" v-model="character.riches" placeholder="0" min="0" />
+        <input type="number" id="riches" v-model="inventory.riches" placeholder="0" min="0" />
       </div>
     </div>
 
@@ -12,15 +12,20 @@
     <div class="equipment-section">
       <div class="equipment-block">
         <h3>Equipment</h3>
-        <div class="equipment-body"></div>
+        <div class="equipment-body">
+          <div class="equipment-item" v-for="item in inventory.equipment" :key="item._id">
+            <Item :item="item" :canRoll="false" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-const character = useCharacterStore();
+<script setup lang="ts">
+import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
+import Item from '@/components/parts/Item.vue';
+const inventory = useInventoryStore();
 </script>
 
 <style scoped lang="scss">
@@ -32,10 +37,8 @@ const character = useCharacterStore();
   h3 {
     font-weight: 600;
     margin: 0;
-    margin-bottom: 0.75rem;
-    border-bottom: 2px solid #8b4513;
-    padding-bottom: 0.25rem;
-    color: #5a3a1a;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #8b4513;
   }
 
   // Riches Section
@@ -84,15 +87,10 @@ const character = useCharacterStore();
     flex: 1;
 
     .equipment-block {
-      padding: 0.5rem 0;
-
       .equipment-body {
-        padding: 1rem;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #666;
-        font-style: italic;
+        flex-direction: column;
+        gap: 0.5rem;
       }
     }
   }

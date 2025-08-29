@@ -50,7 +50,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 

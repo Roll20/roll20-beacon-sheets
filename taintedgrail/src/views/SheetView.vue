@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useTaintedGrailStore } from '@/sheet/stores';
 import BioSection from '@/components/BioSection.vue';
 import HealthSection from '@/components/HealthSection.vue';

@@ -4,7 +4,11 @@
       <div class='roll__component component'>
         <div class='component__description'>
           {{#unless @first}}
-            +
+            {{#if this.negative}}
+              -
+            {{else}}
+              +
+            {{/if}}
           {{/unless}}
           {{#if this.label}}
             <span class='component__label'>
