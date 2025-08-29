@@ -1,0 +1,11 @@
+<div class="crit-roll">
+	{{#if (isEqual resultType 'crit-success')}}
+		<span class="crit-roll__text crit-roll__text--success">
+			Critical Success!
+		</span>
+	{{else if (isEqual resultType 'crit-fail')}}
+		<span class="crit-roll__text crit-roll__text--failure">
+			Critical Failure!
+		</span>
+	{{/if}}
+</div>

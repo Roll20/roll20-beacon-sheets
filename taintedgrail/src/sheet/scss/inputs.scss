@@ -1,0 +1,60 @@
+// Reset
+
+.taintedgrail {
+  button {
+    display: inline-block;
+    margin: 0;
+    border: 0;
+    color: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    padding: 0;
+    width: auto;
+    max-width: 100%;
+    overflow: visible;
+    background: transparent;
+    cursor: pointer;
+
+    &.link-btn {
+      padding: 0.25rem;
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: var(--taintedgrail-primary);
+      }
+      font-weight: 600;
+    }
+
+    &.action-btn {
+      display: inline-block;
+      padding: 0.25rem;
+      transition: background-color 0.2s ease-in-out;
+      border-radius: 0.25rem;
+      background-color: var(--taintedgrail-primary);
+      color: white;
+      &:hover {
+        background-color: var(--taintedgrail-secondary);
+        color: black;
+      }
+    }
+  }
+
+  input {
+	background: transparent;
+	border-radius: 3px;
+	border: 1px solid var(--taintedgrail-color-border-light-tertiary);
+	width: 100%;
+	padding: 2px;
+	font-weight: 500;
+	
+	&:focus {
+		outline: none;
+		box-shadow: 0 0 5px #ff0000;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	&:disabled {
+		background: lightgrey;
+		cursor: not-allowed;
+	}
+  }
+}

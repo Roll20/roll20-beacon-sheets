@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght,GRAD@300..700,-30..0&display=swap');
+
+$taintedgrail-primary-color: black;
+$taintedgrail-secondary-color: #452b52;
+$color-underline-header: #782e22;
+$color-border-light-tertiary: #7a7971;
+
+html * {
+  --taintedgrail-font-color: #{$taintedgrail-primary-color};
+  --taintedgrail-contrast-font-color: white;
+  --taintedgrail-font-family: 'Signika', 'Palatino Linotype', sans-serif;
+  --taintedgrail-input-border: 1px solid #{$taintedgrail-secondary-color};
+  --taintedgrail-button-background-color: #{$taintedgrail-secondary-color};
+  --taintedgrail-section-border: 1px solid #{$taintedgrail-secondary-color};
+  --taintedgrail-color-border-light-tertiary: #{$color-border-light-tertiary};
+  --color-underline-header: #{$color-underline-header};
+  --taintedgrail-primary: #89018b;
+  --taintedgrail-secondary: #ebd7ea;
+}
