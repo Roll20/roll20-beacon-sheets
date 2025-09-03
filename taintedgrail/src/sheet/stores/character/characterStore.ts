@@ -63,9 +63,16 @@ export const useCharacterStore = defineStore('character', () => {
     return waysStore.conviction + 5;
   });
 
-  // Defense = reason + awareness + 5
+  // Defense = Base: reason + awareness + 5 | Offensive: base - potential | Defensive/Movement: base + potential
   const defense = computed(() => {
-    return waysStore.reason + waysStore.awareness + 5;
+    const base = waysStore.reason + waysStore.awareness + 5;
+    if (fightingStance.value === 'offensive') {
+      return base - potential.value;
+    } else if (fightingStance.value === 'defensive' || fightingStance.value === 'movement') {
+      return base + potential.value;
+    } else {
+      return base;
+    }
   });
 
   // Speed = combativeness + awareness
