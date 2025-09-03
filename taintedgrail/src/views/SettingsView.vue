@@ -18,7 +18,7 @@
 <script setup>
 import { useTaintedGrailStore } from '@/sheet/stores';
 
-import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+// import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import router from '@/router';
 
 // const store = useTaintedGrailStore();
@@ -27,7 +27,7 @@ import router from '@/router';
 // const goBack = () => router.replace({ name: 'sheet' });
 
 // const loadExampleData = () => {
-  // store.loadExampleData();
+// store.loadExampleData();
 //   goBack();
 // };
 </script>
