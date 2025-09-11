@@ -1,0 +1,82 @@
+<template>
+  <!-- <div class="settings">
+    SETTINGS
+    <button @click="goBack" class="big-button">Back</button>
+    <button class="big-button" :disabled="!(isOwner || isGM)" @click="loadExampleData">
+      Add mock data
+    </button>
+    <div class="settings__main">
+      <label class="settings__item" for="encumbrance-penalty">
+        <span class="settings__item__name">Encumbrance penalty</span>
+        <span class="settings__item__desc">(Added to ability rolls when over-encumbered)</span>
+        <input class="settings__item__input" type="number" v-model="settings.encumbrancePenalty" />
+      </label>
+    </div>
+  </div> -->
+</template>
+
+<script setup>
+import { useTaintedGrailStore } from '@/sheet/stores';
+
+// import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import router from '@/router';
+
+// const store = useTaintedGrailStore();
+// const settings = useSettingsStore();
+
+// const goBack = () => router.replace({ name: 'sheet' });
+
+// const loadExampleData = () => {
+// store.loadExampleData();
+//   goBack();
+// };
+</script>
+
+<style lang="scss" scoped>
+@use '../common/scss/vars.scss';
+
+.settings {
+  &__main {
+    margin: 2rem 0;
+  }
+  &__item {
+    padding: 1rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    display: inline-block;
+
+    &__name {
+      display: block;
+      font-weight: 600;
+    }
+    &__desc {
+      display: block;
+    }
+    &__input {
+      display: block;
+      margin-top: 0.5rem;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+  }
+}
+
+.big-button {
+  border: none;
+  color: var(--taintedgrail-contrast-font-color);
+  padding: 1rem 2rem;
+  background-color: var(--taintedgrail-button-background-color);
+  font-family: var(--taintedgrail-font-family);
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-top: 1rem;
+  margin-left: 1rem;
+
+  &:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
+  }
+}
+</style>
