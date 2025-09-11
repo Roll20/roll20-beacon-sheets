@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createMemoryHistory } from 'vue-router';
 import SheetView from '../views/SheetView.vue';
 import SettingsView from '../views/SettingsView.vue';
 
@@ -8,7 +8,7 @@ import SettingsView from '../views/SettingsView.vue';
  * */
 const router = createRouter({
   // @ts-ignore
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createMemoryHistory(),
   routes: [
     {
       path: '/sheet',
