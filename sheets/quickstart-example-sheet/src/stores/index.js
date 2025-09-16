@@ -41,7 +41,7 @@ export const useAppStore = defineStore('app', () => {
 
   // Loops through all the stores and runs their Dehydrate.
   // Meta store has unique behavior which shouldn't be modified.
-  // This is invoked any time Firebase data changes.
+  // Invoked every time anything in this sheet is updated.
   const dehydrateStore = () => {
     const character = {}
     character.attributes = {}
@@ -63,7 +63,8 @@ export const useAppStore = defineStore('app', () => {
     return character
   }
 
-  // Loops through all stores and runs Hydrate. Invoked every time anything in this sheet is updated.
+  // Loops through all stores and runs Hydrate. 
+  // This is invoked any time Firebase data changes.
   const hydrateStore = (partial, meta) => {
     if (partial) {
       storeRegistry.forEach((store) => {
