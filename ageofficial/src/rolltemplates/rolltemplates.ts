@@ -28,7 +28,8 @@ import rollStunt from './partials/rollStunt.hbs?raw';
 import rollResults from './partials/rollResults.hbs?raw';
 // @ts-ignore
 import spellTN from './partials/spellTN.hbs?raw';
-
+// @ts-ignore
+import pfTest from './partials/pfTest.hbs?raw';
 // @ts-ignore
 import stuntDie from './partials/stuntDie.hbs?raw';
 
@@ -57,6 +58,7 @@ handlebars.registerPartial('rollStunt', rollStunt);
 handlebars.registerPartial('stuntDie', stuntDie);
 handlebars.registerPartial('rollResults', rollResults);
 handlebars.registerPartial('spellTN', spellTN);
+handlebars.registerPartial('pfTest', pfTest);
 
 // Helper functions for math/transformations
 handlebars.registerHelper('sumComponents', sumComponents);
@@ -124,7 +126,6 @@ export type RollToChatTemplate = {
     components: DiceComponent[];
     multiplier?: number;
     resultType?: 'crit-success' | 'crit-fail';
-    allowHeroDie?: boolean;
     type?:string;
   };
 };

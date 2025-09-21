@@ -10,7 +10,7 @@
         <font-awesome-icon v-if="!meta.avatar" :icon="['fa', 'user']" class="age-no-avatar" />
         
 
-        <Tippy v-if="!settings.showXP" content=" " interactive placement="right-end" aria-expanded="true" class="age-label age-level-label">
+        <Tippy  content=" " interactive placement="right-end" aria-expanded="true" class="age-label age-level-label">
           <div>
             {{  char.level }} 
           </div>
@@ -20,9 +20,9 @@
             </div>
           </template>
         </Tippy> 
-        <div v-else class="age-label age-level-label">
+        <!-- <div v-else class="age-label age-level-label">
             {{  char.level }} 
-          </div>
+          </div> -->
       </div>
       <div class="age-character-details">
         <h1 class="age-character-name">
@@ -61,6 +61,11 @@
           <div class="age-character-bio-value">
             Threat Level: {{ bio.threat }}
           </div>
+        </div>
+        <div class="age-character-bio-value" v-if="settings.gameSystem === 'mage'">
+            <div class="age-character-campaignMode" :class="{ cinematic: settings.campaignMode === 'cinematic', pulpy: settings.campaignMode === 'pulpy', gritty: settings.campaignMode === 'gritty'}">
+              {{ settings.campaignMode }}
+            </div>
         </div>
         
         

@@ -45,7 +45,10 @@ import { faGear,
         faKitMedical,
         faCampground,
         faTrash,
-      faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+      faTrashAlt,
+      faCaretDown,
+      faCaretUp,
+    faHotTubPerson } from '@fortawesome/free-solid-svg-icons'
 /* add icons to the library */
 library.add(faGear,
           faSheetPlastic,   
@@ -69,12 +72,15 @@ library.add(faGear,
           faKitMedical,
           faCampground,
           faTrash,
-        faTrashAlt)
+        faTrashAlt,
+      faCaretDown,
+      faCaretUp,
+    faHotTubPerson)
 
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import '@vueup/vue-quill/dist/vue-quill.bubble.css';
-
+import QuillFirefoxFix from './utility/quill-firefox-fix'
 
 const main = async () => {
   const pinia = createPinia();
@@ -87,7 +93,8 @@ const main = async () => {
   app.use(i18n);
   app.use(relayVue);
   pinia.use(relayPinia);
-  app.component('QuillEditor', QuillEditor)
+  app.component('QuillEditor', QuillEditor);
+  app.use(QuillFirefoxFix)
   app.use(
     VueTippy,
     // optional

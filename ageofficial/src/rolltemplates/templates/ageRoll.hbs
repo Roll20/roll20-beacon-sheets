@@ -1,13 +1,8 @@
 {{#> wrapper type="roll" keyValues=keyValues }}
   {{#if (isEqual "attack" rollType)}}
     {{#> header characterName=characterName title=title subtitle=subtitle}}{{/ header}}
-
     <div class="body">
       {{> rollDie dice=(getDice ../components multiplier) resultType=resultType }}
-    
-      {{#if allowHeroDie }}
-        {{> heroDie total=(sumComponents ../components multiplier) title=title }}
-      {{/if}}
       
       {{> rollComponents components=components }}
       
@@ -18,14 +13,13 @@
       
       {{> rollStunt hasDuplicates=(hasDuplicates ../components multiplier) resultType=resultType dice=(getDice ../components multiplier)}}
       <div class='roll__component component' style="width: 100%;">
-  <hr>
+       <hr>
       <div style="
         display: flex;
         justify-content: space-between;
         font-size: 15px;
         font-weight: bold;
-        color:rgba(0,0,0,0.87);
-    ">
+        color:rgba(0,0,0,0.87);">
     <span>Total</span>
     <span class=" showtip tipsy-n-right" original-title="{{> rollResults}}">
         {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
@@ -49,53 +43,69 @@
     </div>
   {{/if}}
     {{#if (isEqual "standard" rollType)}}
-    {{#> header characterName=characterName title=title subtitle=subtitle}}
-    {{/ header}}
+      {{#> header characterName=characterName title=title subtitle=subtitle}}{{/ header}}
+
+      <div class="body">
+        {{> rollDie dice=(getDice ../components multiplier) resultType=resultType }}
+        {{> rollComponents components=components }}
+
+        {{#if keyValues}}
+          {{> keyValues keyValues=keyValues }}
+        {{/if}}
+        {{> rollStunt hasDuplicates=(hasDuplicates ../components multiplier) resultType=resultType dice=(getDice ../components multiplier)}}
+        <hr>
+        {{#if targetNumber}}
+          <div class="age-roll-row">
+            <span>TN</span>
+            <span>
+                {{targetNumber}}
+            </span> 
+          </div>
+          <hr />
+        {{/if}}
+        <div class="age-roll-row">
+          <span>Total</span>
+          <span>
+              {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
+          </span>   
+
+        {{!-- {{#if  dice=(hasDuplicates ../components multiplier)}}
+          <p>There are duplicate numbers in the dice roll.</p>
+        {{else}}
+          <p>No duplicates in the dice roll.</p>
+        {{/if}} --}}
+        </div>
+        {{#if targetNumber}}
+          {{> spellTN total=(sumComponents ../components multiplier) spellTN=targetNumber}}
+        {{/if}}
+        {{#if textContent}}
+          <hr />
+          <div>
+            {{> textContent textContent=textContent }}
+          </div>
+        {{/if}}
+    {{/if}}
+  {{!-- Power Fatigue Test Roll --}}
+  {{#if (isEqual "powerFatigue" rollType)}}
+    {{#> header characterName=characterName title=title subtitle=subtitle}}{{/ header}}
 
     <div class="body">
       {{> rollDie dice=(getDice ../components multiplier) resultType=resultType }}
-    
-      {{#if allowHeroDie }}
-        {{> heroDie total=(sumComponents ../components multiplier) title=title }}
-      {{/if}}
-      {{> rollComponents components=components }}
-
-      {{#if keyValues}}
-        {{> keyValues keyValues=keyValues }}
-      {{/if}}
-      {{> rollStunt hasDuplicates=(hasDuplicates ../components multiplier) resultType=resultType dice=(getDice ../components multiplier)}}
-      <hr>
-      {{#if targetNumber}}
-        <div class="age-roll-row">
-          <span>TN</span>
-          <span>
-              {{targetNumber}}
-          </span> 
-        </div>
+      <div style="margin-top: 14px;">
         <hr />
-    {{/if}}
-    <div class="age-roll-row">
-      <span>Total</span>
-      <span>
-          {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
-      </span>   
-
-    {{!-- {{#if  dice=(hasDuplicates ../components multiplier)}}
-      <p>There are duplicate numbers in the dice roll.</p>
-    {{else}}
-      <p>No duplicates in the dice roll.</p>
-    {{/if}} --}}
+        <div class="age-roll-row">
+          <span>Total</span>
+          <span class=" showtip tipsy-n-right" original-title="{{> rollResults}}">
+              {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
+          </span>
+        </div>
+        {{#if targetNumber}}
+          {{> pfTest total=(sumComponents ../components multiplier) pfTest=targetNumber}}
+        {{/if}}
+        </div>      
     </div>
-    {{#if targetNumber}}
-      {{> spellTN total=(sumComponents ../components multiplier) spellTN=targetNumber}}
-    {{/if}}
-    {{#if textContent}}
-      <hr />
-      <div>
-        {{> textContent textContent=textContent }}
-      </div>
-    {{/if}}
   {{/if}}
+  {{!-- Damage Roll --}}
   {{#if (isEqual "damage" rollType)}}
   {{#> header characterName=characterName title=title subtitle=subtitle}}
     {{/ header}}

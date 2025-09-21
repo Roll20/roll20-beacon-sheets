@@ -5,13 +5,13 @@ import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { ref } from 'vue';
 import { useSpellStore } from '@/sheet/stores/magic/magicStore';
+import { at } from 'lodash';
 
 export interface MoneyAdapted {
     _id: string;
     moneyname: string;
     moneyamount: number;
 }
-
 
 // export function loadLegacyAbilityScores(attributes: { [key: string]: string }) {
 // export function loadLegacyAbilityScores(attributes: { [key: string]: string }){
@@ -53,61 +53,79 @@ export function loadLegacyAbilityScores(attributes: { [key: string]: string }) {
     };
 
     const abilityStore = useAbilityScoreStore(); // Get the store instance once
-
+    const legacyAbilities = {...abilityStore}
+    if(!attributes) return;
     Object.keys(attributes).forEach(key => {
         if (abilityMap[key]) {
             const value = parseInt(attributes[key], 0);
             if (!isNaN(value)) {
                 const mappedKey = abilityMap[key];
-                (abilityStore as any)[mappedKey] = value;
+                (legacyAbilities as any)[mappedKey] = value;
             }
         }
     });
+    console.log({LegacyAbilitiues:legacyAbilities})
 }
 
-export function loadLegacyCharacterDetails(attributes: { [key: string]: string }) {
-    // const char = useCharacterStore();
-    // const bio = useBioStore();
+export function loadLegacyCharacterDetails(attributes: { [key: string]: any }) {
+    const char = useCharacterStore();
+    const bio = useBioStore();
+    if(!attributes) return;
 
+    console.log(attributes)
+    const legacyChar = {
+        level:attributes?.level,
+        mp:attributes?.magic,
+        hp:attributes?.health,
+        socialClass:attributes['social-class'],
+        background:attributes?.background,
+        ancestry:attributes,
+        sex:attributes?.gender,
+        height:attributes?.height,
+        weight:attributes?.weight,
+        skin:attributes?.skin,
+        eyes:attributes?.eyes,
+        hair:attributes?.hair
+    }
+    console.log({LegacyInfo:legacyChar})
     //Primary Details
-    // char.levelSet(parseInt(attributes.level, 0));
-    // char.magic = Number(attributes.magic);
-    // char.health = Number(attributes.health);
+    // char.levelSet(parseInt(attributes?.level, 0));
+    // char.magic = Number(attributes?.magic);
+    // char.health = Number(attributes?.health);
     // bio.socialClass = attributes['social-class'];
-    // bio.background = attributes.background;
-    // bio.ancestry = attributes.race
+    // bio.background = attributes?.background;
+    // bio.ancestry = attributes?.race
 
     // //Background
-    // bio.sex = attributes.gender;
-    // bio.height = attributes.height;
-    // bio.weight = attributes.weight;
-    // bio.skin = attributes.skin;
-    // bio.eyes = attributes.eyes;
-    // bio.skin = attributes.skin;
-    // bio.hair = attributes.hair;
+    // bio.sex = attributes?.gender;
+    // bio.height = attributes?.height;
+    // bio.weight = attributes?.weight;
+    // bio.skin = attributes?.skin;
+    // bio.eyes = attributes?.eyes;
+    // bio.skin = attributes?.skin;
+    // bio.hair = attributes?.hair;
 };
 
 
 
-export function loadLegacyGroupings(attributes: { [key: string]: string }) {
-    // const data = { /* the example object */ };
+export function loadLegacyGroupings(attributes: { [key: string]: any }) {
+    const data = { /* the example object */ };
 
-    // const grouped = {};
-    
-    // Object.entries(attributes).forEach(([key, value]) => {
-    //   const match = key.match(/repeating_(\w+)_-(\w+)_([\w-]+)/);
-    //   if (match) {
-    //     const [_, type, id, property] = match;
-    //     if (!grouped[type]) grouped[type] = [];
-    //     let item = grouped[type].find(obj => obj._id === id);
-    //     if (!item) {
-    //       item = { _id: id };
-    //       grouped[type].push(item);
-    //     }
-    //     item[property] = value;
-    //   }
-    // });
-    
+    const grouped:any = {};
+    if(!attributes) return;
+    Object.entries(attributes).forEach(([key, value]) => {
+      const match = key.match(/repeating_(\w+)_-(\w+)_([\w-]+)/);
+      if (match) {
+        const [_, type, id, property] = match;
+        if (!grouped[type]) grouped[type] = [];
+        let item = grouped[type].find((obj: any) => obj._id === id);
+        if (!item) {
+          item = { _id: id };
+          grouped[type].push(item);
+        }
+        item[property] = value;
+      }
+    });
     // // Talents
     // if(grouped.talent){
     //     legacyTalents(grouped.talent);
@@ -125,76 +143,77 @@ export function loadLegacyGroupings(attributes: { [key: string]: string }) {
     // }
     // // Currency & Resources
     // if(grouped.money){
-    //     legacyCurrency(grouped.money)
+        // legacyCurrency(grouped.money)
     // }
-    // console.log(grouped);
+    console.log({LegacyGroupings:grouped});
     
 }
 
-export const legacyCurrency = (money:MoneyAdapted[]) => {
-    const inventory = useInventoryStore();
-    money.forEach(m => {
-        switch(m.moneyname){
-            case 'CP':
-                inventory.cash.copper = m.moneyamount;
-            break;
-            case 'SP':
-                inventory.cash.silver = m.moneyamount;
-            break;
-            case 'GP':
-                inventory.cash.gold = m.moneyamount;
-            break
-        }
-    })
+export const legacyCurrency = (money:any) => {
+    console.log({LegacyMoney:money});
+    // const inventory = useInventoryStore();
+    // money.forEach(m => {
+    //     switch(m.moneyname){
+    //         case 'CP':
+    //             inventory.cash.copper = m.moneyamount;
+    //         break;
+    //         case 'SP':
+    //             inventory.cash.silver = m.moneyamount;
+    //         break;
+    //         case 'GP':
+    //             inventory.cash.gold = m.moneyamount;
+    //         break
+    //     }
+    // })
 }
 
 export const legacyTalents = (talents:any[]) => {
     const qualities = useItemStore();
-    talents.forEach(talent => {
-        const talentDegree = ref('novice');
-        switch(talent.talentdegree){
-            case '2':
-                talentDegree.value = 'expert';
-            break;
-            case '3':
-                talentDegree.value = 'master';
-            break;
-        }
-        qualities.addItem({
-            type:'Talent',
-            name: talent.powername,
-            description:talent.talentdescription,
-            qualityLevel:talentDegree.value,
-            qualityNovice:talent.talent1description,
-            qualityExpert:talent.talent2description,
-            qualityMaster:talent.talent3description
-        });
-    });
+    // talents.forEach(talent => {
+    //     const talentDegree = ref('novice');
+    //     switch(talent.talentdegree){
+    //         case '2':
+    //             talentDegree.value = 'expert';
+    //         break;
+    //         case '3':
+    //             talentDegree.value = 'master';
+    //         break;
+    //     }
+    //     qualities.addItem({
+    //         type:'Talent',
+    //         name: talent.powername,
+    //         description:talent.talentdescription,
+    //         qualityLevel:talentDegree.value,
+    //         qualityNovice:talent.talent1description,
+    //         qualityExpert:talent.talent2description,
+    //         qualityMaster:talent.talent3description
+    //     });
+    // });
 }
 
 export const legacyInventory = (inventory:any[]) => {
     const inventoryStore = useInventoryStore();
-    inventory.forEach(item => {
-        console.log(item)
-        inventoryStore.addItem({
-            name:item['equipment-name'],
-            description:item['equipment-description'],
-            type:'item'
-        });
-    });
+    // inventory.forEach(item => {
+    //     console.log(item)
+    //     inventoryStore.addItem({
+    //         name:item['equipment-name'],
+    //         description:item['equipment-description'],
+    //         type:'item'
+    //     });
+    // });
 }
 export const legacyArcana = (arcana:any[]) => {
     const magic = useSpellStore();
-    arcana.forEach(spell => {
-        magic.addSpell({
-            name:spell['spell-name'] || '',
-            description:spell['full-spell-description'] || '',
-            arcanaType: spell['spell-school'] || '',
-            requirements:spell['spell-requirements'] || 'Novice',
-            mpCost:spell['spell-mp-cost'] || 0,
-            shortDescription: spell['short-spell-description'] || '',
-            castingTime:spell['spell-cast-time'] || '',
-            targetNumber:spell['spell-tn'] || 0,
-        });
-    });
+    // arcana.forEach(spell => {
+    //     magic.addSpell({
+    //         name:spell['spell-name'] || '',
+    //         description:spell['full-spell-description'] || '',
+    //         arcanaType: spell['spell-school'] || '',
+    //         requirements:spell['spell-requirements'] || 'Novice',
+    //         mpCost:spell['spell-mp-cost'] || 0,
+    //         shortDescription: spell['short-spell-description'] || '',
+    //         castingTime:spell['spell-cast-time'] || '',
+    //         targetNumber:spell['spell-tn'] || 0,
+    //     });
+    // });
 }

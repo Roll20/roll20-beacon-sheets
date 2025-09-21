@@ -4,6 +4,7 @@ import { ref } from 'vue';
 export type SettingsHydrate = {
   settings: {
     gameSystem: 'fage1e' | 'fage2e' | 'blue rose' | 'cthulu' | 'mage' | undefined;
+    campaignMode?: 'cinematic' | 'pulpy' | 'gritty' | undefined;
     color: string;
     nameInRoll:boolean;
     encumbrancePenalty: number;
@@ -31,12 +32,14 @@ export type SettingsHydrate = {
     showAlienation:boolean;
     showCybernetics:boolean;
     useFortune?: boolean;
+    userPowerFatigue?: boolean;
   };
 };
 
 export const useSettingsStore = defineStore('settings', () => {
   const encumbrancePenalty = ref(0);
   const gameSystem = ref();
+  const campaignMode = ref('');
   const color = ref('#1e4e7a');
   const nameInRoll = ref(true);
   const whisperRollsGM = ref('never');
@@ -63,12 +66,14 @@ export const useSettingsStore = defineStore('settings', () => {
   const showAlienation = ref(false);
   const showCybernetics = ref(false);
   const useFortune = ref(false);
+  const userPowerFatigue = ref(false);
 
   const dehydrate = () => {
     return {
       settings: {
         encumbrancePenalty: encumbrancePenalty.value,
         gameSystem: gameSystem.value,
+        campaignMode: campaignMode.value,
         color: color.value,
         nameInRoll: nameInRoll.value,
         whisperRollsGM: whisperRollsGM.value,
@@ -94,7 +99,8 @@ export const useSettingsStore = defineStore('settings', () => {
         showFear: showFear.value,
         showAlienation: showAlienation.value,
         showCybernetics: showCybernetics.value,
-        useFortune: useFortune.value      
+        useFortune: useFortune.value,
+        userPowerFatigue: userPowerFatigue.value,   
       },
     };
   };
@@ -102,6 +108,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const hydrate = (hydrateStore: SettingsHydrate) => {
     encumbrancePenalty.value = hydrateStore.settings.encumbrancePenalty || encumbrancePenalty.value;
     gameSystem.value = hydrateStore.settings.gameSystem || gameSystem.value;
+    campaignMode.value = hydrateStore.settings.campaignMode || campaignMode.value;
     color.value = hydrateStore.settings.color || color.value;
     nameInRoll.value = hydrateStore.settings.nameInRoll || nameInRoll.value;
     whisperRollsGM.value = hydrateStore.settings.whisperRollsGM || whisperRollsGM.value;
@@ -127,12 +134,14 @@ export const useSettingsStore = defineStore('settings', () => {
     showFear.value = hydrateStore.settings.showFear ?? showFear.value
     showAlienation.value = hydrateStore.settings.showAlienation ?? showAlienation.value
     showCybernetics.value = hydrateStore.settings.showCybernetics ?? showCybernetics.value
-    useFortune.value = hydrateStore.settings.useFortune ?? useFortune.value
+    useFortune.value = hydrateStore.settings.useFortune ?? useFortune.value,
+    userPowerFatigue.value = hydrateStore.settings.userPowerFatigue ?? userPowerFatigue.value
   };
 
   return {
     encumbrancePenalty,
     gameSystem,
+    campaignMode,
     color,
     nameInRoll,
     whisperRollsGM,
@@ -159,6 +168,7 @@ export const useSettingsStore = defineStore('settings', () => {
     showAlienation,
     showCybernetics,
     useFortune,
+    userPowerFatigue,
     dehydrate,
     hydrate,
   };

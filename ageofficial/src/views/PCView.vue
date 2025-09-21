@@ -3,7 +3,7 @@
             <div class="player-sheet-wrapper">
                 <section class="header-section">
                     <div class="section-card">  
-                        <BioSection />
+                        <BioSection :show="showSelectPulpyModal" />
                         <div class="bio-sub-section">
                             <div>
                                 <HPView />
@@ -79,14 +79,36 @@
         </div>  
     <Teleport to="body">
       <XPSection v-if="showModal" :show="showModal" @close="showModal = false">
-      <template #header>
-          <h3 class="age-attack-details-header">Experience</h3>
-      </template>
-    </XPSection>
-  </Teleport>
+        <template #header>
+            <h3 class="age-attack-details-header">Experience</h3>
+        </template>
+        </XPSection>
+    </Teleport>
+    <Teleport to="body">
+  <Transition name="modal">
+    <div v-if="showSelectPulpyModal" class="modal-mask">
+      <div class="modal-container age-modal">
+        <div class="age-modal-header">
+        <h3 class="age-attack-details-header">Advancement Primary</h3>
+        <button type="button" class="btn-close" @click="showSelectPulpyModal = false" aria-label="Close"></button>
+        </div>
+        <div style="display: flex;gap:15px;">
+            <button class="age-btn age-pulpy-btn" @click="char.toughnessPrimary = 'defense';showSelectPulpyModal = false">
+                <div class="age-pulpy-defense"></div>
+                <span>Defense</span>
+            </button>
+            <button class="age-btn age-pulpy-btn" @click="char.toughnessPrimary = 'toughness';showSelectPulpyModal = false">
+                <div class="age-pulpy-toughness"></div>
+                <span>Toughness</span>
+            </button>
+        </div>        
+      </div>
+    </div>
+  </Transition>
+</Teleport>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
@@ -116,6 +138,28 @@ const meta = useMetaStore();
 const bio = useBioStore();
 const char = useCharacterStore();
 
-const showModal = ref(false)
+const showModal = ref(false);
+const showSelectPulpyModal = ref(false);
+// char.toughnessPrimary = null;
+if(char.level >= 4 && !char.toughnessPrimary && settings.campaignMode === 'pulpy' && settings.gameSystem === 'mage'){
+    showSelectPulpyModal.value = true;
+}
+watch(
+  () => char.level,
+  (newLevel, oldLevel) => {
+    if ((newLevel >= 4 || newLevel !== oldLevel) && !char.toughnessPrimary && settings.campaignMode === 'pulpy' && settings.gameSystem === 'mage') {      
+        if(settings.campaignMode === 'pulpy'){
+            showSelectPulpyModal.value = true;
+        }
+    }
+  }
+);
 
+const checkLevelModifiter = () => {
+  if (char.level >= 4 && !char.toughnessPrimary && settings.campaignMode === 'pulpy' && settings.gameSystem === 'mage') {
+    if(settings.campaignMode === 'pulpy'){
+        showSelectPulpyModal.value = true;
+    }
+  }
+};
 </script>

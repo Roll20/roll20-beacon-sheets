@@ -28,7 +28,7 @@
               </div>
               <div class="row">
                 <div v-if="spell.arcanaType === 'custom'" class="mb-3 col">
-                          <span class="age-input-label" id="basic-addon1">MP Cost</span>
+                          <span class="age-input-label" id="basic-addon1">{{magicPoints}} Cost</span>
                           <input type="number" class="form-control" placeholder="Name" aria-label="Character Name" v-model="spell.mpCost"  aria-describedby="basic-addon1">
                       </div>
                   <div class="mb-3 col">
@@ -62,7 +62,7 @@
                           <input type="number" class="form-control" placeholder="0" aria-label="Target Number" v-model="spell.targetNumber"  aria-describedby="basic-addon1">
                   </div>
                   <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
-                          <span class="age-input-label" id="basic-addon1">MP Cost</span>
+                          <span class="age-input-label" id="basic-addon1">{{magicPoints}} Cost</span>
                           <input type="number" class="form-control" placeholder="0" aria-label="Magic Point Cost" v-model="spell.mpCost"  aria-describedby="basic-addon1">
                   </div>
                   <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
@@ -308,6 +308,7 @@ const props = defineProps({
 
 const settings = useSettingsStore();
 const magicTypes = ref();
+const magicPoints = computed(() => settings.gameSystem === 'mage' ? settings.userPowerFatigue ? 'Power' : 'PP' : 'MP');
 switch(settings.gameSystem){
   case 'fage2e':
     magicTypes.value = fageArcana;

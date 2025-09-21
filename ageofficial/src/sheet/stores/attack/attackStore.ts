@@ -8,6 +8,7 @@ import rollToChat from '@/utility/rollToChat';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
+import { powerFatiguePenalty } from '@/utility/arcanaPower';
 // See "inventoryStore.ts" for an explanation of how to use list/repeating sections
 interface Attack {
   weaponType: string;
@@ -113,6 +114,7 @@ export const useAttackStore = defineStore('attacks', () => {
 
   const printAttack = async (weapon: any, bonus?:number,focus?:any) => {
     if (!weapon) return;
+    const settings = useSettingsStore();
     const components = [
       { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
       { label: weapon.weaponGroupAbility, value: Number(bonus) },
@@ -120,16 +122,16 @@ export const useAttackStore = defineStore('attacks', () => {
     ];
     const aim = useSettingsStore().aim
     if(useSettingsStore().aim){
-
       components.push(
         { label: 'Aim', value: useSettingsStore().aimValue  }
       )  
     }
-
+    if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
+      components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
+    }
     await rollToChat({
       characterName: useMetaStore().name,
       title: weapon.name,
-      allowHeroDie: false,
       rollType:'attack',
       components
     });
@@ -190,7 +192,6 @@ export const useAttackStore = defineStore('attacks', () => {
     await rollToChat({
       characterName: useMetaStore().name,
       title: attack.name,
-      allowHeroDie: false,
       rollType:'damage',
       components
     });

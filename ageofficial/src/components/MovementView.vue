@@ -10,16 +10,16 @@
         </h1>
         
         <div class="age-actions age-movement" >
-        <div class="age-container-content">      
+        <div class="age-container-content" v-tippy="{ content: char.powerFatigue > 1 ? 'Power Fatigue: Moves at Half Speed' : null}">      
           <div class="age-container-heading">
             Speed
           </div>
-            <span class="age-num-value">{{ char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0)  }}</span>
+            <span class="age-num-value">{{ characterSpeed }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
         </div>
-        <div class="age-container-content">      
+        <div class="age-container-content" :class="{ 'age-power-fatigue': char.powerFatigue > 0 && settings.gameSystem === 'mage'}"  v-tippy="{ content: char.powerFatigue > 0 ? 'Power Fatigue: Cannot Run or Charge' : null}">      
           <div class="age-container-heading">
             Charge
           </div>
@@ -28,7 +28,7 @@
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
         </div>  
-        <div class="age-container-content">      
+        <div class="age-container-content" :class="{ 'age-power-fatigue': char.powerFatigue > 0 && settings.gameSystem === 'mage'}" v-tippy="{ content: char.powerFatigue > 0 ? 'Power Fatigue: Cannot Run or Charge' : null}">      
           <div class="age-container-heading">
             Run
           </div>
@@ -182,6 +182,12 @@ const speedModifiers = computed(() => {
     return 0
   }
 });
+
+const characterSpeed = computed(() => {
+  const baseSpeed = char.speed + speedModifiers.value + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0);
+  return Math.ceil((baseSpeed) / (char.powerFatigue > 1 && settings.gameSystem === 'mage' ? 2 : 1));
+});
+
 const onRest = (type) => {
   switch(type){
     case 'Breather':

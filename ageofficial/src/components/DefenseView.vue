@@ -21,9 +21,8 @@
           <div class="age-container-heading">
             Defense
           </div>
-            <!-- <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + (guard ? guardValue : 0) + (inventory.equippedShield?.defenseMod ? inventory.equippedShield?.defenseMod : 0) + Number(defenseMods) }} -->
-              <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + ((guard || guardOption === 'always') ? guardValue : 0) + Number(defenseMods) }}
-            </span>
+          {{ defenseLevelMod }}
+            <span class="age-num-value">{{ defense }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
@@ -32,7 +31,7 @@
           <div class="age-container-heading">
             Toughness
           </div>
-            <span class="age-num-value">{{ ability.ConstitutionBase >= 0 ? ability.ConstitutionBase : 0 }}</span>
+            <span class="age-num-value">{{ toughness }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
@@ -84,7 +83,7 @@
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useConditionsStore } from '@/sheet/stores/conditions/conditionsStore';
 import { objectToArray } from '@/utility/objectify';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
@@ -114,6 +113,8 @@ const settings = useSettingsStore();
 const armorRating = armorRatingMod;
 const defenseMods = defenseMod;
 const speedMods = speedMod
+char.gameModeBonus();
+
 const defenseModifiers = computed(() => {
   const conditions = useConditionsStore().conditions;
   let values = []
@@ -224,4 +225,36 @@ const filteredSections = computed(() => {
     return false;
   });
 });
+const defense = computed(() => {
+  return 10 + Number(ability.DexterityBase) + ((props.guard || props.guardOption === 'always') ? props.guardValue : 0) + Number(defenseMods.value) + char.defenseLevelMod;
+});
+const toughness = computed(() => {
+  return ability.ConstitutionBase >= 0 ? ability.ConstitutionBase + char.toughnessLevelMod : 0 + char.toughnessLevelMod;
+});
+// watch(
+//   () => settings.campaignMode,
+//   ([newLevel, newCampaignMode], [oldLevel, oldCampaignMode]) => {
+//     console.log(newLevel, oldLevel, char.toughnessPrimary);
+//     console.log(newLevel >= 4);
+//     if (char.toughnessPrimary) { console.log(true); }
+//     if ((newLevel >= 4 || newLevel !== oldLevel) && !char.toughnessPrimary) {
+//       // Run your level-up check logic here
+//       // For example:
+//       console.log(`Character leveled up from ${oldLevel} to ${newLevel}`);
+//       // You can call a function or trigger a modal, etc.
+//       if (settings.campaignMode === 'pulpy') {
+//         showSelectPulpyModal.value = true;
+//       }
+//     }
+//     if (newCampaignMode !== oldCampaignMode) {
+//       if (newLevel >= 4 && !char.toughnessPrimary) {
+//         if (settings.campaignMode === 'pulpy') {
+//           showSelectPulpyModal.value = true;
+//         }
+//       }
+//     }
+//     console.log(char.defenseLevelMod, char.toughnessLevelMod);
+//   }
+// );
+
 </script>
