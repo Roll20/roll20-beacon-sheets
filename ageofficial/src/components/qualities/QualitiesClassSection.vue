@@ -40,10 +40,10 @@ const props = defineProps({
 });
 const settings = useSettingsStore();
 const qualitiesArray = ref(['Ancestry & Class','Ability Focus','Favored Stunt']);
-const qualitOptions = ref(['Ability Focus','Ancestry','Class','Favored Stunt']);
+const qualitOptions = ref(['Ability Focus','Ancestry','Class','Favored Stunt', 'Special Feature']);
 if(settings.gameSystem === 'mage'){
-  qualitiesArray.value = ['Ability Focus','Favored Stunt'];
-  qualitOptions.value = ['Ability Focus','Favored Stunt'];
+  qualitiesArray.value = ['Ability Focus','Favored Stunt', 'Special Feature'];
+  qualitOptions.value = ['Ability Focus','Favored Stunt', 'Special Feature'];
 }
 const emit = defineEmits(['update:modelValue'])
 const showModal = ref(false)

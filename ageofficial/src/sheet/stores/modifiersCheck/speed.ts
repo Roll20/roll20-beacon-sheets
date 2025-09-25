@@ -6,7 +6,7 @@ import { useModifiersStore } from '../modifiers/modifiersStore';
 
 // Speed Mod calculation with the item modifiers and speed conditions
 export const speedMod = computed(() => {
-  const store = useItemStore();
+  const store = useItemStore(); 
 
   // Sum up the item modifiers that affect "Defense"
   const qMods = store.items.reduce((armorMod, itm) => {

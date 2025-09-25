@@ -1,25 +1,31 @@
 <template>
     <div class="section-card" style="display: block; position: relative;">    
       <div class="config-container">
-    <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
-      <font-awesome-icon :icon="['fa', 'circle-info']" />
-    </button>
-    </div>    
-        <h1 class="age-section-header">
-            Actions
-        </h1>
+        <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
+          <font-awesome-icon :icon="['fa', 'circle-info']" />
+        </button>
+      </div>    
+      <h1 class="age-section-header">
+          Actions
+      </h1>
         <div class="age-actions-section">
           <div class="age-roll-initiative">
             <button class="age-roll-initiative-btn age-btn" @click="rollAbilityInitiative('Dexterity', true)">
                 <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'dice']" /> Roll for Initiative
             </button>
           </div>  
-          <div style="display: grid;grid-template-columns: repeat(2,1fr);gap:5px;padding: 6px 0;">
+          <div style="display: grid;grid-template-columns: repeat(3,1fr);gap:5px;padding: 6px 0;">
             <button class="age-btn" @click="onRest('Breather')">
               <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'kit-medical']" />
               <span>
                 Breather
               </span>
+            </button>
+            <button class="age-btn" @click="onRest('Light Rest')">
+              <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'hot-tub-person']" />
+              <span>
+                Light Rest
+              </span>                
             </button>
             <button class="age-btn" @click="onRest('Total Rest')">
               <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'bed']" />
@@ -150,12 +156,23 @@ const onRest = (type) => {
   switch(type){
     case 'Breather':
       char.health = Math.min(char.health + 5 + ability.ConstitutionBase + char.level, char.healthMax);
+      if(settings.userPowerFatigue && char.powerFatigue === 1){
+        char.powerFatigue = 0
+      };
+    break;
+    case 'Light Rest':
+      if(settings.userPowerFatigue){
+        char.powerFatigue = 0
+      };
     break;
     case 'Total Rest':
-    char.health = Math.min(char.health + 10 + ability.ConstitutionBase + char.level, char.healthMax);
+      char.health = Math.min(char.health + 10 + ability.ConstitutionBase + char.level, char.healthMax);
       if(settings.showArcana){
         char.magic = char.magicMax;
       }
+      if(settings.userPowerFatigue){
+        char.powerFatigue = 0
+      };
     break;
   }
 }

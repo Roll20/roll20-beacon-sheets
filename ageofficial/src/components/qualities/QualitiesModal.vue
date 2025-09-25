@@ -1,14 +1,14 @@
 <template>
   <Transition name="modal">
     <div v-if="show" class="modal-mask">
-        <div class="modal-container age-modal" :class="{ 'age-qualities-modal': feature.type }">
+        <div class="modal-container age-modal" :class="{ 'age-qualities-modal': feature.type }" style="min-width: 450px;">
             <div class="age-modal-header">
               <slot name="header">default header</slot>
               <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
-              <div v-if="mode === 'create' && !feature.type" style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 5px;">
+              <div v-if="mode === 'create' && !feature.type" style="display: grid;grid-template-columns: repeat(auto-fit, minmax(min(100%, 30%), 1fr));gap: 1rem;">
                 <button v-for="qty in qualityOptions" :key="qty" class="age-quality-select-btn" @click="feature.type = qty;if(qty === 'Favored Stunt') feature.spCost = 1">
                   <div class="age-quality-section age-quality-class-icon" v-if="qty === 'Class'"></div>
                   <div class="age-quality-section age-quality-ancestry-icon" v-if="qty === 'Ancestry'"></div>
@@ -16,6 +16,7 @@
                   <div class="age-quality-section age-quality-talent-icon" v-if="qty === 'Talent'"></div>
                   <div class="age-quality-section age-quality-specialization-icon" v-if="qty === 'Specialization'"></div>
                   <div class="age-quality-section age-quality-stunt-icon" v-if="qty === 'Favored Stunt'"></div>
+                  <div class="age-quality-section age-quality-special-icon" v-if="qty === 'Special Feature'"></div>
                   <div>
                     {{ qty }}
                   </div>
@@ -158,7 +159,7 @@
                   <input type="number" class="form-control" placeholder="1" aria-label="Stunt Point Cost" v-model="feature.spCost"  aria-describedby="basic-addon1" min="1">
                 </div>
               </div>
-              <div class="row" style="margin:0" v-if="feature.type === 'Ancestry' || feature.type === 'Class'">
+              <div class="row" style="margin:0" v-if="feature.type === 'Ancestry' || feature.type === 'Class' || feature.type === 'Special Feature'">
                 <div class="mb-3 col">
                     <span class="age-input-label age-input-label" id="basic-addon1">Ability Name</span>          
                     <input type="text" class="form-control" placeholder="Ability Name" aria-label="Talent" v-model="feature.name"  aria-describedby="basic-addon1">
@@ -253,7 +254,7 @@
                 </div>
               </div>
             </div>
-              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization')">
+              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization' && feature.type !== 'Special Feature')">
                <h3 style="display: flex;">
                   <span>Modifiers</span>                  
                   <button class="link-btn" @click="addModifier" 

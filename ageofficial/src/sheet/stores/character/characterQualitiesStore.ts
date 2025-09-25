@@ -9,7 +9,7 @@ import { useModifiersStore } from '../modifiers/modifiersStore';
 
 
 export type Quality = {
-  type: 'Ability Focus' | 'Favored Stunt' | 'Ancestry' | 'Class' | 'Talent' | 'Specialization';
+  type: 'Ability Focus' | 'Favored Stunt' | 'Ancestry' | 'Class' | 'Talent' | 'Specialization' | 'Special Feature';
   _id: string;
   name: string;
   quality?:string;

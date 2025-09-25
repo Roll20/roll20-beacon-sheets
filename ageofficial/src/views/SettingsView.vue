@@ -8,7 +8,7 @@
         </div>
         <div class="container age-modal-container">     
           <div class="row age-modal-row">
-            <div class="">
+            <div class="mb-3 col">
               <span class="age-input-label" id="basic-addon1">Game System</span>      
               <select  id="settings.gameSystem" v-model="settings.gameSystem" class="age-select form-select" @change="updateGameSystem">
                 <!-- <option value="fage1e">Fantasy AGE 1e</option> -->
@@ -19,7 +19,16 @@
                 <!-- <option value="cthulhu">Cthulhu Awakens</option> -->
                 <!-- <option value="threefold">Threefold</option> -->
               </select>
-            </div>              
+            </div>       
+            <div class="mb-3 col" v-if="settings.gameSystem === 'mage'">
+              {{ settings.campaignMode }}
+              <span class="age-input-label" id="basic-addon1">Campaign Mode</span>      
+              <select  id="settings.campaignMode" v-model="settings.campaignMode" class="age-select form-select">
+                <option value="cinematic">Cinematic</option>
+                <option value="pulpy">Pulpy</option>
+                <option value="gritty">Gritty</option>
+              </select>
+            </div>       
           </div>
           <!-- // TODO Items unique to genre slices. Technofantasy, Cthulhu Awakens, Cyberpunk, etc. -->
           <!-- <div class="row age-modal-row"  v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'mage'">
@@ -100,7 +109,16 @@
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Display Enhancements</span>
-              </div>        
+              </div>    
+              <div class=" input-group">
+                <div class=" input-group" v-if="settings.gameSystem === 'mage' && settings.showArcana">
+                  <label class="age-checkbox-toggle" style="margin:1rem;">
+                      <input type="checkbox"  v-model="settings.userPowerFatigue" />
+                      <span class="slider round" ></span>
+                  </label>
+                  <span class="age-toggle-label">Use Power Fatigue</span>
+                </div>
+              </div>           
             </div>
           </div>  
           

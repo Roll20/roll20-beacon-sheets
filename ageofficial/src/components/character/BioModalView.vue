@@ -12,7 +12,7 @@
           <div class="mb-3 col" style="flex-direction: column;padding: 0 2px;">
           <span id="basic-addon1" class="age-input-label">Level</span>
           <div>
-            <input type="number" class="form-control" aria-label="Character Name" v-model="charLevel"  aria-describedby="basic-addon1" @change="levelUp">
+            <input type="number" class="form-control" aria-label="Character Name" v-model="charLevel"  aria-describedby="basic-addon1" @change="levelChange">
           </div>
         </div>
         <div class="mb-3 col-10" style="flex-direction: column;padding: 0 2px;">
@@ -101,7 +101,7 @@
 
           </div>
         </div>
-        <div class="mb-3 col"  v-if="settings.showArcana" style="flex-direction: column;padding: 0 2px;">
+        <div class="mb-3 col"  v-if="settings.showArcana && !settings.userPowerFatigue" style="flex-direction: column;padding: 0 2px;">
           <span id="basic-addon1" class="age-input-label">Max {{settings.gameSystem === 'mage' ? 'Power' : 'Magic'}} Points</span>
           <div>
             <input type="number" class="form-control" aria-label="Character Name" v-model="char.magicMax"  aria-describedby="basic-addon1">
@@ -169,16 +169,7 @@ const classChange = () => {
   //   attack.removeAttack(blastId);
   // }
 }
-const levelUp = () => {
-  if (char.level === null) {
-    char.level = charLevel.value;
-    return;
-  }
-  // Compare current value with the previous value
-  if (charLevel.value > char.level) {
-    char.levelUp();
-  } else if (charLevel.value < char.level) {
-    char.levelDown();
-  }
+const levelChange = () => {
+  char.levelSet(charLevel.value);
 }
 </script>

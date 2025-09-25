@@ -163,7 +163,7 @@ import { settingsSheet } from '@/relay/relay';
 import SidebarSection from './components/SidebarSection.vue';
 import NewSplashView from './views/NewSplashView.vue';
 import { productLineStyle } from '@/utility/productLineStyle';
-import {loadLegacyAbilityScores,loadLegacyCharacterDetails,loadLegacyGroupings} from '@/utility/legacyAdapter';
+import {legacyCurrency, loadLegacyAbilityScores,loadLegacyCharacterDetails,loadLegacyGroupings} from '@/utility/legacyAdapter';
 const showModal = ref(false)
 
 const store = useAgeSheetStore();
@@ -193,9 +193,10 @@ const setTheme = () => {
   productLineStyle(settings.gameSystem,colorTheme);
 }
 
-// loadLegacyAbilityScores(initValues.character.attributes);
-// loadLegacyCharacterDetails(initValues.character.attributes);
-// loadLegacyGroupings(initValues.character.attributes);
+loadLegacyAbilityScores(initValues.character.attributes);
+loadLegacyCharacterDetails(initValues.character.attributes);
+loadLegacyGroupings(initValues.character.attributes);
+
 </script>
 
 <style scoped lang="scss">

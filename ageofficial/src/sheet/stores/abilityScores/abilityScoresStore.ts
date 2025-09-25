@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useModifiersStore } from '../modifiers/modifiersStore';
 import { useItemStore } from '../character/characterQualitiesStore';
+import { powerFatiguePenalty } from '@/utility/arcanaPower';
 
 // Type for All the Data coming from Firebase to hydrate this store.
 export type AbilityScoresHydrate = {
@@ -137,6 +138,7 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
   });
   // Example for how to make basic roll + some modifiers using a custom roll template.
   const rollAbilityCheck = async (abilityScore: AbilityScore, proficient: boolean = false, abilityBonus?: number, focus?:any) => {
+    const settings = useSettingsStore();
     // Score is the Ability Score value
     const score = abilityScores.value[abilityScore].base;
     const { level } = useCharacterStore();
@@ -159,12 +161,14 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
       const encumbrancePenalty = useSettingsStore().encumbrancePenalty;
       components.push({ label: 'Overencumbered', value: encumbrancePenalty });
     }
+    if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
+      components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
+    }
     await rollToChat({
       title: `${abilityScore}`,
       subtitle: subtitle,
       characterName: useMetaStore().name,
       traits: ['Ability', 'Basic'],
-      allowHeroDie: false,
       rollType:'standard',
       components,
     });
@@ -206,7 +210,6 @@ export const useAbilityScoreStore = defineStore('abilityScores', () => {
     await rollToChat({
       title: 'Initiative',
       traits: [],
-      allowHeroDie: false,
       components,
     });
   };

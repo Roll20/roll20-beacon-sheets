@@ -8,6 +8,7 @@
         <div class="age-quality-section age-quality-talent-icon" v-if="feature.type === 'Talent'"></div>
         <div class="age-quality-section age-quality-specialization-icon" v-if="feature.type === 'Specialization'"></div>
         <div class="age-quality-section age-quality-stunt-icon" v-if="feature.type === 'Favored Stunt'"></div>
+        <div class="age-quality-section age-quality-special-icon" v-if="feature.type === 'Special Feature'"></div>
         </div>    
         <div class="label">
           <div v-if="feature.name !== 'custom'">{{ feature.name }}<br /></div>
@@ -65,7 +66,7 @@
               </div>
             </div>
           </div>
-          <div class="age-orb-container" v-if="feature.type !== 'Ability Focus' && feature.type !== 'Favored Stunt' && feature.type !== 'Ancestry' && feature.type !== 'Class'">
+          <div class="age-orb-container" v-if="feature.type !== 'Ability Focus' && feature.type !== 'Favored Stunt' && feature.type !== 'Ancestry' && feature.type !== 'Class' && feature.type !== 'Special Feature'">
             <div class="age-orb" :class="{ 'age-orb-highlight': isNovice || isExpert || isMaster}" v-tippy="{ content: noviceTip }"></div>
             <div class="age-orb" :class="{ 'age-orb-highlight': isExpert || isMaster}" v-tippy="{ content: expertTip }"></div>
             <div class="age-orb" :class="{ 'age-orb-highlight': isMaster}" v-tippy="{ content: masterTip }"></div>

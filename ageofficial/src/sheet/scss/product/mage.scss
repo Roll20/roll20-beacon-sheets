@@ -1,5 +1,8 @@
 $ageMAGEColor: var(--theme-primary);
 $ageMAGEColorLight: #ecfaff;
+$ageMAGECinematic: #a3ccae;
+$ageMAGEPulpy: #fbe1ad;
+$ageMAGEGritty: #da9e89;
 
 body.modernAge {
     background-color: #e6eaf2;
@@ -30,8 +33,9 @@ body.modernAge {
         align-items: center;
         justify-content: center;
         white-space: nowrap;
+        position: relative;
     }
-    & .age-icon-btn {
+    & .age-icon-btn, & .age-icon-btn-sm {
         background-color: none;
         color: $ageMAGEColor;
     }
@@ -77,10 +81,20 @@ body.modernAge {
                 padding: 0 0 2px;
                 margin-top: -2px;
             }
+            &.age-power-fatigue {
+                border-color: #a3a3a3;
+                cursor: not-allowed;
+                & .age-container-heading {
+                    background-color: #a3a3a3;
+                }
+                & .age-num-value {
+                    color: #a3a3a3;
+                }
+            }
         }
         & .age-container-content::before,.age-container-content::after, .age-container-content-corner-top-right, .age-container-content-corner-bottom-left {
             display: none;
-          }
+        }
         & .age-combat-unarmed .age-combat-unarmed__toggle, .age-tab .active .age-tab-icon {
             background-color: $ageMAGEColor;
         }
@@ -144,7 +158,45 @@ body.modernAge {
             }
         }
       }  
-      & .confirm-btn {
-        background:$ageMAGEColor;
-      }
+    & .confirm-btn {
+    background:$ageMAGEColor;
+    }
+    & .age-character-bio-value {
+            .age-character-campaignMode {
+            text-transform: capitalize;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 10px;
+            width: fit-content;
+            &.cinematic {
+                background-color: $ageMAGECinematic;
+            }
+            &.pulpy {
+                background-color: $ageMAGEPulpy;
+            }
+            &.gritty {
+                background-color: $ageMAGEGritty;
+                color:#151619;
+            }
+        }   
+    }
+    & .age-pf-label {
+        font-family:'Archive', serf;
+        text-transform: capitalize;
+    }
+    & .age-pulpy-btn {
+        display: flex;
+        flex-direction: column;
+    }
+    & .age-pulpy-toughness, & .age-pulpy-defense {
+        background: $ageMAGEColor;
+        height: 40px;
+        aspect-ratio: 1;
+    }
+    & .age-pulpy-defense {
+        mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23000" d="M133.813 37.28C103.96 66.698 96.25 109.353 110.28 145.47c-36.49-20.383-64.53-55.487-74.624-98.907-24.28 73.892 10.364 151.554 77.406 183.812-32.378 8.965-67.574-2.14-92.843-33.03 13.227 64.09 61.895 103.305 111.843 93.905-6.975 30.883-30.75 49.33-62.032 44.438 34.323 27.377 71.306 27 91.157 2.437 12.456 22.323 27.246 44.204 44.375 65.438l-23.125 12.062c16.96 26.955 42.62 53.035 75.907 77.125 31.79-23.093 55.416-48.452 72.437-74.28l-22.81-11.845c18.262-22.29 33.963-45.313 47.124-68.844 19.78 24.912 56.984 25.416 91.47-2.092-31.284 4.89-55.09-13.554-62.064-44.438 49.96 9.422 98.644-29.8 111.875-93.906-25.27 30.89-60.465 41.996-92.844 33.03 67.044-32.257 101.688-109.92 77.408-183.81-10.097 43.428-38.153 78.525-74.657 98.905 14.035-36.12 6.356-78.772-23.5-108.19 12.743 50.553-15.21 102.74-63.842 120.345-39.307 2.985-81.754 3.038-121.063.094-48.77-17.527-76.824-69.81-64.063-120.44zm252.156 130.595c-3.963 92.26-46.662 184.737-127.908 265.78-81.665-81.18-123.585-173.522-127.437-265.75 75.58 14.548 179.816 14.366 255.344-.03z"/></svg>');
+    }
+    & .age-pulpy-toughness {
+        mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23000" d="M257.375 20.313c-13.418 0-26.07 7.685-35.938 21.75-9.868 14.064-16.343 34.268-16.343 56.75 0 22.48 6.475 42.654 16.344 56.718 9.868 14.066 22.52 21.75 35.937 21.75 13.418 0 26.038-7.684 35.906-21.75 9.87-14.063 16.376-34.236 16.376-56.718 0-22.48-6.506-42.685-16.375-56.75-9.867-14.064-22.487-21.75-35.905-21.75zm-150.25 43.062c-20.305.574-23.996 13.892-31.78 29.03-23.298 45.304-55.564 164.75-55.564 164.75l160.47-5.436 29.125 137.593-22.78 106.03h149.093l-22.282-106 24.25-137.5 157.53 5.313c.002 0-32.264-119.447-55.56-164.75-7.787-15.14-11.477-28.457-31.782-29.03-17.898 0-32.406 15.552-32.406 34.718 0 19.166 14.508 34.72 32.406 34.72 3.728 0 7.258-.884 10.594-2.126l7.937 74.406L309.437 165c-.285.42-.552.867-.843 1.28-12.436 17.724-30.604 29.69-51.22 29.69-20.614 0-38.782-11.966-51.218-29.69-.277-.395-.54-.816-.812-1.218l-116.75 40.032 7.937-74.406c3.337 1.242 6.867 2.125 10.595 2.125 17.898 0 32.406-15.553 32.406-34.72 0-19.165-14.507-34.718-32.405-34.718z"/></svg>');
+    }
 }

@@ -7,6 +7,9 @@ import sendToChat from '@/utility/sendToChat';
 import type { ComputedRef } from 'vue';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import getRollResult from '@/utility/getRollResult';
+import { useBioStore } from '../bio/bioStore';
+import { useSettingsStore } from '../settings/settingsStore';
+import { useMetaStore } from '../meta/metaStore';
 
 export type CharacterHydrate = {
   character: {
@@ -29,6 +32,8 @@ export type CharacterHydrate = {
     fortuneInjured:boolean;
     fortuneWounded:boolean;
     fatigue?: number;
+    toughnessPrimary?: string | null;
+    powerFatigue?: number;
   };
 };
 
@@ -37,7 +42,7 @@ export type Level = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
 export const useCharacterStore = defineStore('character', () => {
   const abilityScoresStore = useAbilityScoreStore();
   const inventory = useInventoryStore();
-
+  const settings = useSettingsStore();
   //@ts-ignore
   const level: ComputedRef<Level> = computed(
     () =>
@@ -45,20 +50,14 @@ export const useCharacterStore = defineStore('character', () => {
         .reverse()
         .find((level) => level?.xp <= xp.value)?.level || 0,
   );
-  const xp = ref(1500);
-  const lifeCurrent = ref(20);
-  const lifeMod = ref(0);
+  const xp = ref(0);
   // Example of auto-calculated field. These don't need to be saved into firebase and should handled internally in the app whenever.
   // Formula for HP is the one indicated by level table + level multiplied by endurance + arbitrary life modifier.
   // const lifeMax = computed(
   //   () =>
   //     levelTable[level.value].life + level.value * abilityScoresStore.EnduranceBase + lifeMod.value,
   // );
-  const heroDiceCurrent = ref(3);
-  const heroDiceMod = ref(0);
-  const heroDiceMax = computed(() => levelTable[level.value].heroDice + heroDiceMod.value);
-  const manaCurrent = ref(10);
-  const manaMod = ref(0);
+  
   // const manaMax = computed(
   //   () =>
   //     levelTable[level.value].mana + level.value * abilityScoresStore.ThoughtBase + manaMod.value,
@@ -88,30 +87,100 @@ export const useCharacterStore = defineStore('character', () => {
 
   const peril = ref(0);
   const daring = ref(0);
+  const powerFatigue = ref(0);
+  const toughnessPrimary = ref('');
+  const toughnessLevelMod = ref(0);
+  const defenseLevelMod = ref(0);
+  const gameModeBonus = () => {
+    if(settings.gameSystem !== 'mage') return;
+    switch (useSettingsStore().campaignMode) {  
+    case 'cinematic':
+      if(level.value < 4){
+        toughnessLevelMod.value = 0;
+        defenseLevelMod.value = 0;
+      }
+      if(level.value >= 4){
+        toughnessLevelMod.value = 1;
+        defenseLevelMod.value = 1;
+      } if(level.value >= 8){
+        toughnessLevelMod.value = 2;
+        defenseLevelMod.value = 2;
+      } if(level.value >= 12){
+        toughnessLevelMod.value = 3;
+        defenseLevelMod.value = 3;
+      } if(level.value >= 16){
+        toughnessLevelMod.value = 4;
+        defenseLevelMod.value = 4;
+      } if(level.value >= 20){
+        toughnessLevelMod.value = 5;
+        defenseLevelMod.value = 5;
+      } 
+      break;
+    case 'pulpy':
+      if(level.value < 4){
+        toughnessLevelMod.value = 0;
+        defenseLevelMod.value = 0;
+      }
+      if(level.value >= 4){
+        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 1 : 0;
+        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 1 : 0;
+      } 
+      if(level.value >= 8){
+        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 2 : 0;
+        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 2 : 0;
+      } 
+      if(level.value >= 12){
+        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 3 : 0;
+        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 3 : 0;
+      } 
+      if(level.value >= 16){
+        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 4 : 0;
+        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 4 : 0;
+      } 
+      if(level.value >= 20){
+        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 5 : 0;
+        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 5 : 0;
+      }
+      break;
+    case 'gritty':
+      toughnessLevelMod.value = 0;
+      defenseLevelMod.value = 0;
+      break;
+    default:
+      toughnessLevelMod.value = 0;
+      defenseLevelMod.value = 0;
+      break;
+    }
+  };
   const levelUp = () => {
-    const newLevel:number = Number(level.value+1)
+    const newLevel:number = Number(level.value+1);
     // @ts-ignore
     xp.value = levelTable[newLevel].xp
+    gameModeBonus();
   }
   const levelDown = () => {
     const newLevel:number = Number(level.value-1)
     // @ts-ignore
     xp.value = levelTable[newLevel].xp
+    gameModeBonus();
   }
   const levelSet = (newLevel:number)=> {
     // @ts-ignore
     xp.value = levelTable[newLevel].xp
+    gameModeBonus();
   }
+  
   const resetStunts = () => {
     stunts.value = 0;
   }
+  const resetPowerFatigue = () => {
+    powerFatigue.value = 0;
+  }  
+
   const dehydrate = () => {
     return {
       character: {
         xp: xp.value,
-        lifeCurrent: lifeCurrent.value,
-        heroDiceCurrent: heroDiceCurrent.value,
-        manaCurrent: manaCurrent.value,
         defenseMod: defenseMod.value,
         speed: speed.value,
         armor: armor.value,
@@ -126,6 +195,8 @@ export const useCharacterStore = defineStore('character', () => {
         fortuneInjured:fortuneInjured.value,
         fortuneWounded:fortuneWounded.value,
         fatigue: fatigue.value,
+        toughnessPrimary: toughnessPrimary.value,
+        powerFatigue: powerFatigue.value,
         // We don't need to save the computed ones on Firebase as long as we have everything needed to calculate them.
       },
     };
@@ -134,9 +205,6 @@ export const useCharacterStore = defineStore('character', () => {
   const hydrate = (hydrateStore: CharacterHydrate) => {
     // Should only need to hydrate the same attributes as in "dehydrate".
     xp.value = hydrateStore.character.xp ?? xp.value;
-    lifeCurrent.value = hydrateStore.character.lifeCurrent ?? lifeCurrent.value;
-    heroDiceCurrent.value = hydrateStore.character.heroDiceCurrent ?? heroDiceCurrent.value;
-    manaCurrent.value = hydrateStore.character.manaCurrent ?? manaCurrent.value;
     defenseMod.value = hydrateStore.character.defenseMod ?? defenseMod.value;
     speed.value = hydrateStore.character.speed ?? speed.value;
     armor.value = hydrateStore.character.armor ?? armor.value;
@@ -151,6 +219,8 @@ export const useCharacterStore = defineStore('character', () => {
     fortuneInjured.value = hydrateStore.character.fortuneInjured ?? fortuneInjured.value;
     fortuneWounded.value = hydrateStore.character.fortuneWounded ?? fortuneWounded.value;
     fatigue.value = hydrateStore.character.fatigue ?? fatigue.value;
+    toughnessPrimary.value = hydrateStore.character.toughnessPrimary ?? toughnessPrimary.value;
+    powerFatigue.value = hydrateStore.character.powerFatigue ?? powerFatigue.value;
   };
 
   // Posts a message to chat with the "chat" template.
@@ -160,50 +230,6 @@ export const useCharacterStore = defineStore('character', () => {
       subtitle: 'Failure!',
       textContent: "Uh Oh! You've run out of Hero Dice!!",
     });
-  };
-
-  /*
-   * The following 3 methods serve as example for some advanced actions that update values in the sheet.
-   * They check if you have any Hero Dice remaining. If not, it prints a failure message.
-   * If you do, it rolls 1d6, prints the result, does something with the result (like heal) and then subtracts 1 hero die.
-   * */
-  const rollHeroDiceLife = async () => {
-    const title = 'Hero Dice Healing';
-    if (!heroDiceCurrent.value) return heroDiceFailure(title);
-    const result = await rollToChat({
-      title,
-      subtitle: 'Heal by total',
-      keyValues: { Actions: 1, Cost: '1 Hero Die' },
-      traits: ['Heroic'],
-      components: [{ label: 'Hero Die', sides: 6 }],
-    });
-    // lifeCurrent.value = Math.min(lifeCurrent.value + result, lifeMax.value);
-    heroDiceCurrent.value--;
-  };
-  const rollHeroDiceMana = async () => {
-    const title = 'Hero Dice Healing';
-    if (!heroDiceCurrent.value) return heroDiceFailure(title);
-    const result = await rollToChat({
-      title,
-      subtitle: 'Recover Mana by total',
-      keyValues: { Actions: 1, Cost: '1 Hero Die' },
-      traits: ['Heroic'],
-      components: [{ label: 'Hero Die', sides: 6 }],
-    });
-    // manaCurrent.value = Math.min(manaCurrent.value + result, manaMax.value);
-    heroDiceCurrent.value--;
-  };
-
-  const rollHeroDiceRaw = async () => {
-    const title = 'Hero Die';
-    if (!heroDiceCurrent.value) return heroDiceFailure(title);
-    await rollToChat({
-      title: 'Rolling 1 Hero Die',
-      keyValues: { Actions: 1, Cost: '1 Hero Die' },
-      traits: ['Heroic'],
-      components: [{ label: 'Hero Die', sides: 6 }],
-    });
-    heroDiceCurrent.value--;
   };
 
   const rollAttack = async () => {
@@ -221,7 +247,6 @@ export const useCharacterStore = defineStore('character', () => {
       title: `Attack Using ${weaponAbilityScore} ${weaponName ? 'With ' + weaponName : ''}`,
       keyValues: { Actions: 1, Damage: damage.toString() },
       traits: ['Attack'],
-      allowHeroDie: true,
       components: [
         { label: `Base Roll`, sides: 20 },
         { label: `${weaponAbilityScore} Bonus`, value: attackBonus },
@@ -230,6 +255,23 @@ export const useCharacterStore = defineStore('character', () => {
     });
   };
 
+  const rollPowerFatigueTest = async (powerCost:number, focus:number) => {
+    const ability = useAbilityScoreStore();
+    const halfPower = Math.floor(powerCost/2);
+    const components = [
+      { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
+      { label: 'Willpower', value: ability.WillpowerBase },
+      { label: 'Focus', value: focus ? focus : 0 },
+    ];    
+    await rollToChat({
+      characterName: useMetaStore().name,
+      title: '',
+      subtitle: 'Power Fatigue Test',
+      rollType:'powerFatigue',
+      targetNumber: 9 + halfPower,
+      components
+    });
+  };
   // const rollSpell = async () => {
   //   const abilityScoreStore = useAbilityScoreStore();
   //   // const thought = abilityScoreStore.ThoughtCurrent;
@@ -254,24 +296,12 @@ export const useCharacterStore = defineStore('character', () => {
   return {
     level,
     xp,
-    lifeCurrent,
-    lifeMod,
-    // lifeMax,
-    heroDiceCurrent,
-    heroDiceMod,
-    heroDiceMax,
-    manaCurrent,
-    manaMod,
-    // manaMax,
     defenseMod,
     speed,
     armor,
     profBonus,
     stunts,
     // defense,
-    rollHeroDiceLife,
-    rollHeroDiceMana,
-    rollHeroDiceRaw,
     rollAttack,
     // rollSpell,
     levelUp,
@@ -288,55 +318,21 @@ export const useCharacterStore = defineStore('character', () => {
     fatigue,
     fortuneInjured,
     fortuneWounded,
+    powerFatigue,
+    resetPowerFatigue,
     dehydrate,
     hydrate,
+    toughnessPrimary,
+    toughnessLevelMod,
+    defenseLevelMod,
+    gameModeBonus,
+    rollPowerFatigueTest
   };
 });
 
 /* After any Ability Roll you can choose to spend 1 hero die to roll 1d6 and add it to the total.
  * Follow-up Rolls need to be defined outside of the Store since it may not be available when clicking on the button
  *  */
-export const addHeroDie = async (props: any, originalResult: number, originalTitle: string) => {
-  // This follow-up roll subtracts 1 hero die then adds the result of 1d6 to the previous roll and re-posts the new total.
-  const heroDiceCurrent = props?.character?.attributes?.character?.character?.heroDiceCurrent || -1;
-  if (heroDiceCurrent < 0) {
-    await sendToChat(
-      {
-        title: `Adding Hero Dice: ${originalTitle}`,
-        subtitle: 'Failure!',
-        textContent: "Uh Oh! You've run out of Hero Dice!!",
-      },
-      props.dispatch,
-    );
-    return;
-  }
-  await rollToChat(
-    {
-      title: `Adding Hero Dice: ${originalTitle}`,
-      subtitle: 'New Total',
-      allowHeroDie: false,
-      components: [
-        { label: `Original Roll`, value: originalResult },
-        { label: 'Hero Die', sides: 6 },
-      ],
-    },
-    props.dispatch,
-  );
-
-  // Since we can not access the Pinia store to update the store's value, we need to handle updating the values through the relay.
-  props.dispatch.update({
-    character: {
-      id: props.character.id,
-      attributes: {
-        character: {
-          character: {
-            heroDiceCurrent: heroDiceCurrent - 1,
-          },
-        },
-      },
-    },
-  });
-};
 export const addToStunts = (props: any,stunts:number) => {
   if(stunts){
     const stuntPoints = useCharacterStore().stunts;
