@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap');
+
+$rem: 10px;
+
+$font-family-primary: 'Montserrat', sans-serif;
+
+$color-primary: black;//rgb(50, 50, 50);
+$color-secondary: transparentize($color-primary, 0.30);
+$color-tertiary: transparentize($color-primary, 0.65);
+$color-disabled: transparentize($color-primary, 0.90);
+$color-highlight: #fc0902;
+$color-negative: rgb(179, 27, 27);
+$color-positive: rgb(27, 179, 52);
+$color-background: white;
+
+html * {
+  --color-primary: #{$color-primary};
+  --color-secondary: #{$color-secondary};
+  --color-tertiary: #{$color-tertiary};
+  --color-disabled: #{$color-disabled};
+  --color-highlight: #{$color-highlight};
+  --color-highlight-detail: #{$color-background};
+  --color-negative: #{$color-negative};
+  --color-negative-detail: #{$color-background};
+  --color-positive: #{$color-positive};
+  --color-positive-detail: #{$color-background};
+  --color-background: #{$color-background};
+  --color-box: #{$color-primary};
+  --color-box-detail: #{$color-background};
+
+  --size-font-small: 0.8rem;
+  --size-font-medium: 1.0rem;
+  --size-font-large: 1.4rem;
+  --size-font-xlarge: 1.5rem;
+  --size-font-xxlarge: 1.8rem;
+  --size-font-xxxlarge: 2.5rem;
+
+  --size-gap-xsmall: 0.25rem;
+  --size-gap-small: 0.5rem;
+  --size-gap-medium: 1rem;
+  --size-gap-large: 2rem;
+
+  --size-border-radius-medium: 0.25rem;
+
+  --font-family-primary: #{$font-family-primary};
+
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* Propietary Vars */
+  --path-hexagon: polygon(calc(0% + 0.75rem) 0%, calc(100% - 0.75rem) 0%, 100% 50%, calc(100% - 0.75rem) 100%, calc(0% + 0.75rem) 100%, 0% 50%);
+}
