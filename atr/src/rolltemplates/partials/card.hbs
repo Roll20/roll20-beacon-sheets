@@ -1,0 +1,24 @@
+<rolltemplate class="sheet-roll__card sheet-roll-source--{{sourceType}}">
+{{> header characterName=characterName title=title subtitle=subtitle}}
+
+  <div class="sheet-roll__roll-content">
+    {{> @partial-block }}
+  </div>
+
+  {{#if properties}}
+    <div class="sheet-roll__properties">
+      {{#each properties}}
+        {{#if this}}
+          <div class="sheet-roll__property">
+            <strong class="sheet-roll__property-key">{{@key}}:</strong>
+            <span class="sheet-roll__property-value">{{this}}</span>
+          </div>
+        {{/if}}
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{#if description}}
+    <div class="sheet-roll__description">{{description}}</div>
+  {{/if}}
+</rolltemplate>
