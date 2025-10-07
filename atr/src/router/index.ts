@@ -14,9 +14,8 @@ const router = createRouter({
   // @ts-ignore
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', name: 'root' }, 
     {
-      path: '/core',
+      path: '/',
       name: 'core',
       component: CoreView,
       alias: '/core',
@@ -32,19 +31,6 @@ const router = createRouter({
       component: NpcView,
     }
   ],
-});
-
-router.beforeEach((to, from, next) => {
-  if (to.path === '/') {
-    const store = useNpcStore();
-    if (store.isNpc) {
-      next('/npcs');
-    } else {
-      next('/core');
-    }
-  } else {
-    next();
-  }
 });
 
 export default router;

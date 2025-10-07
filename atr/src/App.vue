@@ -47,13 +47,19 @@ function handleKeyUp(e) {
   //if (!e.ctrlKey) isCtrlPressed.value = false;
 }
 
+if(npcStore.isNpc) {
+  router.replace({ name: "npcs" });
+} else {
+  router.replace({ name: "core" });
+}
+
 watch(
   () => npcStore.isNpc,
   (isNpc) => {
     if (isNpc) {
-      router.push('/npcs');
+      router.replace({ name: "npcs" });
     } else {
-      router.push('/core');
+      router.replace({ name: "core" });
     }
   }
 );
