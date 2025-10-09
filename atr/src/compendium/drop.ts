@@ -18,7 +18,7 @@ import { SpellSchema } from "@/schemas/spell";
 
 type Feature = z.infer<typeof FeatureSchema>;
 
-export type compendiumCategory = "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Races" | "Subraces" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories"| "Melee and Missile Modifications" | "Vehicle Modifications" | "Miscellaneous Magic Items" |"Brews" | "Magic Weapons" | "Magic Armor"| "Wondrous Items" | "Mutations";
+export type compendiumCategory = "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Races" | "Subraces" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories"| "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" |"Brews" | "Magic Weapons" | "Magic Armor"| "Wondrous Items" | "Mutations";
 
 export type CompendiumPage = {
   id: string;
@@ -49,7 +49,7 @@ export const createPageRequest = (categoryName: string, pageName: string) => `
 id
 category(name: "${categoryName}") {
   id
-  pages(name: "${pageName}") {
+  pages(name: "${decodeURIComponent(pageName)}") {
     id
     name
     properties
@@ -122,6 +122,7 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   "Magic Armor": onDropEquipment,
   "Wondrous Items": onDropEquipment,
   "Mutations": onDropFeature,
+  "Melee and Missile Weapons": onDropEquipment
 
 };
 
