@@ -49,7 +49,7 @@ export const createPageRequest = (categoryName: string, pageName: string) => `
 id
 category(name: "${categoryName}") {
   id
-  pages(name: "${pageName}") {
+  pages(name: "${decodeURIComponent(pageName)}") {
     id
     name
     properties
