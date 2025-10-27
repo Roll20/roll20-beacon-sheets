@@ -1,0 +1,64 @@
+{
+  "name": "Arbiter",
+  "hitDie": "1d10",
+  "spellcasting": "full",
+  "data-spellcastingAbility": "wisdom",
+  "data-features": {
+    "level-1": [
+      {
+        "label": "Aware",
+        "group": "class-features",
+        "description": "",
+        "data-effects": {
+        "label": "Aware",
+          "effects": [
+            {
+              "attribute": "initiative-modifier",
+              "operation": "add",
+              "value": 5
+            },
+            {
+              "attribute": "perception-passive",
+              "operation": "add",
+              "value": 4
+            }
+          ]
+        }
+      }
+    ],
+    "level-2": [
+      {
+        "label": "Judgment",
+        "group": "class-features",
+        "description": "",
+        "data-effects": {
+          "label": "Judgment",
+          "effects": [
+            {
+              "attribute": "strength",
+              "operation": "add",
+              "value": 1
+            }
+          ]
+        }
+      }
+    ],
+    "level-3": [
+      {
+        "label": "Judgment 2",
+        "group": "class-features",
+        "description": "",
+        "data-effects": {
+          "label": "Judgment",
+          "effects": [
+            {
+              "attribute": "dexterity",
+              "operation": "add",
+              "value": 1
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

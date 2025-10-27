@@ -1,0 +1,36 @@
+{
+  "name": "Studded Armor",
+  "type": "armor",
+  "value": {
+    "amount": 17
+  },
+  "weight": 40,
+  "data-tags": ["attunement"],
+  "data-effects": {
+    "label": "Ring Mail",
+    "enabled": true,
+    "toggleable": false,
+    "removable": false,
+    "description": "Provides a base AC of 14.",
+    "effects": [
+      {
+        "attribute": "$picker:0",
+        "operation": "add",
+        "value": 2
+      }
+    ],
+    "pickers": [
+      {
+        "label": "Ability",
+        "options": [
+          { "label": "Strength", "value": "strength" },
+          { "label": "Dexterity", "value": "dexterity" },
+          { "label": "Constitution", "value": "constitution" },
+          { "label": "Intelligence", "value": "intelligence" },
+          { "label": "Wisdom", "value": "wisdom" },
+          { "label": "Charisma", "value": "charisma" }
+        ]
+      }
+    ]
+  }
+}

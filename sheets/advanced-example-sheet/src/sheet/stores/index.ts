@@ -48,7 +48,7 @@ export const useExampleSheetStore = defineStore('examplesheetStore', () => {
 
   // Loops through all the stores and runs their Dehydrate.
   // Meta store has unique behavior which shouldn't be modified.
-  // This is invoked any time Firebase data changes.
+  // Invoked every time anything in this sheet is updated.
   const dehydrateStore = () => {
     const character: Record<string, any> = {};
     character.attributes = {};
@@ -69,7 +69,7 @@ export const useExampleSheetStore = defineStore('examplesheetStore', () => {
   };
 
   // Loops through all stores and runs Hydrate.
-  // Invoked every time anything in this sheet is updated.
+  // This is invoked any time Firebase data changes.
   const hydrateStore = (partial: Record<string, any>, meta: MetaHydrate) => {
     if (partial) {
       storeRegistry.forEach((store) => {

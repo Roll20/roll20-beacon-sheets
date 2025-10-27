@@ -1,0 +1,20 @@
+{
+  "label": "Aware",
+  "group": "feats",
+  "description": "",
+  "data-effects": {
+    "label": "Aware",
+    "effects": [
+      {
+        "attribute": "initiative-modifier",
+        "operation": "add",
+        "value": 5
+      },
+      {
+        "attribute": "perception-passive-modifier",
+        "operation": "add",
+        "value": 4
+      }
+    ]
+  }
+}
