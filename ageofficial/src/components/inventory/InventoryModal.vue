@@ -208,6 +208,20 @@
                     </div>                        
                 </div>
                 </div>
+                <div class="row" style="margin:0">
+                  <div class="mb-3 col" v-if="item.weaponType === 'Ranged' && settings.gameSystem === 'mage'">
+                        <span class="age-input-label" id="basic-addon1">Capacity</span>
+                        <div>
+                          <input type="number" class="form-control" aria-label="Character Name" v-model="item.capacity" aria-describedby="basic-addon1">
+                        </div>
+                    </div>
+                    <div class="mb-3 col" v-if="item.weaponType === 'Ranged' && settings.gameSystem === 'mage'">
+                    <span class="age-input-label" id="basic-addon1">Rate of Fire</span>
+                    <div>
+                          <input type="text" class="form-control" aria-label="Character Name" v-model="item.rateOfFire" aria-describedby="basic-addon1">
+                    </div>                           
+                    </div>
+                </div>
                 <div v-if="item.weaponType === 'Spell Ranged'">
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Range</span>
@@ -329,7 +343,7 @@
       props.item.configurable = true;
     }
   }
-const weaponTypes = ['Melee','Natural','Ranged','Spell Melee','Spell Ranged']
+  const weaponTypes = ['Melee','Ranged','Spell Melee','Spell Ranged']
 
   </script>
   <style>

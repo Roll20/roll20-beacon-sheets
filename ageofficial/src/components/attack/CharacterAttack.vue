@@ -137,7 +137,10 @@ const settings = useSettingsStore();
 const damageMods = damageMod; 
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
-const trained = computed(() => (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2 : 0);
+const trained = computed(() => { 
+  
+  return (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : props.attack.weaponType === 'Natural' ? 0: -2 : 0
+});
 const attackHit = computed(() => attackToHit(props.attack).value);
 const modsBonus = computed(() => {
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';
@@ -165,7 +168,6 @@ const modsBonus = computed(() => {
   }
   return `${base}${sign}${Math.abs(modifier)}`;
 });
-
 const filteredDamageMods = computed(()=>{
   return damageMods.value.filter(mod => {
     // Filter out stunts with type 'Spell' if the attack is 'melee' or 'ranged'
@@ -189,7 +191,7 @@ const setAttackRoll = () => {
     toAttackRoll = Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility].base) + trained.value;
   }
 }
-setAttackRoll()
+setAttackRoll();
 
 const focus = useAbilityFocusesStore();
 let sfb = {}
@@ -225,8 +227,10 @@ const handleDelete = () => {
 };
 const handlePrint = () => {
   const attackStore = useAttackStore();
+  setAttackRoll()
   attackStore.printAttack(props.attack,toAttackRoll,attackFocus(props.attack));
 };
+
 const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   const attackStore = useAttackStore();
   const attackDamage = Object.assign({}, props.attack);
@@ -240,14 +244,13 @@ const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   if(attackDamage.spCost){
     char.stunts = char.stunts - attackDamage.spCost;
   }
-  console.log(attackDamage)
   attackStore.printAttackDamage(attackDamage); 
 }
+
 const selectedAttack = () => {
   const attackStore = useAttackStore();
   attackStore.setCurrentAttack(props.attack._id);
 };
-
 
 function mergeDice(rolls) {
   // Create an object to track the number of each type of dice

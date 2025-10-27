@@ -56,8 +56,6 @@
               <div><button class="ability-check-btn btn btn-success" @click="rollAbilityCheck(selectedAbility, true);showRerollModal = false;">Reroll</button></div>
             </div>
         </div>
-            
-    
     </div>
     </Transition>
   </Teleport>
@@ -65,16 +63,10 @@
     <SidebarSection ref="sidebarRef">
       <h2>Ability Info</h2>
       <ul class="age-sidebar-list">
-        <li><span class="age-sidebar-list__title">Accuracy</span> represents your character’s physical precision and skill with finesse and ranged weapons, such as bows and rapiers.</li>
-        <li><span class="age-sidebar-list__title">Communication</span> covers your character’s social skills, personal interactions, and ability to deal with others.</li>
-        <li><span class="age-sidebar-list__title">Constitution</span> is your character’s fortitude and resistance to harm.</li>
-        <li><span class="age-sidebar-list__title">Dexterity</span> encompasses your character’s agility, hand-eye coordination, and quickness.</li>
-        <li><span class="age-sidebar-list__title">Fighting</span> is your character’s skill at combat with heavier weapons, such as axes and spears.</li>
-        <li><span class="age-sidebar-list__title">Intelligence</span> is a measure of your character’s smarts, knowledge, and education.</li>
-        <li><span class="age-sidebar-list__title">Perception</span> covers all the senses and the ability to interpret sensory information.</li>
-        <li><span class="age-sidebar-list__title">Strength</span> is your character’s ability to generate raw physical force.</li>
-        <li><span class="age-sidebar-list__title">Willpower</span> encompasses mental toughness, discipline, and confidence</li>
-        
+        <li v-for="abl in abilitiesInfo" :key="abl">
+          <span class="age-sidebar-list__title">{{ abl.ability }}</span> 
+          <span>{{ abl[settings.gameSystem] }}</span>
+        </li>
       </ul>
     </SidebarSection>
     </Teleport>
@@ -91,8 +83,9 @@ import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocu
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import SidebarSection from '@/components/SidebarSection.vue';
 import { abilityMods } from '@/sheet/stores/modifiersCheck/abilities';
+import { abilities } from './abilities';
 const { abilityScores, rollAbilityCheck } = useAbilityScoreStore();
-
+const abilitiesInfo = abilities;
 // const abilityScoresArray = ref(
 //   Object.entries(abilityScores).map(([label, abilityScore]) => ({ ...abilityScore, label })),
 // );

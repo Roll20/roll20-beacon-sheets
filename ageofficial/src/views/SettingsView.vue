@@ -101,7 +101,14 @@
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Show Alienation</span>
-              </div>        
+              </div>   
+              <div class=" input-group">
+                <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <input type="checkbox"  v-model="settings.optionalMovements" />
+                    <span class="slider round" ></span>
+                </label>
+                <span class="age-toggle-label">Movement Types</span>
+              </div>      
               <div class=" input-group">
               <!-- <div class=" input-group" v-if="settings.technofantasy || settings.cyberpunk"> -->
                 <label class="age-checkbox-toggle" style="margin:1rem;">
@@ -188,6 +195,13 @@
               <select  id="settings.showXP" v-model="settings.showXP" class="age-select form-select">
                 <option :value="true">Show</option>
                 <option :value="false">Hide</option>
+              </select>
+            </div>
+            <div class="col">
+              <span class="age-input-label" id="basic-addon1">Income Mode</span>
+              <select  id="settings.showXP" v-model="settings.incomeMode" class="age-select form-select">
+                <option :value="'currency'">Currency</option>
+                <option :value="'recources'">Recources</option>
               </select>
             </div>
             </div>      
