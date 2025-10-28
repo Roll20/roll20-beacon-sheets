@@ -40,6 +40,8 @@ export type Weapon = Item & {
   minStr?: number;
   damageType?:string;
   damageSource?:string;
+  capacity?:number;
+  rateOfFire?:string;
 };
 
 export type Armor = Item & {

@@ -46,7 +46,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-import { fage1e, fage2e } from '@/components/modifiers/focuses'
+import { bluerose, cthulhu, fage1e, fage2e, mage } from '@/components/modifiers/focuses'
 
 const props = defineProps({
     mod:{ type: Object}
@@ -60,16 +60,16 @@ switch(useSettingsStore().gameSystem){
     filteredFocuses.value = fage2e;
   break;
   case 'mage':
-    filteredFocuses.value = fage2e;
+    filteredFocuses.value = mage;
   break;
   case 'fage1e':
     filteredFocuses.value = fage1e;
   break;
   case 'bluerose':
-    filteredFocuses.value = fage2e;
+    filteredFocuses.value = bluerose;
   break;
   case 'cthulhu':
-    filteredFocuses.value = fage2e;
+    filteredFocuses.value = cthulhu;
   break;
 }
 </script>

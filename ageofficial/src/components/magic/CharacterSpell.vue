@@ -40,7 +40,7 @@
         </button>
         </div>
         
-        <button type="button" class="config-btn age-icon-btn" @click="handlePrint" v-tippy="{ content: 'Share '+magicLabel+' in chat'}">
+        <button type="button" class="config-btn age-icon-btn" @click="handleSpellDetails" v-tippy="{ content: 'Share '+magicLabel+' in chat'}">
           <font-awesome-icon :icon="['fa', 'comment']" />
         </button> 
         <button type="button" class="config-btn age-icon-btn" @click="showModal = true" v-tippy="{ content: 'Edit '+magicLabel}">
@@ -197,6 +197,11 @@ const handlePrint = () => {
 const handleDamagePrint = () => {
   const spellStore = useSpellStore();
   spellStore.printSpellDamage(props.spell);
+};
+
+const handleSpellDetails = () => {
+  const spellStore = useSpellStore();
+  spellStore.printSpellDetails(props.spell, magicLabel.value);
 };
 const selectedAttack = () => {
   const spellStore = useSpellStore();

@@ -192,7 +192,25 @@ const setTheme = () => {
   const colorTheme = initValues.settings.colorTheme;
   productLineStyle(settings.gameSystem,colorTheme);
 }
-
+if(!settings.incomeMode) {
+    if(settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e') {
+      console.log('Setting income mode to currency for FAGE');
+      settings.incomeMode = 'currency';
+    } else {
+      console.log('Setting income mode to recources for non-FAGE');
+      settings.incomeMode = 'recources';
+    }
+  }
+function setIncomeModeIfNull() {
+  if(!settings.incomeMode) {
+    if(settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e') {
+      settings.incomeMode = 'currency';
+    } else {
+      settings.incomeMode = 'recources';
+    }
+  }
+}
+setIncomeModeIfNull();
 loadLegacyAbilityScores(initValues.character.attributes);
 loadLegacyCharacterDetails(initValues.character.attributes);
 loadLegacyGroupings(initValues.character.attributes);

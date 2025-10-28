@@ -51,8 +51,8 @@
           </div>     
         </div>
         </div>
-        <CurrencyView v-if="settings.gameSystem === 'fage2e'" />
-        <ResourcesView v-if="settings.gameSystem === 'mage' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'expanse'" />
+        <CurrencyView v-if="settings.incomeMode === 'currency'" />
+        <ResourcesView v-if="settings.incomeMode === 'recources'" />
       </div>
     </div>
   </div>
@@ -128,6 +128,7 @@ function resetItem(){
     quantity: 1
   }
 }
+
 </script>
 
 <style scoped lang="scss">

@@ -62,6 +62,14 @@
                           {{ option }}
                         </option>
                       </optgroup>
+                      <optgroup label="Psychic" v-if="feature.ability === 'Intelligence' && settings.gameSystem === 'mage'">
+                        <option
+                          v-for="option in psychicFocuses"
+                          :key="`Psychic-${option}`"
+                          :value="`Psychic (${option})`">
+                          {{ option }}
+                        </option>
+                      </optgroup>
                       <option v-for="foci in filteredFocuses[feature.ability]" :key="foci" :value="foci">{{ foci }}</option>
                       <option value="custom">Custom</option>
                   </select>
@@ -316,7 +324,7 @@
                 <div >
                   <button v-if="mode === 'create' && feature.type"
                 class="confirm-btn"
-                @click="useItemStore().addItem(feature);$emit('close')"
+                @click="createQuality();$emit('close')"
               >Create</button>      
                 </div>
           </slot>
@@ -343,7 +351,6 @@
 <script setup>
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-// import { mageFocuses, fage2eFocuses, blueroseFocuses,fage1eFocuses, cthulhuFocuses } from '@/components/modifiers/qualities';
 import { computed, ref } from 'vue';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { v4 as uuidv4 } from 'uuid';
@@ -353,7 +360,7 @@ import { bluerose, cthulhu, fage1e, fage2e, mage } from '../modifiers/focuses';
 import CustomAttackModView from '../modifiers/CustomAttackModView.vue';
 import {useModifiersStore} from '@/sheet/stores/modifiers/modifiersStore'
 import BaseModView from '@/components/modifiers/BaseModView.vue';
-import { brArcana, fageArcana, magePowers } from '../magic/magicTypes';
+import { brArcana, fageArcana, magePowers, magePsychicPowers } from '../magic/magicTypes';
 // const qualityOptions = ['Ability Focus', 'Ancestry', 'Class', 'Favored Stunt', 'Specialization', 'Talent' ];
 const props = defineProps({
   show: Boolean,
@@ -363,21 +370,12 @@ const props = defineProps({
 });
 const char = useCharacterStore();
 const mods = useModifiersStore();
+const settings = useSettingsStore()
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower'];
 
-// const filteredFocuses = ref({
-//   Accuracy: ['Arcane Blast', 'Black Powder', 'Bows', 'Brawling', 'Dueling', 'Grenades', 'Light Blades', 'Slings', 'Staves'],
-//   Communication: ['Animal Handling', 'Bargaining', 'Deception','Disguise', 'Etiquette', 'Gambling', 'Investigation', 'Leadership','Performing', 'Persuasion', 'Seduction'],
-//   Constitution: ['Rowing', 'Running', 'Stamina', 'Swimming','Tolerance'],
-//   Dexterity: ['Acrobatics', 'Calligraphy', 'Crafting', 'Initiative', 'Legerdemain', 'Lock Picking', 'Riding', 'Sailing', 'Stealth', 'Traps'],
-//   Fighting: ['Axes', 'Bludgeons', 'Heavy Blades', 'Lances','Polearms', 'Spears'],
-//   Intelligence: ['Arcana', 'Arcane Lore', 'Brewing', 'Cartography','Cryptography', 'Cultural Lore', 'Engineering', 'Evaluation','Healing', 'Heraldry', 'Historical Lore', 'Military Lore', 'Musical Lore', 'Natural Lore', 'Navigation', 'Religious Lore', 'Research,Thieves’ Lore', 'Writing'],
-//   Perception: ['Empathy', 'Hearing', 'Searching', 'Seeing', 'Smelling','Tasting', 'Touching', 'Tracking'],
-//   Strength: ['Climbing', 'Driving', 'Intimidation', 'Jumping','Might', 'Smithing'],
-//   Willpower: ['Courage', 'Faith', 'Morale', 'Self-Discipline']
-// })
 const filteredFocuses = ref(fage2e)
 const arcanaFocuses = ref([]);
+const psychicFocuses = ref([]);
 switch(useSettingsStore().gameSystem){
   case 'fage2e':
     filteredFocuses.value = fage2e;
@@ -386,6 +384,7 @@ switch(useSettingsStore().gameSystem){
   case 'mage':
     filteredFocuses.value = mage;
     arcanaFocuses.value = magePowers;
+    psychicFocuses.value = magePsychicPowers;
   break;
   case 'fage1e':
     filteredFocuses.value = fage1e;
@@ -406,7 +405,7 @@ const setFocus = (selectedOption) => {
     props.feature.name = group === 'custom' ? 'custom' : group;
   }
 }
-const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : props.feature.name || '');
+const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : psychicFocuses.value.includes(props.feature.name) ? `Psychic (${props.feature.name})` : props.feature.name || '');
 
 const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 
 // 'Health Points', 'Magic Points',
@@ -460,18 +459,25 @@ const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Cust
 //     break;
 //   }
 // }
+const createQuality = () => {
+  useItemStore().addItem(props.feature);
+  if(!props.feature.modifiers && props.feature.modifiers.length === 0) return;
+  props.feature.modifiers.forEach(mod => {
+    useItemStore().addModifier(props.feature, mod)
+  });
+}
 const addModifier = () => {
-  mods.addModifier(props.feature)
-  // if(props.feature._id){
-  //   useItemStore().addModifier(props.feature)
-  // } else {
-  //   Object.assign(props.feature, {
-  //     modifiers:[{
-  //       _id:uuidv4(),
-  //       option:''
-  //     }]
-  //   })
-  // }
+  // mods.addModifier(props.feature)
+  if(props.feature._id){
+    useItemStore().addModifier(props.feature)
+  } else {
+    Object.assign(props.feature, {
+      modifiers:[{
+        _id:uuidv4(),
+        option:''
+      }]
+    })
+  }
 }
 const removeModifier = (index) => {
   if(props.feature._id){

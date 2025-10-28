@@ -247,7 +247,7 @@ export const attackToHit = (attack: any) => {
     if (settings.aimToggle === 'always') toHit += settings.aimValue;
     if (settings.aim) toHit += settings.aimValue;
     quals.items.forEach(qual => {
-      if (qual.type === 'Ability Focus' && qual.name === attack.weaponGroup) {
+      if (qual.type === 'Ability Focus' && (qual.name === attack.weaponGroup || qual.customName === attack.name)) {
         if (qual.doubleFocus) {
           toHit += 4;
         } else if (qual.focus) {
@@ -265,13 +265,13 @@ export const attackFocus = (attack:any) => {
   const focusBonus = ref(0);
   const quals = useItemStore();
   quals.items.forEach(qual => {
-    if(qual.type ===  'Ability Focus' && qual.name === attack.weaponGroup){
+    if (qual.type === 'Ability Focus' && (qual.name === attack.weaponGroup || qual.customName === attack.name)) {
       if(qual.doubleFocus){
         focusBonus.value += 4
       } else if(qual.focus){
         focusBonus.value += 2
       }
     }
-  })
+  });
   return focusBonus.value
 }

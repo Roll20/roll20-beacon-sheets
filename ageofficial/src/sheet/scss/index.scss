@@ -310,6 +310,7 @@ body {
           }
           & .age-combat-icon {
             grid-area: icon;
+            position: relative;
           }
           & .age-combat-name {
             grid-area: name;
@@ -542,6 +543,24 @@ body {
         & .age-movement { 
           grid-template-columns: repeat(3, minmax(75px, 1fr));
         }
+        & .age-custom-movement {
+          padding: 0 10px;
+          & .age-custom-movement-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px;
+            &__inputs {
+              display: flex;
+              gap: 8px;
+            }
+            &__delete {
+              opacity: .25;
+            }
+            &__delete:hover {
+              opacity: 1;
+            }
+          }
+        }
         & .age-actions-mage {
           display: grid;    
           grid-template-columns: repeat(2, minmax(75px, 1fr));
@@ -627,6 +646,31 @@ body {
             border-radius: 0.5rem;
             padding-left: 50px;
             margin-left: 10px;
+            &-gold {
+              background-image: url(src/assets/currency/gold.png);
+            }
+            &-silver {
+              background-image: url(src/assets/currency/silver.png);
+            }
+            &-copper {
+              background-image: url(src/assets/currency/copper.png);
+            }
+            &-gold,&-copper,&-silver {
+              height: 75px;
+              width: 50px;
+              background-size: cover;
+              background-repeat: no-repeat;
+              position: absolute;
+              left: -10px;
+              top: -24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 22px;
+              font-weight: 600;
+              font-family: 'Ringbearer', sans-serif;
+              color: rgba(0, 0, 0, 0.7);
+            }
           }
           & .currency {
             overflow: hidden;
@@ -804,9 +848,6 @@ body {
     & .modal-footer-actions {
       display: flex;
       gap: 40px;
-      & button {
-        height: 45px;
-      }
     }
     & .age-input-group {
       position: relative;
