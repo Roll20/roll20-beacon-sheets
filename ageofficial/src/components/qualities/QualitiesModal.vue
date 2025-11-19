@@ -272,51 +272,9 @@
                 </button>
 
                 </h3>
-                <div v-for="(mod,index) in mods.parentItems(feature._id)" :key="index" style="display:flex;gap:10px;">
+                <div v-for="(mod) in mode === 'create' ? feature.modifiers : mods.parentItems(feature._id)" :key="mod" style="display:flex;gap:10px; margin-bottom: 10px;">
                   <BaseModView :mod="mod" :modOptions="modOptions" />
-                </div>
-                <div v-for="(mod,index) in feature.modifiers" :key="mod" style="display:flex;gap:10px;">
-                  <div>
-                    <select
-                      class="age-atk-select form-select"
-                        data-testid="test-spell-weaponType-input"
-                        :id="`weaponType-${feature._id}`"
-                        v-model="mod.option"
-                    >
-                      <option v-for="op in modOptions" :key="op" :value="op">{{ op }}</option>
-                    </select>
-                  </div>
-                  <!-- <div v-if="mod.option === 'Damage'">
-                    <label class="container">Permanent
-                      <input type="radio" id="one" value="permanent" v-model="mod.conditional" />
-                      <span class="checkmark"></span>
-                    </label>
-                    <label class="container">Optional
-                      <input type="radio" id="one" value="optional" v-model="mod.conditional" />
-                      <span class="checkmark"></span>
-                    </label>
-                  </div> -->
-                  <div v-if="mod.option === 'Ability Reroll'">
-                    <AbilityModView :mod="mod" />
-                  </div>
-                  <div v-else-if="mod.option === 'Spell'">
-                    <SpellModView :mod="mod" />
-                  </div>
-                  <div v-else-if="mod.option === 'Custom Attack'">
-                    <CustomAttackModView :mod="mod" />
-                  </div>
-                  <div v-else>
-                    <input type="number"  class="form-control" placeholder="0"  v-model="mod.variable" v-if="mod.option && mod.option !== 'Damage'" />
-                  </div>
-                  <div>
-                    <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.roll" v-if="mod.option === 'Damage'" />
-                  </div>
-                  
-                  <button class="link-btn" @click="removeModifier(index)" 
-                  style="background: none; font-weight: bold;border:none;" v-tippy="{ content: 'Remove Modifier' }">
-                  <font-awesome-icon :icon="['fa', 'minus']" />
-                </button>
-                </div>
+                </div>                
               </div>
             </div>
         <div class="modal-footer-actions" v-if="mode === 'create'">
@@ -372,7 +330,7 @@ const char = useCharacterStore();
 const mods = useModifiersStore();
 const settings = useSettingsStore()
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower'];
-
+// mods.modifiers = [];
 const filteredFocuses = ref(fage2e)
 const arcanaFocuses = ref([]);
 const psychicFocuses = ref([]);
@@ -412,69 +370,20 @@ const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Cust
  'Speed', 'Spell', 
 //  'Stunt Die'
 ])
-// let filteredFocuses = []
-// let focuses = [];
-// function filteredItems() {
-//       return focuses[props.feature.ability] || [];
-//     }
-// function setAbilityFocuses(ability) {
-//   switch(props.feature.ability){
-//     case 'Accuracy':
-//     focuses = ['Arcane Blast', 'Black Powder', 'Bows', 'Brawling', 'Dueling', 'Grenades', 'Light Blades', 'Slings', 'Staves']
-//     break;
-//     case 'Willpower':
-//       // debugger
-//       setTimeout(()=>{
-//     focuses = ['Courage', 'Faith', 'Morale', 'Self-Discipline']
-//   },50)
-//     break;
-//   }
 
-  
-// }
-// const setWeaponGroupAbility = () => {
-//   // debugger
-//   switch(props.spell.weaponGroup){
-//     // ACCURACY
-//     case('black powder'):
-//     case('bows'):
-//     case('brawling'):
-//     case('dueling'):
-//     case('light blades'):
-//     case('slings'):
-//     case('staves'):
-//       props.spell.weaponGroupAbility = 'Accuracy';
-//     break;
-//     // FIGHTING
-//     case('axes'):
-//     case('bludgeons'):
-//     case('heavy blades'):
-//     case('lances'):
-//     case('polearms'):
-//     case('spears'):
-//       props.spell.weaponGroupAbility = 'Fighting';
-//     break;
-//     default:
-//       props.spell.weaponGroupAbility = ''
-//     break;
-//   }
-// }
 const createQuality = () => {
   useItemStore().addItem(props.feature);
-  if(!props.feature.modifiers && props.feature.modifiers.length === 0) return;
-  props.feature.modifiers.forEach(mod => {
-    useItemStore().addModifier(props.feature, mod)
-  });
 }
 const addModifier = () => {
   // mods.addModifier(props.feature)
   if(props.feature._id){
-    useItemStore().addModifier(props.feature)
+    mods.addModifier(props.feature)
   } else {
+    console.log('adding modifier to local feature', props.feature);
     Object.assign(props.feature, {
       modifiers:[{
         _id:uuidv4(),
-        option:''
+        option:0
       }]
     })
   }
