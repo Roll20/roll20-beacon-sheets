@@ -75,6 +75,20 @@ export const useItemStore = defineStore('quality', ()=>{
       });
     }
     items.value.push(newItem);
+    const setNewQualMods = newItem.modifiers.map((mod:any) => {
+      return {
+        enabled: true,
+        modifiedValue: mod.modifiedValue,
+        option: mod.option,
+        parentId: newItem._id,
+        sourceType: newItem.type,
+        variable: mod.variable,
+        _id: mod._id,
+      }
+    })
+    if(newItem.modifiers.length > 0){
+      useModifiersStore().modifiers.push(...setNewQualMods);
+    }
     return newItem;
   }
 
