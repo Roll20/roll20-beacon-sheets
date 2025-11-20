@@ -34,7 +34,7 @@
         </div>
         
         <div class="age-weapon-range-reload age-combat-range">
-          <div v-if="attack.weaponType === 'Ranged'">
+          <div v-if="attack.weaponType === 'Ranged' || attack.weaponType === 'Spell Ranged'">
             {{ attack.shortRange }} ~ {{ attack.longRange }} yds
           </div>
           <div class="age-weapon-reload" v-if="attack.reload">
@@ -138,9 +138,12 @@ const damageMods = damageMod;
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
 const trained = computed(() => { 
-  
+  if(props.attack.option === 'Custom Attack' && props.attack.weaponType === 'Spell Ranged'){
+    return 0;
+  }
   return (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : props.attack.weaponType === 'Natural' ? 0: -2 : 0
 });
+console.log(attackFocus(props.attack))
 const attackHit = computed(() => attackToHit(props.attack).value);
 const modsBonus = computed(() => {
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';
