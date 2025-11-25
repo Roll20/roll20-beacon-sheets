@@ -365,25 +365,24 @@ const setFocus = (selectedOption) => {
 }
 const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : psychicFocuses.value.includes(props.feature.name) ? `Psychic (${props.feature.name})` : props.feature.name || '');
 
-const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 
-// 'Health Points', 'Magic Points',
- 'Speed', 'Spell', 
-//  'Stunt Die'
-])
+const modOptions = computed(() => {
+  if(useSettingsStore().showArcana){
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Spell'];
+  } else {
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed'];
+  }
+})
 
 const createQuality = () => {
   useItemStore().addItem(props.feature);
 }
 const addModifier = () => {
-  // mods.addModifier(props.feature)
   if(props.feature._id){
     mods.addModifier(props.feature)
   } else {
-    console.log('adding modifier to local feature', props.feature);
     Object.assign(props.feature, {
       modifiers:[{
-        _id:uuidv4(),
-        option:0
+        _id:uuidv4()
       }]
     })
   }
