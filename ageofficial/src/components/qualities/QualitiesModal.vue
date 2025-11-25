@@ -8,7 +8,7 @@
             </div>
 
             <div class="modal-body">
-              <div v-if="mode === 'create' && !feature.type" style="display: grid;grid-template-columns: repeat(auto-fit, minmax(min(100%, 30%), 1fr));gap: 1rem;">
+              <div v-if="mode === 'create' && !feature.type" :style="`display: grid;grid-template-columns: repeat(${qualitiesLength}, minmax(min(100%, 30%), 1fr));gap: 1rem;`">
                 <button v-for="qty in qualityOptions" :key="qty" class="age-quality-select-btn" @click="feature.type = qty;if(qty === 'Favored Stunt') feature.spCost = 1">
                   <div class="age-quality-section age-quality-class-icon" v-if="qty === 'Class'"></div>
                   <div class="age-quality-section age-quality-ancestry-icon" v-if="qty === 'Ancestry'"></div>
@@ -272,51 +272,9 @@
                 </button>
 
                 </h3>
-                <div v-for="(mod,index) in mods.parentItems(feature._id)" :key="index" style="display:flex;gap:10px;">
+                <div v-for="(mod) in mode === 'create' ? feature.modifiers : mods.parentItems(feature._id)" :key="mod" style="display:flex;gap:10px; margin-bottom: 10px;">
                   <BaseModView :mod="mod" :modOptions="modOptions" />
-                </div>
-                <div v-for="(mod,index) in feature.modifiers" :key="mod" style="display:flex;gap:10px;">
-                  <div>
-                    <select
-                      class="age-atk-select form-select"
-                        data-testid="test-spell-weaponType-input"
-                        :id="`weaponType-${feature._id}`"
-                        v-model="mod.option"
-                    >
-                      <option v-for="op in modOptions" :key="op" :value="op">{{ op }}</option>
-                    </select>
-                  </div>
-                  <!-- <div v-if="mod.option === 'Damage'">
-                    <label class="container">Permanent
-                      <input type="radio" id="one" value="permanent" v-model="mod.conditional" />
-                      <span class="checkmark"></span>
-                    </label>
-                    <label class="container">Optional
-                      <input type="radio" id="one" value="optional" v-model="mod.conditional" />
-                      <span class="checkmark"></span>
-                    </label>
-                  </div> -->
-                  <div v-if="mod.option === 'Ability Reroll'">
-                    <AbilityModView :mod="mod" />
-                  </div>
-                  <div v-else-if="mod.option === 'Spell'">
-                    <SpellModView :mod="mod" />
-                  </div>
-                  <div v-else-if="mod.option === 'Custom Attack'">
-                    <CustomAttackModView :mod="mod" />
-                  </div>
-                  <div v-else>
-                    <input type="number"  class="form-control" placeholder="0"  v-model="mod.variable" v-if="mod.option && mod.option !== 'Damage'" />
-                  </div>
-                  <div>
-                    <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.roll" v-if="mod.option === 'Damage'" />
-                  </div>
-                  
-                  <button class="link-btn" @click="removeModifier(index)" 
-                  style="background: none; font-weight: bold;border:none;" v-tippy="{ content: 'Remove Modifier' }">
-                  <font-awesome-icon :icon="['fa', 'minus']" />
-                </button>
-                </div>
+                </div>                
               </div>
             </div>
         <div class="modal-footer-actions" v-if="mode === 'create'">
@@ -372,7 +330,7 @@ const char = useCharacterStore();
 const mods = useModifiersStore();
 const settings = useSettingsStore()
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower'];
-
+// mods.modifiers = [];
 const filteredFocuses = ref(fage2e)
 const arcanaFocuses = ref([]);
 const psychicFocuses = ref([]);
@@ -407,74 +365,28 @@ const setFocus = (selectedOption) => {
 }
 const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : psychicFocuses.value.includes(props.feature.name) ? `Psychic (${props.feature.name})` : props.feature.name || '');
 
-const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 
-// 'Health Points', 'Magic Points',
- 'Speed', 'Spell', 
-//  'Stunt Die'
-])
-// let filteredFocuses = []
-// let focuses = [];
-// function filteredItems() {
-//       return focuses[props.feature.ability] || [];
-//     }
-// function setAbilityFocuses(ability) {
-//   switch(props.feature.ability){
-//     case 'Accuracy':
-//     focuses = ['Arcane Blast', 'Black Powder', 'Bows', 'Brawling', 'Dueling', 'Grenades', 'Light Blades', 'Slings', 'Staves']
-//     break;
-//     case 'Willpower':
-//       // debugger
-//       setTimeout(()=>{
-//     focuses = ['Courage', 'Faith', 'Morale', 'Self-Discipline']
-//   },50)
-//     break;
-//   }
+const modOptions = computed(() => {
+  if(useSettingsStore().showArcana){
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Spell'];
+  } else {
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed'];
+  }
+})
 
-  
-// }
-// const setWeaponGroupAbility = () => {
-//   // debugger
-//   switch(props.spell.weaponGroup){
-//     // ACCURACY
-//     case('black powder'):
-//     case('bows'):
-//     case('brawling'):
-//     case('dueling'):
-//     case('light blades'):
-//     case('slings'):
-//     case('staves'):
-//       props.spell.weaponGroupAbility = 'Accuracy';
-//     break;
-//     // FIGHTING
-//     case('axes'):
-//     case('bludgeons'):
-//     case('heavy blades'):
-//     case('lances'):
-//     case('polearms'):
-//     case('spears'):
-//       props.spell.weaponGroupAbility = 'Fighting';
-//     break;
-//     default:
-//       props.spell.weaponGroupAbility = ''
-//     break;
-//   }
-// }
+const qualitiesLength = computed(() => {
+  return props.qualityOptions.length % 2 === 0 ? 2 : 'auto-fit';
+})
+
 const createQuality = () => {
   useItemStore().addItem(props.feature);
-  if(!props.feature.modifiers && props.feature.modifiers.length === 0) return;
-  props.feature.modifiers.forEach(mod => {
-    useItemStore().addModifier(props.feature, mod)
-  });
 }
 const addModifier = () => {
-  // mods.addModifier(props.feature)
   if(props.feature._id){
-    useItemStore().addModifier(props.feature)
+    mods.addModifier(props.feature)
   } else {
     Object.assign(props.feature, {
       modifiers:[{
-        _id:uuidv4(),
-        option:''
+        _id:uuidv4()
       }]
     })
   }

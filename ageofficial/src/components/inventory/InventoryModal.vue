@@ -272,7 +272,7 @@
 <script setup>
   import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
   import { computed, ref } from 'vue';
-  import { fage2eWG,mageWG } from '../attack/weaponGroups';
+  import { fage2eWG,mageWG, blueRoseWG } from '../attack/weaponGroups';
   import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
 
   const props = defineProps({
@@ -286,6 +286,9 @@
   switch(settings.gameSystem){
     case 'mage':
       weaponGroups.value = mageWG;
+    break;
+    case 'blue-rose':
+      weaponGroups.value = blueRoseWG;  
     break;
     default:
       weaponGroups.value = fage2eWG;

@@ -5,8 +5,8 @@
           <div class="age-combat-section age-combat-axes-icon" v-if="attack.weaponGroup === 'Axes'"></div>
           <div class="age-combat-section age-combat-blackPowder-icon" v-if="attack.weaponGroup === 'Black Powder'"></div>
           <div class="age-combat-section age-combat-bludgeons-icon" v-if="attack.weaponGroup === 'Bludgeons'"></div>
-          <div class="age-combat-section age-combat-bows-icon" v-if="attack.weaponGroup === 'Bows'"></div>
-          <div class="age-combat-section age-combat-brawling-icon" v-if="attack.weaponGroup === 'Brawling'"></div>
+          <div class="age-combat-section age-combat-bows-icon" v-if="attack.weaponGroup === 'Bows' || (attack.option === 'Custom Attack' && attack.weaponType === 'Ranged')"></div>
+          <div class="age-combat-section age-combat-brawling-icon" v-if="attack.weaponGroup === 'Brawling' || (attack.option === 'Custom Attack' && attack.weaponType === 'Melee')"></div>
           <div class="age-combat-section age-combat-dueling-icon" v-if="attack.weaponGroup === 'Dueling'"></div>
           <div class="age-combat-section age-combat-heavyBlades-icon" v-if="attack.weaponGroup === 'Heavy Blades'"></div>
           <div class="age-combat-section age-combat-lances-icon" v-if="attack.weaponGroup === 'Lances'"></div>
@@ -16,6 +16,7 @@
           <div class="age-combat-section age-combat-spears-icon" v-if="attack.weaponGroup === 'Spears'"></div>
           <div class="age-combat-section age-combat-staves-icon" v-if="attack.weaponGroup === 'Staves'"></div>
           <div class="age-combat-section age-combat-magic-icon" v-if="attack.weaponType === 'Spell Ranged'"></div>
+          <div class="age-combat-section age-combat-magic-melee-icon" v-if="attack.weaponType === 'Spell Melee'"></div>
           <div class="age-combat-section age-combat-pistols-icon" v-if="attack.weaponGroup === 'Pistols'"></div>
           <div class="age-combat-section age-combat-longarms-icon" v-if="attack.weaponGroup === 'Long Arms'"></div>
           <div class="age-combat-section age-combat-shotguns-icon" v-if="attack.weaponGroup === 'Shotguns'"></div>
@@ -34,7 +35,7 @@
         </div>
         
         <div class="age-weapon-range-reload age-combat-range">
-          <div v-if="attack.weaponType === 'Ranged'">
+          <div v-if="attack.weaponType === 'Ranged' || attack.weaponType === 'Spell Ranged'">
             {{ attack.shortRange }} ~ {{ attack.longRange }} yds
           </div>
           <div class="age-weapon-reload" v-if="attack.reload">
@@ -138,9 +139,12 @@ const damageMods = damageMod;
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
 const trained = computed(() => { 
-  
+  if(props.attack.option === 'Custom Attack'){
+    return 0;
+  }
   return (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : props.attack.weaponType === 'Natural' ? 0: -2 : 0
 });
+
 const attackHit = computed(() => attackToHit(props.attack).value);
 const modsBonus = computed(() => {
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';
@@ -188,7 +192,8 @@ let toAttackRoll = 0
 
 const setAttackRoll = () => {
   if(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]){
-    toAttackRoll = Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility].base) + trained.value;
+    const attackAbility = props.attack.option === 'Custom Attack' && props.attack.weaponType === 'Spell Ranged' ? 'Accuracy' : props.attack.weaponGroupAbility;
+    toAttackRoll = Number(useAbilityScoreStore().abilityScores[attackAbility].base) + trained.value;
   }
 }
 setAttackRoll();
@@ -228,7 +233,9 @@ const handleDelete = () => {
 const handlePrint = () => {
   const attackStore = useAttackStore();
   setAttackRoll()
-  attackStore.printAttack(props.attack,toAttackRoll,attackFocus(props.attack));
+  const theAttack = props.attack;
+  theAttack.weaponGroupAbility = props.attack.option === 'Custom Attack' && props.attack.weaponType === 'Spell Ranged' ? 'Accuracy' : props.attack.weaponGroupAbility;
+  attackStore.printAttack(theAttack,toAttackRoll,attackFocus(props.attack));
 };
 
 const handlePrintDamage = (damageRoll,attackDmgLabel) => {

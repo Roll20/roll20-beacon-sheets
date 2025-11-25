@@ -20,7 +20,7 @@ export const defenseMod = computed(() => {
   }, 0);
   
   // Combine item modifiers with speed conditions
-  return qMods + defenseConditions() + (useInventoryStore()?.equippedShield?.defenseMod || 0);
+  return Number(qMods + defenseConditions() + (useInventoryStore()?.equippedShield?.defenseMod || 0));
 });
   const defenseConditions = (): number => {
     const conditions = useConditionsStore().conditions;
@@ -30,23 +30,23 @@ export const defenseMod = computed(() => {
   conditions.forEach((con)=>{
     if(!con.modifiers) return
     if(typeof con.modifiers === 'string'){
-      JSON.parse((con.modifiers as string).replace('$__$','')).forEach((cm)=>{
+      JSON.parse((con.modifiers as string).replace('$__$','')).forEach((cm:any)=>{
         if(cm.modifiedValue === 'Defense'){
           if(typeof cm.penalty === 'number'){
             values.push(cm.penalty)
           } else {
-            const pVal = ability[cm.penalty+'Base']
+            const pVal = ability[cm.penalty+'Base'];
             values.push(-pVal)
           }
         }
       })
     } else {
-      con.modifiers.forEach((cm)=>{
+      con.modifiers.forEach((cm: any)=>{
       if(cm.modifiedValue === 'Defense'){
         if(typeof cm.penalty === 'number'){
           values.push(cm.penalty)
         } else {
-          const pVal = ability[cm.penalty+'Base']
+          const pVal = ability[cm.penalty+'Base'];
           values.push(-pVal)
         }
       }

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="min-width: 125px;">
     <select
       class="age-atk-select form-select"
         data-testid="test-spell-weaponType-input"

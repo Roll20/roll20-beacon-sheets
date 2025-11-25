@@ -31,21 +31,21 @@ export type ModifiersHydrate = {
     };
   };
 export const useModifiersStore = defineStore('modifiers', ()=>{
-    const modifiers: Ref<Array<Modifier>> = ref([]);
-    const addModifier = (parentSource:any) => {
-        const newModifier = {
-            _id: uuidv4(),
-            parentId:parentSource._id,
-            sourceType:parentSource.type,            
-            enabled:parentSource.enabled        
-          }
-          modifiers.value.push(newModifier);
-        return newModifier;
-      }
-      const removeModifier = (_id:string) => {
-        const indexToRemove = modifiers.value.findIndex((mod) => mod._id === _id);
-        if (indexToRemove >= 0) modifiers.value.splice(indexToRemove, 1);
-      };
+  const modifiers: Ref<Array<Modifier>> = ref([]);
+  const addModifier = (parentSource:any) => {
+      const newModifier = {
+          _id: uuidv4(),
+          parentId:parentSource._id,
+          sourceType:parentSource.type,            
+          enabled:parentSource.enabled        
+        }
+        modifiers.value.push(newModifier);
+      return newModifier;
+  }
+  const removeModifier = (_id:string) => {
+    const indexToRemove = modifiers.value.findIndex((mod) => mod._id === _id);
+    if (indexToRemove >= 0) modifiers.value.splice(indexToRemove, 1);
+  };
 
   const parentItems = (parentId:string) => {
     return modifiers.value.filter(mod => mod.parentId === parentId);

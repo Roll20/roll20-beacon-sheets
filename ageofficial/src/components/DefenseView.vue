@@ -21,7 +21,6 @@
           <div class="age-container-heading">
             Defense
           </div>
-          {{ defenseLevelMod }}
             <span class="age-num-value">{{ defense }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
@@ -51,9 +50,9 @@
             Armor Rating | Penalty
           </div>
             <div style="display: flex;">
-              <span class="age-num-value">{{ armorRatingSet !== null && armorRatingSet !== undefined ? armorRatingSet : armorRatingMod}}</span>
+              <span class="age-num-value">{{ armorRatingSet !== null && armorRatingSet !== 0 ? armorRatingSet : armorRatingMod}}</span>
               <span style="font-size: 20px;">|</span>
-              <span class="age-num-value">{{ armorPenaltySet !== null && armorPenaltySet !== undefined ? armorPenaltySet : armorPenaltyMod}}</span>
+              <span class="age-num-value">{{ armorPenaltySet !== null && armorPenaltySet !== 0 ? armorPenaltySet : armorPenaltyMod}}</span>
             </div>
             
             <!-- Additional corner elements -->

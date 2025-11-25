@@ -207,31 +207,18 @@ function mergeDice(rolls: string[]): string {
 export const damageBonus = computed(()=>{
   const mods = useModifiersStore();
   const totalBonus = ref(0);
-  // console.log(totalBonus.value)
-
-  // console.log(mods.modifiers)
   // mods.modifiers = []
     mods.modifiers.forEach(mod => {
       // mod = null
       if(mod.option === 'Damage' && mod.modifiedValue !== 'Roll'){
-        // const modIndex = ref(0)
         switch(mod.sourceType){
           case 'Condition':
-            console.log(mod)
-            totalBonus.value += Number(mod.bonus || 0) + Number(mod.penalty || 0)
-            
+            totalBonus.value += Number(mod.bonus || 0) + Number(mod.penalty || 0)            
           break;
           default:
             totalBonus.value += Number(mod.bonus || 0) + Number(mod.penalty || 0)
           break;
         }
-        // mods.modifiers.findIndex((submod) => submod._id === mod.parentId);
-        // if (modIndex >= 0){
-// mod.
-        // }
-        // if(mod.sourceType === 'Condition' && )
-            // totalBonus.value += Number(mod.bonus || 0) + Number(mod.penalty || 0)
-
       }
     })
   return totalBonus.value
@@ -241,13 +228,13 @@ export const attackToHit = (attack: any) => {
   const settings = useSettingsStore();
   const ability = useAbilityScoreStore();
   const quals = useItemStore();
-  const abilityBase = ref(`${attack.weaponGroupAbility}Base`);
+  const abilityBase = ref(attack.option === 'Custom Attack' && attack.weaponType === 'Spell Ranged' ? `${'Accuracy'}Base` : `${attack.weaponGroupAbility}Base`);
   return computed(() => {
     let toHit = 0;
     if (settings.aimToggle === 'always') toHit += settings.aimValue;
     if (settings.aim) toHit += settings.aimValue;
     quals.items.forEach(qual => {
-      if (qual.type === 'Ability Focus' && (qual.name === attack.weaponGroup || qual.customName === attack.name)) {
+      if (qual.type === 'Ability Focus' && (qual.name === attack.weaponGroup || qual.customName === attack.name || qual.name === attack.name)) {
         if (qual.doubleFocus) {
           toHit += 4;
         } else if (qual.focus) {
