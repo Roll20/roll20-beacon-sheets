@@ -8,7 +8,7 @@
             </div>
 
             <div class="modal-body">
-              <div v-if="mode === 'create' && !feature.type" style="display: grid;grid-template-columns: repeat(auto-fit, minmax(min(100%, 30%), 1fr));gap: 1rem;">
+              <div v-if="mode === 'create' && !feature.type" :style="`display: grid;grid-template-columns: repeat(${qualitiesLength}, minmax(min(100%, 30%), 1fr));gap: 1rem;`">
                 <button v-for="qty in qualityOptions" :key="qty" class="age-quality-select-btn" @click="feature.type = qty;if(qty === 'Favored Stunt') feature.spCost = 1">
                   <div class="age-quality-section age-quality-class-icon" v-if="qty === 'Class'"></div>
                   <div class="age-quality-section age-quality-ancestry-icon" v-if="qty === 'Ancestry'"></div>
@@ -371,6 +371,10 @@ const modOptions = computed(() => {
   } else {
     return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed'];
   }
+})
+
+const qualitiesLength = computed(() => {
+  return props.qualityOptions.length % 2 === 0 ? 2 : 'auto-fit';
 })
 
 const createQuality = () => {
