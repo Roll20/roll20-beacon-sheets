@@ -32,7 +32,7 @@
         No results found.
       </div>             
     </div>
-    <div class="age-combat-footer">
+    <div class="age-combat-footer" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'">
       <button class="age-label-black" @click="showWeaponGroupModal = true">
           <div class="age-label-side-heading-black">Weapon Groups</div>
           <div class="age-combat-wg">

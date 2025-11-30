@@ -14,6 +14,8 @@
   <SpellModView v-if="mod.option === 'Spell'" :mod="mod" />
   <SpeedModView v-if="mod.option === 'Speed'" :mod="mod" />
   <ArmorModView v-if="mod.option === 'Armor Rating' || mod.option === 'Armor Penalty'" :mod="mod" />
+  <ToughnessModView v-if="mod.option === 'Toughness'" :mod="mod" />
+
   <CustomAttackModView v-if="mod.option === 'Custom Attack'" :mod="mod" />
   <button class="link-btn" @click="removeModifier" 
                   style="background: none; font-weight: bold;border:none;" v-tippy="{ content: 'Remove Modifier' }">
@@ -29,6 +31,7 @@ import CustomAttackModView from '../modifiers/CustomAttackModView.vue';
 import { useModifiersStore } from '@/sheet/stores/modifiers/modifiersStore';
 import SpeedModView from './SpeedModView.vue';
 import ArmorModView from './ArmorModView.vue';
+import ToughnessModView from './ToughnessModView.vue';
 const props = defineProps({
     mod:{ type: Object},
     modOptions:{type:Array}
