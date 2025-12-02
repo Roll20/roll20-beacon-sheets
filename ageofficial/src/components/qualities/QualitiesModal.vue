@@ -8,7 +8,7 @@
             </div>
 
             <div class="modal-body">
-              <div v-if="mode === 'create' && !feature.type" style="display: grid;grid-template-columns: repeat(auto-fit, minmax(min(100%, 30%), 1fr));gap: 1rem;">
+              <div v-if="mode === 'create' && !feature.type" :style="`display: grid;grid-template-columns: repeat(${qualitiesLength}, minmax(min(100%, 30%), 1fr));gap: 1rem;`">
                 <button v-for="qty in qualityOptions" :key="qty" class="age-quality-select-btn" @click="feature.type = qty;if(qty === 'Favored Stunt') feature.spCost = 1">
                   <div class="age-quality-section age-quality-class-icon" v-if="qty === 'Class'"></div>
                   <div class="age-quality-section age-quality-ancestry-icon" v-if="qty === 'Ancestry'"></div>
@@ -365,25 +365,28 @@ const setFocus = (selectedOption) => {
 }
 const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : psychicFocuses.value.includes(props.feature.name) ? `Psychic (${props.feature.name})` : props.feature.name || '');
 
-const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 
-// 'Health Points', 'Magic Points',
- 'Speed', 'Spell', 
-//  'Stunt Die'
-])
+const modOptions = computed(() => {
+  if(useSettingsStore().showArcana){
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Spell'];
+  } else {
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed'];
+  }
+})
+
+const qualitiesLength = computed(() => {
+  return props.qualityOptions.length % 2 === 0 ? 2 : 'auto-fit';
+})
 
 const createQuality = () => {
   useItemStore().addItem(props.feature);
 }
 const addModifier = () => {
-  // mods.addModifier(props.feature)
   if(props.feature._id){
     mods.addModifier(props.feature)
   } else {
-    console.log('adding modifier to local feature', props.feature);
     Object.assign(props.feature, {
       modifiers:[{
-        _id:uuidv4(),
-        option:0
+        _id:uuidv4()
       }]
     })
   }

@@ -228,7 +228,7 @@ export const attackToHit = (attack: any) => {
   const settings = useSettingsStore();
   const ability = useAbilityScoreStore();
   const quals = useItemStore();
-  const abilityBase = ref(`${attack.weaponGroupAbility}Base`);
+  const abilityBase = ref(attack.option === 'Custom Attack' && attack.weaponType === 'Spell Ranged' ? `${'Accuracy'}Base` : `${attack.weaponGroupAbility}Base`);
   return computed(() => {
     let toHit = 0;
     if (settings.aimToggle === 'always') toHit += settings.aimValue;

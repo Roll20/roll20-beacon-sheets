@@ -41,7 +41,7 @@
           </select>
           </div>          
         </div>
-        <div class="input-group mb-3" v-if="settings.gameSystem !== 'mage'" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3" style="flex-direction: column;padding: 0 2px;">
           <span id="basic-addon1" class="age-input-label">Ancestry</span>
           <div>
             <input type="text" class="form-control" aria-label="Ancestry" v-model="bio.ancestry"  aria-describedby="basic-addon1">

@@ -43,7 +43,7 @@ export const useItemStore = defineStore('quality', ()=>{
         name: selectedItem ? selectedItem.name : '',
         description: selectedItem ? selectedItem.description : '',
         enabled:true,
-        modifiers:selectedItem ? selectedItem.modifiers : '',
+        // modifiers:selectedItem ? selectedItem.modifiers : '',
         ability: selectedItem ? selectedItem.ability : ''
       }
       switch(newItem.type){
@@ -75,8 +75,8 @@ export const useItemStore = defineStore('quality', ()=>{
       });
     }
     items.value.push(newItem);
-    const setNewQualMods = newItem.modifiers.map((mod:any) => {
-      return {
+    const setNewQualMods = selectedItem.modifiers.map((mod:any) => {
+      const newMod = {
         enabled: true,
         modifiedValue: mod.modifiedValue,
         option: mod.option,
@@ -85,8 +85,74 @@ export const useItemStore = defineStore('quality', ()=>{
         variable: mod.variable,
         _id: mod._id,
       }
+      if(mod.option === 'Custom Attack'){
+        Object.assign(newMod,{
+          name: mod.name,
+          damage: mod.damage,
+          weaponType: mod.weaponType,
+          weaponGroupAbility: mod.weaponGroupAbility,
+        })
+        if(mod.weaponType === 'Ranged' || mod.weaponType === 'Spell Ranged'){
+          Object.assign(newMod,{
+            shortRange: mod.shortRange,
+            longRange: mod.longRange,
+          })
+        }
+      }
+      if(mod.option === 'Ability Reroll'){
+        Object.assign(newMod,{
+            abilityFocus: mod.abilityFocus
+          })
+      }
+      if(mod.option === 'Damage' || mod.option === 'Defense' || mod.option === 'Speed'){
+        if(mod.modifiedValue === 'Bonus'){
+          Object.assign(newMod,{
+            bonus: mod.bonus
+          })
+        }
+        if(mod.modifiedValue === 'Penalty'){
+          Object.assign(newMod,{
+            penalty: mod.penalty
+          })
+        }
+        if(mod.modifiedValue === 'Roll'){
+          Object.assign(newMod,{
+            roll: mod.roll
+          })
+        }
+      }   
+      if(mod.option === 'Ability Reroll'){
+        Object.assign(newMod,{
+            modifiedOption: mod.modifiedOption
+          })
+        if(mod.modifiedOption === 'Bonus'){
+          Object.assign(newMod,{
+            bonus: mod.bonus
+          })
+        }
+        if(mod.modifiedOption === 'Penalty'){
+          Object.assign(newMod,{
+            penalty: mod.penalty
+          })
+        }
+        if(mod.modifiedOption === 'Roll'){
+          Object.assign(newMod,{
+            roll: mod.roll
+          })
+        }
+      }
+      if(mod.option === 'Spell'){
+        Object.assign(newMod,{
+          customName: mod.customName,
+          costType: mod.costType,
+          spellSuccessDamage: mod.spellSuccessDamage,
+          spellFailDamage: mod.spellFailDamage,
+          spellTest: mod.spellTest,
+        })
+      }
+      return newMod;
     })
-    if(newItem.modifiers.length > 0){
+    if(selectedItem.modifiers.length > 0){
       useModifiersStore().modifiers.push(...setNewQualMods);
     }
     return newItem;

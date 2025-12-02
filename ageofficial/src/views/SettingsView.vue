@@ -81,7 +81,7 @@
                 </label>
                 <span class="age-toggle-label">Use Daring</span>
               </div>                -->
-              <div class=" input-group" v-if="settings.gameSystem === 'mage'">
+              <div class=" input-group">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.useFortune" />
                     <span class="slider round" ></span>
@@ -264,6 +264,14 @@ const settings = useSettingsStore();
 
 const updateGameSystem = () => {
   const colorTheme = initValues.settings.colorTheme;
+  switch(settings.gameSystem) {
+    case 'expanse':
+      settings.useFortune = true;
+    break;
+    default:
+      settings.useFortune = false;
+    break;
+  }
   productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk});
 }
 </script>
