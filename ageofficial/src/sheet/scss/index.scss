@@ -336,7 +336,7 @@ body {
         & .age-orb-container {
           display: grid;
           align-items: center;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: repeat(3,1fr);
           height: 100%;
           & .age-orb{
             background-color:rgba(0,0,0,0.2);
@@ -348,7 +348,10 @@ body {
           }
           & .age-orb-highlight {
           }
-        }    
+        } 
+        & .age-adv-orb-container {
+          grid-template-columns: repeat(5, 1fr);
+        }   
         & .age-biography-section {
           padding:5px;
           display: flex;

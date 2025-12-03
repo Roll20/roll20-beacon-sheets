@@ -129,13 +129,11 @@
                 <div class="mb-3 col">
                   <span class="age-input-label" id="basic-addon1">Talent Level</span>
                   <select
-                    class="age-atk-select form-select"
+                    class="age-atk-select form-select capitalize"
                       data-testid="test-spell-weaponType-input"
                       v-model="feature.qualityLevel"
                   >
-                    <option value="novice">Novice</option>
-                    <option value="expert">Expert</option>
-                    <option value="master">Master</option>
+                    <option v-for="lvl in qualityLevels" :key="lvl" :value="lvl" class="capitalize">{{ lvl }}</option>
                   </select>
                 </div>
 
@@ -199,7 +197,7 @@
               
               <!-- Quality Levels -->
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'novice' || feature.qualityLevel === 'expert' || feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'novice' || feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                       <span class="age-input-label">Novice</span>
                       <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
                         modules: {
@@ -220,7 +218,7 @@
                 </div>
               </div>
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'expert' || feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Expert</span>
                     <QuillEditor ref="quillEditor2" contentType="html" toolbar="" :options="{
                       modules: {
@@ -241,7 +239,49 @@
                 </div>
               </div>
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
+                    <span class="age-input-label">Master</span>
+                    <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
+                      modules: {
+                        keyboard: {
+                            bindings: {
+                                enter: {
+                                    key: 13, // 'Enter' key
+                                    handler: (range, context) => {
+                                    // Default behavior of Quill (inserts a single paragraph)
+                                    const quill = this.$refs.quillEditor3.quill;
+                                    quill.formatLine(range.index, 1, 'block', true);
+                                    },
+                                },
+                            },
+                        },
+                      },
+                      scrollingContainer: true}" v-model:content="feature.qualityMaster" />
+                </div>
+              </div>
+              <div class="row" style="margin:0">
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'gransmaster' || feature.qualityLevel === 'apex'" >
+                    <span class="age-input-label">Master</span>
+                    <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
+                      modules: {
+                        keyboard: {
+                            bindings: {
+                                enter: {
+                                    key: 13, // 'Enter' key
+                                    handler: (range, context) => {
+                                    // Default behavior of Quill (inserts a single paragraph)
+                                    const quill = this.$refs.quillEditor3.quill;
+                                    quill.formatLine(range.index, 1, 'block', true);
+                                    },
+                                },
+                            },
+                        },
+                      },
+                      scrollingContainer: true}" v-model:content="feature.qualityMaster" />
+                </div>
+              </div>
+              <div class="row" style="margin:0">
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Master</span>
                     <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
                       modules: {
@@ -372,6 +412,14 @@ const modOptions = computed(() => {
     return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Spell'];
   } else {
     return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Toughness'];
+  }
+})
+
+const qualityLevels = computed(() => {
+  if(useSettingsStore().showAfterMastery){
+    return ['novice','expert','master','grandmaster','apex'];
+  } else {
+    return ['novice','expert','master'];
   }
 })
 
