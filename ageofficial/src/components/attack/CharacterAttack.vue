@@ -23,6 +23,8 @@
           <div class="age-combat-section age-combat-assaultrifles-icon" v-if="attack.weaponGroup === 'Assault Rifles'"></div>
           <div class="age-combat-section age-combat-smgs-icon" v-if="attack.weaponGroup === 'SMGs'"></div>
           <div class="age-combat-section age-combat-grenades-icon" v-if="attack.weaponGroup === 'Grenades'"></div>
+          <div class="age-combat-section age-item-weapon-icon" v-if="settings.gameSystem === 'expanse' && attack.weaponType === 'Melee'"></div>
+          <div class="age-combat-section age-item-weapon-ranged-icon" v-if="settings.gameSystem === 'expanse' && attack.weaponType === 'Ranged'"></div>
 
           </div>        
           <div class="age-combat-section age-combat-natural-icon" v-if="attack.weaponType === 'Natural'"></div>
@@ -142,7 +144,16 @@ const trained = computed(() => {
   if(props.attack.option === 'Custom Attack'){
     return 0;
   }
-  return (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : props.attack.weaponType === 'Natural' ? 0: -2 : 0
+  // console.log(
+  //   (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? 
+  //   char.weaponGroups.includes(props.attack.weaponGroup) ? 
+  //   0 : 5 : 1)
+  if(settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'){
+    return char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2;
+  } else {
+    return 0
+  }
+  // return (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : props.attack.weaponType === 'Natural' ? 0: -2 : 0
 });
 
 const attackHit = computed(() => attackToHit(props.attack).value);
@@ -156,10 +167,14 @@ const modsBonus = computed(() => {
     });
   const baseModifier = Number(mod)  || 0; // Calculate mod / 2 only once
   const abilityBonus = ref(0);
-  if (char.weaponGroups.includes(props.attack.weaponGroup)) {
-    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) ;
-  } else if(props.attack.weaponType === 'Spell Ranged'){
-    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility]?.base) ; 
+  if(settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'){
+    if (char.weaponGroups.includes(props.attack.weaponGroup)) {
+      abilityBonus.value = Math.floor(Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) / 2) ;
+    } else if(props.attack.weaponType === 'Spell Ranged'){
+      abilityBonus.value = Math.floor(Number(ability.abilityScores[props.attack.weaponGroupAbility]?.base) / 2) ; 
+    }
+  } else {
+    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) ;    
   }
   const totalModifiers = modifiersStore.reduce((total, item) => {
     const value = item.bonus || item.penalty || 0; // Use bonus or penalty, default to 0 if neither

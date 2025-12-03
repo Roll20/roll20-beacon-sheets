@@ -45,6 +45,10 @@ if(settings.gameSystem === 'mage'){
   qualitiesArray.value = ['Ancestry','Ability Focus','Favored Stunt', 'Special Feature'];
   qualitOptions.value = ['Ancestry','Ability Focus','Favored Stunt', 'Special Feature'];
 }
+if(settings.gameSystem === 'expanse'){
+  qualitiesArray.value = ['Ability Focus','Favored Stunt','Special Feature'];
+  qualitOptions.value = ['Ability Focus','Favored Stunt', 'Special Feature'];
+}
 const emit = defineEmits(['update:modelValue'])
 const showModal = ref(false)
 let featureNew = ref({

@@ -11,17 +11,26 @@
             <div class="mb-3 col">
               <span class="age-input-label" id="basic-addon1">Game System</span>      
               <select  id="settings.gameSystem" v-model="settings.gameSystem" class="age-select form-select" @change="updateGameSystem">
-                <!-- <option value="fage1e">Fantasy AGE 1e</option> -->
                 <option value="fage2e">Fantasy AGE 2e</option>
                 <option value="mage">Modern AGE</option>
                 <option value="blue rose">Blue Rose</option>
-                <!-- <option value="expanse">Expanse</option> -->
+                <option value="expanse">Expanse</option>
                 <!-- <option value="cthulhu">Cthulhu Awakens</option> -->
                 <!-- <option value="threefold">Threefold</option> -->
-              </select>
+              </select>            
             </div>       
+            <div class="mb-3 col" v-if="settings.gameSystem === 'expanse'">
+              <span class="age-input-label" id="basic-addon1">Origin</span>      
+              <select  id="char.originFaction" v-model="char.originFaction" class="age-select form-select" @change="updateExpanseFaction">
+                <option value="">None</option>
+                <option value="earth">Earth</option>
+                <option value="mars">Mars</option>
+                <option value="belters">The Belt</option>
+                <option value="transportUnion">Transport Union</option>
+                <!-- <option value="outers">The Outers</option> -->
+              </select>
+              </div>
             <div class="mb-3 col" v-if="settings.gameSystem === 'mage'">
-              {{ settings.campaignMode }}
               <span class="age-input-label" id="basic-addon1">Campaign Mode</span>      
               <select  id="settings.campaignMode" v-model="settings.campaignMode" class="age-select form-select">
                 <option value="cinematic">Cinematic</option>
@@ -60,7 +69,7 @@
           <div class="row age-modal-row">
             <h4>System Options</h4>
             <div style="display: grid;grid-template-columns: repeat(3,1fr);">
-              <div class=" input-group">
+              <div class=" input-group" v-if="settings.gameSystem !== 'expanse'">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.showArcana" />
                     <span class="slider round" ></span>
@@ -228,6 +237,7 @@
               <p>Fantasy AGE Core Rulebook is ©2023 Green Ronin Publishing, LLC.</p>
               <p>Blue Rose: The AGE Roleplaying Game of Romantic Fantasy is © 2017 Green Ronin Publishing, LLC.</p>
               <p>Modern AGE Basic Rulebook is © 2018 Green Ronin Publishing, LLC.</p>
+              <p>The Expanse Transport Union Edition Core Rulebook is ©2025 Green Ronin Publishing, LLC.</p>
               <p>Beacon SDK AGE System Sheet created by Don White/Web Lynx ©2024</p>
 
             </div>
@@ -254,6 +264,7 @@
 
 <script setup>
 import { initValues } from '@/relay/relay';
+import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { productLineStyle } from '@/utility/productLineStyle';
 
@@ -261,7 +272,7 @@ const props = defineProps({
   show: Boolean
 })
 const settings = useSettingsStore();
-
+const char = useCharacterStore();
 const updateGameSystem = () => {
   const colorTheme = initValues.settings.colorTheme;
   switch(settings.gameSystem) {
@@ -273,6 +284,12 @@ const updateGameSystem = () => {
     break;
   }
   productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk});
+}
+
+const updateExpanseFaction = () => {
+  const colorTheme = initValues.settings.colorTheme;
+  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk, originFaction:char.originFaction});
+
 }
 </script>
 

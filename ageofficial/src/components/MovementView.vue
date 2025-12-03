@@ -1,7 +1,7 @@
 <template>
   <div class="section-card" style="display: block; position: relative;">    
     <div class="config-container">
-      <button class="link-btn age-icon-btn" @click="char.addMovement()" v-tippy="{ content: 'Add Movement Type' }">
+      <button class="link-btn age-icon-btn" @click="char.addMovement()" v-tippy="{ content: 'Add Movement Type' }" v-if="settings.optionalMovements">
         <font-awesome-icon :icon="['fa', 'circle-plus']" />
       </button>
       <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
