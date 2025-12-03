@@ -18,7 +18,13 @@
                 <!-- <option value="cthulhu">Cthulhu Awakens</option> -->
                 <!-- <option value="threefold">Threefold</option> -->
               </select>            
-            </div>       
+            </div> 
+            <div class="mb-3 col" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'mage'">
+              <span class="age-input-label" id="basic-addon1">Genre Slice Theme</span>      
+              <select  id="char.originFaction" v-model="settings.theme" class="age-select form-select" @change="updateTheme">
+                <option v-for="thm in theme" :key="thm.value" :value="thm.value" class="capitalize">{{ thm.label }}</option>
+              </select>
+            </div>      
             <div class="mb-3 col" v-if="settings.gameSystem === 'expanse'">
               <span class="age-input-label" id="basic-addon1">Origin</span>      
               <select  id="char.originFaction" v-model="char.originFaction" class="age-select form-select" @change="updateExpanseFaction">
@@ -29,7 +35,7 @@
                 <option value="transportUnion">Transport Union</option>
                 <!-- <option value="outers">The Outers</option> -->
               </select>
-              </div>
+            </div>
             <div class="mb-3 col" v-if="settings.gameSystem === 'mage'">
               <span class="age-input-label" id="basic-addon1">Campaign Mode</span>      
               <select  id="settings.campaignMode" v-model="settings.campaignMode" class="age-select form-select">
@@ -125,8 +131,7 @@
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Display Enhancements</span>
-              </div>    
-              <div class=" input-group">
+              </div>  
                 <div class=" input-group" v-if="settings.gameSystem === 'mage' && settings.showArcana">
                   <label class="age-checkbox-toggle" style="margin:1rem;">
                       <input type="checkbox"  v-model="settings.userPowerFatigue" />
@@ -134,7 +139,13 @@
                   </label>
                   <span class="age-toggle-label">Use Power Fatigue</span>
                 </div>
-              </div>           
+              <div class=" input-group">
+                  <label class="age-checkbox-toggle" style="margin:1rem;">
+                      <input type="checkbox"  v-model="settings.showAfterMastery" />
+                      <span class="slider round" ></span>
+                  </label>
+                  <span class="age-toggle-label">Show After Mastery</span>
+                </div>       
             </div>
           </div>  
           
@@ -267,12 +278,30 @@ import { initValues } from '@/relay/relay';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { productLineStyle } from '@/utility/productLineStyle';
+import { computed } from 'vue';
 
 const props = defineProps({
   show: Boolean
 })
+
 const settings = useSettingsStore();
 const char = useCharacterStore();
+
+if(!settings.theme){
+  settings.theme = 'basic';
+}
+console.log('SettingsView settings.theme',settings.theme);
+const theme = computed(() => {
+  switch(settings.gameSystem) {
+    case 'fage2e':
+      return [{ label:'Basic', value: 'basic'},{ label:'Cthulhu Mythos', value:'cthulhuMythos'},{ label:'Technofantasy', value: 'technofantasy'}];
+    case 'mage':
+      return [{ label:'Basic', value: 'basic'},{ label:'Cyberpunk', value:'cyberpunk'}];
+    default:
+      return null;    
+  }
+})
+
 const updateGameSystem = () => {
   const colorTheme = initValues.settings.colorTheme;
   switch(settings.gameSystem) {
@@ -283,14 +312,21 @@ const updateGameSystem = () => {
       settings.useFortune = false;
     break;
   }
-  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk});
+  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.theme === 'cthulhuMythos',technofantasy:settings.theme === 'technofantasy',cyberpunk:settings.theme === 'cyberpunk'});
+}
+const updateTheme = () => {
+  const colorTheme = initValues.settings.colorTheme;
+  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.theme === 'cthulhuMythos',technofantasy:settings.theme === 'technofantasy',cyberpunk:settings.theme === 'cyberpunk', originFaction:char.originFaction});
+
 }
 
 const updateExpanseFaction = () => {
   const colorTheme = initValues.settings.colorTheme;
-  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk, originFaction:char.originFaction});
+  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.theme === 'cthulhuMythos',technofantasy:settings.theme === 'technofantasy',cyberpunk:settings.theme === 'cyberpunk', originFaction:char.originFaction});
 
 }
+
+
 </script>
 
 <style lang="scss" scoped>
