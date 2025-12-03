@@ -93,10 +93,8 @@
         <div class="input-group mb-3" v-if="bio.type === 'AniMon'" style="flex-direction: column;padding: 0 2px;">
           <span id="basic-addon1" class="age-input-label">Threat Level</span>
           <div>
-            <select  id="bio.profession" v-model="bio.threat" class="age-atk-select form-select" @change="classChange">
-            <option value="Minor">Minor</option>
-            <option value="Moderate">Moderate</option>
-            <option value="Major">Major</option>
+            <select  id="bio.profession" v-model="bio.threat" class="age-atk-select form-select">
+              <option v-for="threat in threatLevels" :key="threat" :value="threat">{{ threat }}</option>
           </select>
           </div>
           
@@ -166,6 +164,7 @@ switch(settings.gameSystem){
     classes.value = blueroseClasses;
   break;
 }
+const threatLevels = ref(['Zero','Minor','Moderate','Major','Dire','Legendary']);
 const expanseFactions = ref([
   {label: 'Earther', value:'earth'},
   {label: 'Belter', value:'belters'},
