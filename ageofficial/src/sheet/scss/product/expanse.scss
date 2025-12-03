@@ -103,7 +103,6 @@ body.expanse {
             border-color: var(--theme-primary);
             & .age-container-heading {
                 padding: 0 0 2px;
-                margin-top: -2px;
             }
             &.age-power-fatigue {
                 border-color: #a3a3a3;
@@ -220,7 +219,7 @@ body.expanse {
         background-size: cover;
     }
     &.union {
-        background:url(/src/assets/background/expanse-earth-blue.png);
+        background:url(/src/assets/background/expanse-transportUnion.png);
         background-size: cover;
     }
     &.mars {

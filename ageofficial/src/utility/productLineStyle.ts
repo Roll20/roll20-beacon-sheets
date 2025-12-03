@@ -63,7 +63,7 @@ export function productLineStyle(gameSystem:string,lightDark:string,args?:any){
                 case 'transportUnion':
                     document.body.classList.add('union');
                     document.body.classList.remove('mars','belters','earth');
-                    document.documentElement.style.setProperty('--theme-primary', '#00577B');
+                    document.documentElement.style.setProperty('--theme-primary', '#00837c');
                     document.documentElement.style.setProperty('--theme-secondary','#f5fcff');
                 break;
                 // orange

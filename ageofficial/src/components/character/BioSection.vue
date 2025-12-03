@@ -114,8 +114,7 @@ const originFactionImg = computed(() => {
     case 'belters':  
       return 'src/assets/factions/belter-black.png';
     case 'transportUnion':  
-      return '';
-      // return 'src/assets/factions/transport-union.png';
+      return 'src/assets/factions/transportUnion.png';
     case 'outers':  
       return '';
   }

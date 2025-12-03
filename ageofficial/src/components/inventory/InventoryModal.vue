@@ -288,7 +288,7 @@
   import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
   import { computed, ref } from 'vue';
   import { fage2eWG,mageWG, blueRoseWG } from '../attack/weaponGroups';
-  import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
+  import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 
   const props = defineProps({
     show: Boolean,
@@ -324,9 +324,7 @@
       // ACCURACY
       case('Black Powder'):
       case('Bows'):
-      case('Brawling'):
       case('Dueling'):
-      case('Light Blades'):
       case('Slings'):
       case('Staves'):
       case('Unarmed'):
@@ -350,6 +348,10 @@
       case('Polearms'):
       case('Spears'):      
         props.item.weaponGroupAbility = 'Fighting';
+      break;
+      case('Brawling'):
+      case('Light Blades'):
+        props.item.weaponGroupAbility = settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose' ? 'Accuracy' : 'Fighting';
       break;
       default:
         props.item.weaponGroupAbility = ''
