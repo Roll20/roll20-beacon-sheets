@@ -98,6 +98,18 @@ export const useCharacterStore = defineStore('character', () => {
     ascensionGauge.value = value;
   };
 
+  const rollHealthScore = computed(() => () => {
+    if (healthCondition.value >= 15) {
+      return 3;
+    } else if (healthCondition.value >= 11) {
+      return 2;
+    } else if (healthCondition.value >= 6) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
   const dehydrate = () => {
     return {
       character: {
@@ -143,19 +155,6 @@ export const useCharacterStore = defineStore('character', () => {
     act3.value = hydrateStore.character.act3 ?? act3.value;
     ascensionGauge.value = hydrateStore.character.ascensionGauge ?? ascensionGauge.value;
     fightingStance.value = hydrateStore.character.fightingStance ?? fightingStance.value;
-  };
-
-  const rollHealthScore = () => {
-    const healthValue = healthCondition.value;
-    if (healthValue >= 15) {
-      return 3;
-    } else if (healthValue >= 11) {
-      return 2;
-    } else if (healthValue >= 6) {
-      return 1;
-    } else {
-      return 0;
-    }
   };
 
   return {

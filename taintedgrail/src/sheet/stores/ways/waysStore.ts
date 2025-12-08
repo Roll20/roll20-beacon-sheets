@@ -111,10 +111,7 @@ export const useWaysStore = defineStore('ways', () => {
   // Initialize Domain Scores
   const domains = ref(
     Object.fromEntries(
-      Object.entries(DOMAIN_CONFIG).map(([domainKey, wayScore]) => [
-        domainKey,
-        createDomain(wayScore, WAY_CONFIG[wayScore]),
-      ]),
+      Object.entries(DOMAIN_CONFIG).map(([domainKey, wayScore]) => [domainKey, createDomain(wayScore, WAY_CONFIG[wayScore])]),
     ) as Record<keyof typeof DOMAIN_CONFIG, ReturnType<typeof createDomain>>,
   );
 
@@ -151,8 +148,7 @@ export const useWaysStore = defineStore('ways', () => {
     // Total = Base + (parent bonus) + way - (parent penalty)
     disciplines.value.forEach((discipline) => {
       const domain = domains.value[discipline.parentDomain as keyof typeof domains.value];
-      discipline.total =
-        discipline.base + domain.bonus + ways.value[domain.way.title as WaysScore] - domain.penalty;
+      discipline.total = discipline.base + domain.bonus + ways.value[domain.way.title as WaysScore] - domain.penalty;
     });
   };
 
@@ -169,7 +165,6 @@ export const useWaysStore = defineStore('ways', () => {
   const addDiscipline = async (discipline: any) => {
     const disciplineName = discipline.properties.Name;
     const parentDomainFriendly = discipline.properties['data-Domain'];
-    const parentDomain = friendlyNameToDomain(parentDomainFriendly);
 
     // Check if discipline already exists anywhere
     const existingDiscipline = getDisciplineByName(disciplineName);
@@ -182,13 +177,13 @@ export const useWaysStore = defineStore('ways', () => {
     }
 
     // Verify the parent domain exists
-    const domainExists = domains.value[parentDomain as keyof typeof domains.value];
+    const domainExists = domains.value[parentDomainFriendly as keyof typeof domains.value];
 
     if (domainExists) {
       const newDiscipline: Discipline = {
         _id: uuidv4(),
         name: disciplineName,
-        parentDomain: parentDomain,
+        parentDomain: parentDomainFriendly,
         base: 0,
         total: 0,
       };
@@ -204,9 +199,7 @@ export const useWaysStore = defineStore('ways', () => {
   };
 
   const getDisciplineByName = (disciplineName: string): Discipline | undefined => {
-    return disciplines.value.find(
-      (discipline) => discipline.name.toLowerCase() === disciplineName.toLowerCase(),
-    );
+    return disciplines.value.find((discipline) => discipline.name.toLowerCase() === disciplineName.toLowerCase());
   };
 
   // Domain field setters

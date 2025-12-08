@@ -17,7 +17,8 @@
     <div class="item-content" :class="{ compact: isCompact }">
       <slot name="content">
         <span v-if="isWeapon">Damage: {{ weaponItem.damage }} | Range: {{ weaponItem.range }}</span>
-        <span v-if="isArmor">Protection: {{ armorProtection }}</span>
+        <span v-if="isArmor">Protection: {{ armorItem.protection }}</span>
+        <span v-if="isShield">Protection: {{ shieldProtection }}</span>
         <span v-if="isSpell">MP Cost: {{ spellItem.mpCost }} | Cast Time: {{ spellItem.castTime }}</span>
       </slot>
     </div>
@@ -70,28 +71,30 @@ const props = withDefaults(
 
 const isWeapon = computed(() => props.item.type === CategoryType.WEAPON);
 const isArmor = computed(() => props.item.type === CategoryType.ARMOR);
+const isShield = computed(() => props.item.type === CategoryType.SHIELDS);
 const isSpell = computed(() => props.item.type === CategoryType.SPELL);
 
 const weaponItem = computed(() => props.item as Weapon);
 const armorItem = computed(() => props.item as Armor);
+const shieldItem = computed(() => props.item as Armor);
 const spellItem = computed(() => props.item as Spell);
 
-const armorProtection = computed(() => {
-  if (
-    character.fightingStance === 'offensive' &&
-    armorItem.value.offensiveProtection != undefined &&
-    armorItem.value.offensiveProtection != null
-  ) {
-    return armorItem.value.offensiveProtection;
-  } else if (
-    character.fightingStance === 'defensive' &&
-    armorItem.value.defensiveProtection != undefined &&
-    armorItem.value.defensiveProtection != null
-  ) {
-    return armorItem.value.defensiveProtection;
+// Shield Protection is calculated by the fighting stance and cannot go below 0.
+// Offensive: protection -1 | Defensive: protection +1 | Standard: protection
+const shieldProtection = computed(() => {
+  const protection = shieldItem.value.protection;
+  let newProtection = protection;
+  if (character.fightingStance === 'offensive' && protection != undefined && protection != null) {
+    newProtection -= 1;
+  } else if (character.fightingStance === 'defensive' && protection != undefined && protection != null) {
+    newProtection += 1;
   } else {
-    return armorItem.value.standardProtection;
+    newProtection = protection;
   }
+  if (newProtection < 0) {
+    newProtection = 0;
+  }
+  return newProtection;
 });
 
 const roll = () => {

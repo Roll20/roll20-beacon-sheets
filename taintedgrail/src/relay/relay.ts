@@ -92,6 +92,7 @@ We use refs to keep track of the state of the sheet.
 This is a way to keep track of the state of the sheet in a reactive way.
 */
 export const beaconPulse = ref(0);
+export const dragOverPulse = ref(false);
 export const blockUpdate = ref(false);
 export const dispatchRef = shallowRef();
 export const dropUpdate: Ref<Dispatch> = ref({} as Dispatch);
@@ -139,11 +140,7 @@ It will return the relayPinia and relayVue objects that can be used to install t
 We use a watcher of beaconPulse value to trigger a re-render of the sheet when the value changes, see the onChange handler.
 This is just one way to trigger a re-render, you can implement your own logic to trigger a re-render.
 */
-export const createRelay = async ({
-  devMode = false,
-  primaryStore = 'taintedgrailStore',
-  logMode = false,
-}) => {
+export const createRelay = async ({ devMode = false, primaryStore = 'taintedgrailStore', logMode = false }) => {
   // @ts-ignore
   const dispatch = await (devMode ? devRelay() : initRelay(relayConfig));
   const relayPinia = (context: PiniaPluginContext) => {

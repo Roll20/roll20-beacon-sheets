@@ -104,12 +104,15 @@
 </template>
 
 <script setup lang="ts">
-import { useWaysStore, type Discipline } from '@/sheet/stores/ways/waysStore';
+import { storeToRefs } from 'pinia';
+import { useWaysStore, type Discipline, type Domain } from '@/sheet/stores/ways/waysStore';
 import { capitalizeFirstLetter, domainToFriendlyName } from '@/utility/formattedNames';
 
 const TRASH_ICON = new URL('@/assets/trash.svg', import.meta.url).href;
 
-const { ways, disciplines, domains, removeDiscipline, setDomainBase, setDomainBonus, setDomainPenalty } = useWaysStore();
+const waysStore = useWaysStore();
+const { ways, disciplines, domains } = storeToRefs(waysStore);
+const { removeDiscipline, setDomainBase, setDomainBonus, setDomainPenalty } = waysStore;
 
 const props = defineProps({
   show: Boolean,
@@ -117,37 +120,40 @@ const props = defineProps({
 
 // Helper function to get disciplines for a specific domain
 const getDisciplinesForDomain = (domainKey: string) => {
-  return disciplines.filter((discipline) => discipline.parentDomain === domainKey);
+  return disciplines.value.filter((discipline) => discipline.parentDomain === domainKey);
 };
 
 const getDomainBonus = (parentDomain: string) => {
-  return domains[parentDomain as keyof typeof domains].bonus;
+  const domainRecord = domains.value as Record<string, Domain>;
+  return domainRecord[parentDomain]?.bonus ?? 0;
 };
 
 const getDomainPenalty = (parentDomain: string) => {
-  return domains[parentDomain as keyof typeof domains].penalty;
+  const domainRecord = domains.value as Record<string, Domain>;
+  return domainRecord[parentDomain]?.penalty ?? 0;
 };
 
 // Helper function to get way score safely
 const getWayScore = (wayTitle: string) => {
+  const currentWays = ways.value;
   switch (wayTitle) {
     case 'combativeness':
-      return ways.combativeness;
+      return currentWays.combativeness;
     case 'creativity':
-      return ways.creativity;
+      return currentWays.creativity;
     case 'awareness':
-      return ways.awareness;
+      return currentWays.awareness;
     case 'reason':
-      return ways.reason;
+      return currentWays.reason;
     case 'conviction':
-      return ways.conviction;
+      return currentWays.conviction;
     default:
       return 0;
   }
 };
 
 const updateDisciplineScore = (disciplineId: string, newScore: number) => {
-  const discipline = disciplines.find((d: Discipline) => d._id === disciplineId);
+  const discipline = disciplines.value.find((d: Discipline) => d._id === disciplineId);
   if (discipline) {
     discipline.base = newScore;
   }
@@ -185,7 +191,7 @@ const updateDisciplineScore = (disciplineId: string, newScore: number) => {
 }
 
 .modal-body {
-  max-height: 650px;
+  max-height: 90vh;
   overflow-y: auto;
 }
 

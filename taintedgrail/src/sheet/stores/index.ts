@@ -3,9 +3,10 @@ import { ref } from 'vue';
 import jp from 'jsonpath';
 
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
+import { useNPCStore } from '@/sheet/stores/character/npcStore';
 import { useWaysStore } from '@/sheet/stores/ways/waysStore';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import { useTraitsStore } from '@/sheet/stores/traits/traitsStore';
+import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 
 import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
 
@@ -21,9 +22,10 @@ export const useTaintedGrailStore = defineStore('taintedgrailStore', () => {
   const stores = {
     meta: useMetaStore(),
     character: useCharacterStore(),
+    npc: useNPCStore(),
     ways: useWaysStore(),
     inventory: useInventoryStore(),
-    traits: useTraitsStore(),
+    settings: useSettingsStore(),
   };
 
   const pageLoading = ref(false);

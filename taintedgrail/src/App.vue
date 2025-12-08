@@ -1,27 +1,19 @@
 <template>
   <div class="taintedgrail">
-    <!-- <div class="header section">
-      <div class="section__header">This is the Header</div>
-      <div class="section__body tabs">
-        <router-link to="/sheet">Sheet Tab</router-link>
-        <router-link to="/settings">Settings Tab</router-link>
-        <div class="campaignId" v-if="campaignId">Campaign ID: {{ campaignId }}</div>
-      </div>
-    </div> -->
+    <div class="dragOverlay" v-if="isDraggingItem">
+      <div class="dragOverlay__text">Drop compendium item to add to sheet</div>
+    </div>
     <router-view v-slot="{ Component }">
       <transition name="fade">
         <component :is="Component" />
       </transition>
     </router-view>
-    <!-- <div class="footer section section__header">This is the Footer</div> -->
   </div>
 </template>
 
 <script setup>
-import { useTaintedGrailStore } from './sheet/stores';
-
-const store = useTaintedGrailStore();
-const campaignId = store.meta.campaignId;
+import { dragOverPulse } from './relay/relay';
+const isDraggingItem = dragOverPulse;
 </script>
 
 <style scoped lang="scss">
@@ -29,11 +21,37 @@ const campaignId = store.meta.campaignId;
   container-type: inline-size;
   max-width: 1024px;
   min-width: 1024px;
-  min-height: 768px;
-  max-height: 768px;
+  min-height: 700px;
+  max-height: 700px;
   width: 100%;
   margin: 0;
   overflow-x: hidden;
+
+  .dragOverlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__text {
+      background-color: lightgrey;
+      color: black;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      text-align: center;
+      padding: 1rem;
+      max-width: 80%;
+      z-index: 1000;
+    }
+  }
 }
 .header {
   margin-bottom: 0.5rem;
