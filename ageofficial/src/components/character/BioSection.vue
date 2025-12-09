@@ -62,14 +62,19 @@
             Threat Level: {{ bio.threat }}
           </div>
         </div>
+        <div class="age-character-bio-container" v-if="char.originFaction && settings.gameSystem === 'expanse'">
+          <div class="age-character-bio-value">
+            {{ originFactionLabel }}
+          </div>
+        </div>
         <div class="age-character-bio-value" v-if="settings.gameSystem === 'mage'">
             <div class="age-character-campaignMode" :class="{ cinematic: settings.campaignMode === 'cinematic', pulpy: settings.campaignMode === 'pulpy', gritty: settings.campaignMode === 'gritty'}">
               {{ settings.campaignMode }}
             </div>
         </div>
-        
-        
-        
+        <div class="age-character-originFaction-logo" v-if="settings.gameSystem === 'expanse' && char.originFaction && originFactionImg">
+          <img :src="originFactionImg" :alt="char.originFaction" />
+        </div>
     </div>
       
   </div>
@@ -87,7 +92,7 @@
  import { Tippy } from 'vue-tippy'
 
 
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
@@ -99,7 +104,37 @@ const settings = useSettingsStore();
 const meta = useMetaStore();
 const bio = useBioStore();
 const char = useCharacterStore();
-const showModal = ref(false)
+const showModal = ref(false);
+const originFactionImg = computed(() => {
+  switch (char.originFaction) {
+    case 'earth':
+      return 'src/assets/factions/earther.png';
+    case 'mars':
+      return 'src/assets/factions/martian.png';
+    case 'belters':  
+      return 'src/assets/factions/belter-black.png';
+    case 'transportUnion':  
+      return 'src/assets/factions/transportUnion.png';
+    case 'outers':  
+      return '';
+  }
+  return '';
+});
+const originFactionLabel = computed(() => {
+  switch (char.originFaction) {
+    case 'earth':
+      return 'Earther';
+    case 'mars':
+      return 'Martian';
+    case 'belters':  
+      return 'Belters';
+    case 'transportUnion':
+      return 'Transport Union';
+    // case 'outers':  
+    //   return 'Outers';
+  }
+  return '';
+});
 function closeModal() {
   showModal.value = false;
 }

@@ -1,7 +1,7 @@
 $ageFAGE2eColor: #1e4e7a;
 
 .age-combat-section {
-    background-color:$ageFAGE2eColor;
+    background-color:var(--theme-primary);
     height: 40px;
     width: 40px;
     position: absolute;

@@ -37,6 +37,7 @@ export type CharacterHydrate = {
     toughnessPrimary?: string | null;
     powerFatigue?: number;
     customMovements?: any[];
+    originFaction?: string;
   };
 };
 
@@ -95,7 +96,7 @@ export const useCharacterStore = defineStore('character', () => {
   const toughnessLevelMod = ref(0);
   const defenseLevelMod = ref(0);
   const customMovements = ref<{ _id: string; name: string; speed: number }[]>([]);
-
+  const originFaction = ref('');
   const gameModeBonus = () => {
     if(settings.gameSystem !== 'mage') return;
     switch (useSettingsStore().campaignMode) {  
@@ -183,11 +184,9 @@ export const useCharacterStore = defineStore('character', () => {
   }  
 
   const addMovement = () => {
-    console.log('add movement')
     customMovements.value.push({ _id:uuidv4(), name: '', speed: 0 });
   }
   const deleteMovement = (index:number) => {
-    console.log(customMovements.value)
     customMovements.value.splice(index, 1);
   }
 
@@ -213,6 +212,7 @@ export const useCharacterStore = defineStore('character', () => {
         powerFatigue: powerFatigue.value,
         // ensure we pass an object (empty object if no movements)
         customMovements: arrayToObject(customMovements.value ?? []),
+        originFaction: originFaction.value,
         // We don't need to save the computed ones on Firebase as long as we have everything needed to calculate them.
       },
     };
@@ -237,6 +237,7 @@ export const useCharacterStore = defineStore('character', () => {
     fatigue.value = hydrateStore.character.fatigue ?? fatigue.value;
     toughnessPrimary.value = hydrateStore.character.toughnessPrimary ?? toughnessPrimary.value;
     powerFatigue.value = hydrateStore.character.powerFatigue ?? powerFatigue.value;
+    originFaction.value = hydrateStore.character.originFaction ?? originFaction.value;
 
     // Safely convert stored object -> array. If nothing stored, set empty array.
     const stored = hydrateStore.character.customMovements;
@@ -349,6 +350,7 @@ export const useCharacterStore = defineStore('character', () => {
     powerFatigue,
     resetPowerFatigue,
     customMovements,
+    originFaction,
     dehydrate,
     hydrate,
     toughnessPrimary,

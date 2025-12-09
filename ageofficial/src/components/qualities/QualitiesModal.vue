@@ -129,13 +129,11 @@
                 <div class="mb-3 col">
                   <span class="age-input-label" id="basic-addon1">Talent Level</span>
                   <select
-                    class="age-atk-select form-select"
+                    class="age-atk-select form-select capitalize"
                       data-testid="test-spell-weaponType-input"
                       v-model="feature.qualityLevel"
                   >
-                    <option value="novice">Novice</option>
-                    <option value="expert">Expert</option>
-                    <option value="master">Master</option>
+                    <option v-for="lvl in qualityLevels" :key="lvl" :value="lvl" class="capitalize">{{ lvl }}</option>
                   </select>
                 </div>
 
@@ -199,7 +197,7 @@
               
               <!-- Quality Levels -->
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'novice' || feature.qualityLevel === 'expert' || feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'novice' || feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                       <span class="age-input-label">Novice</span>
                       <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
                         modules: {
@@ -220,7 +218,7 @@
                 </div>
               </div>
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'expert' || feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Expert</span>
                     <QuillEditor ref="quillEditor2" contentType="html" toolbar="" :options="{
                       modules: {
@@ -241,7 +239,49 @@
                 </div>
               </div>
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
+                    <span class="age-input-label">Master</span>
+                    <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
+                      modules: {
+                        keyboard: {
+                            bindings: {
+                                enter: {
+                                    key: 13, // 'Enter' key
+                                    handler: (range, context) => {
+                                    // Default behavior of Quill (inserts a single paragraph)
+                                    const quill = this.$refs.quillEditor3.quill;
+                                    quill.formatLine(range.index, 1, 'block', true);
+                                    },
+                                },
+                            },
+                        },
+                      },
+                      scrollingContainer: true}" v-model:content="feature.qualityMaster" />
+                </div>
+              </div>
+              <div class="row" style="margin:0">
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'gransmaster' || feature.qualityLevel === 'apex'" >
+                    <span class="age-input-label">Master</span>
+                    <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
+                      modules: {
+                        keyboard: {
+                            bindings: {
+                                enter: {
+                                    key: 13, // 'Enter' key
+                                    handler: (range, context) => {
+                                    // Default behavior of Quill (inserts a single paragraph)
+                                    const quill = this.$refs.quillEditor3.quill;
+                                    quill.formatLine(range.index, 1, 'block', true);
+                                    },
+                                },
+                            },
+                        },
+                      },
+                      scrollingContainer: true}" v-model:content="feature.qualityMaster" />
+                </div>
+              </div>
+              <div class="row" style="margin:0">
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Master</span>
                     <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
                       modules: {
@@ -262,7 +302,7 @@
                 </div>
               </div>
             </div>
-              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization' && feature.type !== 'Special Feature')">
+              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization')">
                <h3 style="display: flex;">
                   <span>Modifiers</span>                  
                   <button class="link-btn" @click="addModifier" 
@@ -314,7 +354,7 @@ import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { v4 as uuidv4 } from 'uuid';
 import SpellModView from '@/components/modifiers/SpellModView.vue';
 import AbilityModView from '@/components/modifiers/AbilityModView.vue';
-import { bluerose, cthulhu, fage1e, fage2e, mage } from '../modifiers/focuses';
+import { bluerose, cthulhu, expanse, fage1e, fage2e, mage } from '../modifiers/focuses';
 import CustomAttackModView from '../modifiers/CustomAttackModView.vue';
 import {useModifiersStore} from '@/sheet/stores/modifiers/modifiersStore'
 import BaseModView from '@/components/modifiers/BaseModView.vue';
@@ -354,6 +394,8 @@ switch(useSettingsStore().gameSystem){
   case 'cthulhu':
     filteredFocuses.value = cthulhu;
   break;
+  case 'expanse':
+    filteredFocuses.value = expanse;
 }
 const setFocus = (selectedOption) => {
   const [group, option] = selected.value.split('(');
@@ -369,7 +411,15 @@ const modOptions = computed(() => {
   if(useSettingsStore().showArcana){
     return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Spell'];
   } else {
-    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed'];
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Toughness'];
+  }
+})
+
+const qualityLevels = computed(() => {
+  if(useSettingsStore().showAfterMastery){
+    return ['novice','expert','master','grandmaster','apex'];
+  } else {
+    return ['novice','expert','master'];
   }
 })
 
