@@ -7,15 +7,21 @@
           <div class="weapons-body">
             <Item v-for="weapon in inventory.weapons" :key="weapon._id" :item="weapon" :canShowInChat="false" />
           </div>
-		  <div class="parry-action" v-if="canParry">
-			<span>Parry</span>
-			<button class="parry-btn" title="Parry" @click="parryRoll()"><img :src="DIE_ICON" alt="Parry" /></button>
-		  </div>
+          <div class="parry-action" v-if="canParry">
+            <span>Parry</span>
+            <button class="parry-btn" title="Parry" @click="parryRoll()"><img :src="DIE_ICON" alt="Parry" /></button>
+          </div>
         </div>
         <div class="armor-block">
           <h3>Armor</h3>
           <div class="armor-body">
             <Item v-for="armor in inventory.armors" :key="armor._id" :item="armor" :canRoll="false" />
+          </div>
+        </div>
+        <div class="armor-block">
+          <h3>Shields</h3>
+          <div class="armor-body">
+            <Item v-for="shield in inventory.shields" :key="shield._id" :item="shield" :canRoll="false" />
           </div>
         </div>
       </div>
@@ -64,7 +70,6 @@ const DIE_ICON = new URL('@/assets/d10.svg', import.meta.url).href;
 const canParry = computed(() => {
   return inventory.weapons.length > 0 && (character.fightingStance === 'standard' || character.fightingStance === 'defensive');
 });
-
 </script>
 
 <style scoped lang="scss">
@@ -99,14 +104,14 @@ const canParry = computed(() => {
     align-items: center;
     margin-bottom: 1rem;
 
-	select {
-		width: 110px; // To align with the inputs below
-		padding: 0.25rem;
-		background-color: rgba(0, 0, 0, 0.05);
-		border: 1px solid #7a7971;
-		border-radius: 3px;
-		box-sizing: border-box;
-	}
+    select {
+      width: 110px; // To align with the inputs below
+      padding: 0.25rem;
+      background-color: rgba(0, 0, 0, 0.05);
+      border: 1px solid #7a7971;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
   }
 
   .value-display {
@@ -133,8 +138,7 @@ const canParry = computed(() => {
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem;
-	padding-right: 36px; // Align with the weapon roll buttons above
-
+    padding-right: 36px; // Align with the weapon roll buttons above
   }
 
   .parry-btn {
@@ -144,13 +148,13 @@ const canParry = computed(() => {
     justify-content: center;
     width: 28px;
     height: 28px;
-	transition: all 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .parry-btn:hover {
     background: #e3f2fd;
-	border-color: #bbdefb;
-	border-radius: 4px;
+    border-color: #bbdefb;
+    border-radius: 4px;
   }
 
   .parry-btn img {

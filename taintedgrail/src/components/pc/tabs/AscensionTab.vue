@@ -50,7 +50,7 @@
       <div class="ascension-categories">
         <div class="category-group">
           <div class="category-header">
-            <span>Premise</span>
+            <span>Premise / Fall</span>
           </div>
           <div class="category-content">
             <div class="category-item" v-for="premise in inventory.premises" :key="premise._id">
@@ -60,7 +60,7 @@
         </div>
         <div class="category-group">
           <div class="category-header">
-            <span>Awakening</span>
+            <span>Awakening / Ruin</span>
           </div>
           <div class="category-content">
             <div class="category-item" v-for="awakening in inventory.awakenings" :key="awakening._id">
@@ -70,7 +70,7 @@
         </div>
         <div class="category-group">
           <div class="category-header">
-            <span>Rise</span>
+            <span>Rise / Infamy</span>
           </div>
           <div class="category-content">
             <div class="category-item" v-for="rise in inventory.rises" :key="rise._id">
@@ -80,7 +80,7 @@
         </div>
         <div class="category-group">
           <div class="category-header">
-            <span>Ascension</span>
+            <span>Ascension / Disgrace</span>
           </div>
           <div class="category-content">
             <div class="category-item" v-for="ascension in inventory.ascensions" :key="ascension._id">
@@ -209,7 +209,7 @@ const handleAscensionClick = (value: number) => {
     .gauge-circles {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.30rem;
+      gap: 0.3rem;
       justify-content: center;
       margin-bottom: 1rem;
       padding: 0.4rem;

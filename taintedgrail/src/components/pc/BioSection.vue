@@ -92,9 +92,9 @@ const meta = useMetaStore();
 
       .name {
         background-color: rgba(0, 0, 0, 0.05) !important;
-		width: 100%;
-		border: 1px solid #7a7971;
-		border-radius: 2px;
+        width: 100%;
+        border: 1px solid #7a7971;
+        border-radius: 2px;
         padding: 1rem 0.25rem;
         font-size: 1.4rem;
         font-weight: bold;

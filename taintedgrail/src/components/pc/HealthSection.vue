@@ -12,6 +12,7 @@
                 v-for="index in condition.count"
                 :key="condition.startIndex + index - 1"
                 class="condition-circle"
+                :title="`${condition.label}: ${condition.startIndex + index - 1}`"
                 :class="{ checked: characterStore.isHealthChecked(condition.startIndex + index - 1) }"
                 @click="characterStore.setHealth(condition.startIndex + index - 1)"
               ></div>
@@ -50,7 +51,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-
 const characterStore = useCharacterStore();
 
 const healthConditions = computed(() => [

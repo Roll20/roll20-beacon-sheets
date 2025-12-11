@@ -1,5 +1,5 @@
-import type { Dispatch, DropArgs, InitArgs } from '@roll20-official/beacon-sdk';
-import { initValues, beaconPulse, dispatchRef } from '../relay';
+import type { Dispatch, DragArgs, DropArgs, InitArgs } from '@roll20-official/beacon-sdk';
+import { initValues, beaconPulse, dispatchRef, dragOverPulse } from '../relay';
 import { CategoryType, useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import { useWaysStore } from '@/sheet/stores/ways/waysStore';
 
@@ -25,7 +25,17 @@ export const onSharedSettingsChange = () => {};
 
 export const onTranslationsRequest = () => ({});
 
-export const onDragOver = () => {};
+export const onDragOver = (entity: DragArgs) => {
+  dragOverPulse.value = true;
+
+  // Item is moved outside of the sheet.
+  if (!entity.coordinates || !entity.dragData) dragOverPulse.value = false;
+
+  // If item has been dragged over and not moved (or dropped on another sheet), reset.
+  setTimeout(() => {
+    dragOverPulse.value = false;
+  }, 2000);
+};
 
 export const onDropOver = async (entity: DropArgs) => {
   const inventory = useInventoryStore();
@@ -45,8 +55,7 @@ export const onDropOver = async (entity: DropArgs) => {
         matchedItem = compendiumData.data.ruleSystem?.pages.find(
           (item: any) =>
             item.name === entity.dropData.pageName &&
-            (item.properties.Expansion === entity.dropData.expansionId ||
-              item.properties.expansion === entity.dropData.expansionId),
+            (item.properties.Expansion === entity.dropData.expansionId || item.properties.expansion === entity.dropData.expansionId),
         );
       } else {
         matchedItem = compendiumData.data.ruleSystem?.pages;
@@ -56,6 +65,9 @@ export const onDropOver = async (entity: DropArgs) => {
     if (!matchedItem) {
       throw new Error('No item found');
     }
+
+    // Remove the dragOver overlay.
+    dragOverPulse.value = false;
 
     // Pass along disciplines to the Ways store to handle further.
     if (entity.dropData.categoryName === 'Disciplines') {

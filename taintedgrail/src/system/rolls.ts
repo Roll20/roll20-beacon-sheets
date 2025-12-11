@@ -1,18 +1,13 @@
 import type { DiceComponent } from '@/rolltemplates/rolltemplates';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-import { type AnyItem, type Spell, type Weapon } from '@/sheet/stores/inventory/inventoryStore';
+import { useNPCStore } from '@/sheet/stores/character/npcStore';
+import { CategoryType, type AnyItem, type Spell, type Weapon } from '@/sheet/stores/inventory/inventoryStore';
+import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useWaysStore, type WaysScore } from '@/sheet/stores/ways/waysStore';
-import {
-  capitalizeFirstLetter,
-  domainToFriendlyName,
-  friendlyNameToDomain,
-  spellDisciplineToFriendlyName,
-} from '@/utility/formattedNames';
+import { capitalizeFirstLetter, domainToFriendlyName, friendlyNameToDomain, spellDisciplineToFriendlyName } from '@/utility/formattedNames';
 import rollToChat from '@/utility/rollToChat';
 import sendToChat from '@/utility/sendToChat';
 import sendUserError from '@/utility/sendUserError';
-
-
 
 // 1d10 + Way - Health Modifier
 export const wayRoll = async (way: WaysScore) => {
@@ -107,7 +102,7 @@ export const parryRoll = async () => {
   const healthModifier = rollHealthScore();
 
   let subtitle = '1d10 + Combativeness + Close Combat - Health Modifier';
-  let components: DiceComponent[] = [
+  const components: DiceComponent[] = [
     { label: 'Roll', sides: 10 },
     { label: 'Combativeness', value: waysScores.combativeness },
     { label: 'Close Combat', value: domains.closeCombat.base },
@@ -168,8 +163,8 @@ export const weaponRoll = async (item: Weapon) => {
   if (fightingStance === 'defensive') stanceModifier = -potential;
   else if (fightingStance === 'offensive') stanceModifier = potential;
 
-  let subtitle = `1d10 + Combativeness + ${labelToUse} - Health Modifier`;
-  let components: DiceComponent[] = [
+  let subtitle = `Attack: 1d10 + Combativeness + ${labelToUse} - Health Modifier`;
+  const components: DiceComponent[] = [
     { label: 'Roll', sides: 10 },
     { label: 'Combativeness', value: combativeness },
     { label: labelToUse, value: scoreToUse },
@@ -177,18 +172,25 @@ export const weaponRoll = async (item: Weapon) => {
 
   // Add stance modifier if it's not 0.
   if (stanceModifier !== 0) {
-    subtitle = `1d10 + Combativeness + ${labelToUse} ${stanceModifier < 0 ? '-' : '+'} Stance Modifier - Health Modifier`;
+    subtitle = `Attack: 1d10 + Combativeness + ${labelToUse} ${stanceModifier < 0 ? '-' : '+'} Stance Modifier - Health Modifier`;
     components.push({ label: 'Health Modifier', value: -healthModifier, negative: true });
     components.push({ label: `Stance Modifier (${currentFightingStance})`, value: stanceModifier, negative: stanceModifier < 0 });
   } else {
     components.push({ label: 'Health Modifier', value: -healthModifier, negative: true });
   }
 
-  await rollToChat({
+  const rollResult = await rollToChat({
     title: `Weapon Roll: ${item.name}`,
     subtitle: subtitle,
     allowCrit: true,
     components: components,
+  });
+
+  const damageInfo = `Roll Result (${rollResult}) + Weapon Damage (${item.damage}) - Defense - Protection`;
+  // Send roll damage formula to chat.
+  await sendToChat({
+    title: 'Damage Formula',
+    textContent: damageInfo,
   });
 };
 
@@ -202,7 +204,7 @@ export const magicRoll = async (item: Spell) => {
   const disciplineScore = getDisciplineByName(item.discipline)?.base || 0;
 
   // Get the parent domain of the spell discipline (which should always be magic, realistically)
-  const parentDomain = getDisciplineByName(item.discipline)?.parentDomain;
+  const parentDomain = getDisciplineByName(friendlySpellDiscipline)?.parentDomain;
 
   // It could be that the player (for some reason) removed the discipline needed from their sheet, but still has the spell.
   if (!parentDomain) {
@@ -229,6 +231,53 @@ export const magicRoll = async (item: Spell) => {
       { label: 'Health Modifier', value: -healthModifier, negative: true },
     ],
   });
+};
+
+export const npcAttackRoll = async () => {
+  const { attack, damage, rollHealthScore } = useNPCStore();
+  const healthModifier = rollHealthScore();
+  const { name } = useMetaStore();
+  await rollToChat({
+    title: `${name}: Attack Roll (Damage: ${damage})`,
+    subtitle: '1d10 + Attack - Health Modifier',
+    allowCrit: false,
+    components: [
+      { label: 'Roll', sides: 10 },
+      { label: 'Attack', value: attack || 0 },
+      { label: 'Health Modifier', value: -healthModifier, negative: true },
+    ],
+  });
+};
+
+export const genericNpcDomainRoll = async (value: number, domain: string) => {
+  const { rollHealthScore } = useNPCStore();
+  const healthModifier = rollHealthScore();
+  const { name } = useMetaStore();
+  await rollToChat({
+    title: `${name}: ${domain} Roll`,
+    subtitle: `1d10 + ${domain} - Health Modifier`,
+    allowCrit: false,
+    components: [
+      { label: 'Roll', sides: 10 },
+      { label: `${domain}`, value: value },
+      { label: 'Health Modifier', value: -healthModifier, negative: true },
+    ],
+  });
+};
+
+export const npcDefenseRoll = async () => {
+  const { defense, protection } = useNPCStore();
+  const { name } = useMetaStore();
+  // Convert defense/protection to a mock item.
+  const mockItem: AnyItem = {
+    _id: '1',
+    name: `${name}: Defense`,
+    description: `Defense: ${defense || 0}\nProtection: ${protection || 0}`,
+    type: CategoryType.TRAIT,
+    quantity: 1,
+    icon: '',
+  };
+  sendItemToChat(mockItem);
 };
 
 export const sendItemToChat = async (item: AnyItem) => {

@@ -27,16 +27,16 @@
 
 <script setup lang="ts">
 import { useTaintedGrailStore } from '@/sheet/stores';
-import BioSection from '@/components/BioSection.vue';
-import HealthSection from '@/components/HealthSection.vue';
-import TraitsSection from '@/components/TraitsSection.vue';
-import TabSection from '@/components/TabSection.vue';
-import WaysSection from '@/components/WaysSection.vue';
+import BioSection from '@/components/pc/BioSection.vue';
+import HealthSection from '@/components/pc/HealthSection.vue';
+import TraitsSection from '@/components/pc/TraitsSection.vue';
+import TabSection from '@/components/pc/TabSection.vue';
+import WaysSection from '@/components/pc/WaysSection.vue';
 
 useTaintedGrailStore();
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 @use '../common/scss/vars.scss' as vars;
 
 .taintedgrail {

@@ -2,13 +2,7 @@
   <div class="domains-tab">
     <div class="domains-header">
       <h3>Domains and Disciplines</h3>
-      <img
-        :src="eyeIcon"
-        class="eye-icon"
-        alt="Eye"
-        title="Edit Domains and Disciplines"
-        @click="showModal = true"
-      />
+      <img :src="eyeIcon" class="eye-icon" alt="Eye" title="Edit Domains and Disciplines" @click="showModal = true" />
     </div>
 
     <div class="domains-grid">
@@ -23,6 +17,7 @@
             <span class="domain-total"
               >Total:
               <input
+                title="Click on 👁️ to edit"
                 type="number"
                 :value="ways.domains[domainKey as keyof typeof ways.domains].total"
                 readonly
@@ -31,23 +26,14 @@
           </div>
 
           <!-- Disciplines for this domain -->
-          <div
-            v-for="discipline in getDisciplinesForDomain(domainKey)"
-            :key="discipline._id"
-            class="discipline-row"
-          >
+          <div v-for="discipline in getDisciplinesForDomain(domainKey)" :key="discipline._id" class="discipline-row">
             <span class="discipline-indent"></span>
             <span class="roll-icon" @click="disciplineRoll(discipline.name)">
               <img :src="dieIcon" :alt="`Roll ${discipline.name}`" />
             </span>
             <span class="discipline-name">{{ discipline.name }}</span>
             <span class="discipline-total"
-              >Total:
-              <input
-                type="number"
-                :value="discipline.total"
-                readonly
-                class="total-input readonly"
+              >Total: <input title="Click on 👁️ to edit" type="number" :value="discipline.total" readonly class="total-input readonly"
             /></span>
           </div>
         </div>
@@ -197,7 +183,7 @@ const closeModal = () => {
             background-color: rgba(0, 0, 0, 0.02);
             border-color: #ddd;
             color: #666;
-            cursor: not-allowed;
+            cursor: help;
           }
         }
       }
