@@ -6,7 +6,7 @@
           <div class="age-combat-section age-combat-blackPowder-icon" v-if="attack.weaponGroup === 'Black Powder'"></div>
           <div class="age-combat-section age-combat-bludgeons-icon" v-if="attack.weaponGroup === 'Bludgeons'"></div>
           <div class="age-combat-section age-combat-bows-icon" v-if="attack.weaponGroup === 'Bows' || (attack.option === 'Custom Attack' && attack.weaponType === 'Ranged')"></div>
-          <div class="age-combat-section age-combat-brawling-icon" v-if="attack.weaponGroup === 'Brawling' || (attack.option === 'Custom Attack' && attack.weaponType === 'Melee')"></div>
+          <div class="age-combat-section age-combat-brawling-icon" v-if="settings.gameSystem !== 'expanse' && attack.weaponGroup === 'Brawling' || (attack.option === 'Custom Attack' && attack.weaponType === 'Melee')"></div>
           <div class="age-combat-section age-combat-dueling-icon" v-if="attack.weaponGroup === 'Dueling'"></div>
           <div class="age-combat-section age-combat-heavyBlades-icon" v-if="attack.weaponGroup === 'Heavy Blades'"></div>
           <div class="age-combat-section age-combat-lances-icon" v-if="attack.weaponGroup === 'Lances'"></div>
