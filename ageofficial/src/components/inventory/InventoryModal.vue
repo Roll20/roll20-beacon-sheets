@@ -151,6 +151,15 @@
                           <option value="Willpower">Willpower</option>
                       </select>
                   </div>
+                  <div class="mb-3 col" v-if="settings.gameSystem !== 'fage2e' && settings.gameSystem !== 'blue rose'" >
+                    <span class="age-input-label" id="basic-addon1">Weapon Focus</span>
+                      <select
+                        class="age-atk-select form-select"
+                          data-testid="test-attack-weaponGroup-input"
+                          v-model="item.weaponGroup" >
+                          <option v-for="wg in weaponGroups" :key="wg" :value="wg">{{ wg }}</option>
+                      </select>
+                  </div>
                 </div>
                 <div class="row" style="margin:0">
                   <div class="mb-3 col">
@@ -287,7 +296,7 @@
 <script setup>
   import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
   import { computed, ref } from 'vue';
-  import { fage2eWG,mageWG, blueRoseWG } from '../attack/weaponGroups';
+  import { fage2eWG,mageWG, blueRoseWG, expanseWG } from '../attack/weaponGroups';
   import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 
   const props = defineProps({
@@ -302,8 +311,11 @@
     case 'mage':
       weaponGroups.value = mageWG;
     break;
-    case 'blue-rose':
+    case 'blue rose':
       weaponGroups.value = blueRoseWG;  
+    break;
+    case 'expanse':
+      weaponGroups.value = expanseWG;
     break;
     default:
       weaponGroups.value = fage2eWG;
