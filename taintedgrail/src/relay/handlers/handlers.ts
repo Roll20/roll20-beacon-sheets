@@ -1,10 +1,12 @@
-import type { Dispatch, DragArgs, DropArgs, InitArgs } from '@roll20-official/beacon-sdk';
+import type { Character, Dispatch, DragArgs, DropArgs, InitArgs } from '@roll20-official/beacon-sdk';
 import { initValues, beaconPulse, dispatchRef, dragOverPulse } from '../relay';
 import { CategoryType, useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import { useWaysStore } from '@/sheet/stores/ways/waysStore';
+import { useNPCStore } from '@/sheet/stores/character/npcStore';
+import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.
-export const onInit = ({ character, settings, compendiumDropData }: InitArgs) => {
+export const onInit = ({ character, settings, compendiumDropData }: InitArgs, dispatch: Dispatch) => {
   initValues.id = character.id;
   initValues.character = character;
   initValues.settings = settings;

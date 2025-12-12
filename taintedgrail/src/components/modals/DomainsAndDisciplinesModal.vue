@@ -29,7 +29,8 @@
                     <input
                       type="number"
                       :value="domain.base"
-                      @input="(event) => setDomainBase(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
+                      max="5"
+                      @input="(event) => updateDomainScore(domainKey, Number((event.target as HTMLInputElement)?.value) || 0)"
                       class="form-control"
                     />
                   </td>
@@ -56,7 +57,9 @@
                   <td>
                     <span class="total-readonly">{{ domain.total }}</span>
                   </td>
-                  <td class="domain-actions"></td>
+                  <td class="domain-actions">
+                    <button @click="addCustomDiscipline(domainKey)" class="add-btn" title="Add discipline">+</button>
+                  </td>
                 </tr>
 
                 <!-- Discipline Rows -->
@@ -69,6 +72,7 @@
                     <input
                       type="number"
                       :value="discipline.base"
+                      min="6"
                       @input="(event) => updateDisciplineScore(discipline._id, Number((event.target as HTMLInputElement)?.value) || 0)"
                       class="form-control discipline-input"
                     />
@@ -112,7 +116,9 @@ const TRASH_ICON = new URL('@/assets/trash.svg', import.meta.url).href;
 
 const waysStore = useWaysStore();
 const { ways, disciplines, domains } = storeToRefs(waysStore);
-const { removeDiscipline, setDomainBase, setDomainBonus, setDomainPenalty } = waysStore;
+const { removeDiscipline, addCustomDiscipline, setDomainBase, setDomainBonus, setDomainPenalty } = waysStore;
+const MAX_DOMAIN_SCORE = 5;
+const MIN_DISCIPLINE_SCORE = 6;
 
 const props = defineProps({
   show: Boolean,
@@ -155,8 +161,12 @@ const getWayScore = (wayTitle: string) => {
 const updateDisciplineScore = (disciplineId: string, newScore: number) => {
   const discipline = disciplines.value.find((d: Discipline) => d._id === disciplineId);
   if (discipline) {
-    discipline.base = newScore;
+    discipline.base = Math.max(MIN_DISCIPLINE_SCORE, newScore);
   }
+};
+
+const updateDomainScore = (domainKey: string, newScore: number) => {
+  setDomainBase(domainKey, Math.min(MAX_DOMAIN_SCORE, newScore));
 };
 </script>
 
@@ -425,6 +435,24 @@ const updateDisciplineScore = (disciplineId: string, newScore: number) => {
   border-radius: 2px;
   transition: background-color 0.2s;
   vertical-align: middle;
+}
+
+.add-btn {
+  background: transparent;
+  border: 1px solid #7a7971;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.add-btn:hover {
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
 .trash-btn:hover {

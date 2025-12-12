@@ -11,21 +11,29 @@
     <!-- Equipment Section -->
     <div class="equipment-section">
       <div class="equipment-block">
-        <h3>Equipment</h3>
+        <div class="section-header">
+          <h3>Equipment</h3>
+          <button class="add-btn" title="Add custom equipment" @click="showCustomEquipmentModal = true">+</button>
+        </div>
         <div class="equipment-body">
           <div class="equipment-item" v-for="item in inventory.equipment" :key="item._id">
-            <Item :item="item" :canRoll="false" />
+            <ItemComponent :item="item" :canRoll="false" />
           </div>
         </div>
       </div>
     </div>
+    <CustomEquipmentModal :show="showCustomEquipmentModal" @close="showCustomEquipmentModal = false" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import Item from '@/components/parts/Item.vue';
+import ItemComponent from '@/components/parts/ItemComponent.vue';
+import CustomEquipmentModal from '@/components/modals/CustomEquipmentModal.vue';
 const inventory = useInventoryStore();
+
+const showCustomEquipmentModal = ref(false);
 </script>
 
 <style scoped lang="scss">
@@ -39,6 +47,27 @@ const inventory = useInventoryStore();
     margin: 0;
     margin-bottom: 0.5rem;
     border-bottom: 1px solid #8b4513;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .add-btn {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #7a7971;
+    border-radius: 2px;
+    background: transparent;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .add-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
   }
 
   // Riches Section

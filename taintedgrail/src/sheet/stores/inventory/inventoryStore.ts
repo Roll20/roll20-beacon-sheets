@@ -27,6 +27,10 @@ export enum CategoryType {
   AWAKENING = 'Awakenings',
   RISE = 'Rises',
   ASCENSION = 'Ascensions',
+  FALL = 'Falls',
+  RUIN = 'Ruins',
+  INFAMY = 'Infamies',
+  DISGRACE = 'Disgraces',
   TRAIT = 'Traits',
   SPECIAL_ABILITY = 'Special Abilities',
 }
@@ -74,6 +78,10 @@ export type InventoryHydrate = {
     awakenings: Record<string, Item>;
     rises: Record<string, Item>;
     ascensions: Record<string, Item>;
+    falls: Record<string, Item>;
+    ruins: Record<string, Item>;
+    infamies: Record<string, Item>;
+    disgraces: Record<string, Item>;
     riches: number;
 
     // NPC Only
@@ -96,6 +104,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   const awakenings: Ref<Array<Item>> = ref([]);
   const rises: Ref<Array<Item>> = ref([]);
   const ascensions: Ref<Array<Item>> = ref([]);
+  const falls: Ref<Array<Item>> = ref([]);
+  const ruins: Ref<Array<Item>> = ref([]);
+  const infamies: Ref<Array<Item>> = ref([]);
+  const disgraces: Ref<Array<Item>> = ref([]);
   const riches: Ref<number> = ref(0);
 
   const traits: Ref<Array<Item>> = ref([]);
@@ -116,6 +128,10 @@ export const useInventoryStore = defineStore('inventory', () => {
     [CategoryType.AWAKENING]: awakenings,
     [CategoryType.RISE]: rises,
     [CategoryType.ASCENSION]: ascensions,
+    [CategoryType.FALL]: falls,
+    [CategoryType.RUIN]: ruins,
+    [CategoryType.INFAMY]: infamies,
+    [CategoryType.DISGRACE]: disgraces,
     [CategoryType.TRAIT]: traits,
     [CategoryType.SPECIAL_ABILITY]: specialAbilities,
   } as const;
@@ -123,10 +139,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   const createGenericItem = (item: any, categoryName: CategoryType): AnyItem => ({
     _id: uuidv4(),
     type: categoryName,
-    name: item.properties.Name,
-    description: item.properties.Description || '',
-    quantity: item.properties.Quantity || 1,
-    icon: item.properties['data-builderImage'] || '',
+    name: item.properties ? item.properties.Name : item.Name,
+    description: item.properties ? item.properties.Description : item.Description || '',
+    quantity: item.properties ? item.properties.Quantity : item.Quantity || 1,
+    icon: item.properties ? item.properties['data-builderImage'] : item['data-builderImage'] || '',
   });
 
   const enrichWeapon = (baseItem: AnyItem, item: any): Weapon =>
@@ -164,27 +180,28 @@ export const useInventoryStore = defineStore('inventory', () => {
     const baseItem = createGenericItem(item, categoryName);
     let enrichedItem: AnyItem;
 
-    let canAdd = true;
+    const canAdd = true;
     // Check if the player has the discipline if it's required.
-    if (categoryName === CategoryType.WEAPON || categoryName === CategoryType.SPELL) {
-      let discipline = item.properties['data-Discipline'];
-      if (discipline && discipline !== '') {
-        if (categoryName === CategoryType.SPELL) {
-          // For spells we need to convert to friendly name.
-          discipline = spellDisciplineToFriendlyName(discipline);
-        }
+    // NOTE: Disabled, just fall back to domain value if the discipline is not found.
+    // if (categoryName === CategoryType.WEAPON || categoryName === CategoryType.SPELL) {
+    //   let discipline = item.properties['data-Discipline'];
+    //   if (discipline && discipline !== '') {
+    //     if (categoryName === CategoryType.SPELL) {
+    //       // For spells we need to convert to friendly name.
+    //       discipline = spellDisciplineToFriendlyName(discipline);
+    //     }
 
-        const disciplineObject = getDisciplineByName(discipline);
-        canAdd = disciplineObject !== undefined;
-        if (!canAdd) {
-          await sendUserError({
-            title: `Unable to add ${categoryName}: ${baseItem.name}`,
-            textContent: `You do not have the ${discipline} discipline.`,
-          });
-          return;
-        }
-      }
-    }
+    //     const disciplineObject = getDisciplineByName(discipline);
+    //     canAdd = disciplineObject !== undefined;
+    //     if (!canAdd) {
+    //       await sendUserError({
+    //         title: `Unable to add ${categoryName}: ${baseItem.name}`,
+    //         textContent: `You do not have the ${discipline} discipline.`,
+    //       });
+    //       return;
+    //     }
+    //   }
+    // }
 
     // Check if the player already has a torment or rout (only one of each)
     if (categoryName === CategoryType.TORMENT) {
@@ -236,6 +253,80 @@ export const useInventoryStore = defineStore('inventory', () => {
     targetArray.value = targetArray.value.filter((existingItem) => existingItem._id !== item._id);
   };
 
+  const normalizeNonNegative = (value: number) => {
+    if (!Number.isFinite(value) || Number.isNaN(value)) return 0;
+    return Math.max(0, value);
+  };
+
+  const addCustomWeapon = (params: { name: string; description: string; damage: number; range: number }) => {
+    const customWeapon: Weapon = {
+      _id: uuidv4(),
+      type: CategoryType.WEAPON,
+      name: params.name.trim(),
+      description: params.description.trim(),
+      quantity: 1,
+      icon: '',
+      domain: '',
+      discipline: '',
+      damage: normalizeNonNegative(params.damage).toString(),
+      range: normalizeNonNegative(params.range).toString(),
+    };
+    weapons.value.push(customWeapon);
+  };
+
+  const addCustomArmor = (params: { name: string; description: string; protection: number }) => {
+    const customArmor: Armor = {
+      _id: uuidv4(),
+      type: CategoryType.ARMOR,
+      name: params.name.trim(),
+      description: params.description.trim(),
+      quantity: 1,
+      icon: '',
+      protection: normalizeNonNegative(params.protection),
+    };
+    armors.value.push(customArmor);
+  };
+
+  const addCustomShield = (params: { name: string; description: string; protection: number }) => {
+    const customShield: Armor = {
+      _id: uuidv4(),
+      type: CategoryType.SHIELDS,
+      name: params.name.trim(),
+      description: params.description.trim(),
+      quantity: 1,
+      icon: '',
+      protection: normalizeNonNegative(params.protection),
+    };
+    shields.value.push(customShield);
+  };
+
+  const addCustomSpell = (params: { name: string; description: string; discipline: string; mpCost: number; castTime: string }) => {
+    const customSpell: Spell = {
+      _id: uuidv4(),
+      type: CategoryType.SPELL,
+      name: params.name.trim(),
+      description: params.description.trim(),
+      quantity: 1,
+      icon: '',
+      discipline: params.discipline.trim(),
+      mpCost: normalizeNonNegative(params.mpCost),
+      castTime: params.castTime.trim(),
+    };
+    spells.value.push(customSpell);
+  };
+
+  const addCustomEquipment = (params: { name: string; description: string; quantity: number }) => {
+    const customEquipment: Item = {
+      _id: uuidv4(),
+      type: CategoryType.EQUIPMENT,
+      name: params.name.trim(),
+      description: params.description.trim(),
+      quantity: normalizeNonNegative(params.quantity),
+      icon: '',
+    };
+    equipment.value.push(customEquipment);
+  };
+
   // Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id.
   const dehydrate = () => {
     return {
@@ -253,6 +344,10 @@ export const useInventoryStore = defineStore('inventory', () => {
         awakenings: arrayToObject(awakenings.value),
         rises: arrayToObject(rises.value),
         ascensions: arrayToObject(ascensions.value),
+        falls: arrayToObject(falls.value),
+        ruins: arrayToObject(ruins.value),
+        infamies: arrayToObject(infamies.value),
+        disgraces: arrayToObject(disgraces.value),
         riches: riches.value,
         traits: arrayToObject(traits.value),
         specialAbilities: arrayToObject(specialAbilities.value),
@@ -275,6 +370,10 @@ export const useInventoryStore = defineStore('inventory', () => {
     awakenings.value = objectToArray(hydrateStore.inventory.awakenings) || awakenings.value;
     rises.value = objectToArray(hydrateStore.inventory.rises) || rises.value;
     ascensions.value = objectToArray(hydrateStore.inventory.ascensions) || ascensions.value;
+    falls.value = objectToArray(hydrateStore.inventory.falls) || falls.value;
+    ruins.value = objectToArray(hydrateStore.inventory.ruins) || ruins.value;
+    infamies.value = objectToArray(hydrateStore.inventory.infamies) || infamies.value;
+    disgraces.value = objectToArray(hydrateStore.inventory.disgraces) || disgraces.value;
     riches.value = hydrateStore.inventory.riches || riches.value;
     traits.value = objectToArray(hydrateStore.inventory.traits) || traits.value;
     specialAbilities.value = objectToArray(hydrateStore.inventory.specialAbilities) || specialAbilities.value;
@@ -294,10 +393,19 @@ export const useInventoryStore = defineStore('inventory', () => {
     awakenings,
     rises,
     ascensions,
+    falls,
+    ruins,
+    infamies,
+    disgraces,
     riches,
     traits,
     specialAbilities,
     addItem,
+    addCustomWeapon,
+    addCustomArmor,
+    addCustomShield,
+    addCustomSpell,
+    addCustomEquipment,
     removeItem,
     dehydrate,
     hydrate,
