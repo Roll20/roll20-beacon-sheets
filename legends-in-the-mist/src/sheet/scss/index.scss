@@ -1,0 +1,218 @@
+@use '/src/common/scss/vars';
+@use '/src/common/scss/reset';
+
+@use 'scale/ecv';
+@use 'scale/vtt';
+
+@use 'inputs';
+
+html {
+  font-size: 11px;
+}
+
+body {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  height: min-content;
+  overflow-x: hidden;
+  margin: 0;
+  background: #646463;
+  &:has(.view--challenge) {
+    background: #e7e3d8;
+    overflow-y: scroll;
+  }
+}
+
+.card {
+  &__container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  &__header {
+    cursor: e-resize;
+  }
+
+  &[data-flipped="true"] &__container {
+    transform: rotateY(180deg);
+  }
+
+  &__side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+    &--back {
+      transform: rotateY(180deg);
+    }
+  }
+  &__section {
+    > .title {
+      padding: 4px 0;
+      background-color: var(--color-section-title-background);
+      :has(.decorator) {
+        position: relative;
+      }
+      .decorator {
+        height: 16px;
+        width: 16px;
+        position: absolute;
+        top: 50%;
+        margin-top: -8px;
+        right: 8px;
+        fill: rgba(0,0,0,0.75);
+      }
+    }
+    .break-padding {
+      width: calc(100% + 10px);
+      margin-left: -5px;
+      + *:not(.break-padding) {
+        margin-top: 5px;
+      }
+    }
+  }
+}
+
+.title {
+  font-family: var(--font-family-title);
+  font-optical-sizing: auto;
+  font-weight: bold;
+  text-transform: uppercase;
+  &:has(.decorator) {
+    position: relative;
+    .decorator {
+      height: 16px;
+      width: 16px;
+      position: absolute;
+      top: 50%;
+      margin-top: -8px;
+      right: 8px;
+      fill: rgba(0,0,0,0.75);
+    }
+  }
+}
+h2.title {
+  font-size: var(--font-size-large);
+}
+h3.title {
+  font-size: var(--font-size-medium);
+}
+h4.title {
+  font-size: var(--font-size-small);
+}
+
+.image-toggle {
+  display: grid;
+  grid-template-areas: "stack";
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  input, .svg-icon {
+    grid-area: stack;
+    place-self: center;
+  }
+  input {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+  }
+  .svg-icon {
+    pointer-events: none;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.table {
+  display: grid;
+  &__header {
+    display: contents;
+  }
+  &__body {
+    display: contents;
+  }
+  &__row {
+    display: contents;
+  }
+  &__footer {
+    display: contents;
+  }
+}
+
+.smart-textarea {
+  width: 100%;
+  min-height: 5rem;
+  resize: vertical;
+  padding: 5px;
+  border: 1px solid var(--color-textarea);
+  border-radius: 5px;
+  font-size: 1rem;
+  line-height: 1.4;
+  transition: border-color 0.2s ease;
+  outline: none;
+  background-color: transparent;
+
+  /* Hide scrollbar initially (Chrome, Edge, Safari) */
+  scrollbar-width: none; /* Firefox */
+  resize: none;
+}
+
+/* Narrow scrollbar style (when visible) */
+.smart-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+.smart-textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.4);
+  border-radius: 3px;
+}
+.smart-textarea::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 100, 100, 0.6);
+}
+
+/* Hide scrollbar when not focused or hovered */
+.smart-textarea:not(:hover):not(:focus)::-webkit-scrollbar {
+  display: none;
+}
+.smart-textarea:not(:hover):not(:focus) {
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Visual feedback */
+.smart-textarea:focus {
+  border-color: var(--color-textarea-hover);
+  background-color: var(--color-card-title);
+}
+
+/* Form fields */
+input[type="text"],
+input[type="number"] {
+  border: 0;
+  border-bottom: 1px solid var(--color-textinput-line);
+  background: transparent;
+  outline: none;
+}
+
+select {
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid var(--color-textinput-line);
+  background: transparent;
+  padding: 1px 2px;
+  outline: none;
+}
+
+button {
+  outline: none;
+}

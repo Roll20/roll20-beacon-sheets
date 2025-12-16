@@ -1,0 +1,141 @@
+@use '../../common/scss/vars.scss';
+
+rolltemplate.sheet {
+  display: block;
+  max-width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+  background: white;
+  color: black;
+
+  .header {
+    text-align: center;
+    color: black;
+    border-bottom: 2px solid #e3e3e3;
+    font-weight: bold;
+    margin-bottom: 5px;
+    &__title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+  }
+  .body {
+    hr {
+      margin: 0.5rem 0;
+    }
+    .trait-list {
+      display: flex;
+      gap: 0.5rem;
+
+      .trait {
+        font-style: italic;
+      }
+    }
+  }
+
+  .key-values {
+    &__pair {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      gap: 0.5rem;
+    }
+    &__key {
+      font-weight: 600;
+    }
+  }
+
+  .roll {
+    &__total {
+      text-align: center;
+      font-size: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      .result-number {
+        font-size: 60px;
+        height: 60px;
+        line-height: 60px;
+      }
+      .result-icon {
+        height: 49px;
+        margin-top: 1px;
+      }
+      .result-text {
+        font-family: var(--font-family-title);
+        flex-basis: 100%;
+        font-size: 24px;
+        line-height: 24px;
+      }
+    }
+    &__components {
+      display: flex;
+      flex-direction: column;
+      border-top: 2px solid #e3e3e3;
+      padding: 10px 10px 0 10px;
+
+      .component {
+        &__value {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  details {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    &[open] {
+      margin-top: 14px;
+      flex-direction: column-reverse;
+      .summary__button {
+        transform: rotate(180deg);
+      }
+    }
+  }
+  .summary {
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    &__button {
+      position: relative;
+      z-index: 1;
+      span {
+        font-size: 10px;
+        background: #e3e3e3;
+        padding: 0px 20px;
+        border-radius: 10px;
+      }
+    }
+    &__line {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      margin-top: -1px;
+      width: 100%;
+      height: 2px;
+      background: #e3e3e3;
+      pointer-events: none;
+    }
+  }
+
+  .hero-die {
+    text-align: center;
+    &__button {
+      display: inline-block;
+      padding: 0.25rem;
+      transition: background-color 0.2s ease-in-out;
+      border-radius: 0.25rem;
+      background-color: var(--sheet-primary);
+      color: white;
+      &:hover {
+        background-color: var(--sheet-secondary);
+        color: black;
+      }
+    }
+  }
+}
