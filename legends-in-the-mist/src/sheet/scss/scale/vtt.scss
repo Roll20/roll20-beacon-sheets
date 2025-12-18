@@ -1,0 +1,17 @@
+//Styling to be used when accessed on the VTT.
+
+@media screen and (max-width: 1000px) {
+  html,
+  body {
+    font-size: 11px !important;
+
+    .sheet-sheet {
+      .sheet-panel,
+      .sheet-tabbed-panel {
+        min-height: 25rem;
+        height: 35svh;
+        max-height: 40rem;
+      }
+    }
+  }
+}

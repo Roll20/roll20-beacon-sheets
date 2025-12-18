@@ -1,0 +1,17 @@
+{{#> wrapper type="roll" keyValues=keyValues }}
+  {{#> header characterName=characterName title=title subtitle=subtitle}}
+  {{/ header}}
+  <div class="body">
+    {{> rollTotal total=(sumComponents ../components multiplier) resultType=(getRollResultType ../components multiplier)}}
+
+    <details>
+      <summary class="summary">
+        <div class="summary__button">
+          <span>▼</span>
+        </div>
+        <div class="summary__line"></div>
+      </summary>
+      {{> rollComponents components=components }}
+    </details>
+  </div>
+{{/ wrapper }}
