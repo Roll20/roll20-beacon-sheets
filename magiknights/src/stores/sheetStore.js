@@ -45,7 +45,8 @@ export const useSheetStore = defineStore('sheet',() => {
   const charisma = ref(10);
 
   // Per rules: Modifier is capped at +5 until "Exceed a Mortal's Limits" at Reputation Level IV
-  const exceededMortalLimits = ref(false);
+  // Reputation Level IV corresponds to reputation value of 4 or higher
+  const exceededMortalLimits = computed(() => reputation.value >= 4);
 
   const strengthMod = computed(() => {
     const raw = Math.floor((strength.value - 10) / 2);
@@ -188,24 +189,70 @@ export const useSheetStore = defineStore('sheet',() => {
     }
   });
 
-  const hp = {
-    current: ref(10),
-    temp: ref(0),
-    max: ref(0)
-  };
-  const mp = {
-    current: ref(10),
-    max: ref(0)
-  };
-  const shp = {
-    current: ref(10),
-    max: ref(0)
-  };
-
   const elemental_affinity = ref('');
   const magic_style = ref('');
   const element_name = ref('');
   const mam = ref('');
+
+  // Auto-calculated HP: 10 + CON Mod + (Level - 1) × (6 + CON Mod)
+  const hp_max_override = ref('');
+  const hp_max = computed({
+    get() {
+      if (hp_max_override.value !== '' && !isNaN(Number(hp_max_override.value))) {
+        return Number(hp_max_override.value);
+      }
+      // Formula: 10 + CON Mod + (Level - 1) × (6 + CON Mod)
+      const conMod = constitutionMod.value;
+      return 10 + conMod + (level.value - 1) * (6 + conMod);
+    },
+    set(value) {
+      hp_max_override.value = value === '' ? '' : value;
+    }
+  });
+  const hp = {
+    current: ref(10),
+    temp: ref(0),
+    max: hp_max
+  };
+
+  // Auto-calculated MP: MCO × 2 where MCO = Level + MAM Modifier + Reputation
+  const mp_max_override = ref('');
+  const mp_max = computed({
+    get() {
+      if (mp_max_override.value !== '' && !isNaN(Number(mp_max_override.value))) {
+        return Number(mp_max_override.value);
+      }
+      // MCO = Magi-Knight Level + Magic Ability Modifier + Reputation Level
+      const mamMod = abilityScores[mam.value]?.mod.value || 0;
+      const mco = level.value + mamMod + reputation.value;
+      return mco * 2;
+    },
+    set(value) {
+      mp_max_override.value = value === '' ? '' : value;
+    }
+  });
+  const mp = {
+    current: ref(10),
+    max: mp_max
+  };
+
+  // Auto-calculated SHP: 10 + CON Modifier + Reputation Level
+  const shp_max_override = ref('');
+  const shp_max = computed({
+    get() {
+      if (shp_max_override.value !== '' && !isNaN(Number(shp_max_override.value))) {
+        return Number(shp_max_override.value);
+      }
+      return 10 + constitutionMod.value + reputation.value;
+    },
+    set(value) {
+      shp_max_override.value = value === '' ? '' : value;
+    }
+  });
+  const shp = {
+    current: ref(10),
+    max: shp_max
+  };
   const elemental_enhancement_1 = ref('');
   const elemental_enhancement_2 = ref('');
   const roll_resist_proficiency = ref('');
@@ -271,10 +318,51 @@ export const useSheetStore = defineStore('sheet',() => {
   const traits = ref([]);
   const traitsCount = computed(() => traits.value?.length);
 
-  const student_damage = ref('');
-  const student_armor = ref(0);
+  // Auto-calculated Student Damage: "1d4+" + (STR Modifier + Reputation Level)
+  const student_damage_override = ref('');
+  const student_damage = computed({
+    get() {
+      if (student_damage_override.value !== '') {
+        return student_damage_override.value;
+      }
+      const bonus = strengthMod.value + reputation.value;
+      return bonus >= 0 ? `1d4+${bonus}` : `1d4${bonus}`;
+    },
+    set(value) {
+      student_damage_override.value = value === '' ? '' : value;
+    }
+  });
+
+  // Auto-calculated Student Armor: 10 + CON Modifier + DEX Modifier
+  const student_armor_override = ref('');
+  const student_armor = computed({
+    get() {
+      if (student_armor_override.value !== '' && !isNaN(Number(student_armor_override.value))) {
+        return Number(student_armor_override.value);
+      }
+      return 10 + constitutionMod.value + dexterityMod.value;
+    },
+    set(value) {
+      student_armor_override.value = value === '' ? '' : value;
+    }
+  });
+
   const student_move = ref(0);
-  const student_attack = ref('');
+
+  // Auto-calculated Student Attack: Proficiency Bonus + max(STR, DEX) Modifier
+  const student_attack_override = ref('');
+  const student_attack = computed({
+    get() {
+      if (student_attack_override.value !== '' && !isNaN(Number(student_attack_override.value))) {
+        return Number(student_attack_override.value);
+      }
+      const bestMod = Math.max(strengthMod.value, dexterityMod.value);
+      return proficiency.value + bestMod;
+    },
+    set(value) {
+      student_attack_override.value = value === '' ? '' : value;
+    }
+  });
   const interests = ref('');
   const virtues = ref('');
   const strengths = ref('');
@@ -562,40 +650,40 @@ export const useSheetStore = defineStore('sheet',() => {
     return {
       current: hp.current.value,
       temp: hp.temp.value,
-      max: hp.max.value,
+      max_override: hp_max_override.value,
     };
   }
-  
+
   function hydrateHp(hp, hydrateData = {}) {
     hp.current.value = hydrateData.current ?? hp.current.value;
     hp.temp.value = hydrateData.temp ?? hp.temp.value;
-    hp.max.value = hydrateData.max ?? hp.max.value;
+    hp_max_override.value = hydrateData.max_override ?? hp_max_override.value;
   }
-  
+
   // Dehydrate and Hydrate methods for 'mp'
   function dehydrateMp(mp) {
     return {
       current: mp.current.value,
-      max: mp.max.value,
+      max_override: mp_max_override.value,
     };
   }
-  
+
   function hydrateMp(mp, hydrateData = {}) {
     mp.current.value = hydrateData.current ?? mp.current.value;
-    mp.max.value = hydrateData.max ?? mp.max.value;
+    mp_max_override.value = hydrateData.max_override ?? mp_max_override.value;
   }
-  
+
   // Dehydrate and Hydrate methods for 'shp'
   function dehydrateShp(shp) {
     return {
       current: shp.current.value,
-      max: shp.max.value,
+      max_override: shp_max_override.value,
     };
   }
-  
+
   function hydrateShp(shp, hydrateData = {}) {
     shp.current.value = hydrateData.current ?? shp.current.value;
-    shp.max.value = hydrateData.max ?? shp.max.value;
+    shp_max_override.value = hydrateData.max_override ?? shp_max_override.value;
   }
   
   // Dehydrate and Hydrate methods for 'crystal'
@@ -715,10 +803,10 @@ export const useSheetStore = defineStore('sheet',() => {
       fate: dehydrateFate(fate),
       armor_weave: dehydrateArmorWeave(armor_weave),
       soul_weapon: dehydrateSoulWeapon(soul_weapon),
-      student_damage: student_damage.value,
-      student_armor: student_armor.value,
+      student_damage_override: student_damage_override.value,
+      student_armor_override: student_armor_override.value,
       student_move: student_move.value,
-      student_attack: student_attack.value,
+      student_attack_override: student_attack_override.value,
       knight_damage: knight_damage.value,
       knight_armor: knight_armor.value,
       knight_hasShield: knight_hasShield.value,
@@ -771,16 +859,16 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration.value = hydrateStore.inspiration ?? inspiration.value;
     stress.value = hydrateStore.stress ?? stress.value;
     exhaustion.value = hydrateStore.exhaustion ?? exhaustion.value;
-    exceededMortalLimits.value = hydrateStore.exceededMortalLimits ?? exceededMortalLimits.value;
+    // exceededMortalLimits is now computed based on reputation >= 4
     rested.value = hydrateStore.rested ?? rested.value;
     studied.value = hydrateStore.studied ?? studied.value;
     gloom.value = hydrateStore.gloom_gems ?? gloom.value;
     unity.value = hydrateStore.unity_points ?? unity.value;
 
-    student_damage.value = hydrateStore.student_damage ?? student_damage.value;
-    student_armor.value = hydrateStore.student_armor ?? student_armor.value;
+    student_damage_override.value = hydrateStore.student_damage_override ?? student_damage_override.value;
+    student_armor_override.value = hydrateStore.student_armor_override ?? student_armor_override.value;
     student_move.value = hydrateStore.student_move ?? student_move.value;
-    student_attack.value = hydrateStore.student_attack ?? student_attack.value;
+    student_attack_override.value = hydrateStore.student_attack_override ?? student_attack_override.value;
     knight_damage.value = hydrateStore.knight_damage ?? knight_damage.value;
     knight_armor.value = hydrateStore.knight_armor ?? knight_armor.value;
     knight_hasShield.value = hydrateStore.knight_hasShield ?? knight_hasShield.value;
@@ -1242,9 +1330,15 @@ export const useSheetStore = defineStore('sheet',() => {
     backstory,
 
     student_damage,
+    student_damage_override,
     student_armor,
+    student_armor_override,
     student_move,
     student_attack,
+    student_attack_override,
+    hp_max_override,
+    mp_max_override,
+    shp_max_override,
     knight_damage,
     knight_armor,
     knight_hasShield,
