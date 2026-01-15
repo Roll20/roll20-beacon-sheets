@@ -43,13 +43,34 @@ export const useSheetStore = defineStore('sheet',() => {
   const intelligence = ref(10);
   const wisdom = ref(10);
   const charisma = ref(10);
-  
-  const strengthMod = computed(() => Math.floor((strength.value - 10) / 2));
-  const dexterityMod = computed(() => Math.floor((dexterity.value - 10) / 2));
-  const constitutionMod = computed(() => Math.floor((constitution.value - 10) / 2));
-  const intelligenceMod = computed(() => Math.floor((intelligence.value - 10) / 2));
-  const wisdomMod = computed(() => Math.floor((wisdom.value - 10) / 2));
-  const charismaMod = computed(() => Math.floor((charisma.value - 10) / 2));
+
+  // Per rules: Modifier is capped at +5 until "Exceed a Mortal's Limits" at Reputation Level IV
+  const exceededMortalLimits = ref(false);
+
+  const strengthMod = computed(() => {
+    const raw = Math.floor((strength.value - 10) / 2);
+    return exceededMortalLimits.value ? raw : Math.min(raw, 5);
+  });
+  const dexterityMod = computed(() => {
+    const raw = Math.floor((dexterity.value - 10) / 2);
+    return exceededMortalLimits.value ? raw : Math.min(raw, 5);
+  });
+  const constitutionMod = computed(() => {
+    const raw = Math.floor((constitution.value - 10) / 2);
+    return exceededMortalLimits.value ? raw : Math.min(raw, 5);
+  });
+  const intelligenceMod = computed(() => {
+    const raw = Math.floor((intelligence.value - 10) / 2);
+    return exceededMortalLimits.value ? raw : Math.min(raw, 5);
+  });
+  const wisdomMod = computed(() => {
+    const raw = Math.floor((wisdom.value - 10) / 2);
+    return exceededMortalLimits.value ? raw : Math.min(raw, 5);
+  });
+  const charismaMod = computed(() => {
+    const raw = Math.floor((charisma.value - 10) / 2);
+    return exceededMortalLimits.value ? raw : Math.min(raw, 5);
+  });
   const abilityScores = {
     strength:{
       score: strength,
@@ -92,11 +113,11 @@ export const useSheetStore = defineStore('sheet',() => {
   const proficiency = ref(calculateProficiency());
 
   function calculateProficiency() {
-    if (reputation.value > 6){
-      return '0';
+    if (reputation.value > 5){
+      return 6;
     }
     if (reputation.value < 0){
-      return '0';
+      return 0;
     }
     if (customProficiency.value != undefined && customProficiency.value != '') {
       return customProficiency.value;
@@ -194,7 +215,7 @@ export const useSheetStore = defineStore('sheet',() => {
     get() {
       // If the override is empty, return the calculated value
       if (spell_attack_override.value === '') {
-        return proficiency.value + (abilityScores[mam]?.mod.value || 0);
+        return proficiency.value + (abilityScores[mam.value]?.mod.value || 0);
       }
       // If override is set, return the override value
       return spell_attack_override.value;
@@ -210,7 +231,7 @@ export const useSheetStore = defineStore('sheet',() => {
     get() {
       // If the override is empty or not a number, return the calculated value
       if (spell_dc_override.value === '' || isNaN(Number(spell_dc_override.value))) {
-        return 8 + proficiency.value + (abilityScores[mam]?.mod.value || 0);
+        return 8 + proficiency.value + (abilityScores[mam.value]?.mod.value || 0);
       }
       // If override is set, return the override value
       return Number(spell_dc_override.value);
@@ -667,6 +688,7 @@ export const useSheetStore = defineStore('sheet',() => {
       inspiration: inspiration.value,
       stress: stress.value,
       exhaustion: exhaustion.value,
+      exceededMortalLimits: exceededMortalLimits.value,
       dexterityMod: dexterityMod.value,
       rested: rested.value,
       studied: studied.value,
@@ -749,6 +771,7 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration.value = hydrateStore.inspiration ?? inspiration.value;
     stress.value = hydrateStore.stress ?? stress.value;
     exhaustion.value = hydrateStore.exhaustion ?? exhaustion.value;
+    exceededMortalLimits.value = hydrateStore.exceededMortalLimits ?? exceededMortalLimits.value;
     rested.value = hydrateStore.rested ?? rested.value;
     studied.value = hydrateStore.studied ?? studied.value;
     gloom.value = hydrateStore.gloom_gems ?? gloom.value;
@@ -1178,6 +1201,7 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration,
     stress,
     exhaustion,
+    exceededMortalLimits,
     proficiency,
     customProficiency,
 
