@@ -18,13 +18,19 @@ const proficiencyMap = {
 
   watch(
       () => sheet.customProficiency,
-      (newValue, oldValue) => 
+      (newValue, oldValue) =>
       {
         if (newValue != '') {
           sheet.proficiency = newValue;
         } else {
           var reputation = sheet.reputation;
-          sheet.proficiency = Number(proficiencyMap[reputation]);
+          if (reputation > 5) {
+            sheet.proficiency = 6;
+          } else if (reputation < 0) {
+            sheet.proficiency = 0;
+          } else {
+            sheet.proficiency = Number(proficiencyMap[reputation]);
+          }
         }
       }
     );
