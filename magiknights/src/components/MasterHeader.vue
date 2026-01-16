@@ -2,6 +2,7 @@
 import { inject } from 'vue';
 import { useSheetStore, useMetaStore } from '@/stores';
 import { initValues } from '@/relay';
+import NotchContainer from '@/components/NotchContainer.vue';
 
 const sheet = useSheetStore();
 const meta = useMetaStore();
@@ -50,10 +51,10 @@ const handleTransform = async () => {
       <input type="text" class="underline" pattern="/\d+/" v-model="sheet.reputation">
       <span class="capitalize">reputation level</span>
     </div>
-    <div class="transform-toggle">
-      <button class="transform-button" @click="handleTransform" :class="{ transformed: sheet.isTransformed }">
+    <div class="transform-toggle" @click="handleTransform">
+      <NotchContainer class="transform-notch" :class="{ active: sheet.isTransformed }" notchType="wedge">
         {{ sheet.isTransformed ? 'Magi-Knight' : 'Student' }}
-      </button>
+      </NotchContainer>
       <span class="transform-label">Current Form</span>
     </div>
   </header>
@@ -113,31 +114,21 @@ const handleTransform = async () => {
     align-items: center;
     gap: 4px;
     z-index: 10;
-  }
-  .transform-button {
-    padding: 6px 14px;
-    font-size: 0.85em;
-    font-weight: bold;
-    border: 2px solid var(--primary-color, #4a4a4a);
-    border-radius: 4px;
-    background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
-    color: #333;
     cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 100px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  }
+  .transform-notch {
+    padding: var(--half-gap) var(--gap);
+    --borderColor: var(--header-blue);
 
-    &:hover {
-      background: linear-gradient(135deg, #d0d0d0 0%, #b8b8b8 100%);
-      transform: scale(1.02);
+    &:hover,
+    &:focus-visible {
+      background-color: var(--header-blue);
+      color: var(--masterBack);
     }
 
-    &.transformed {
-      background: linear-gradient(135deg, #6b5b95 0%, #4a3f6b 100%);
-      color: #fff;
-      border-color: #8b7bb5;
-      box-shadow: 0 0 8px rgba(107, 91, 149, 0.5);
+    &.active {
+      background-color: var(--header-blue);
+      color: var(--masterBack);
     }
   }
   .transform-label {
