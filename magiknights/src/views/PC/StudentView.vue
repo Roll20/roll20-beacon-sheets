@@ -93,10 +93,6 @@ function studentAbilitySummary()
       <h4>Student Type</h4>
       <input class="underline student-type" type="text" v-model="sheet.student_type" placeholder="Enter Student Type">
     </notch-container>
-    <notch-container class="student-token-image">
-      <h4>Student Token Image</h4>
-      <input class="underline" type="text" v-model="sheet.studentTokenImage" placeholder="Paste token image URL">
-    </notch-container>
     <NotchContainer class="fate-card" width="thick" notchType="wedge">
       <h4>Fate Card</h4>
       <select v-model="sheet.fate.card" class="fate-select underline">
@@ -192,17 +188,6 @@ function studentAbilitySummary()
   }
   .student-type{
     text-align: center;
-  }
-  .student-token-image{
-    text-align: center;
-    padding: var(--half-gap);
-    h4 {
-      margin-bottom: var(--half-gap);
-    }
-    input {
-      width: 100%;
-      font-size: 0.8em;
-    }
   }
   .student-ability-button{
    position: relative;
