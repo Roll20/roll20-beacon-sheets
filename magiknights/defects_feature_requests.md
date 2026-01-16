@@ -7,14 +7,12 @@ Description: When manually changing a skill value (e.g., for Skill Mastery or Re
 [RESOLVED] Sheet Privacy/Permissions Issue
 Status: Fixed (deployed 2024-11-21)
 Description: Users without edit rights could see character sheets they shouldn't have access to.
+[RESOLVED] Damage Roll Parser Doesn't Support Complex Dice Expressions
+Status: Fixed (deployed 2026-01-16)
+Description: The damage field only parsed the first numeric value when entering complex dice expressions. For example, entering 1d12+2d6+3+4+5 only registered the 2 instead of the full expression.
+Solution: Refactored rollStudentDamage and rollKnightDamage functions to use getRollResults with formula property, delegating dice expression parsing to the Roll20 Beacon API which properly handles complex expressions.
 
 OPEN DEFECTS
-DEF-001: Damage Roll Parser Doesn't Support Complex Dice Expressions
-Priority: High
-Description: The damage field only parses the first numeric value when entering complex dice expressions. For example, entering 1d12+2d6+3+4+5 only registers the 2 instead of the full expression.
-Expected Behavior: The damage roll should correctly parse and roll all dice and modifiers in a complex expression like 1d12+2d6+3+4+5.
-Rules Reference: Per Section 3.1 (Weapon Attacks), damage calculations may include multiple dice types and modifiers.
-Workaround: Users must roll additional dice separately.
 DEF-002: Token Bars Not Linkable to Character Attributes
 Priority: High
 Description: Token bars (HP, SHP, MP, Temp HP, etc.) cannot be linked to character sheet attributes. The sheet has an "hp" attribute in the code that isn't properly hooked up. Custom attributes created by users also cannot be added to tokens.
