@@ -119,6 +119,11 @@ const handleTransform = async () => {
   .transform-notch {
     padding: var(--half-gap) var(--gap);
     --borderColor: var(--header-blue);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 11ch;
+    white-space: nowrap;
 
     &:hover,
     &:focus-visible {
