@@ -1338,6 +1338,15 @@ export const useSheetStore = defineStore('sheet',() => {
     rollStudentDamage,
     rollKnightDamage,
 
+    // Toggle transformation state and return info for token update
+    toggleTransform: () => {
+      isTransformed.value = !isTransformed.value;
+      return {
+        isTransformed: isTransformed.value,
+        tokenImage: isTransformed.value ? knightTokenImage.value : studentTokenImage.value,
+        formName: isTransformed.value ? 'Magi-Knight' : 'Student'
+      };
+    },
 
     dehydrate,
     hydrate
