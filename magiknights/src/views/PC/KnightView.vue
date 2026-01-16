@@ -201,10 +201,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     </Collapsible>
     <!-- Static content here -->
   </NotchContainer>
-  <NotchContainer class="knight-token-image basic-item" width="thick" notchType="curve">
-    <h4>Magi-Knight Token Image</h4>
-    <input class="underline" type="text" v-model="sheet.knightTokenImage" placeholder="Paste token image URL">
-  </NotchContainer>
 <NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
   <h4>Combat Forms</h4>
   <RepeatingSection name="forms">
@@ -435,16 +431,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   }
   .elemental_label {
     font-weight: bold;
-  }
-  .knight-token-image {
-    padding: var(--half-gap);
-    h4 {
-      margin-bottom: var(--half-gap);
-    }
-    input {
-      width: 100%;
-      font-size: 0.8em;
-    }
   }
 
 /* Invisible div */
