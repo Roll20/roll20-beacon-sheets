@@ -1047,8 +1047,6 @@ export const useSheetStore = defineStore('sheet',() => {
   return;
  }
 
-  const regex = /(?:(\d*)[Dd](\d+))([+-]?\d+)?/;
-
   const rollSpell = async (item,tier) => {
     const abMod = abilityScores[mam.value]?.mod.value || 0;
     const attackPromise = getRollResults(
@@ -1154,118 +1152,68 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const rollStudentDamage = async (notation) => {
     let notationString = String(student_damage.value || notation);
-    
-    // Parsing the dice notation, e.g., "1d20+2"
-    const match = notationString.match(regex);
-  
-    if (!match) {
+
+    // Validate that there's a dice expression to roll
+    if (!notationString || !notationString.match(/\d*[dD]\d+/)) {
       return;
     }
-  
-    const diceCount = match[1] ? parseInt(match[1], 10) : 1; // default to 1 if not specified
-    const diceSides = parseInt(match[2], 10);
-    const modifier = match[3] ? parseInt(match[3], 10) : 0; // default to 0 if not specified
-  
-    // Roll each die individually and calculate the total
-    let rollTotal = 0;
-    const individualRolls = [];
-    for (let i = 0; i < diceCount; i++) {
-      const roll = Math.floor(Math.random() * diceSides) + 1;
-      individualRolls.push(roll);
-      rollTotal += roll;
-    }
-  
-    // Create components for the roll breakdown
-    const components = [
-      {
-        label: `${diceCount}d${diceSides} ` + individualRolls.join(' + '), // Show each roll in the breakdown
-        value: rollTotal, // Total of the dice rolls
-        alwaysShowInBreakdown: true,
-      },
-    ];
 
-    // Add modifier to total
-    rollTotal += modifier;
-  
-    // Adding modifier to components if it exists
-    if (modifier !== 0) {
-      components.push({
-        label: "Modifier",
-        value: modifier,
-        alwaysShowInBreakdown: true,
-      });
-    }
-  
+    // Use getRollResults with formula property to support complex dice expressions
+    // like "1d12+2d6+3+4+5" - the Roll20 Beacon API handles all parsing
+    const { total, components } = await getRollResults([
+      { label: 'Damage', formula: notationString, rollFormula: true, alwaysShowInBreakdown: true }
+    ]);
+
+    // Mark all components to show in breakdown
+    components.forEach(comp => {
+      comp.alwaysShowInBreakdown = true;
+    });
+
     // Format the roll for chat
     const rollObj = {
       title: 'Damage Roll',
       subtitle: 'Student Persona',
       characterName: metaStore.name,
       components: components,
-      total: Number(rollTotal),
+      total: Number(total),
     };
-  
+
     rollToChat({ rollObj });
-  
-    return rollTotal;
+
+    return total;
   }; 
 
   const rollKnightDamage = async (notation) => {
     let notationString = String(knight_damage.value || notation);
-    
-    // Parsing the dice notation, e.g., "1d20+2"
-    const match = notationString.match(regex);
-  
-    if (!match) {
+
+    // Validate that there's a dice expression to roll
+    if (!notationString || !notationString.match(/\d*[dD]\d+/)) {
       return;
     }
-  
-    const diceCount = match[1] ? parseInt(match[1], 10) : 1; // default to 1 if not specified
-    const diceSides = parseInt(match[2], 10);
-    const modifier = match[3] ? parseInt(match[3], 10) : 0; // default to 0 if not specified
-  
-    // Roll each die individually and calculate the total
-    let rollTotal = 0;
-    const individualRolls = [];
-    for (let i = 0; i < diceCount; i++) {
-      const roll = Math.floor(Math.random() * diceSides) + 1;
-      individualRolls.push(roll);
-      rollTotal += roll;
-    }
-  
-    // Create components for the roll breakdown
-    const components = [
-      {
-        label: `${diceCount}d${diceSides} ` + individualRolls.join(' + '), // Show each roll in the breakdown
-        value: rollTotal, // Total of the dice rolls
-        alwaysShowInBreakdown: true,
-      },
-    ];
-  
-        // Add modifier to total
-        rollTotal += modifier;
 
-    // Adding modifier to components if it exists
-    if (modifier !== 0) {
-      components.push({
-        label: "Modifier",
-        value: modifier,
-        alwaysShowInBreakdown: true,
-      });
-    }
-  
+    // Use getRollResults with formula property to support complex dice expressions
+    // like "1d12+2d6+3+4+5" - the Roll20 Beacon API handles all parsing
+    const { total, components } = await getRollResults([
+      { label: 'Damage', formula: notationString, rollFormula: true, alwaysShowInBreakdown: true }
+    ]);
+
+    // Mark all components to show in breakdown
+    components.forEach(comp => {
+      comp.alwaysShowInBreakdown = true;
+    });
+
     // Format the roll for chat
     const rollObj = {
       title: 'Damage Roll',
       subtitle: 'Magi-Knight Persona',
       characterName: metaStore.name,
       components: components,
-      total: Number(rollTotal),
+      total: Number(total),
     };
-  
+
     rollToChat({ rollObj });
-  
-    return rollTotal;
+
+    return total;
   }; 
 
   const toTitleCase = (str) => {
