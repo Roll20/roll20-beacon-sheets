@@ -1,15 +1,12 @@
 <script setup>
 import { useMetaStore } from '@/stores/metaStore.js';
-import { useSheetStore } from '@/stores/sheetStore.js';
 import MasterHeader from '@/components/MasterHeader.vue';
 import HPContainer from '@/components/HPContainer.vue';
 import BaseSplit from '@/components/BaseSplit.vue';
 import KnightNav from '@/components/KnightNav.vue';
 import SkillSection from '@/components/SkillSection.vue';
-import NotchContainer from '@/components/NotchContainer.vue';
 
 let permissions = useMetaStore().permissions;
-const sheet = useSheetStore();
 
 </script>
 
@@ -26,16 +23,6 @@ const sheet = useSheetStore();
     </div>
     <div class="specific-view column">
       <RouterView />
-    </div>
-    <div class="token-images-section">
-      <NotchContainer class="token-image-field">
-        <h4>Student Token Image</h4>
-        <input class="underline" type="text" v-model="sheet.studentTokenImage" placeholder="Paste student form token image URL">
-      </NotchContainer>
-      <NotchContainer class="token-image-field">
-        <h4>Magi-Knight Token Image</h4>
-        <input class="underline" type="text" v-model="sheet.knightTokenImage" placeholder="Paste magi-knight form token image URL">
-      </NotchContainer>
     </div>
   </div>
   <div v-else class="no-permissions">
@@ -61,26 +48,6 @@ const sheet = useSheetStore();
     display: grid;
     gap: inherit;
     align-content: start;
-  }
-  > .token-images-section {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--half-gap);
-    margin-top: var(--half-gap);
-    padding-top: var(--half-gap);
-    border-top: 1px solid var(--border-color, #ccc);
-  }
-}
-.token-image-field {
-  padding: var(--half-gap);
-  h4 {
-    margin-bottom: var(--half-gap);
-    text-align: center;
-  }
-  input {
-    width: 100%;
-    font-size: 0.8em;
   }
 }
 .knight-nav{
