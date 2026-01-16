@@ -9,6 +9,16 @@ import {
   onTranslationsRequest,
   onDragOver
 } from './handlers'
+import {
+  getMKHP,
+  setMKHP,
+  getTempHP,
+  setTempHP,
+  getSHP,
+  setSHP,
+  getMP,
+  setMP
+} from './handlers/computed'
 import { reactive, ref, watch, nextTick, shallowRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -28,15 +38,61 @@ const relayConfig = {
     onDragOver
   },
   // Refer to our advanced example sheet on how to setup actions and computed properties.
-  actions: {},
+  actions: {
+    // Transform action - toggles between Student and Magi-Knight forms
+    // Updates the token image and form state
+    transform: {
+      method: async ({ dispatch, character }) => {
+        const attrs = character.attributes || {};
+        const currentlyTransformed = attrs.isTransformed || false;
+        const newTransformed = !currentlyTransformed;
+
+        // Get the appropriate token image URL
+        const studentImage = attrs.studentTokenImage || '';
+        const knightImage = attrs.knightTokenImage || '';
+        const newTokenImage = newTransformed ? knightImage : studentImage;
+
+        // Update character attributes with new transform state
+        dispatch.update({
+          character: {
+            id: character.id,
+            attributes: {
+              updateId: 'TRANSFORM',
+              isTransformed: newTransformed,
+            },
+          },
+        });
+
+        // Update token image if a URL is configured
+        if (newTokenImage) {
+          await dispatch.updateTokensByCharacter({
+            characterId: character.id,
+            token: {
+              imgsrc: newTokenImage,
+            },
+          });
+        }
+
+        // Post transformation message to chat
+        const formName = newTransformed ? 'Magi-Knight' : 'Student';
+        dispatch.post({
+          characterId: character.id,
+          content: `transforms into ${formName} form!`,
+          options: { whisper: false },
+        });
+      },
+    },
+  },
   computed: {
-    hp:{
-      get({character},...args){
-        console.log('You can pass args to dot notation computed values', args);
-        debugger;
-        return args[0];
-      }
-    }
+    // Token bar attributes - these can be linked to token bars in Roll20
+    // MKHP: Magi-Knight HP (current and max)
+    mkhp: { tokenBarValue: true, get: getMKHP, set: setMKHP },
+    // Temp HP: Temporary Hit Points (current only, no max)
+    tempHp: { tokenBarValue: true, get: getTempHP, set: setTempHP },
+    // SHP: Student HP (current and max)
+    shp: { tokenBarValue: true, get: getSHP, set: setSHP },
+    // MP: Magic Points (current and max)
+    mp: { tokenBarValue: true, get: getMP, set: setMP },
   }
 }
 

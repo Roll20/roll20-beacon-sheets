@@ -2,11 +2,23 @@ import { initValues } from '..';
 import { colorHandler } from './colorHandler';
 
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.
-export const onInit = ({ character, settings, compendiumDropData }) => {
+export const onInit = ({ character, settings, compendiumDropData }, dispatch) => {
   initValues.id = character.id
   initValues.character = character
   initValues.settings = settings
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null
   colorHandler(settings)
-  console.log('onInit -> Example Sheet Relay')
+
+  // Register the Transform action to the token action bar
+  dispatch.addActionsToHost({
+    locations: ['tokenActionBar'],
+    name: 'Transform',
+    sheetAction: {
+      characterId: character.id,
+      action: 'transform',
+      args: [],
+    },
+  });
+
+  console.log('onInit -> Magi-Knights Sheet Relay')
 };
