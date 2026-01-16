@@ -27,6 +27,12 @@ This is a great starting place to customize what data you need for your sheet.
 export const useSheetStore = defineStore('sheet',() => {
   const sheet_mode = ref('pc');
 
+  // Transformation state - tracks if character is in Magi-Knight form
+  const isTransformed = ref(false);
+  // Token image URLs for form switching
+  const studentTokenImage = ref('');
+  const knightTokenImage = ref('');
+
   const character_name = ref('');
   const level = ref(1);
   const reputation = ref(0);
@@ -770,6 +776,9 @@ export const useSheetStore = defineStore('sheet',() => {
   const dehydrate = () => {
     const obj = {
       sheet_mode: sheet_mode.value,
+      isTransformed: isTransformed.value,
+      studentTokenImage: studentTokenImage.value,
+      knightTokenImage: knightTokenImage.value,
       level: level.value,
       reputation: reputation.value,
       player: player.value,
@@ -854,6 +863,9 @@ export const useSheetStore = defineStore('sheet',() => {
   // Handles updating these values in the store.
   const hydrate = (hydrateStore) => {
     sheet_mode.value = hydrateStore.sheet_mode ?? sheet_mode.value;
+    isTransformed.value = hydrateStore.isTransformed ?? isTransformed.value;
+    studentTokenImage.value = hydrateStore.studentTokenImage ?? studentTokenImage.value;
+    knightTokenImage.value = hydrateStore.knightTokenImage ?? knightTokenImage.value;
     level.value = hydrateStore.level ?? level.value;
     reputation.value = hydrateStore.reputation ?? reputation.value;
     customProficiency.value = hydrateStore.customProficiency ?? customProficiency.value;
@@ -1234,6 +1246,9 @@ export const useSheetStore = defineStore('sheet',() => {
 
   return {
     sheet_mode,
+    isTransformed,
+    studentTokenImage,
+    knightTokenImage,
     level,
     reputation,
     player,
