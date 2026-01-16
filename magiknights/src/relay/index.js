@@ -9,6 +9,16 @@ import {
   onTranslationsRequest,
   onDragOver
 } from './handlers'
+import {
+  getMKHP,
+  setMKHP,
+  getTempHP,
+  setTempHP,
+  getSHP,
+  setSHP,
+  getMP,
+  setMP
+} from './handlers/computed'
 import { reactive, ref, watch, nextTick, shallowRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -30,13 +40,15 @@ const relayConfig = {
   // Refer to our advanced example sheet on how to setup actions and computed properties.
   actions: {},
   computed: {
-    hp:{
-      get({character},...args){
-        console.log('You can pass args to dot notation computed values', args);
-        debugger;
-        return args[0];
-      }
-    }
+    // Token bar attributes - these can be linked to token bars in Roll20
+    // MKHP: Magi-Knight HP (current and max)
+    mkhp: { tokenBarValue: true, get: getMKHP, set: setMKHP },
+    // Temp HP: Temporary Hit Points (current only, no max)
+    tempHp: { tokenBarValue: true, get: getTempHP, set: setTempHP },
+    // SHP: Student HP (current and max)
+    shp: { tokenBarValue: true, get: getSHP, set: setSHP },
+    // MP: Magic Points (current and max)
+    mp: { tokenBarValue: true, get: getMP, set: setMP },
   }
 }
 

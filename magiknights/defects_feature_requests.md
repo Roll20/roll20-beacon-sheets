@@ -11,19 +11,12 @@ Description: Users without edit rights could see character sheets they shouldn't
 Status: Fixed (deployed 2026-01-16)
 Description: The damage field only parsed the first numeric value when entering complex dice expressions. For example, entering 1d12+2d6+3+4+5 only registered the 2 instead of the full expression.
 Solution: Refactored rollStudentDamage and rollKnightDamage functions to use getRollResults with formula property, delegating dice expression parsing to the Roll20 Beacon API which properly handles complex expressions.
+[RESOLVED] Token Bars Not Linkable to Character Attributes (DEF-002)
+Status: Fixed (deployed 2026-01-16)
+Description: Token bars (HP, SHP, MP, Temp HP, etc.) could not be linked to character sheet attributes. The sheet had an "hp" attribute in the code that wasn't properly hooked up.
+Solution: Created computed.js with getter/setter functions for token bar attributes (MKHP, SHP, MP, Temp HP). Updated relay/index.js to define token bar computed properties with tokenBarValue: true. Also added hp_max, mp_max, and shp_max to the dehydrate function so token bars can access max values. Token bars now support both absolute value changes and relative adjustments (+/- notation).
 
 OPEN DEFECTS
-DEF-002: Token Bars Not Linkable to Character Attributes
-Priority: High
-Description: Token bars (HP, SHP, MP, Temp HP, etc.) cannot be linked to character sheet attributes. The sheet has an "hp" attribute in the code that isn't properly hooked up. Custom attributes created by users also cannot be added to tokens.
-Expected Behavior: Token bars should be assignable to character sheet values (MKHP, SHP, MP, etc.) so they update automatically.
-Rules Reference:
-
-SHP Formula: 10 + CON Modifier + Reputation Level (Section 2.1)
-MKHP Level 1: 10 + CON Modifier (Section 2.2)
-MP: MCO * 2 or MCO * 3 with Magical Implement (Section 2.3)
-Technical Notes: Beacon sheets use Vue.js; token bar attributes need to be defined in initial code and hooked up in Vue code.
-
 DEF-003: Cannot Support Multiple Resist Proficiencies
 Priority: Medium
 Description: The sheet only supports one Roll to Resist proficiency. A tactic exists that grants additional resist proficiencies (STR, DEX, CON, and Magic), but there's no way to track multiple proficiencies on the sheet.
