@@ -25,6 +25,11 @@ Review the existing codebase to understand the patterns used, especially:
 
 Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: If you need clarification on any game rules or mechanics, consult the compendium JSON files at:
+- `compendium/rules.json` - Core game rules and mechanics
+- `compendium/lists.json` - Game lists and reference data
+- `compendium/classes.json` - Character class information
+
 **Feature 1: Unity Points Resource System**
 - Add Unity Points tracking to the character sheet resources section
 - Unity Points are unlocked at Reputation Level II (reputation >= 2)
@@ -73,6 +78,10 @@ Ensure all new features integrate with the existing dehydrate/hydrate system for
 I need you to implement the Squadron Formations system for the Magi-Knights Awakening Roll20 Beacon character sheet located at /home/mechageo/projects/roll20-beacon-sheets/magiknights.
 
 Review the existing codebase to understand the patterns used. Use existing styles and component patterns wherever possible.
+
+**Compendium Reference**: If you need clarification on formation rules, effects, or costs, consult:
+- `compendium/rules.json` - Search for "formation" for detailed formation mechanics
+- `compendium/techniques.json` - May contain formation-related techniques
 
 **Squadron Formations System**
 
@@ -128,6 +137,10 @@ Follow the existing collapsible section patterns and button styling used elsewhe
 I need you to implement the Combination Maneuvers system for the Magi-Knights Awakening Roll20 Beacon character sheet located at /home/mechageo/projects/roll20-beacon-sheets/magiknights.
 
 Review the existing codebase to understand the patterns used. Use existing styles and component patterns wherever possible.
+
+**Compendium Reference**: If you need clarification on combination maneuver rules, effects, or Unity Point costs, consult:
+- `compendium/rules.json` - Search for "combination" or "maneuver" for detailed mechanics
+- `compendium/techniques.json` - May contain maneuver-related abilities
 
 **Combination Maneuvers System**
 
@@ -210,6 +223,11 @@ I need you to implement the Release Magic card-based spell system for the Magi-K
 
 Review the existing codebase, especially the spell system implementation. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: If you need clarification on Release Magic rules, card effects, or scaling values, consult:
+- `compendium/spells.json` - Search for "Release" magic or card-based spells
+- `compendium/rules.json` - Search for "Release" or "card" for the card magic system rules
+- `compendium/classes.json` - May contain Release magic style information
+
 **Release Magic System**
 
 Release Magic is a unique magic style that uses a 22-card spell deck instead of traditional spell paths. This should be an alternative magic system available when the character's Magic Style is set to "Release" or similar.
@@ -220,7 +238,7 @@ Release Magic is a unique magic style that uses a 22-card spell deck instead of 
    - Each card has a unique effect
    - "Scaling Value" mechanic: Some cards have effects that scale (SV = Reputation Level or MAM modifier)
 
-2. **The 22 Card Types** (implement all):
+2. **The 22 Card Types** (implement all - verify exact effects against compendium/spells.json):
    ```
    0. The Fool - Wild card, copy effect of last card played
    1. The Magician - Deal SV d8 magical damage to one target
@@ -297,6 +315,11 @@ I need you to enhance the Battle Techniques and Combat Tactics systems for the M
 
 Review the existing techniques/tactics implementation in the codebase. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: This phase heavily relies on compendium data. Consult these files for accurate technique/tactic information:
+- `compendium/techniques.json` - **PRIMARY SOURCE** for all battle techniques with level requirements, frequencies, and effects
+- `compendium/rules.json` - For technique usage rules and frequency definitions
+- `compendium/classes.json` - For tactic prerequisites related to class features
+
 **Part 1: Battle Technique Enhancements**
 
 The existing techniques section needs additional fields for proper rule enforcement:
@@ -304,7 +327,7 @@ The existing techniques section needs additional fields for proper rule enforcem
 1. **Level Requirements**:
    - Add a "Required Level" field to each technique (number 1-15)
    - Display a warning or disable techniques if character level is below requirement
-   - Common requirements: Level 3+, Level 5+, Level 6+, Level 9+
+   - Common requirements: Level 3+, Level 5+, Level 6+, Level 9+ (verify against compendium/techniques.json)
 
 2. **Frequency/Usage Tracking**:
    - Add "Frequency Type" selector with options:
@@ -343,7 +366,7 @@ Combat Tactics are passive abilities with prerequisites. Enhance the existing sy
    - Effect Type (Passive/Active/Reaction)
    - Automatic Bonus (if applicable - e.g., "+1 to Initiative")
 
-2. **Key Tactics to Support** (reference data):
+2. **Key Tactics to Support** (verify effects against compendium/techniques.json):
    ```
    - Adept of Magic: +1 Rep Level for Mana Coefficient calculation
    - Combat Form Drills: Can learn second Combat Form, switch as Free Action
@@ -390,11 +413,15 @@ I need you to implement the Spell Modification system for the Magi-Knights Awake
 
 Review the existing spell casting implementation. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: If you need clarification on spell modification rules, costs, or effects, consult:
+- `compendium/rules.json` - Search for "Mana Strain", "Rushed", "Overcharging", "Total Focus", "Quickening" for exact mechanics
+- `compendium/spells.json` - For spell tier costs and how modifications interact with spells
+
 **Spell Modification System**
 
 When casting spells, players can apply modifications that alter the spell's cost, action type, or power. Implement toggles/options that apply when casting any spell.
 
-1. **Modification Types**:
+1. **Modification Types** (verify exact costs/effects against compendium/rules.json):
 
    - **Mana Strain**
      - Effect: Reduce MP cost by one tier (Tier III costs as Tier II, etc.)
@@ -470,6 +497,12 @@ Consider adding a "Clear Modifications" button to quickly reset all toggles afte
 I need you to implement the Summoning Companions system for the Magi-Knights Awakening Roll20 Beacon character sheet located at /home/mechageo/projects/roll20-beacon-sheets/magiknights.
 
 Review the existing codebase, especially repeating sections and the NPC view. Use existing styles and component patterns wherever possible.
+
+**Compendium Reference**: If you need clarification on summoning rules, summon stats, or command mechanics, consult:
+- `compendium/spells.json` - Search for "Summoning" path spells and summon creation rules
+- `compendium/monsters.json` - May contain summon stat block templates
+- `compendium/rules.json` - For summoning command range, verbal component rules, and Form interactions
+- `compendium/techniques.json` - Search for "Telepathic Summoner" and other summoning-related tactics
 
 **Summoning Companions System**
 
@@ -549,6 +582,11 @@ Optional: Add preset summon templates for common summon types that can be quickl
 I need you to implement the Magi-Squire companion system for the Magi-Knights Awakening Roll20 Beacon character sheet located at /home/mechageo/projects/roll20-beacon-sheets/magiknights.
 
 Review the existing codebase, especially the NPC view patterns. Use existing styles and component patterns wherever possible.
+
+**Compendium Reference**: If you need clarification on Magi-Squire rules, blip system, or restrictions, consult:
+- `compendium/rules.json` - Search for "Squire" or "Magi-Squire" for the companion rules
+- `compendium/classes.json` - For Student Type options and abilities that squires can use
+- `compendium/lists.json` - May contain squire-related reference data
 
 **Magi-Squire System**
 
@@ -637,11 +675,16 @@ I need you to implement equipment progression and validation systems for the Mag
 
 Review the existing equipment sections in the codebase. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: If you need clarification on equipment progression, combat forms, or relic rules, consult:
+- `compendium/equipment.json` - **PRIMARY SOURCE** for Soul Armor tiers, weapon qualities, and equipment bonuses
+- `compendium/rules.json` - For Combat Form requirements and Relic capacity rules
+- `compendium/relics.json` - For relic data and capacity mechanics
+
 **Part 1: Soul Armor Progression System**
 
 Soul Armor upgrades as characters gain Reputation, providing scaling bonuses.
 
-1. **Armor Tiers** (selectable based on reputation):
+1. **Armor Tiers** (verify exact bonuses against compendium/equipment.json):
    - Awakened (Rep 0-I): +0 Armor, +0 Weapon
    - Destined (Rep I): +1 Armor, +0 Weapon
    - Fabled (Rep II): +1 Armor, +1 Weapon
@@ -668,7 +711,7 @@ Soul Armor upgrades as characters gain Reputation, providing scaling bonuses.
 
 Combat Forms have level and equipment requirements that need validation.
 
-1. **Form Requirements**:
+1. **Form Requirements** (verify against compendium/rules.json or compendium/equipment.json):
    ```
    Form I - Adaptation: Any level, any weapon
    Form II - Deflection: Any level, any weapon
@@ -701,7 +744,7 @@ Combat Forms have level and equipment requirements that need validation.
 
 **Part 3: Relic Capacity Enforcement**
 
-1. **Capacity Rule**:
+1. **Capacity Rule** (verify against compendium/rules.json):
    - Maximum equipped relics = Reputation Level (minimum 1)
    - Rep 0-I: 1 relic, Rep II: 2 relics, Rep III: 3 relics, etc.
 
@@ -738,11 +781,15 @@ I need you to implement equipment library systems for the Magi-Knights Awakening
 
 Review the existing equipment sections, especially the runes repeating section. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: This phase heavily relies on equipment compendium data. Consult:
+- `compendium/equipment.json` - **PRIMARY SOURCE** for all runes, attachments, and visors with exact effects
+- `compendium/lists.json` - May contain categorized equipment lists
+
 **Part 1: Armament Runes Library**
 
 Implement a picker/library system for runes with predefined effects.
 
-1. **Weapon Runes**:
+1. **Weapon Runes** (verify exact effects against compendium/equipment.json):
    ```
    - Enhanced Element: +1 damage of your element type
    - Discharge Energy: 1/encounter, bonus action for +2d6 elemental damage
@@ -759,7 +806,7 @@ Implement a picker/library system for runes with predefined effects.
    - Volatile Blast Enchantment: On crit, 10ft AoE for 1d6 damage
    ```
 
-2. **Armor Runes**:
+2. **Armor Runes** (verify exact effects against compendium/equipment.json):
    ```
    - Blinding Stride: When moving 20ft+, attackers have disadvantage
    - Levitation: Hover up to 10ft as move action
@@ -791,7 +838,7 @@ Implement a picker/library system for runes with predefined effects.
 
 Add attachment slots for Soul Guns with specific bonuses.
 
-1. **Attachment Types** (4 slots per gun):
+1. **Attachment Types** (4 slots per gun - verify against compendium/equipment.json):
 
    **Scope** (affects accuracy/range):
    - Standard Scope: +1 to attack rolls at 30ft+
@@ -820,7 +867,7 @@ Add attachment slots for Soul Guns with specific bonuses.
 
 **Part 3: Magi-Knight Visor Equipment**
 
-1. **Visor Types**:
+1. **Visor Types** (verify against compendium/equipment.json):
    - Ether Identification: Identify magical items, see magical auras
    - Medical Diagnostic: +2 to Medicine checks, see ally HP status
    - Virtual HUD: Track up to 6 targets, +1 to attack tracked targets
@@ -851,11 +898,19 @@ I need you to implement compendium integration features for the Magi-Knights Awa
 
 Review the Roll20 Beacon SDK documentation for compendium integration. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: This phase directly uses the compendium JSON files:
+- `compendium/shards.json` - **PRIMARY SOURCE** for all Shard of Power data
+- `compendium/equipment.json` - For equipment drag-drop mapping
+- `compendium/spells.json` - For spell drag-drop mapping
+- `compendium/techniques.json` - For technique drag-drop mapping
+- `compendium/relics.json` - For relic drag-drop mapping
+- `compendium/manifest.json` - For understanding the compendium structure
+
 **Part 1: Shards of Power Compendium Integration**
 
 Implement a picker for the 20 Shard types with full data.
 
-1. **Shard Data** (all 20 shards with rarity 1-10):
+1. **Shard Data** (load directly from compendium/shards.json - the list below is for reference):
    ```
    Rarity 1:
    - Shard of Mending [Lesser]: Heal 1d12 + Level HP
@@ -937,8 +992,8 @@ Enable dragging items from Roll20 compendium to the character sheet.
    - Map compendium fields to sheet fields
    - Auto-populate repeating section entries
 
-3. **Data Mapping** (based on compendium structure in /home/mechageo/projects/magi-knights-srd/compendium):
-   - Analyze compendium JSON structure
+3. **Data Mapping** (analyze the structure of each compendium JSON file):
+   - Read compendium/*.json files to understand field names
    - Create mapping functions for each item type
    - Handle missing or optional fields gracefully
 
@@ -972,11 +1027,16 @@ I need you to implement character enhancement systems for the Magi-Knights Awake
 
 Review the existing elemental system and proficiency calculations. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: If you need clarification on elements, proficiency, or social mechanics, consult:
+- `compendium/rules.json` - For proficiency progression table and social point thresholds
+- `compendium/classes.json` - For elemental affinities and branch element details
+- `compendium/lists.json` - May contain element and social progression reference data
+
 **Part 1: Branching Elements System**
 
 Expand the elemental system to include branching/advanced elements.
 
-1. **Primary and Branch Elements**:
+1. **Primary and Branch Elements** (verify against compendium/classes.json):
    ```
    Earth → Wood OR Metal
    Fire → Lightning OR Toxins
@@ -991,7 +1051,7 @@ Expand the elemental system to include branching/advanced elements.
    - Unique enhancement options
    - Thematic abilities
 
-   Example effects:
+   Example effects (verify against compendium):
    - Wood (Earth): Nature-based, healing affinity
    - Metal (Earth): Construct affinity, armor bonus
    - Lightning (Fire): Speed bonus, chain damage
@@ -1019,7 +1079,7 @@ Expand the elemental system to include branching/advanced elements.
 
 Verify proficiency bonus calculation matches the Reputation-based system.
 
-1. **Expected Progression**:
+1. **Expected Progression** (verify exact values against compendium/rules.json):
    ```
    Rep 0 (Level 1): +2
    Rep I (Level 2-4): +2
@@ -1031,7 +1091,7 @@ Verify proficiency bonus calculation matches the Reputation-based system.
 
 2. **Verification Tasks**:
    - Review current proficiency calculation in sheetStore
-   - Compare against SRD progression table
+   - Compare against SRD progression table in compendium/rules.json
    - Fix formula if incorrect
    - Ensure proficiency is based on Reputation, NOT Level directly
    - Document the correct formula in code comments
@@ -1045,7 +1105,7 @@ Verify proficiency bonus calculation matches the Reputation-based system.
 
 Enhance bond tracking with SP milestone system.
 
-1. **Bond Progression Milestones**:
+1. **Bond Progression Milestones** (verify thresholds against compendium/rules.json):
    ```
    0 SP: New Beginning (just met)
    5 SP: Friendly (acquaintance)
@@ -1101,6 +1161,10 @@ I need you to implement student phase systems and final polish features for the 
 
 Review the existing Student view and Eclipse chart. Use existing styles and component patterns wherever possible.
 
+**Compendium Reference**: If you need clarification on student phase rules, Soul Oblation, or trauma mechanics, consult:
+- `compendium/rules.json` - **PRIMARY SOURCE** for student phase activities, Soul Oblation tiers, and Eclipse/Trauma thresholds
+- `compendium/lists.json` - May contain activity options and phase structure
+
 **Part 1: Student Phase Activity Tracking**
 
 Implement tracking for the non-combat student life portion of gameplay.
@@ -1111,7 +1175,7 @@ Implement tracking for the non-combat student life portion of gameplay.
    - Starting amount varies by school type
    - Used for buying mundane gear, food, activities
 
-2. **Free Time Phase** (~90 minutes of activity time):
+2. **Free Time Phase** (~90 minutes of activity time - verify against compendium/rules.json):
    - Time slot tracker (can represent 90 min in 15-30 min blocks)
    - Activity log/selector:
      - Socialize (gain SP with someone)
@@ -1141,7 +1205,7 @@ Implement tracking for the non-combat student life portion of gameplay.
 
 Implement the heroic sacrifice ability.
 
-1. **Soul Oblation** (unlocked at Rep I):
+1. **Soul Oblation** (unlocked at Rep I - verify effects against compendium/rules.json):
    - Effect: Burn out Soul Crystal to heal and stabilize entire squad
    - Cost: Gain 1 Crystalline Fracture
    - Base effect: Heal all squad members for (Level + Rep) × 2 HP
@@ -1173,7 +1237,7 @@ Implement the heroic sacrifice ability.
 
 Add warnings and indicators for dangerous Trauma/Corruption levels.
 
-1. **Eclipse Chart Milestones**:
+1. **Eclipse Chart Milestones** (verify thresholds against compendium/rules.json):
    - 3+ Corruption: Risk of becoming Heartless Knight
    - 5+ Total (Trauma + Corruption): Severe psychological effects
    - 7+ Total: Near Total Soul Eclipse
@@ -1246,4 +1310,29 @@ Include these instructions in each session:
 
 6. **Documentation**: Add code comments for complex logic. Update any relevant documentation.
 
-7. **Compendium Reference**: The game rules are in `/home/mechageo/projects/magi-knights-srd/compendium` - reference this for accurate game data.
+7. **Compendium Reference for Rule Clarification**:
+
+   **IMPORTANT**: When implementing any game mechanic and you are unsure about the exact rules, effects, costs, or thresholds, **always consult the compendium JSON files** located at `compendium/` in the project root:
+
+   | File | Contents |
+   |------|----------|
+   | `rules.json` | Core game rules, mechanics, proficiency tables, phase rules |
+   | `classes.json` | Student types, magic styles, elemental affinities |
+   | `techniques.json` | Battle techniques and combat tactics with requirements |
+   | `spells.json` | Spell paths, tiers, Release magic cards |
+   | `equipment.json` | Weapons, armor, runes, attachments, visors |
+   | `shards.json` | Shards of Power with rarity and effects |
+   | `relics.json` | Relic items and their properties |
+   | `monsters.json` | NPC/enemy stat blocks, summon templates |
+   | `lists.json` | Reference lists and categorized data |
+   | `locations.json` | Setting and location information |
+   | `manifest.json` | Compendium structure and metadata |
+   | `magi-knights-compendium.json` | Combined/master compendium data |
+
+   The compendium files are the **authoritative source** for game rules. If there's any discrepancy between the prompt instructions and the compendium data, **prefer the compendium data** as it represents the official game rules.
+
+8. **Rule Implementation Philosophy**: The goal is to faithfully implement the Magi-Knights Awakening rules as defined in the compendium. When in doubt:
+   - Read the relevant compendium JSON file
+   - Search for keywords related to the feature
+   - Implement according to the compendium specification
+   - Add a code comment referencing which compendium entry was used
