@@ -7,6 +7,19 @@ const sheet = useSheetStore();
 
 <template>
   <div class="settings-view">
+    <h3>Sheet Mode</h3>
+    <p class="settings-description">
+      Switch between Player Character and NPC/Monster sheet modes.
+    </p>
+    <NotchContainer class="sheet-mode-section" notchType="wedge">
+      <div class="mode-info">
+        <span>Current Mode: <strong>Player Character</strong></span>
+        <button class="mode-switch-btn" @click="sheet.sheet_mode = 'npc'">
+          Switch to NPC Sheet
+        </button>
+      </div>
+    </NotchContainer>
+
     <h3>Token Settings</h3>
     <p class="settings-description">
       Configure token images for automatic switching when transforming between Student and Magi-Knight forms.
@@ -70,6 +83,31 @@ const sheet = useSheetStore();
     input {
       width: 100%;
       font-size: 0.85em;
+    }
+  }
+
+  .sheet-mode-section {
+    padding: var(--half-gap);
+  }
+
+  .mode-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--half-gap);
+  }
+
+  .mode-switch-btn {
+    padding: 8px 16px;
+    background: var(--header-blue, #4a4a8a);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+
+    &:hover {
+      opacity: 0.9;
     }
   }
 }

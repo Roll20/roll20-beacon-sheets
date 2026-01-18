@@ -516,6 +516,109 @@ export const useSheetStore = defineStore('sheet',() => {
     magical: 'Magical',
     true: 'True Damage'
   };
+
+  // ==================== NPC/MONSTER DATA ====================
+  // NPC Type determines HP structure and attack scaling
+  const npcTypes = {
+    horde: { name: 'Horde', hasMultipleHP: true, units: 4 },
+    vassal: { name: 'Vassal', hasMultipleHP: false },
+    adversary: { name: 'Adversary', hasMultipleHP: false },
+    nemesis: { name: 'Nemesis', hasMultipleHP: false },
+    harbinger: { name: 'Harbinger', hasMultipleHP: false }
+  };
+
+  // NPC basic info
+  const npc_name = ref('');
+  const npc_type = ref('vassal');
+  const npc_size = ref('Medium');
+  const npc_creature_type = ref('Outsider');
+  const npc_armor = ref(10);
+  const npc_move = ref(30);
+  const npc_invasion_level = ref(0);
+  const npc_horrific_rating = ref('');
+  const npc_physical_check = ref(0);
+  const npc_magical_check = ref(0);
+  const npc_inert_spectral_energy = ref('1d4');
+  const npc_whisper_rolls = ref(false);
+
+  // NPC HP - single pool for non-horde, 4 pools for horde
+  const npc_hp = ref({ current: 10, max: 10 });
+  const npc_horde_hp = ref([
+    { current: 12, max: 12, defeated: false },
+    { current: 12, max: 12, defeated: false },
+    { current: 12, max: 12, defeated: false },
+    { current: 12, max: 12, defeated: false }
+  ]);
+
+  // Computed: count of active horde units
+  const npc_active_units = computed(() => {
+    if (npc_type.value !== 'horde') return 1;
+    return npc_horde_hp.value.filter(unit => !unit.defeated && unit.current > 0).length;
+  });
+
+  // NPC Primary Attack
+  const npc_primary_attack = ref({
+    name: 'Primary Attack',
+    attackBonus: 0,
+    // For hordes, DC scales: [4 units, 3 units, 2 units, 1 unit]
+    attackDC: [12, 9, 6, 3],
+    range: '5ft',
+    damage: '1d6',
+    // For hordes, damage scales: [4 units, 3 units, 2 units, 1 unit]
+    hordeDamage: ['7', '5', '3', '1'],
+    damageType: 'physical',
+    special: ''
+  });
+
+  // NPC Secondary Attack
+  const npc_secondary_attack = ref({
+    name: 'Secondary Attack',
+    attackBonus: 0,
+    attackDC: [12, 9, 6, 3],
+    range: '30ft',
+    damage: '1d8',
+    hordeDamage: ['7', '5', '3', '1'],
+    damageType: 'magical',
+    special: ''
+  });
+
+  // Computed: get current attack values based on active units
+  const npc_primary_current = computed(() => {
+    if (npc_type.value !== 'horde') {
+      return {
+        attackBonus: npc_primary_attack.value.attackBonus,
+        damage: npc_primary_attack.value.damage
+      };
+    }
+    const unitIndex = 4 - npc_active_units.value;
+    return {
+      attackDC: npc_primary_attack.value.attackDC[Math.min(unitIndex, 3)],
+      damage: npc_primary_attack.value.hordeDamage[Math.min(unitIndex, 3)]
+    };
+  });
+
+  const npc_secondary_current = computed(() => {
+    if (npc_type.value !== 'horde') {
+      return {
+        attackBonus: npc_secondary_attack.value.attackBonus,
+        damage: npc_secondary_attack.value.damage
+      };
+    }
+    const unitIndex = 4 - npc_active_units.value;
+    return {
+      attackDC: npc_secondary_attack.value.attackDC[Math.min(unitIndex, 3)],
+      damage: npc_secondary_attack.value.hordeDamage[Math.min(unitIndex, 3)]
+    };
+  });
+
+  // NPC Traits (simple array, not repeating section for simplicity)
+  const npc_traits = ref([]);
+
+  // NPC Notes
+  const npc_notes = ref('');
+
+  // ==================== END NPC DATA ====================
+
   // repeating sections
   const sections = {
     techniques: {
@@ -929,8 +1032,28 @@ export const useSheetStore = defineStore('sheet',() => {
       quote: quote.value,
       player_links: player_links.value,
       backstory: backstory.value,
+
+      // NPC data
+      npc_name: npc_name.value,
+      npc_type: npc_type.value,
+      npc_size: npc_size.value,
+      npc_creature_type: npc_creature_type.value,
+      npc_armor: npc_armor.value,
+      npc_move: npc_move.value,
+      npc_invasion_level: npc_invasion_level.value,
+      npc_horrific_rating: npc_horrific_rating.value,
+      npc_physical_check: npc_physical_check.value,
+      npc_magical_check: npc_magical_check.value,
+      npc_inert_spectral_energy: npc_inert_spectral_energy.value,
+      npc_whisper_rolls: npc_whisper_rolls.value,
+      npc_hp: { ...npc_hp.value },
+      npc_horde_hp: npc_horde_hp.value.map(unit => ({ ...unit })),
+      npc_primary_attack: { ...npc_primary_attack.value },
+      npc_secondary_attack: { ...npc_secondary_attack.value },
+      npc_traits: [...npc_traits.value],
+      npc_notes: npc_notes.value,
     };
-    
+
     Object.entries(sections).forEach(([name,val]) => {
       obj[name] = arrayToObject(val.rows.value);
     });
@@ -1024,7 +1147,38 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateFate(fate, hydrateStore.fate);
     hydrateArmorWeave(armor_weave, hydrateStore.armor_weave);
     hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
-    
+
+    // NPC hydration
+    npc_name.value = hydrateStore.npc_name ?? npc_name.value;
+    npc_type.value = hydrateStore.npc_type ?? npc_type.value;
+    npc_size.value = hydrateStore.npc_size ?? npc_size.value;
+    npc_creature_type.value = hydrateStore.npc_creature_type ?? npc_creature_type.value;
+    npc_armor.value = hydrateStore.npc_armor ?? npc_armor.value;
+    npc_move.value = hydrateStore.npc_move ?? npc_move.value;
+    npc_invasion_level.value = hydrateStore.npc_invasion_level ?? npc_invasion_level.value;
+    npc_horrific_rating.value = hydrateStore.npc_horrific_rating ?? npc_horrific_rating.value;
+    npc_physical_check.value = hydrateStore.npc_physical_check ?? npc_physical_check.value;
+    npc_magical_check.value = hydrateStore.npc_magical_check ?? npc_magical_check.value;
+    npc_inert_spectral_energy.value = hydrateStore.npc_inert_spectral_energy ?? npc_inert_spectral_energy.value;
+    npc_whisper_rolls.value = hydrateStore.npc_whisper_rolls ?? npc_whisper_rolls.value;
+    if (hydrateStore.npc_hp) {
+      npc_hp.value = { ...npc_hp.value, ...hydrateStore.npc_hp };
+    }
+    if (hydrateStore.npc_horde_hp) {
+      npc_horde_hp.value = hydrateStore.npc_horde_hp.map((unit, i) => ({
+        ...npc_horde_hp.value[i],
+        ...unit
+      }));
+    }
+    if (hydrateStore.npc_primary_attack) {
+      npc_primary_attack.value = { ...npc_primary_attack.value, ...hydrateStore.npc_primary_attack };
+    }
+    if (hydrateStore.npc_secondary_attack) {
+      npc_secondary_attack.value = { ...npc_secondary_attack.value, ...hydrateStore.npc_secondary_attack };
+    }
+    npc_traits.value = hydrateStore.npc_traits ?? npc_traits.value;
+    npc_notes.value = hydrateStore.npc_notes ?? npc_notes.value;
+
     Object.entries(sections).forEach(([name,obj]) => {
       obj.rows.value = objectToArray(hydrateStore[name]);
     });
@@ -1386,7 +1540,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const toTitleCase = (str) => {
     const minorWords = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'by', 'with', 'in', 'of'];
-  
+
     return str.split(' ').map((word, index, arr) => {
       // Capitalize first and last words, or if word is not a minor word
       if (index === 0 || index === arr.length - 1 || !minorWords.includes(word.toLowerCase())) {
@@ -1396,6 +1550,160 @@ export const useSheetStore = defineStore('sheet',() => {
       return word.toLowerCase();
     }).join(' ');
   };
+
+  // ==================== NPC ROLL FUNCTIONS ====================
+
+  const rollNPCAttack = async (attackType = 'primary') => {
+    const attack = attackType === 'primary' ? npc_primary_attack.value : npc_secondary_attack.value;
+    const current = attackType === 'primary' ? npc_primary_current.value : npc_secondary_current.value;
+    const isHorde = npc_type.value === 'horde';
+
+    let subtitle = '';
+    if (isHorde) {
+      subtitle = `O-Attack DC ${current.attackDC} (${npc_active_units.value}/4 units)`;
+    } else {
+      subtitle = `Attack Roll`;
+    }
+
+    const components = isHorde
+      ? [] // Hordes use DC, not attack roll
+      : [
+          { label: 'd20', formula: '1d20', alwaysShowInBreakdown: true },
+          { label: 'Attack', value: attack.attackBonus, alwaysShowInBreakdown: true }
+        ];
+
+    if (isHorde) {
+      // For hordes, just display the DC info
+      const rollObj = {
+        title: attack.name,
+        subtitle: subtitle,
+        characterName: npc_name.value || 'NPC',
+        components: [],
+        total: current.attackDC,
+        keyValues: {
+          'Range': attack.range,
+          'O-Attack DC': current.attackDC
+        }
+      };
+      rollToChat({ rollObj, whisper: npc_whisper_rolls.value });
+    } else {
+      // For non-hordes, roll attack
+      const { total, components: resultComponents } = await getRollResults(components);
+      resultComponents.forEach(comp => { comp.alwaysShowInBreakdown = true; });
+
+      const rollObj = {
+        title: attack.name,
+        subtitle: subtitle,
+        characterName: npc_name.value || 'NPC',
+        components: resultComponents,
+        total: Number(total),
+        keyValues: {
+          'Range': attack.range
+        }
+      };
+      rollToChat({ rollObj, whisper: npc_whisper_rolls.value });
+    }
+  };
+
+  const rollNPCDamage = async (attackType = 'primary') => {
+    const attack = attackType === 'primary' ? npc_primary_attack.value : npc_secondary_attack.value;
+    const current = attackType === 'primary' ? npc_primary_current.value : npc_secondary_current.value;
+    const isHorde = npc_type.value === 'horde';
+
+    const damageValue = isHorde ? current.damage : attack.damage;
+    const dmgType = damageTypeLabels[attack.damageType] || 'Physical';
+
+    // Check if damage is a dice expression or flat number
+    const isDiceExpression = String(damageValue).match(/\d*[dD]\d+/);
+
+    let total, resultComponents;
+    if (isDiceExpression) {
+      const result = await getRollResults([
+        { label: 'Damage', formula: damageValue, rollFormula: true, alwaysShowInBreakdown: true }
+      ]);
+      total = result.total;
+      resultComponents = result.components;
+      resultComponents.forEach(comp => { comp.alwaysShowInBreakdown = true; });
+    } else {
+      // Flat damage (common for hordes)
+      total = parseInt(damageValue) || 0;
+      resultComponents = [{ label: 'Damage', value: total, alwaysShowInBreakdown: true }];
+    }
+
+    const rollObj = {
+      title: `${attack.name} Damage`,
+      subtitle: isHorde ? `${npc_active_units.value}/4 units - ${dmgType}` : dmgType,
+      characterName: npc_name.value || 'NPC',
+      components: resultComponents,
+      total: Number(total),
+      keyValues: {
+        'Damage Type': dmgType
+      }
+    };
+
+    rollToChat({ rollObj, whisper: npc_whisper_rolls.value });
+    return total;
+  };
+
+  const rollNPCCheck = async (checkType = 'physical') => {
+    const modifier = checkType === 'physical' ? npc_physical_check.value : npc_magical_check.value;
+    const checkName = checkType === 'physical' ? 'Physical Check' : 'Magical Check';
+
+    const { total, components } = await getRollResults([
+      { label: 'd20', formula: '1d20', alwaysShowInBreakdown: true },
+      { label: 'Mod', value: modifier, alwaysShowInBreakdown: true }
+    ]);
+
+    components.forEach(comp => { comp.alwaysShowInBreakdown = true; });
+
+    const rollObj = {
+      title: checkName,
+      subtitle: npcTypes[npc_type.value]?.name || 'NPC',
+      characterName: npc_name.value || 'NPC',
+      components: components,
+      total: Number(total)
+    };
+
+    rollToChat({ rollObj, whisper: npc_whisper_rolls.value });
+    return total;
+  };
+
+  const rollNPCGloomGems = async () => {
+    const diceExpr = npc_inert_spectral_energy.value || '1d4';
+
+    const { total, components } = await getRollResults([
+      { label: 'Gloom Gems', formula: diceExpr, rollFormula: true, alwaysShowInBreakdown: true }
+    ]);
+
+    components.forEach(comp => { comp.alwaysShowInBreakdown = true; });
+
+    const rollObj = {
+      title: 'Inert Spectral Energy',
+      subtitle: 'Gloom Gems Yield',
+      characterName: npc_name.value || 'NPC',
+      components: components,
+      total: Number(total)
+    };
+
+    rollToChat({ rollObj, whisper: npc_whisper_rolls.value });
+    return total;
+  };
+
+  // Add a trait to NPC
+  const addNPCTrait = () => {
+    npc_traits.value.push({
+      _id: uuidv4(),
+      name: `Trait ${npc_traits.value.length + 1}`,
+      description: ''
+    });
+  };
+
+  // Remove a trait from NPC
+  const removeNPCTrait = (traitId) => {
+    npc_traits.value = npc_traits.value.filter(t => t._id !== traitId);
+  };
+
+  // ==================== END NPC ROLL FUNCTIONS ====================
 
   return {
     sheet_mode,
@@ -1513,6 +1821,36 @@ export const useSheetStore = defineStore('sheet',() => {
         formName: isTransformed.value ? 'Magi-Knight' : 'Student'
       };
     },
+
+    // NPC exports
+    npcTypes,
+    npc_name,
+    npc_type,
+    npc_size,
+    npc_creature_type,
+    npc_armor,
+    npc_move,
+    npc_invasion_level,
+    npc_horrific_rating,
+    npc_physical_check,
+    npc_magical_check,
+    npc_inert_spectral_energy,
+    npc_whisper_rolls,
+    npc_hp,
+    npc_horde_hp,
+    npc_active_units,
+    npc_primary_attack,
+    npc_secondary_attack,
+    npc_primary_current,
+    npc_secondary_current,
+    npc_traits,
+    npc_notes,
+    rollNPCAttack,
+    rollNPCDamage,
+    rollNPCCheck,
+    rollNPCGloomGems,
+    addNPCTrait,
+    removeNPCTrait,
 
     dehydrate,
     hydrate
