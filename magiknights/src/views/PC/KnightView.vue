@@ -14,6 +14,9 @@ import RepeatingSection from '@/components/RepeatingSection.vue';
 import RepeatingItem from '@/components/RepeatingItem.vue';
 import Collapsible from '@/components/Collapsible.vue';
 import SpellSection from '@/components/SpellSection.vue';
+import WeaponQualitiesSelector from '@/components/WeaponQualitiesSelector.vue';
+import GunQualitiesSelector from '@/components/GunQualitiesSelector.vue';
+import ImplementQualitiesSelector from '@/components/ImplementQualitiesSelector.vue';
 
 import { useSheetStore } from '@/stores/sheetStore';
 
@@ -198,8 +201,8 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           </select>
         </div>
         <div class="grid">
-          <label class="properties-header" :for="`soul-weapon-qualities`">Qualities</label>
-          <textarea class="input-field" :id="`soul-weapon-qualities`" v-model="sheet.soul_weapon.qualities"></textarea>
+          <label class="properties-header">Qualities</label>
+          <WeaponQualitiesSelector />
         </div>
       </template>
       <template v-slot:collapsed>
@@ -207,11 +210,88 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
         <span class="damage-type-tag" :class="sheet.soul_weapon.damageType">
           {{ sheet.damageTypeLabels[sheet.soul_weapon.damageType] || 'Physical' }}
         </span>
-        <span class="description-span">{{ sheet.soul_weapon.qualities }}</span>
+        <span v-if="sheet.activeWeaponQualities.length > 0" class="qualities-summary">
+          {{ sheet.activeWeaponQualities.join(', ') }}
+        </span>
       </template>
     </Collapsible>
     <!-- Static content here -->
   </NotchContainer>
+
+  <NotchContainer class="magical-implement-container basic-item" width="thick" notchType="curve">
+    <h4>Magical Implement</h4>
+    <Collapsible class="basic-item" :default="sheet.magical_implement.collapsed" @collapse="sheet.magical_implement.collapsed = !sheet.magical_implement.collapsed">
+      <template v-slot:expanded>
+        <div class="flex-box half-gap grow-label">
+          <label :for="`magical-implement-name`">Name</label>
+          <input class="input-field" type="text" v-model="sheet.magical_implement.name" :id="`magical-implement-name`">
+        </div>
+        <div class="grid">
+          <label class="properties-header" :for="`magical-implement-description`">Description</label>
+          <textarea class="input-field" v-model="sheet.magical_implement.description" :id="`magical-implement-description`"></textarea>
+        </div>
+        <div class="grid">
+          <label class="properties-header">Qualities</label>
+          <ImplementQualitiesSelector />
+        </div>
+      </template>
+      <template v-slot:collapsed>
+        <span class="implement-name">{{ sheet.magical_implement.name || 'New Implement' }}</span>
+        <span v-if="sheet.hasManaAttunement" class="mana-attunement-badge">
+          Mana Attunement
+        </span>
+        <span v-if="sheet.activeImplementQualities.length > 0" class="qualities-summary">
+          {{ sheet.activeImplementQualities.join(', ') }}
+        </span>
+      </template>
+    </Collapsible>
+  </NotchContainer>
+
+  <NotchContainer class="soul-gun-container basic-item" width="thick" notchType="curve">
+    <h4>Soul Gun</h4>
+    <Collapsible class="basic-item" :default="sheet.soul_gun.collapsed" @collapse="sheet.soul_gun.collapsed = !sheet.soul_gun.collapsed">
+      <template v-slot:expanded>
+        <div class="flex-box half-gap grow-label">
+          <label :for="`soul-gun-name`">Name</label>
+          <input class="input-field" type="text" v-model="sheet.soul_gun.name" :id="`soul-gun-name`">
+        </div>
+        <div class="flex-box half-gap grow-label">
+          <label :for="`soul-gun-range`">Range</label>
+          <input class="input-field" type="text" v-model="sheet.soul_gun.range" :id="`soul-gun-range`">
+        </div>
+        <div class="flex-box half-gap grow-label">
+          <label :for="`soul-gun-damage`">Damage</label>
+          <input class="input-field" type="text" v-model="sheet.soul_gun.damage" :id="`soul-gun-damage`">
+        </div>
+        <div class="flex-box half-gap grow-label">
+          <label :for="`soul-gun-damage-type`">Damage Type</label>
+          <select class="input-field" v-model="sheet.soul_gun.damageType" :id="`soul-gun-damage-type`">
+            <option value="physical">Physical</option>
+            <option value="magical">Magical</option>
+            <option value="true">True Damage</option>
+          </select>
+        </div>
+        <div class="grid">
+          <label class="properties-header">Qualities</label>
+          <GunQualitiesSelector />
+        </div>
+      </template>
+      <template v-slot:collapsed>
+        <div class="collapsed-gun-actions">
+          <button class="gun-roll-btn" @click="sheet.rollGunAttack">Attack</button>
+          <button class="gun-roll-btn" @click="sheet.rollGunDamage">Damage</button>
+          <span class="gun-name">{{ sheet.soul_gun.name || 'New Gun' }}</span>
+        </div>
+        <span class="damage-type-tag" :class="sheet.soul_gun.damageType">
+          {{ sheet.damageTypeLabels[sheet.soul_gun.damageType] || 'Physical' }}
+        </span>
+        <span v-if="sheet.activeGunQualities.length > 0" class="qualities-summary">
+          {{ sheet.activeGunQualities.join(', ') }}
+        </span>
+      </template>
+    </Collapsible>
+  </NotchContainer>
+
 <NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
   <h4>Combat Forms</h4>
   <RepeatingSection name="forms">
@@ -529,6 +609,63 @@ input{
   &.true {
     background: #c62828;
     color: white;
+  }
+}
+
+.qualities-summary {
+  font-size: 0.7rem;
+  color: #666;
+  font-style: italic;
+  margin-left: 4px;
+}
+
+.soul-gun-container {
+  .collapsed-gun-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .gun-roll-btn {
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      background: var(--header-blue);
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    .gun-name {
+      font-weight: bold;
+      margin-left: 4px;
+    }
+  }
+}
+
+html.dark {
+  .qualities-summary {
+    color: #aaa;
+  }
+}
+
+.magical-implement-container {
+  .implement-name {
+    font-weight: bold;
+  }
+
+  .mana-attunement-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #1565c0;
+    color: white;
+    margin-left: 4px;
   }
 }
 </style>
