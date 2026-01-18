@@ -483,6 +483,127 @@ export const useSheetStore = defineStore('sheet',() => {
     }
   }));
 
+  // ==================== COMBINATION MANEUVERS ====================
+  // Per compendium/lists.json: Combination Maneuvers
+  // Unlocked at Rep Level II, requires Unity Points
+
+  const combinationManeuverData = {
+    avengingFlare: {
+      name: 'Avenging Flare',
+      participants: 2,
+      unityCost: 1,
+      actionType: 'Immediate',
+      isQuick: true,
+      description: 'When squadron member becomes Exposed/Unconscious within 60ft: Other participants may Spell Attack OR Move 30ft + Weapon Attack with Advantage. All damage = True Damage.',
+      shortEffect: () => 'True Damage counter-attack on ally exposure'
+    },
+    planetaryAegis: {
+      name: 'Planetary Aegis of Nullification',
+      participants: 2,
+      unityCost: 1,
+      actionType: 'Bonus',
+      isQuick: false,
+      isLingering: true,
+      description: 'All within 15ft of Initiator or Finisher: Gain 6× Rep Level Temp HP + Physical/Magical Resistance while Temp HP remains.',
+      shortEffect: (rep) => `${6 * rep} Temp HP + Resistance`
+    },
+    starstormRestoration: {
+      name: 'Starstorm Restoration',
+      participants: 2,
+      unityCost: 1,
+      actionType: 'Standard',
+      isQuick: false,
+      description: 'At Finisher\'s turn end: 5× Rep Level True Damage to enemies within 30ft, pushed 10ft, Prone. All participants heal 10× Rep Level HP and remove 1 Condition.',
+      shortEffect: (rep) => `${5 * rep} damage, heal ${10 * rep} HP`
+    },
+    blueshiftCollision: {
+      name: 'Blueshift Collision',
+      participants: 3,
+      unityCost: 2,
+      actionType: 'Full-Round',
+      isQuick: false,
+      description: 'All participants within 10ft immediately take extra turn: 2 Move, 2 Standard, 2 Bonus Actions. First Attack = Advantage + True Damage. All gain 1 Exhaustion + Mysticism DC 14 or Drained.',
+      shortEffect: () => 'Extra turn with doubled actions'
+    },
+    envoysOfHope: {
+      name: 'Envoys of Hope (Aura)',
+      participants: 3,
+      unityCost: 2,
+      actionType: 'Bonus',
+      isQuick: false,
+      isLingering: true,
+      description: 'At turn start: Gain pool of 2× Rep Level d4s. Add to one Damage/Healing/Roll to Resist during turn. OR Immediate: Reduce incoming damage by pool roll.',
+      shortEffect: (rep) => `${2 * rep}d4 pool for rolls`
+    },
+    ultimateRadiantReflection: {
+      name: 'Ultimate Radiant Reflection',
+      participants: 4,
+      unityCost: 2,
+      actionType: 'Reaction',
+      isQuick: true,
+      description: 'When damaging spell targets participants within 30ft radius: ½ squadron = Damage → 0. Full squadron = Reflect as True Damage + 4× Rep Level True Damage to caster. All gain 1 Exhaustion + Mysticism DC 14 or Drained.',
+      shortEffect: (rep) => `Negate/reflect spell + ${4 * rep} damage`
+    },
+    ringshineFulminationNova: {
+      name: 'Ringshine Fulmination (Nova)',
+      participants: 4,
+      unityCost: 3,
+      actionType: 'Full-Round',
+      isQuick: false,
+      isLegendary: true,
+      description: 'Each participant rolls 1d20. Dice pool based on roll: 20=8d12, 18+=6d12, 12+=4d12, 1+=2d12 (all +MAM+Rep). Divide evenly, roll. True Damage to all enemies within 100ft. All gain 2 Exhaustion + Mysticism DC 16 or Depleted.',
+      shortEffect: () => 'Massive AoE True Damage'
+    },
+    ringshineFulminationZenith: {
+      name: 'Ringshine Fulmination (Zenith)',
+      participants: 4,
+      unityCost: 3,
+      actionType: 'Full-Round',
+      isQuick: false,
+      isLegendary: true,
+      description: 'Participants within 10ft roll 1d20. Dice pool: 20=10d10+8d8, 18+=8d10+6d8, 12+=6d10+4d8, 1+=4d10+2d8 (all +MAM+Rep). Divide evenly, roll. True Damage to ONE target within 100ft. All gain 2 Exhaustion + Mysticism DC 16 or Depleted.',
+      shortEffect: () => 'Devastating single-target True Damage'
+    }
+  };
+
+  // Track selected participant count for combos (default 2)
+  const comboParticipants = ref(2);
+
+  // Track combination maneuvers section collapsed state
+  const combosCollapsed = ref(true);
+
+  // Computed maneuver effects based on reputation and MAM
+  const comboEffects = computed(() => {
+    const rep = reputation.value;
+    const mamMod = abilityScores[mam.value]?.mod.value || 0;
+    return {
+      planetaryAegis: {
+        tempHp: 6 * rep
+      },
+      starstormRestoration: {
+        damage: 5 * rep,
+        healing: 10 * rep
+      },
+      envoysOfHope: {
+        dicePool: 2 * rep
+      },
+      ultimateRadiantReflection: {
+        bonusDamage: 4 * rep
+      },
+      ringshineFulmination: {
+        mamMod: mamMod,
+        repLevel: rep
+      }
+    };
+  });
+
+  // Check if a maneuver can be executed (enough participants and unity)
+  const canExecuteManeuver = (maneuverKey) => {
+    const maneuver = combinationManeuverData[maneuverKey];
+    if (!maneuver) return false;
+    return comboParticipants.value >= maneuver.participants && unity.value >= maneuver.unityCost;
+  };
+
   const traits = ref([]);
   const traitsCount = computed(() => traits.value?.length);
 
@@ -1290,6 +1411,8 @@ export const useSheetStore = defineStore('sheet',() => {
       unity_points: unity.value,
       active_formation: activeFormation.value,
       formations_collapsed: formationsCollapsed.value,
+      combo_participants: comboParticipants.value,
+      combos_collapsed: combosCollapsed.value,
       elemental_affinity: elemental_affinity.value,
       magic_style: magic_style.value,
       element_name: element_name.value,
@@ -1410,6 +1533,8 @@ export const useSheetStore = defineStore('sheet',() => {
     unity.value = hydrateStore.unity_points ?? unity.value;
     activeFormation.value = hydrateStore.active_formation ?? activeFormation.value;
     formationsCollapsed.value = hydrateStore.formations_collapsed ?? formationsCollapsed.value;
+    comboParticipants.value = hydrateStore.combo_participants ?? comboParticipants.value;
+    combosCollapsed.value = hydrateStore.combos_collapsed ?? combosCollapsed.value;
 
     student_damage_override.value = hydrateStore.student_damage_override ?? student_damage_override.value;
     student_armor_override.value = hydrateStore.student_armor_override ?? student_armor_override.value;
@@ -2041,6 +2166,93 @@ export const useSheetStore = defineStore('sheet',() => {
     }
   };
 
+  // ==================== COMBINATION MANEUVER FUNCTIONS ====================
+
+  const executeManeuver = async (maneuverKey) => {
+    const maneuver = combinationManeuverData[maneuverKey];
+    if (!maneuver) return;
+
+    const rep = reputation.value;
+    const mamMod = abilityScores[mam.value]?.mod.value || 0;
+    const participants = comboParticipants.value;
+
+    // Build key values for the roll output
+    const keyValues = {
+      'Participants': `${participants} Magi-Knights`,
+      'Unity Cost': `${maneuver.unityCost} per participant`,
+      'Action': maneuver.actionType
+    };
+
+    // Add tags for special maneuver types
+    const tags = [];
+    if (maneuver.isQuick) tags.push('Quick Combo');
+    if (maneuver.isLingering) tags.push('Lingering');
+    if (maneuver.isLegendary) tags.push('Legendary');
+    if (tags.length > 0) {
+      keyValues['Type'] = tags.join(', ');
+    }
+
+    // Build components array for dice rolls
+    const components = [];
+
+    // Handle different maneuver types with their specific rolls
+    if (maneuverKey === 'starstormRestoration') {
+      keyValues['Damage'] = `${5 * rep} True Damage`;
+      keyValues['Healing'] = `${10 * rep} HP`;
+      keyValues['Effect'] = 'Enemies pushed 10ft, Prone';
+    } else if (maneuverKey === 'planetaryAegis') {
+      keyValues['Temp HP'] = `${6 * rep}`;
+      keyValues['Resistance'] = 'Physical & Magical';
+    } else if (maneuverKey === 'envoysOfHope') {
+      const dicePool = 2 * rep;
+      keyValues['Dice Pool'] = `${dicePool}d4`;
+      keyValues['Use'] = 'Add to Damage/Healing/Resist OR reduce incoming damage';
+      // Roll the dice pool
+      components.push({ label: `Aura Pool`, formula: `${dicePool}d4`, alwaysShowInBreakdown: true });
+    } else if (maneuverKey === 'ultimateRadiantReflection') {
+      keyValues['Bonus Damage'] = `${4 * rep} True Damage`;
+      keyValues['Effect'] = participants >= 4 ? 'Full reflect + bonus damage' : 'Damage reduced to 0';
+    } else if (maneuverKey === 'ringshineFulminationNova') {
+      // Roll d20 for each participant to determine dice pool
+      keyValues['Range'] = '100ft AoE';
+      keyValues['Aftermath'] = '2 Exhaustion + DC 16 or Depleted';
+      // Each participant rolls 1d20 - show example for one
+      components.push({ label: `Participant Roll`, formula: '1d20', alwaysShowInBreakdown: true });
+      // Base damage formula reference
+      keyValues['Dice Pool'] = '20=8d12, 18+=6d12, 12+=4d12, 1+=2d12 (+MAM+Rep each)';
+      keyValues['Modifiers'] = `+${mamMod} MAM, +${rep} Rep`;
+    } else if (maneuverKey === 'ringshineFulminationZenith') {
+      // Single target variant
+      keyValues['Target'] = 'Single target within 100ft';
+      keyValues['Aftermath'] = '2 Exhaustion + DC 16 or Depleted';
+      components.push({ label: `Participant Roll`, formula: '1d20', alwaysShowInBreakdown: true });
+      keyValues['Dice Pool'] = '20=10d10+8d8, 18+=8d10+6d8, 12+=6d10+4d8, 1+=4d10+2d8 (+MAM+Rep each)';
+      keyValues['Modifiers'] = `+${mamMod} MAM, +${rep} Rep`;
+    } else if (maneuverKey === 'blueshiftCollision') {
+      keyValues['Effect'] = 'Extra turn: 2 Move, 2 Standard, 2 Bonus';
+      keyValues['First Attack'] = 'Advantage + True Damage';
+      keyValues['Aftermath'] = '1 Exhaustion + DC 14 or Drained';
+    } else if (maneuverKey === 'avengingFlare') {
+      keyValues['Trigger'] = 'Ally becomes Exposed/Unconscious';
+      keyValues['Effect'] = 'Spell Attack OR Move 30ft + Weapon Attack w/ Advantage';
+      keyValues['Damage Type'] = 'True Damage';
+    }
+
+    // Add Maneuver Tax reminder
+    keyValues['Maneuver Tax'] = 'Mysticism (CON) DC 14 - Fail = 1 Exhaustion';
+
+    const rollObj = {
+      title: maneuver.name,
+      subtitle: `Combination Maneuver Executed`,
+      characterName: metaStore.name,
+      components: components,
+      keyValues: keyValues,
+      textContent: maneuver.description
+    };
+
+    rollToChat({ rollObj });
+  };
+
   // ==================== NPC ROLL FUNCTIONS ====================
 
   const rollNPCAttack = async (attackType = 'primary') => {
@@ -2278,6 +2490,14 @@ export const useSheetStore = defineStore('sheet',() => {
     formationsCollapsed,
     activateFormation,
     deactivateFormation,
+
+    // Combination Maneuvers
+    combinationManeuverData,
+    comboParticipants,
+    combosCollapsed,
+    comboEffects,
+    canExecuteManeuver,
+    executeManeuver,
 
     traitsCount,
 
