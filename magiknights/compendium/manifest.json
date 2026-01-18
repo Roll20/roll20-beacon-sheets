@@ -1,0 +1,48 @@
+{
+  "name": "Magi-Knights Awakening SRD Compendium",
+  "version": "1.0.0",
+  "description": "Roll20 Compendium for Magi-Knights Awakening with Beacon sheet attributes",
+  "categories": {
+    "Rules": {
+      "pageCount": 141,
+      "file": "rules.json"
+    },
+    "Spells": {
+      "pageCount": 18,
+      "file": "spells.json"
+    },
+    "Techniques": {
+      "pageCount": 44,
+      "file": "techniques.json"
+    },
+    "Equipment": {
+      "pageCount": 26,
+      "file": "equipment.json"
+    },
+    "Relics": {
+      "pageCount": 10,
+      "file": "relics.json"
+    },
+    "Shards": {
+      "pageCount": 20,
+      "file": "shards.json"
+    },
+    "Monsters": {
+      "pageCount": 43,
+      "file": "monsters.json"
+    },
+    "Locations": {
+      "pageCount": 5,
+      "file": "locations.json"
+    },
+    "Classes": {
+      "pageCount": 29,
+      "file": "classes.json"
+    },
+    "Lists": {
+      "pageCount": 5,
+      "file": "lists.json"
+    }
+  },
+  "totalPages": 342
+}
