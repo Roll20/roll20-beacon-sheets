@@ -42,6 +42,80 @@ export const useSheetStore = defineStore('sheet',() => {
   const exhaustion = ref(0);
   const student_type = ref('');
 
+  // Roll mode: 'normal', 'advantage', or 'disadvantage'
+  const rollMode = ref('normal');
+
+  // Computed: Check if forced disadvantage due to stress/exhaustion at 6
+  const forcedDisadvantage = computed(() => stress.value >= 6 || exhaustion.value >= 6);
+
+  // Computed: Get effective roll mode (forced disadvantage overrides manual selection)
+  const effectiveRollMode = computed(() => {
+    if (forcedDisadvantage.value) return 'disadvantage';
+    return rollMode.value;
+  });
+
+  // Get the dice expression based on roll mode
+  const getRollDice = () => {
+    switch (effectiveRollMode.value) {
+      case 'advantage':
+        return { formula: '2d20kh1', display: '2d20kh' };
+      case 'disadvantage':
+        return { formula: '2d20kl1', display: '2d20kl' };
+      default:
+        return { formula: '1d20', display: '1d20' };
+    }
+  };
+
+  // Conditions tracking
+  const conditions = ref({
+    // Mental conditions
+    distressed: false,
+    horrified: false,
+    berserk: false,
+    // Physical conditions
+    bleeding: false,
+    burning: false,
+    exposed: false,
+    paralyzed: false,
+    prone: false,
+    restrained: false,
+    // Depletion conditions
+    depleted: false,
+    drained: false,
+    silenced: false,
+    soulSiphoned1: false,
+    soulSiphoned2: false,
+    soulSiphoned3: false,
+    soulTainted: false,
+    // Other conditions
+    blinded: false,
+    charmed: false,
+    frightened: false,
+    incapacitated: false,
+    invisible: false,
+    poisoned: false,
+    stunned: false
+  });
+
+  // Get list of active conditions
+  const activeConditions = computed(() => {
+    return Object.entries(conditions.value)
+      .filter(([_, active]) => active)
+      .map(([name, _]) => name);
+  });
+
+  // Check if any condition grants disadvantage on attacks
+  const conditionDisadvantageOnAttacks = computed(() => {
+    return conditions.value.prone ||
+           conditions.value.restrained ||
+           conditions.value.blinded ||
+           conditions.value.frightened ||
+           conditions.value.poisoned;
+  });
+
+  // Check if distressed (applies -1 to checks)
+  const distressedPenalty = computed(() => conditions.value.distressed ? -1 : 0);
+
   // abilityScores
   const strength = ref(10);
   const dexterity = ref(10);
@@ -297,6 +371,11 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const eclipse = ref([0,0,0,0,0,0,0,0]);
   const eclipse_blips = ref([0,0,0,0,0,0,0,0]);
+
+  // Trauma is computed from eclipse blips in filled/solid dot state (1) only
+  // State 0 = empty, State 1 = Trauma (solid dot), State 2 = Corruption (X), State 3 = Burnout (scratched)
+  const trauma = computed(() => eclipse_blips.value.filter(blip => blip === 1).length);
+
   const eclipse_phase = computed(() => {
     const text = Math.max(0,...eclipse.value) >= 3 
       ? 'Heartless Knight' 
@@ -426,9 +505,17 @@ export const useSheetStore = defineStore('sheet',() => {
     name: ref(''),
     range: ref(''),
     damage: ref(''),
+    damageType: ref('physical'), // 'physical', 'magical', or 'true'
     qualities: ref(''),
     collapsed: ref(true)
   }
+
+  // Damage type labels for display
+  const damageTypeLabels = {
+    physical: 'Physical',
+    magical: 'Magical',
+    true: 'True Damage'
+  };
   // repeating sections
   const sections = {
     techniques: {
@@ -758,15 +845,17 @@ export const useSheetStore = defineStore('sheet',() => {
       name: soulWeapon.name.value,
       range: soulWeapon.range.value,
       damage: soulWeapon.damage.value,
+      damageType: soulWeapon.damageType.value,
       qualities: soulWeapon.qualities.value,
       collapsed: soulWeapon.collapsed.value,
     };
   }
-  
+
   function hydrateSoulWeapon(soulWeapon, hydrateData = {}) {
     soulWeapon.name.value = hydrateData.name ?? soulWeapon.name.value;
     soulWeapon.range.value = hydrateData.range ?? soulWeapon.range.value;
     soulWeapon.damage.value = hydrateData.damage ?? soulWeapon.damage.value;
+    soulWeapon.damageType.value = hydrateData.damageType ?? soulWeapon.damageType.value;
     soulWeapon.qualities.value = hydrateData.qualities ?? soulWeapon.qualities.value;
     soulWeapon.collapsed.value = hydrateData.collapsed ?? soulWeapon.collapsed.value;
   }
@@ -785,6 +874,8 @@ export const useSheetStore = defineStore('sheet',() => {
       inspiration: inspiration.value,
       stress: stress.value,
       exhaustion: exhaustion.value,
+      rollMode: rollMode.value,
+      conditions: { ...conditions.value },
       exceededMortalLimits: exceededMortalLimits.value,
       dexterityMod: dexterityMod.value,
       rested: rested.value,
@@ -874,6 +965,13 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration.value = hydrateStore.inspiration ?? inspiration.value;
     stress.value = hydrateStore.stress ?? stress.value;
     exhaustion.value = hydrateStore.exhaustion ?? exhaustion.value;
+    rollMode.value = hydrateStore.rollMode ?? rollMode.value;
+    // Hydrate conditions
+    if (hydrateStore.conditions) {
+      Object.keys(conditions.value).forEach(key => {
+        conditions.value[key] = hydrateStore.conditions[key] ?? conditions.value[key];
+      });
+    }
     // exceededMortalLimits is now computed based on reputation >= 4
     rested.value = hydrateStore.rested ?? rested.value;
     studied.value = hydrateStore.studied ?? studied.value;
@@ -945,14 +1043,21 @@ export const useSheetStore = defineStore('sheet',() => {
     if (elementToCheck === elementToUse) {
       rollToResist = proficiency.value;
     }
+
+    const dice = getRollDice();
+    const rollModeLabel = effectiveRollMode.value !== 'normal'
+      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+      : '';
+
     const rollObj = {
       title: toTitleCase(name),
-      subtitle: 'Ability Check',
+      subtitle: `Ability Check${rollModeLabel}`,
       characterName: metaStore.name,
       components: [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'Mod', value:abilityScores[name].mod.value,alwaysShowInBreakdown: true},
-        {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true}
+        {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true},
+        {label: 'Distressed', value: distressedPenalty.value, alwaysShowInBreakdown: distressedPenalty.value !== 0}
       ]
     };
     rollToChat({rollObj});
@@ -961,24 +1066,34 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollSkill = (name) => {
     const abilityName = skills[name].ability.value;
     const formattedTitle = toTitleCase(name.replace(/_/g, ' '));
-    var skillOverrideValue = skills[name].overrideValue.value;
+    const skillOverrideValue = skills[name].overrideValue.value;
+
+    const dice = getRollDice();
+    const rollModeLabel = effectiveRollMode.value !== 'normal'
+      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+      : '';
+
     if (skillOverrideValue !== '' && skillOverrideValue !== undefined){
       const rollObj = {
         title: formattedTitle,
+        subtitle: rollModeLabel ? `Skill Check${rollModeLabel}` : undefined,
         characterName: metaStore.name,
         components: [
-          {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-          {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true}
+          {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+          {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true},
+          {label: 'Distressed', value: distressedPenalty.value, alwaysShowInBreakdown: distressedPenalty.value !== 0}
         ]
       };
       rollToChat({rollObj});
     }else{
       const rollObj = {
         title: formattedTitle,
+        subtitle: rollModeLabel ? `Skill Check${rollModeLabel}` : undefined,
         characterName: metaStore.name,
         components: [
-          {label:'1d20',sides:20,alwaysShowInBreakdown: true},
-          {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true}
+          {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+          {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true},
+          {label: 'Distressed', value: distressedPenalty.value, alwaysShowInBreakdown: distressedPenalty.value !== 0}
         ]
       };
       if(skills[name].proficiency.value){
@@ -991,9 +1106,14 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollWeapon = async (item,tier) => {
     let abMod = Number(knight_attack.value) || 0;
 
+    const dice = getRollDice();
+    const rollModeLabel = effectiveRollMode.value !== 'normal'
+      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+      : '';
+
     const attackPromise = getRollResults(
       [
-        {label:'Attack Roll: 1d20',sides:20,alwaysShowInBreakdown: true},
+        {label:`Attack Roll: ${dice.display}`, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'Mod', value:abMod,alwaysShowInBreakdown: true},
         //{label:'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
       ]
@@ -1038,6 +1158,8 @@ export const useSheetStore = defineStore('sheet',() => {
       rollObj.textContent = soul_weapon.qualities.value;
     }
     if(soul_weapon.damage.value) {
+      const dmgType = damageTypeLabels[soul_weapon.damageType.value] || 'Physical';
+      rollObj.keyValues[`Damage Type`] = dmgType;
       rollObj.keyValues[`Soul Weapon Damage Roll`] = soul_weapon.damage.value;
 
     if(item.range){
@@ -1051,7 +1173,7 @@ export const useSheetStore = defineStore('sheet',() => {
       rollObj.keyValues[`Modifier`] = damageBreakdownMod;
     }
     if (damageBreakdownTotal){
-      rollObj.keyValues[`Total`] = damageBreakdownTotal;
+      rollObj.keyValues[`Total ${dmgType}`] = damageBreakdownTotal;
     }
 
     }
@@ -1064,9 +1186,15 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const rollSpell = async (item,tier) => {
     const abMod = abilityScores[mam.value]?.mod.value || 0;
+
+    const dice = getRollDice();
+    const rollModeLabel = effectiveRollMode.value !== 'normal'
+      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+      : '';
+
     const attackPromise = getRollResults(
       [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'MAM', value:abMod,alwaysShowInBreakdown: true},
         {label:'Prof',value: Number(proficiency.value),alwaysShowInBreakdown: true}
       ]
@@ -1128,11 +1256,17 @@ export const useSheetStore = defineStore('sheet',() => {
   };
 
   const rollInitiative = (name) => {
+    const dice = getRollDice();
+    const rollModeLabel = effectiveRollMode.value !== 'normal'
+      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+      : '';
+
     const rollObj = {
       title: 'Roll Initiative',
+      subtitle: rollModeLabel || undefined,
       characterName: metaStore.name,
       components: [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'Initiative', value:Number(initiative.value),alwaysShowInBreakdown: true},
       ]
     };
@@ -1140,12 +1274,17 @@ export const useSheetStore = defineStore('sheet',() => {
   };
 
   const rollKnightAttack = (name) => {
+    const dice = getRollDice();
+    const rollModeLabel = effectiveRollMode.value !== 'normal'
+      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+      : '';
+
     const rollObj = {
       title: 'Attack Roll',
-      subtitle: 'Magi-Knight Persona',
+      subtitle: `Magi-Knight Persona${rollModeLabel}`,
       characterName: metaStore.name,
       components: [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'Value', value:Number(knight_attack.value),alwaysShowInBreakdown: true}
       ]
     };
@@ -1153,12 +1292,17 @@ export const useSheetStore = defineStore('sheet',() => {
   };
 
   const rollStudentAttack = (name) => {
+    const dice = getRollDice();
+    const rollModeLabel = effectiveRollMode.value !== 'normal'
+      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+      : '';
+
     const rollObj = {
       title: 'Attack Roll',
-      subtitle: 'Student Persona',
+      subtitle: `Student Persona${rollModeLabel}`,
       characterName: metaStore.name,
       components: [
-        {label:'1d20',sides:20,alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'Value', value:Number(student_attack.value),alwaysShowInBreakdown: true},
       ]
     };
@@ -1184,13 +1328,16 @@ export const useSheetStore = defineStore('sheet',() => {
       comp.alwaysShowInBreakdown = true;
     });
 
-    // Format the roll for chat
+    // Format the roll for chat - Student attacks are always Physical
     const rollObj = {
       title: 'Damage Roll',
-      subtitle: 'Student Persona',
+      subtitle: 'Student Persona - Physical',
       characterName: metaStore.name,
       components: components,
       total: Number(total),
+      keyValues: {
+        'Damage Type': 'Physical'
+      }
     };
 
     rollToChat({ rollObj });
@@ -1217,13 +1364,19 @@ export const useSheetStore = defineStore('sheet',() => {
       comp.alwaysShowInBreakdown = true;
     });
 
+    // Get damage type from soul weapon
+    const dmgType = damageTypeLabels[soul_weapon.damageType.value] || 'Physical';
+
     // Format the roll for chat
     const rollObj = {
       title: 'Damage Roll',
-      subtitle: 'Magi-Knight Persona',
+      subtitle: `Magi-Knight Persona - ${dmgType}`,
       characterName: metaStore.name,
       components: components,
       total: Number(total),
+      keyValues: {
+        'Damage Type': dmgType
+      }
     };
 
     rollToChat({ rollObj });
@@ -1255,9 +1408,21 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration,
     stress,
     exhaustion,
+    trauma,
     exceededMortalLimits,
     proficiency,
     customProficiency,
+
+    // Roll mode (advantage/disadvantage)
+    rollMode,
+    effectiveRollMode,
+    forcedDisadvantage,
+
+    // Conditions
+    conditions,
+    activeConditions,
+    conditionDisadvantageOnAttacks,
+    distressedPenalty,
 
     hp,
     mp,
@@ -1281,6 +1446,7 @@ export const useSheetStore = defineStore('sheet',() => {
     student_type,
     armor_weave,
     soul_weapon,
+    damageTypeLabels,
     gloom_gems:gloom,
     unity_points:unity,
     traitsCount,

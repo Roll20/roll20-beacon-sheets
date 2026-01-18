@@ -189,6 +189,14 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           <label :for="`soul-weapon-damage`">Damage</label>
           <input class="input-field" type="text" v-model="sheet.soul_weapon.damage" :id="`soul-weapon-damage`">
         </div>
+        <div class="flex-box half-gap grow-label">
+          <label :for="`soul-weapon-damage-type`">Damage Type</label>
+          <select class="input-field" v-model="sheet.soul_weapon.damageType" :id="`soul-weapon-damage-type`">
+            <option value="physical">Physical</option>
+            <option value="magical">Magical</option>
+            <option value="true">True Damage</option>
+          </select>
+        </div>
         <div class="grid">
           <label class="properties-header" :for="`soul-weapon-qualities`">Qualities</label>
           <textarea class="input-field" :id="`soul-weapon-qualities`" v-model="sheet.soul_weapon.qualities"></textarea>
@@ -196,6 +204,9 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
       </template>
       <template v-slot:collapsed>
         <button @click="sheet.rollWeapon">{{ sheet.soul_weapon.name || 'New Weapon' }}</button>
+        <span class="damage-type-tag" :class="sheet.soul_weapon.damageType">
+          {{ sheet.damageTypeLabels[sheet.soul_weapon.damageType] || 'Physical' }}
+        </span>
         <span class="description-span">{{ sheet.soul_weapon.qualities }}</span>
       </template>
     </Collapsible>
@@ -494,5 +505,30 @@ h4{
 
 input{
   color: var(--lm-color);
+}
+
+.damage-type-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-left: 4px;
+
+  &.physical {
+    background: #666;
+    color: white;
+  }
+
+  &.magical {
+    background: #6a1b9a;
+    color: white;
+  }
+
+  &.true {
+    background: #c62828;
+    color: white;
+  }
 }
 </style>
