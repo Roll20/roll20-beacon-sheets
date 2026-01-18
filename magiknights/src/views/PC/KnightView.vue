@@ -455,6 +455,7 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
       </LabelStacked>
       </div>
   </NotchContainer>
+
 </template>
 
 <style lang="scss">
@@ -668,4 +669,5 @@ html.dark {
     margin-left: 4px;
   }
 }
+
 </style>

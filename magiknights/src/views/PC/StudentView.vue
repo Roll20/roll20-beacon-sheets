@@ -107,6 +107,7 @@ function studentAbilitySummary()
       </select>
     </NotchContainer>
     </div>
+
     <div class="gear-section">
       <NotchContainer>
         <h4>gear</h4>
@@ -137,6 +138,45 @@ function studentAbilitySummary()
     <NotchContainer class="notebook">
       <SocialSection name="squadron" />
     </NotchContainer>
+
+  <!-- Herald Section - Per compendium: Herald bond affects spell tier access -->
+  <NotchContainer class="herald-container" width="thick" notchType="curve">
+    <h4>Herald Connection</h4>
+    <div class="herald-content">
+      <div class="flex-box half-gap grow-label">
+        <label for="herald-name">Herald Name</label>
+        <input class="underline" type="text" v-model="sheet.herald.name" id="herald-name" placeholder="Enter Herald's name">
+      </div>
+      <div class="flex-box half-gap grow-label">
+        <label for="herald-bond-level">Bond Level</label>
+        <select class="underline" v-model="sheet.herald.bondLevel" id="herald-bond-level">
+          <option :value="1">I - Initial Bond</option>
+          <option :value="2">II - Strengthened</option>
+          <option :value="3">III - Deep Connection</option>
+          <option :value="4">IV - Profound Bond</option>
+          <option :value="5">V - Ultimate Bond</option>
+        </select>
+      </div>
+      <div class="herald-tier-access">
+        <span class="tier-label">Spell Tier Access:</span>
+        <span class="tier-badges">
+          <span class="tier-badge unlocked">I</span>
+          <span class="tier-badge unlocked">II</span>
+          <span class="tier-badge unlocked">III</span>
+          <span class="tier-badge unlocked">IV</span>
+          <span class="tier-badge unlocked">V</span>
+          <span class="tier-badge" :class="{ 'unlocked': sheet.tierVIUnlocked, 'locked': !sheet.tierVIUnlocked }">
+            VI
+            <span v-if="!sheet.tierVIUnlocked" class="lock-icon" title="Requires Bond Level IV+">🔒</span>
+          </span>
+        </span>
+      </div>
+      <div class="grid">
+        <label class="properties-header" for="herald-notes">Notes</label>
+        <textarea class="underline" v-model="sheet.herald.notes" id="herald-notes" placeholder="Notes about your Herald..."></textarea>
+      </div>
+    </div>
+  </NotchContainer>
 </template>
 
 <style lang="scss">
@@ -249,6 +289,84 @@ function studentAbilitySummary()
 
   .skill-container {
     grid-column: 1;
+  }
+}
+
+// Herald Section Styles
+.herald-container {
+  .herald-content {
+    display: grid;
+    gap: var(--half-gap);
+  }
+
+  .herald-tier-access {
+    display: flex;
+    align-items: center;
+    gap: var(--half-gap);
+    flex-wrap: wrap;
+    padding: var(--tiny-gap) 0;
+
+    .tier-label {
+      font-weight: bold;
+      color: var(--header-blue);
+      font-size: 0.85rem;
+    }
+
+    .tier-badges {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      transition: all 0.2s ease;
+
+      &.unlocked {
+        background: var(--header-blue);
+        color: white;
+      }
+
+      &.locked {
+        background: #666;
+        color: #aaa;
+        position: relative;
+
+        .lock-icon {
+          font-size: 0.6rem;
+          margin-left: 2px;
+        }
+      }
+    }
+  }
+
+  h4 {
+    color: var(--header-blue);
+  }
+
+  .grow-label {
+    color: var(--header-blue);
+  }
+
+  .properties-header {
+    color: var(--header-blue);
+  }
+}
+
+html.dark {
+  .herald-container {
+    .tier-badge.locked {
+      background: #444;
+      color: #888;
+    }
   }
 }
 </style>

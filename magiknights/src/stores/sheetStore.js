@@ -404,6 +404,27 @@ export const useSheetStore = defineStore('sheet',() => {
   const gloom = ref(0);
   const unity = ref(0);
 
+  // Unity Points: Unlocked at Reputation Level II (rep >= 2), max = rep - 1
+  // Per compendium/rules.json: Unity is used for Combination Maneuvers
+  const unityMax = computed(() => {
+    if (reputation.value < 2) return 0;
+    return reputation.value - 1;
+  });
+
+  // Check if Unity Points are available (Rep II+ required)
+  const unityAvailable = computed(() => reputation.value >= 2);
+
+  // Herald Bond Level system (I-V, stored as 1-5)
+  // Per compendium: Herald bond affects spell tier access (Bond IV+ = Tier VI access)
+  const herald = {
+    name: ref(''),
+    bondLevel: ref(1),
+    notes: ref('')
+  };
+
+  // Check if Tier VI spells are unlocked (requires Herald Bond Level IV+)
+  const tierVIUnlocked = computed(() => herald.bondLevel.value >= 4);
+
   const traits = ref([]);
   const traitsCount = computed(() => traits.value?.length);
 
@@ -1173,6 +1194,21 @@ export const useSheetStore = defineStore('sheet',() => {
     implement.collapsed.value = hydrateData.collapsed ?? implement.collapsed.value;
   }
 
+  // Dehydrate and Hydrate methods for 'herald'
+  function dehydrateHerald(herald) {
+    return {
+      name: herald.name.value,
+      bondLevel: herald.bondLevel.value,
+      notes: herald.notes.value
+    };
+  }
+
+  function hydrateHerald(herald, hydrateData = {}) {
+    herald.name.value = hydrateData.name ?? herald.name.value;
+    herald.bondLevel.value = hydrateData.bondLevel ?? herald.bondLevel.value;
+    herald.notes.value = hydrateData.notes ?? herald.notes.value;
+  }
+
   // Handles retrieving these values from the store
   const dehydrate = () => {
     const obj = {
@@ -1220,6 +1256,7 @@ export const useSheetStore = defineStore('sheet',() => {
       soul_weapon: dehydrateSoulWeapon(soul_weapon),
       soul_gun: dehydrateSoulGun(soul_gun),
       magical_implement: dehydrateMagicalImplement(magical_implement),
+      herald: dehydrateHerald(herald),
       student_damage_override: student_damage_override.value,
       student_armor_override: student_armor_override.value,
       student_move: student_move.value,
@@ -1360,6 +1397,7 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
     hydrateSoulGun(soul_gun, hydrateStore.soul_gun);
     hydrateMagicalImplement(magical_implement, hydrateStore.magical_implement);
+    hydrateHerald(herald, hydrateStore.herald);
 
     // NPC hydration
     npc_name.value = hydrateStore.npc_name ?? npc_name.value;
@@ -2104,6 +2142,10 @@ export const useSheetStore = defineStore('sheet',() => {
     damageTypeLabels,
     gloom_gems:gloom,
     unity_points:unity,
+    unity_max: unityMax,
+    unity_available: unityAvailable,
+    herald,
+    tierVIUnlocked,
     traitsCount,
 
     interests,

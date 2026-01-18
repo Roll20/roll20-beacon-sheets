@@ -43,12 +43,24 @@ const attributes = [
           <input class="input-number" type="number" name="gloom_gems" v-model="sheet.gloom_gems">
         </template>
       </CloverDisplay>
-      <CloverDisplay class="unity-points">
+      <CloverDisplay v-if="sheet.unity_available" class="unity-points">
         <template v-slot:header>
           <span class="clover-span">unity points</span>
         </template>
         <template v-slot:content>
-          <input class="input-number" type="number" name="unity_points" v-model="sheet.unity_points">
+          <div class="unity-display">
+            <input class="input-number unity-current" type="number" name="unity_points" v-model="sheet.unity_points" :max="sheet.unity_max" min="0">
+            <span class="unity-separator">/</span>
+            <span class="unity-max">{{ sheet.unity_max }}</span>
+          </div>
+        </template>
+      </CloverDisplay>
+      <CloverDisplay v-else class="unity-points unity-locked">
+        <template v-slot:header>
+          <span class="clover-span">unity points</span>
+        </template>
+        <template v-slot:content>
+          <span class="locked-text" title="Unlocked at Reputation Level II">🔒</span>
         </template>
       </CloverDisplay>
     </template>
@@ -60,9 +72,49 @@ const attributes = [
   text-align: center;
 }
 
+.unity-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.unity-current {
+  width: 2ch;
+  text-align: right;
+  padding-right: 2px;
+}
+
+.unity-separator {
+  font-size: 1.2em;
+  color: var(--color);
+}
+
+.unity-max {
+  font-size: 1.2em;
+  color: var(--color);
+  min-width: 1ch;
+}
+
+.unity-locked {
+  opacity: 0.5;
+}
+
+.locked-text {
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: help;
+}
+
 @supports (-moz-appearance: none) { /* Tweak positions for clovers only in Firefox */
   .input-number {
-    margin-left: 38px; 
+    margin-left: 38px;
   }
   .clover-container {
     margin-left: -75px;
