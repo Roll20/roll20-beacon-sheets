@@ -18,6 +18,7 @@ import WeaponQualitiesSelector from '@/components/WeaponQualitiesSelector.vue';
 import GunQualitiesSelector from '@/components/GunQualitiesSelector.vue';
 import ImplementQualitiesSelector from '@/components/ImplementQualitiesSelector.vue';
 import SquadronFormations from '@/components/SquadronFormations.vue';
+import CombinationManeuvers from '@/components/CombinationManeuvers.vue';
 
 import { useSheetStore } from '@/stores/sheetStore';
 
@@ -350,6 +351,11 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   <!-- Squadron Formations - Per compendium: requires 3+ Magi-Knights within 60ft -->
   <div class="formations-section grid-span-all">
     <SquadronFormations />
+  </div>
+
+  <!-- Combination Maneuvers - Per compendium: requires 2+ Magi-Knights and Unity Points (Rep II+) -->
+  <div class="combos-section grid-span-all">
+    <CombinationManeuvers />
   </div>
 
   <div class="spell-path-container grid-span-all">
