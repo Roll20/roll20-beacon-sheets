@@ -14,6 +14,7 @@ import RepeatingSection from '@/components/RepeatingSection.vue';
 import RepeatingItem from '@/components/RepeatingItem.vue';
 import Collapsible from '@/components/Collapsible.vue';
 import SpellSection from '@/components/SpellSection.vue';
+import ReleaseMagic from '@/components/ReleaseMagic.vue';
 import WeaponQualitiesSelector from '@/components/WeaponQualitiesSelector.vue';
 import GunQualitiesSelector from '@/components/GunQualitiesSelector.vue';
 import ImplementQualitiesSelector from '@/components/ImplementQualitiesSelector.vue';
@@ -359,7 +360,11 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   </div>
 
   <div class="spell-path-container grid-span-all">
-  <NotchContainer class="spell-container" width="thick" notchType="curve">
+  <!-- Release Magic System (shown when magic_style is 'Release') -->
+  <ReleaseMagic v-if="sheet.magic_style === 'Release'" />
+
+  <!-- Traditional Spell Paths (shown for all other magic styles) -->
+  <NotchContainer v-else class="spell-container" width="thick" notchType="curve">
     <h3>Spell Paths</h3>
     <div class="spell-path-layout">
       <div class="spell-tier-headers">
@@ -449,7 +454,15 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
       <LabelStacked>
         <template v-slot:number>
-          <input type="text" class="underline element-name-underline" v-model="sheet.magic_style">
+          <select class="underline element-name-underline" v-model="sheet.magic_style">
+            <option value="">Select Magic Style</option>
+            <option value="Ethereal">Ethereal</option>
+            <option value="Memento">Memento</option>
+            <option value="Shaper">Shaper</option>
+            <option value="Soul">Soul</option>
+            <option value="Verse">Verse</option>
+            <option value="Release">Release</option>
+          </select>
         </template>
         <template v-slot:label>
           <span class="elemental_label">Magic Style</span>
