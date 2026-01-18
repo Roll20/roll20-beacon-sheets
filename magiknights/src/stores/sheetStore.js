@@ -425,6 +425,64 @@ export const useSheetStore = defineStore('sheet',() => {
   // Check if Tier VI spells are unlocked (requires Herald Bond Level IV+)
   const tierVIUnlocked = computed(() => herald.bondLevel.value >= 4);
 
+  // ==================== SQUADRON FORMATIONS ====================
+  // Per compendium/lists.json: Tactical Formations
+  // Unlocked at Rep Level I, requires 3+ Magi-Knights within 60ft
+
+  const formationData = {
+    arrow: {
+      name: 'Arrow Formation',
+      type: 'Attack',
+      cost: 2,
+      description: 'All in Formation Range: +2× Rep Level damage. After Oversee + Call for Assistance: +2× Rep Level additional damage.',
+      shortEffect: (rep) => `+${2 * rep} damage`
+    },
+    victory: {
+      name: 'Victory Formation',
+      type: 'Defense',
+      cost: 2,
+      description: 'All in Formation Range: Reduce Physical/Magical damage by 2× Rep Level. Reaction: Any member can intercept damage for another.',
+      shortEffect: (rep) => `-${2 * rep} damage taken`
+    },
+    barrage: {
+      name: 'Barrage Formation',
+      type: 'Destruction',
+      cost: 3,
+      description: '1/Round: Cast Rushed Spell without ½ damage reduction. 1/Round: Overcharge costs only 1 Exhaustion.',
+      shortEffect: () => 'Full damage on Rushed spells'
+    },
+    diamond: {
+      name: 'Diamond Formation',
+      type: 'Restoration',
+      cost: 3,
+      description: 'At Squadron Leader turn start: All heal 3× Rep Level HP. Advantage on Condition removal vs Nemesis or weaker. Immune to Distressed.',
+      shortEffect: (rep) => `Heal ${3 * rep} HP/turn`
+    }
+  };
+
+  // Track currently active formation (null if none)
+  const activeFormation = ref(null);
+
+  // Track formations section collapsed state
+  const formationsCollapsed = ref(true);
+
+  // Computed effect values based on reputation
+  const formationEffects = computed(() => ({
+    arrow: {
+      damage: 2 * reputation.value,
+      additionalDamage: 2 * reputation.value
+    },
+    victory: {
+      damageReduction: 2 * reputation.value
+    },
+    barrage: {
+      // No numeric effect, special ability
+    },
+    diamond: {
+      healing: 3 * reputation.value
+    }
+  }));
+
   const traits = ref([]);
   const traitsCount = computed(() => traits.value?.length);
 
@@ -1230,6 +1288,8 @@ export const useSheetStore = defineStore('sheet',() => {
       studied: studied.value,
       gloom_gems: gloom.value,
       unity_points: unity.value,
+      active_formation: activeFormation.value,
+      formations_collapsed: formationsCollapsed.value,
       elemental_affinity: elemental_affinity.value,
       magic_style: magic_style.value,
       element_name: element_name.value,
@@ -1348,6 +1408,8 @@ export const useSheetStore = defineStore('sheet',() => {
     studied.value = hydrateStore.studied ?? studied.value;
     gloom.value = hydrateStore.gloom_gems ?? gloom.value;
     unity.value = hydrateStore.unity_points ?? unity.value;
+    activeFormation.value = hydrateStore.active_formation ?? activeFormation.value;
+    formationsCollapsed.value = hydrateStore.formations_collapsed ?? formationsCollapsed.value;
 
     student_damage_override.value = hydrateStore.student_damage_override ?? student_damage_override.value;
     student_armor_override.value = hydrateStore.student_armor_override ?? student_armor_override.value;
@@ -1917,6 +1979,68 @@ export const useSheetStore = defineStore('sheet',() => {
     }).join(' ');
   };
 
+  // ==================== SQUADRON FORMATION FUNCTIONS ====================
+
+  const activateFormation = (formationKey) => {
+    const formation = formationData[formationKey];
+    if (!formation) return;
+
+    const rep = reputation.value;
+    const effects = formationEffects.value[formationKey];
+
+    // Set active formation
+    activeFormation.value = formationKey;
+
+    // Build key values based on formation type
+    const keyValues = {
+      'Type': formation.type,
+      'Cost': `${formation.cost} Inspiration`,
+      'Formation Range': '60ft'
+    };
+
+    // Add specific effect values
+    if (formationKey === 'arrow') {
+      keyValues['Damage Bonus'] = `+${effects.damage}`;
+      keyValues['After Oversee'] = `+${effects.additionalDamage} additional`;
+    } else if (formationKey === 'victory') {
+      keyValues['Damage Reduction'] = `${effects.damageReduction}`;
+      keyValues['Special'] = 'Can intercept damage for allies';
+    } else if (formationKey === 'barrage') {
+      keyValues['Rushed Spells'] = 'Full damage (no ½ reduction)';
+      keyValues['Overcharge'] = 'Costs only 1 Exhaustion';
+    } else if (formationKey === 'diamond') {
+      keyValues['Healing'] = `${effects.healing} HP/turn`;
+      keyValues['Condition Removal'] = 'Advantage vs Nemesis or weaker';
+      keyValues['Special'] = 'Immune to Distressed';
+    }
+
+    const rollObj = {
+      title: formation.name,
+      subtitle: `Squadron Formation Activated`,
+      characterName: metaStore.name,
+      components: [],
+      keyValues: keyValues,
+      textContent: formation.description
+    };
+
+    rollToChat({ rollObj });
+  };
+
+  const deactivateFormation = () => {
+    if (activeFormation.value) {
+      const formation = formationData[activeFormation.value];
+      const rollObj = {
+        title: formation.name,
+        subtitle: 'Formation Ended',
+        characterName: metaStore.name,
+        components: [],
+        keyValues: {}
+      };
+      rollToChat({ rollObj });
+      activeFormation.value = null;
+    }
+  };
+
   // ==================== NPC ROLL FUNCTIONS ====================
 
   const rollNPCAttack = async (attackType = 'primary') => {
@@ -2146,6 +2270,15 @@ export const useSheetStore = defineStore('sheet',() => {
     unity_available: unityAvailable,
     herald,
     tierVIUnlocked,
+
+    // Squadron Formations
+    formationData,
+    activeFormation,
+    formationEffects,
+    formationsCollapsed,
+    activateFormation,
+    deactivateFormation,
+
     traitsCount,
 
     interests,

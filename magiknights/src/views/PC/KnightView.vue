@@ -17,6 +17,7 @@ import SpellSection from '@/components/SpellSection.vue';
 import WeaponQualitiesSelector from '@/components/WeaponQualitiesSelector.vue';
 import GunQualitiesSelector from '@/components/GunQualitiesSelector.vue';
 import ImplementQualitiesSelector from '@/components/ImplementQualitiesSelector.vue';
+import SquadronFormations from '@/components/SquadronFormations.vue';
 
 import { useSheetStore } from '@/stores/sheetStore';
 
@@ -345,6 +346,12 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     </RepeatingSection>
     <!-- repeating section here -->
   </NotchContainer>
+
+  <!-- Squadron Formations - Per compendium: requires 3+ Magi-Knights within 60ft -->
+  <div class="formations-section grid-span-all">
+    <SquadronFormations />
+  </div>
+
   <div class="spell-path-container grid-span-all">
   <NotchContainer class="spell-container" width="thick" notchType="curve">
     <h3>Spell Paths</h3>
