@@ -1415,6 +1415,10 @@ export const useSheetStore = defineStore('sheet',() => {
       combos_collapsed: combosCollapsed.value,
       elemental_affinity: elemental_affinity.value,
       magic_style: magic_style.value,
+      release_magic_deck: releaseMagicDeck.value,
+      release_magic_collapsed: releaseMagicCollapsed.value,
+      signature_card_1: signatureCard1.value,
+      signature_card_2: signatureCard2.value,
       element_name: element_name.value,
       mam: mam.value,
       student_type: student_type.value,
@@ -1535,6 +1539,14 @@ export const useSheetStore = defineStore('sheet',() => {
     formationsCollapsed.value = hydrateStore.formations_collapsed ?? formationsCollapsed.value;
     comboParticipants.value = hydrateStore.combo_participants ?? comboParticipants.value;
     combosCollapsed.value = hydrateStore.combos_collapsed ?? combosCollapsed.value;
+
+    // Hydrate Release Magic state
+    if (hydrateStore.release_magic_deck && Array.isArray(hydrateStore.release_magic_deck)) {
+      releaseMagicDeck.value = hydrateStore.release_magic_deck;
+    }
+    releaseMagicCollapsed.value = hydrateStore.release_magic_collapsed ?? releaseMagicCollapsed.value;
+    signatureCard1.value = hydrateStore.signature_card_1 ?? signatureCard1.value;
+    signatureCard2.value = hydrateStore.signature_card_2 ?? signatureCard2.value;
 
     student_damage_override.value = hydrateStore.student_damage_override ?? student_damage_override.value;
     student_armor_override.value = hydrateStore.student_armor_override ?? student_armor_override.value;
@@ -2253,6 +2265,381 @@ export const useSheetStore = defineStore('sheet',() => {
     rollToChat({ rollObj });
   };
 
+  // ==================== RELEASE MAGIC SYSTEM ====================
+
+  // Card definitions for Release Magic Style
+  const releaseCardDefinitions = [
+    { id: 'king', name: 'King', triumvirate: 'Era of Royalty', effect: '+X Leadership bonus + Xd6 Magical Damage to one target' },
+    { id: 'queen', name: 'Queen', triumvirate: 'Era of Royalty', effect: '+X Leadership bonus + next MK Weapon Attack deals +Xd6 Magical' },
+    { id: 'knight', name: 'Knight', triumvirate: 'Era of Heroism', effect: '+X Leadership bonus + reduce next MK damage by Xd8' },
+    { id: 'dame', name: 'Dame', triumvirate: 'Era of Heroism', effect: '+X Leadership bonus + heal Xd8 HP to one MK' },
+    { id: 'squire', name: 'Squire', triumvirate: 'Era of Potential', effect: 'Discard with another card: +Rep Level to Scaling Value' },
+    { id: 'damsel', name: 'Damsel', triumvirate: 'Era of Potential', effect: 'Discard with another card: +Rep Level to Scaling Value' },
+    { id: 'light', name: 'Light', triumvirate: 'The Chiaroscuro', effect: 'All MKs within 60ft gain Xd4 Temp HP' },
+    { id: 'dark', name: 'Dark', triumvirate: 'The Chiaroscuro', effect: 'Full-Round: +X HP, teleport 10+X ft, immune to hostile targeting until next turn' },
+    { id: 'twilight', name: 'Twilight', triumvirate: 'The Chiaroscuro', effect: 'Bonus Action, 0 MP: Exchange equal amounts of HP for MP OR MP for HP' },
+    { id: 'life', name: 'Life', triumvirate: 'The Collective Cycle', effect: 'One MK within 60ft heals Xd8 HP and -1 Stress' },
+    { id: 'death', name: 'Death', triumvirate: 'The Collective Cycle', effect: 'One target or Horde takes Xd12 Magical Damage' },
+    { id: 'passage', name: 'Passage', triumvirate: 'The Collective Cycle', effect: 'You and/or one MK within 60ft teleport 10+(10×X) ft' },
+    { id: 'angel', name: 'Angel', triumvirate: 'The Endless Battle', effect: 'One Outsider takes Xd10 True Damage' },
+    { id: 'demon', name: 'Demon', triumvirate: 'The Endless Battle', effect: 'One Cultist takes Xd10 Magical Damage' },
+    { id: 'mortal', name: 'Mortal', triumvirate: 'The Endless Battle', effect: 'Bonus Action, 0 MP: Discard hand, shuffle discard into deck, -1 Stress, draw 2 cards' },
+    { id: 'hope', name: 'Hope', triumvirate: 'The Eternal Phase', effect: 'Roll Fate Die (see card details)', isFateDie: true },
+    { id: 'despair', name: 'Despair', triumvirate: 'The Eternal Phase', effect: 'Roll Fate Die (see card details)', isFateDie: true },
+    { id: 'fortune', name: 'Fortune', triumvirate: 'The Eternal Phase', effect: 'Roll Fate Die (see card details)', isFateDie: true },
+    { id: 'justice', name: 'Justice', triumvirate: 'The Arduous Judgment', effect: 'Make Spell Attack vs one target: Xd10 Magical Damage' },
+    { id: 'mercy', name: 'Mercy', triumvirate: 'The Arduous Judgment', effect: 'Next Convincing Argument has Advantage' },
+    { id: 'reflection', name: 'Reflection', triumvirate: 'The Arduous Judgment', effect: 'One MK gains Xd4 + Rep Level MP (up to max)' },
+    { id: 'love', name: 'Love', triumvirate: 'The Dynamic Tale', effect: 'Full-Round, 0 MP. Roll Fate Die (Ephemeral)', isFateDie: true, isEphemeral: true }
+  ];
+
+  // Release Magic state
+  const releaseMagicDeck = ref([]);
+  const releaseMagicCollapsed = ref(true);
+  const signatureCard1 = ref('');
+  const signatureCard2 = ref('');
+
+  // Computed: Scaling Value = Reputation Level OR MAM modifier (whichever is higher)
+  const scalingValue = computed(() => {
+    const mamMod = abilityScores[mam.value]?.mod.value || 0;
+    return Math.max(reputation.value, mamMod);
+  });
+
+  // Computed: Hand limit = 3 + Reputation Level
+  const handLimit = computed(() => 3 + Math.max(1, reputation.value));
+
+  // Computed: Cards by location
+  const cardsInDeck = computed(() => releaseMagicDeck.value.filter(c => c.location === 'deck'));
+  const cardsInHand = computed(() => releaseMagicDeck.value.filter(c => c.location === 'hand'));
+  const cardsInDiscard = computed(() => releaseMagicDeck.value.filter(c => c.location === 'discard'));
+  const cardsRemoved = computed(() => releaseMagicDeck.value.filter(c => c.location === 'removed'));
+
+  // Initialize deck with all 22 cards
+  const initializeReleaseDeck = () => {
+    releaseMagicDeck.value = releaseCardDefinitions.map(cardDef => ({
+      ...cardDef,
+      location: 'deck'
+    }));
+    // Shuffle the deck
+    shuffleReleaseDeck();
+  };
+
+  // Shuffle the deck
+  const shuffleReleaseDeck = () => {
+    const deckCards = releaseMagicDeck.value.filter(c => c.location === 'deck');
+    for (let i = deckCards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deckCards[i], deckCards[j]] = [deckCards[j], deckCards[i]];
+    }
+  };
+
+  // Draw cards from deck to hand
+  const drawReleaseCards = (count = 1) => {
+    const availableCards = cardsInDeck.value;
+    const currentHandSize = cardsInHand.value.length;
+    const maxToDraw = Math.min(count, availableCards.length, handLimit.value - currentHandSize);
+
+    for (let i = 0; i < maxToDraw; i++) {
+      const card = availableCards[i];
+      if (card) {
+        card.location = 'hand';
+      }
+    }
+
+    // Output to chat
+    const rollObj = {
+      title: 'Release Magic',
+      subtitle: `Drew ${maxToDraw} card${maxToDraw !== 1 ? 's' : ''}`,
+      characterName: metaStore.name,
+      keyValues: {
+        'Cards in Hand': `${cardsInHand.value.length}/${handLimit.value}`,
+        'Cards in Deck': cardsInDeck.value.length
+      }
+    };
+    rollToChat({ rollObj });
+  };
+
+  // Draw initial hand at combat start
+  const drawInitialHand = () => {
+    // Add signature cards if character is level 5+
+    if (level.value >= 5 && signatureCard1.value) {
+      const sig1 = releaseMagicDeck.value.find(c => c.id === signatureCard1.value);
+      if (sig1) sig1.location = 'hand';
+    }
+    if (level.value >= 10 && signatureCard2.value) {
+      const sig2 = releaseMagicDeck.value.find(c => c.id === signatureCard2.value);
+      if (sig2) sig2.location = 'hand';
+    }
+
+    // Draw remaining cards to reach hand limit
+    const currentHandSize = cardsInHand.value.length;
+    const toDraw = handLimit.value - currentHandSize;
+    if (toDraw > 0) {
+      drawReleaseCards(toDraw);
+    }
+  };
+
+  // Play a card from hand
+  const playReleaseCard = async (cardId) => {
+    const card = releaseMagicDeck.value.find(c => c.id === cardId && c.location === 'hand');
+    if (!card) return;
+
+    // Roll the card effect
+    await rollReleaseCard(card);
+
+    // Move card to discard (or removed if ephemeral)
+    if (card.isEphemeral) {
+      card.location = 'removed';
+    } else {
+      card.location = 'discard';
+    }
+  };
+
+  // Roll a Release Magic card
+  const rollReleaseCard = async (card) => {
+    const sv = scalingValue.value;
+    const mamMod = abilityScores[mam.value]?.mod.value || 0;
+    const rep = reputation.value;
+
+    const keyValues = {
+      'Scaling Value': `X = ${sv}`,
+      'Action': 'Standard'
+    };
+
+    const components = [];
+
+    // Handle different card types
+    switch (card.id) {
+      case 'king':
+        keyValues['Leadership Bonus'] = `+${sv}`;
+        components.push({ label: 'Damage', formula: `${sv}d6`, alwaysShowInBreakdown: true });
+        keyValues['Damage Type'] = 'Magical';
+        break;
+
+      case 'queen':
+        keyValues['Leadership Bonus'] = `+${sv}`;
+        keyValues['Next Attack Bonus'] = `+${sv}d6 Magical Damage`;
+        break;
+
+      case 'knight':
+        keyValues['Leadership Bonus'] = `+${sv}`;
+        components.push({ label: 'Damage Reduction', formula: `${sv}d8`, alwaysShowInBreakdown: true });
+        break;
+
+      case 'dame':
+        keyValues['Leadership Bonus'] = `+${sv}`;
+        components.push({ label: 'Healing', formula: `${sv}d8`, alwaysShowInBreakdown: true });
+        break;
+
+      case 'squire':
+      case 'damsel':
+        keyValues['Effect'] = `Discard with another card: +${rep} to Scaling Value`;
+        break;
+
+      case 'light':
+        components.push({ label: 'Temp HP (All MKs 60ft)', formula: `${sv}d4`, alwaysShowInBreakdown: true });
+        break;
+
+      case 'dark':
+        keyValues['Action'] = 'Full-Round';
+        keyValues['HP Gain'] = `+${sv} HP`;
+        keyValues['Teleport'] = `${10 + sv}ft`;
+        keyValues['Effect'] = 'Immune to hostile targeting until next turn';
+        break;
+
+      case 'twilight':
+        keyValues['Action'] = 'Bonus Action';
+        keyValues['MP Cost'] = '0 MP';
+        keyValues['Effect'] = 'Exchange equal amounts of HP for MP OR MP for HP';
+        break;
+
+      case 'life':
+        components.push({ label: 'Healing', formula: `${sv}d8`, alwaysShowInBreakdown: true });
+        keyValues['Stress Relief'] = '-1 Stress';
+        break;
+
+      case 'death':
+        components.push({ label: 'Damage', formula: `${sv}d12`, alwaysShowInBreakdown: true });
+        keyValues['Damage Type'] = 'Magical';
+        break;
+
+      case 'passage':
+        keyValues['Teleport Distance'] = `${10 + (10 * sv)}ft`;
+        keyValues['Targets'] = 'You and/or one MK within 60ft';
+        break;
+
+      case 'angel':
+        components.push({ label: 'Damage vs Outsider', formula: `${sv}d10`, alwaysShowInBreakdown: true });
+        keyValues['Damage Type'] = 'True Damage';
+        break;
+
+      case 'demon':
+        components.push({ label: 'Damage vs Cultist', formula: `${sv}d10`, alwaysShowInBreakdown: true });
+        keyValues['Damage Type'] = 'Magical';
+        break;
+
+      case 'mortal':
+        keyValues['Action'] = 'Bonus Action';
+        keyValues['MP Cost'] = '0 MP';
+        keyValues['Effect'] = 'Discard hand, shuffle discard into deck, -1 Stress, draw 2 cards';
+        break;
+
+      case 'hope':
+        keyValues['Action'] = 'Fate Die Roll';
+        const hopeFate = await getRollResults([{ formula: '1d20', alwaysShowInBreakdown: true }]);
+        components.push({ label: 'Fate Die', value: hopeFate.total, alwaysShowInBreakdown: true });
+
+        if (hopeFate.total === 20) {
+          keyValues['Result (20)'] = `Repair ${sv} Fractures, split ${sv} Stress/Exhaustion removal, Advantage on next Fate Die`;
+        } else if (hopeFate.total >= 6) {
+          keyValues['Result (6-19)'] = `Repair ${sv} Fractures`;
+        } else if (hopeFate.total >= 2) {
+          keyValues['Result (2-5)'] = `Repair ${Math.floor(sv/2)} Fractures`;
+        } else {
+          keyValues['Result (1)'] = `Take ${sv} Magical damage, search deck for Despair`;
+        }
+        break;
+
+      case 'despair':
+        keyValues['Action'] = 'Fate Die Roll';
+        const despairFate = await getRollResults([{ formula: '1d20', alwaysShowInBreakdown: true }]);
+        components.push({ label: 'Fate Die', value: despairFate.total, alwaysShowInBreakdown: true });
+
+        if (despairFate.total === 20) {
+          keyValues['Result (20)'] = 'Treat as Hope 20 + 1 Inspiration';
+        } else if (despairFate.total >= 6) {
+          keyValues['Result (6-19)'] = `One non-Outsider gets -${sv} to Attacks/Resists/Damage for 1 turn`;
+        } else if (despairFate.total >= 2) {
+          keyValues['Result (2-5)'] = 'MP refunded';
+        } else {
+          keyValues['Result (1)'] = `+${sv} Magical damage + Distressed + 3 Stress (potential +1 Trauma)`;
+        }
+        break;
+
+      case 'fortune':
+        keyValues['Action'] = 'Fate Die Roll';
+        const fortuneFate = await getRollResults([{ formula: '1d20', alwaysShowInBreakdown: true }]);
+        components.push({ label: 'Fate Die', value: fortuneFate.total, alwaysShowInBreakdown: true });
+
+        if (fortuneFate.total === 20) {
+          keyValues['Result (20)'] = `Next ${Math.floor(sv/2)} d20s get MAM×2 bonus + Advantage on next Fate`;
+        } else if (fortuneFate.total >= 6) {
+          keyValues['Result (6-19)'] = `Next ${Math.floor(sv/2)} d20s get MAM bonus`;
+        } else if (fortuneFate.total >= 2) {
+          keyValues['Result (2-5)'] = 'Disadvantage on next Fate Die';
+        } else {
+          keyValues['Result (1)'] = 'Disadvantage on next Fate + 3 Stress (potential +1 Trauma)';
+        }
+        break;
+
+      case 'justice':
+        keyValues['Spell Attack'] = `1d20 + ${mamMod} + ${proficiency.value}`;
+        components.push({ label: 'Damage on Hit', formula: `${sv}d10`, alwaysShowInBreakdown: true });
+        keyValues['Damage Type'] = 'Magical';
+        break;
+
+      case 'mercy':
+        keyValues['Effect'] = 'Next Convincing Argument has Advantage and bypasses Argument Resistances/Immunities';
+        break;
+
+      case 'reflection':
+        components.push({ label: 'MP Restore', formula: `${sv}d4`, alwaysShowInBreakdown: true });
+        keyValues['Bonus'] = `+${rep} MP`;
+        keyValues['Effect'] = 'One MK (up to max)';
+        break;
+
+      case 'love':
+        keyValues['Action'] = 'Full-Round';
+        keyValues['MP Cost'] = '0 MP';
+        keyValues['Ephemeral'] = 'Removed after play';
+        const loveFate = await getRollResults([{ formula: '1d20', alwaysShowInBreakdown: true }]);
+        components.push({ label: 'Fate Die', value: loveFate.total, alwaysShowInBreakdown: true });
+
+        if (loveFate.total === 20) {
+          keyValues['Result (20)'] = 'Play 2 cards free, return 1, draw to Hand Limit';
+        } else if (loveFate.total >= 6) {
+          keyValues['Result (6-19)'] = 'Play 2 cards free, return 1, draw 1';
+        } else if (loveFate.total >= 2) {
+          keyValues['Result (2-5)'] = 'Play 1 card free, remove from play';
+        } else {
+          keyValues['Result (1)'] = 'Discard hand, remove 11 random cards + Love until end of Encounter, +1 Trauma';
+        }
+        break;
+    }
+
+    // Roll dice if components exist
+    let resultComponents = components;
+    if (components.some(c => c.formula)) {
+      const results = await getRollResults(components);
+      resultComponents = results.components;
+    }
+
+    const rollObj = {
+      title: card.name,
+      subtitle: `Release Magic Card - ${card.triumvirate}`,
+      characterName: metaStore.name,
+      components: resultComponents,
+      keyValues: keyValues,
+      textContent: card.effect
+    };
+
+    rollToChat({ rollObj });
+  };
+
+  // Reset deck (shuffle discard back into deck)
+  const resetReleaseDeck = () => {
+    // Move all discard cards back to deck
+    releaseMagicDeck.value.forEach(card => {
+      if (card.location === 'discard') {
+        card.location = 'deck';
+      }
+    });
+
+    shuffleReleaseDeck();
+
+    const rollObj = {
+      title: 'Release Magic',
+      subtitle: 'Deck Reset',
+      characterName: metaStore.name,
+      keyValues: {
+        'Cards in Deck': cardsInDeck.value.length,
+        'Effect': 'Discard pile shuffled into deck'
+      }
+    };
+    rollToChat({ rollObj });
+  };
+
+  // Cycle deck (costs 2 Stress, shuffles discard into deck)
+  const cycleReleaseSpellDeck = () => {
+    if (cardsInDeck.value.length === 0) {
+      // Gain 2 Stress
+      stress.value = Math.min(stress.value + 2, 6);
+
+      // Move discard to deck and shuffle
+      releaseMagicDeck.value.forEach(card => {
+        if (card.location === 'discard') {
+          card.location = 'deck';
+        }
+      });
+
+      shuffleReleaseDeck();
+
+      const rollObj = {
+        title: 'Release Magic',
+        subtitle: 'Cycling the Spell Deck',
+        characterName: metaStore.name,
+        keyValues: {
+          'Stress Gained': '+2',
+          'New Deck Size': cardsInDeck.value.length,
+          'Effect': 'Discard pile shuffled into new deck'
+        }
+      };
+      rollToChat({ rollObj });
+    }
+  };
+
+  // ==================== END RELEASE MAGIC SYSTEM ====================
+
   // ==================== NPC ROLL FUNCTIONS ====================
 
   const rollNPCAttack = async (attackType = 'primary') => {
@@ -2498,6 +2885,25 @@ export const useSheetStore = defineStore('sheet',() => {
     comboEffects,
     canExecuteManeuver,
     executeManeuver,
+
+    // Release Magic
+    releaseCardDefinitions,
+    releaseMagicDeck,
+    releaseMagicCollapsed,
+    signatureCard1,
+    signatureCard2,
+    scalingValue,
+    handLimit,
+    cardsInDeck,
+    cardsInHand,
+    cardsInDiscard,
+    cardsRemoved,
+    initializeReleaseDeck,
+    drawReleaseCards,
+    drawInitialHand,
+    playReleaseCard,
+    resetReleaseDeck,
+    cycleReleaseSpellDeck,
 
     traitsCount,
 
