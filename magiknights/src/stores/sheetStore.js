@@ -253,7 +253,15 @@ export const useSheetStore = defineStore('sheet',() => {
     get() {
       // If the override is empty, return the calculated value
       if (initiative_override.value === '') {
-        return dexterityMod.value;
+        let init = dexterityMod.value;
+
+        // Add Magical Foresight bonus if tactic is active
+        if (hasTacticActive('Magical Foresight')) {
+          const mamMod = abilityScores[mam.value]?.mod.value || 0;
+          init += mamMod;
+        }
+
+        return init;
       }
       // If override is set, return the override value
       return initiative_override.value;
@@ -275,6 +283,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const mam = ref('');
 
   // Auto-calculated HP: 10 + CON Mod + (Level - 1) × (6 + CON Mod)
+  // Tough as Nails Tactic adds: +2 Student HP + 2 HP/Level while transformed
   const hp_max_override = ref('');
   const hp_max = computed({
     get() {
@@ -283,7 +292,14 @@ export const useSheetStore = defineStore('sheet',() => {
       }
       // Formula: 10 + CON Mod + (Level - 1) × (6 + CON Mod)
       const conMod = constitutionMod.value;
-      return 10 + conMod + (level.value - 1) * (6 + conMod);
+      let hp = 10 + conMod + (level.value - 1) * (6 + conMod);
+
+      // Add Tough as Nails bonus if tactic is active
+      if (hasTacticActive('Tough as Nails')) {
+        hp += 2 + (level.value * 2); // +2 Student HP + 2 HP/Level
+      }
+
+      return hp;
     },
     set(value) {
       hp_max_override.value = value === '' ? '' : value;
@@ -297,6 +313,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
   // Auto-calculated MP: MCO × 2 (or MCO × 3 with Mana Attunement from Magical Implement)
   // MCO = Level + MAM Modifier + Reputation
+  // Adept of Magic Tactic adds +1 to Reputation Level for MCO calculation
   const mp_max_override = ref('');
   const mp_max = computed({
     get() {
@@ -305,7 +322,14 @@ export const useSheetStore = defineStore('sheet',() => {
       }
       // MCO = Magi-Knight Level + Magic Ability Modifier + Reputation Level
       const mamMod = abilityScores[mam.value]?.mod.value || 0;
-      const mco = level.value + mamMod + reputation.value;
+      let repBonus = reputation.value;
+
+      // Add Adept of Magic bonus if tactic is active
+      if (hasTacticActive('Adept of Magic')) {
+        repBonus += 1;
+      }
+
+      const mco = level.value + mamMod + repBonus;
       // Mana Attunement (from Magical Implement): MCO × 3, Standard: MCO × 2
       const hasManaAttunement = magical_implement?.qualities?.value?.manaAttunement ?? false;
       const multiplier = hasManaAttunement ? 3 : 2;
@@ -982,7 +1006,30 @@ export const useSheetStore = defineStore('sheet',() => {
       template: {
         name: '',
         description: '',
-        type: '',
+        type: '', // Battle, Combat, Social
+        category: '', // Physical Attacks, Defensive, Magical, Squad Support
+        levelRequired: 0, // Minimum level to use
+        frequency: 'At-Will', // At-Will, 1/Round, 1/Encounter, 1/Rest, X/Encounter
+        maxUses: 1, // Max uses per frequency period (for limited techniques)
+        usesRemaining: 1, // Current uses left
+        actionType: '', // Standard, Bonus, Free, Immediate, Reaction, Full-Round
+        associatedRoll: '', // Optional dice expression for technique
+        collapsed: true
+      },
+      addItem(item){
+        const newItem = {...this.template,...item};
+        this.rows.value.push(newItem);
+      },
+      rows: ref([])
+    },
+    tactics: {
+      template: {
+        name: '',
+        description: '',
+        prerequisites: '', // e.g., "Level 9+, Combat Form Drills"
+        effectType: 'Passive', // Passive, Active, Reaction
+        automaticBonus: '', // e.g., "+1 to Initiative" or "+2 HP/Level"
+        active: true, // Whether this tactic is currently equipped/active
         collapsed: true
       },
       addItem(item){
@@ -1155,6 +1202,63 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const removeRow = (section,id) => {
     sections[section].rows.value = sections[section].rows.value.filter(row => row._id !== id);
+  };
+
+  // Helper methods for Battle Techniques
+  const resetTechniqueUses = (frequency = 'all') => {
+    sections.techniques.rows.value.forEach(technique => {
+      if (frequency === 'all' || technique.frequency === frequency) {
+        technique.usesRemaining = technique.maxUses;
+      }
+    });
+  };
+
+  const useTechnique = (techniqueId) => {
+    const technique = sections.techniques.rows.value.find(t => t._id === techniqueId);
+    if (technique && technique.usesRemaining > 0) {
+      technique.usesRemaining--;
+      return true;
+    }
+    return false;
+  };
+
+  const isTechniqueAvailable = (technique) => {
+    // Check level requirement
+    if (technique.levelRequired > level.value) {
+      return false;
+    }
+    // Check uses remaining
+    if (technique.frequency !== 'At-Will' && technique.usesRemaining <= 0) {
+      return false;
+    }
+    return true;
+  };
+
+  // Helper methods for Combat Tactics
+  const checkTacticPrerequisites = (tactic) => {
+    // Basic prerequisite checking - can be enhanced based on specific requirements
+    const prereqs = tactic.prerequisites.toLowerCase();
+
+    // Check level requirements (e.g., "9th+", "Level 9+")
+    const levelMatch = prereqs.match(/(\d+)(th|st|nd|rd)?\+/);
+    if (levelMatch) {
+      const requiredLevel = parseInt(levelMatch[1]);
+      if (level.value < requiredLevel) {
+        return false;
+      }
+    }
+
+    // Additional prerequisite checks can be added here
+    // (e.g., checking for specific Combat Forms, Spell Paths, etc.)
+
+    return true;
+  };
+
+  // Computed values for active tactics
+  const hasTacticActive = (tacticName) => {
+    return sections.tactics.rows.value.some(
+      tactic => tactic.name === tacticName && tactic.active
+    );
   };
 
   function dehydrateSkills(skills) {
@@ -2949,6 +3053,13 @@ export const useSheetStore = defineStore('sheet',() => {
     addRow,
     removeRow,
     removeTrait: (traitId) => removeTrait(traits, traitId),
+
+    // Battle Techniques and Combat Tactics
+    resetTechniqueUses,
+    useTechnique,
+    isTechniqueAvailable,
+    checkTacticPrerequisites,
+    hasTacticActive,
 
     rollInitiative,
     rollAbility,
