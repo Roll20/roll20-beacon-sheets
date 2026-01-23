@@ -308,6 +308,25 @@ conditionDisadvantageOnSkillChecks: computed(() => distressed || disoriented)
 // No flat penalties are used - all condition effects use the Disadvantage mechanic.
 ```
 
+**Endurance Die & Attrition System:**
+```javascript
+// Endurance Die: roll 1d6 alongside d20 when affected by Stress or Exhaustion.
+// If d6 >= current level, negate the penalty for that roll.
+// Level 6 Disadvantage cannot be negated (already handled by forcedDisadvantage computed).
+enduranceDieEnabled: ref(true)      // Whether 1d6 Endurance Die system is active
+freakingOutToday: ref(false)        // Tracks if Oppressive Stress occurred today
+
+// Stress affects mental ability rolls (INT, WIS, CHA)
+// Exhaustion affects physical ability rolls (STR, DEX, CON)
+// getEnduranceDieInfo(abilityName) returns { type, level } or null
+
+// Eclipse Blip states: 0=empty, 1=Trauma, 2=Corruption, 3=Burnout
+corruptionCount: computed(() => eclipse_blips with state === 2)
+burnoutLines: computed(() => eclipse_blips with state === 3)
+heartlessKnight: computed(() => corruptionCount >= 3)  // -1 SP, no Catharsis, lose Comforting Comrade
+fallenKnight: computed(() => corruptionCount >= 5)     // 1/2 Trauma, Refreshing->Average, Risk of Relapse
+```
+
 **Squadron Formations:**
 - Arrow (Attack), Victory (Defense), Barrage (Destruction), Diamond (Restoration)
 - Require 3+ Magi-Knights within 60ft

@@ -54,6 +54,28 @@ export const useSheetStore = defineStore('sheet',() => {
     return rollMode.value;
   });
 
+  // Endurance Die system: roll 1d6 alongside d20 when affected by Stress (mental) or Exhaustion (physical).
+  // If d6 >= current level, negate the penalty. Level 6 Disadvantage cannot be negated.
+  const enduranceDieEnabled = ref(true);
+  const freakingOutToday = ref(false);
+
+  // Mental abilities affected by Stress, Physical abilities affected by Exhaustion
+  const mentalAbilities = ['intelligence', 'wisdom', 'charisma'];
+  const physicalAbilities = ['strength', 'dexterity', 'constitution'];
+
+  // Returns Endurance Die info for a given ability name (used by roll functions)
+  const getEnduranceDieInfo = (abilityName) => {
+    if (!enduranceDieEnabled.value) return null;
+    const lower = abilityName.toLowerCase();
+    if (mentalAbilities.includes(lower) && stress.value > 0 && stress.value < 6) {
+      return { type: 'stress', level: stress.value };
+    }
+    if (physicalAbilities.includes(lower) && exhaustion.value > 0 && exhaustion.value < 6) {
+      return { type: 'exhaustion', level: exhaustion.value };
+    }
+    return null;
+  };
+
   // Get the dice expression based on roll mode
   const getRollDice = (forceDisadvantage = false) => {
     const mode = forceDisadvantage ? 'disadvantage' : effectiveRollMode.value;
@@ -406,14 +428,27 @@ export const useSheetStore = defineStore('sheet',() => {
   const trauma = computed(() => eclipse_blips.value.filter(blip => blip === 1).length);
 
   const eclipse_phase = computed(() => {
-    const text = Math.max(0,...eclipse.value) >= 3 
-      ? 'Heartless Knight' 
+    const text = Math.max(0,...eclipse.value) >= 3
+      ? 'Heartless Knight'
       : 'Soul Eclipse\nChart';
-    
+
     return text.replace(/\n/g, '<br>');
   });
-  
-  
+
+  // Corruption count: eclipse_blips with state === 2 (X marks)
+  const corruptionCount = computed(() => eclipse_blips.value.filter(blip => blip === 2).length);
+
+  // Burnout lines: eclipse_blips with state === 3 (scratched)
+  const burnoutLines = computed(() => eclipse_blips.value.filter(blip => blip === 3).length);
+
+  // Heartless Knight: 3+ corruption points
+  // Per compendium: -1 SP gained, no Catharsis, lose Comforting Comrade
+  const heartlessKnight = computed(() => corruptionCount.value >= 3);
+
+  // Fallen Knight: 5+ corruption points
+  // Per compendium: 1/2 Trauma received, Refreshing->Average Sleep, Horrified->Distressed immediately, Risk of Relapse
+  const fallenKnight = computed(() => corruptionCount.value >= 5);
+
   const crystal = {
     facet1: ref(false),
     facet2: ref(false),
@@ -1561,6 +1596,8 @@ export const useSheetStore = defineStore('sheet',() => {
       inspiration: inspiration.value,
       stress: stress.value,
       exhaustion: exhaustion.value,
+      enduranceDieEnabled: enduranceDieEnabled.value,
+      freakingOutToday: freakingOutToday.value,
       rollMode: rollMode.value,
       conditions: { ...conditions.value },
       exceededMortalLimits: exceededMortalLimits.value,
@@ -1686,6 +1723,8 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration.value = hydrateStore.inspiration ?? inspiration.value;
     stress.value = hydrateStore.stress ?? stress.value;
     exhaustion.value = hydrateStore.exhaustion ?? exhaustion.value;
+    enduranceDieEnabled.value = hydrateStore.enduranceDieEnabled ?? enduranceDieEnabled.value;
+    freakingOutToday.value = hydrateStore.freakingOutToday ?? freakingOutToday.value;
     rollMode.value = hydrateStore.rollMode ?? rollMode.value;
     // Hydrate conditions
     if (hydrateStore.conditions) {
@@ -1820,15 +1859,25 @@ export const useSheetStore = defineStore('sheet',() => {
       ? ` (${hasConditionDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
+    const enduranceInfo = getEnduranceDieInfo(name);
+    const components = [
+      {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+      {label:'Mod', value:abilityScores[name].mod.value,alwaysShowInBreakdown: true},
+      {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true}
+    ];
+    if (enduranceInfo) {
+      components.push({label: 'Endurance Die (1d6)', formula: '1d6', alwaysShowInBreakdown: true});
+    }
+
+    const enduranceNote = enduranceInfo
+      ? ` | Endurance: negate if d6 >= ${enduranceInfo.level} (${enduranceInfo.type})`
+      : '';
+
     const rollObj = {
       title: toTitleCase(name),
-      subtitle: `Ability Check${rollModeLabel}`,
+      subtitle: `Ability Check${rollModeLabel}${enduranceNote}`,
       characterName: metaStore.name,
-      components: [
-        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
-        {label:'Mod', value:abilityScores[name].mod.value,alwaysShowInBreakdown: true},
-        {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true}
-      ]
+      components
     };
     rollToChat({rollObj});
   };
@@ -1844,30 +1893,43 @@ export const useSheetStore = defineStore('sheet',() => {
       ? ` (${hasConditionDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
+    const enduranceInfo = getEnduranceDieInfo(abilityName);
+    const enduranceNote = enduranceInfo
+      ? ` | Endurance: negate if d6 >= ${enduranceInfo.level} (${enduranceInfo.type})`
+      : '';
+
     if (skillOverrideValue !== '' && skillOverrideValue !== undefined){
+      const components = [
+        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true}
+      ];
+      if (enduranceInfo) {
+        components.push({label: 'Endurance Die (1d6)', formula: '1d6', alwaysShowInBreakdown: true});
+      }
       const rollObj = {
         title: formattedTitle,
-        subtitle: rollModeLabel ? `Skill Check${rollModeLabel}` : undefined,
+        subtitle: `Skill Check${rollModeLabel}${enduranceNote}` || undefined,
         characterName: metaStore.name,
-        components: [
-          {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
-          {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true}
-        ]
+        components
       };
       rollToChat({rollObj});
     }else{
+      const components = [
+        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true}
+      ];
+      if(skills[name].proficiency.value){
+        components.push({label: 'Prof',value:Number(proficiency.value),alwaysShowInBreakdown: true});
+      }
+      if (enduranceInfo) {
+        components.push({label: 'Endurance Die (1d6)', formula: '1d6', alwaysShowInBreakdown: true});
+      }
       const rollObj = {
         title: formattedTitle,
-        subtitle: rollModeLabel ? `Skill Check${rollModeLabel}` : undefined,
+        subtitle: `Skill Check${rollModeLabel}${enduranceNote}` || undefined,
         characterName: metaStore.name,
-        components: [
-          {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
-          {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true}
-        ]
+        components
       };
-      if(skills[name].proficiency.value){
-        rollObj.components.push({label: 'Prof',value:Number(proficiency.value),alwaysShowInBreakdown: true});
-      }
       rollToChat({rollObj});
     }
   };
@@ -2999,6 +3061,14 @@ export const useSheetStore = defineStore('sheet',() => {
     exceededMortalLimits,
     proficiency,
     customProficiency,
+
+    // Endurance Die and attrition
+    enduranceDieEnabled,
+    freakingOutToday,
+    corruptionCount,
+    burnoutLines,
+    heartlessKnight,
+    fallenKnight,
 
     // Roll mode (advantage/disadvantage)
     rollMode,

@@ -177,7 +177,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md attrition section"
     ],
     "context": "The compendium defines the Endurance Die system: roll 1d6 with d20 when affected by Stress (mental rolls) or Exhaustion (physical rolls). If d6 >= current level, negate the penalty. Level 6 Disadvantage cannot be negated. Freaking Out occurs at 6 Stress + Oppressive Stress same day. Heartless Knight (3+ Corruption): -1 SP gained, no Catharsis, lose Comforting Comrade. Fallen Knight (5+ Corruption): 1/2 Trauma received, Refreshing->Average Sleep, Horrified->Distressed immediately, Risk of Relapse (double Corruption gained permanently). The eclipse_blips array uses states: 0=empty, 1=Trauma, 2=Corruption, 3=Burnout.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 10,

@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 8/17
-- **Current Task:** 9 - Implement Endurance Die and attrition mechanics
+- **Tasks Completed:** 9/17
+- **Current Task:** 10 - Implement Combat Form selection and tracking
 - **Last Updated:** 2026-01-23
 
 ---
@@ -181,6 +181,29 @@
 **Files Modified:**
 - `src/components/BurstDisplay.vue` (deleted)
 - `src/components/DiamondDisplay.vue` (deleted)
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 9: Implement Endurance Die and attrition mechanics
+
+**Changes Made:**
+- Added `enduranceDieEnabled` ref (boolean, default true) to control whether the 1d6 Endurance Die system is active
+- Added `freakingOutToday` ref (boolean, default false) to track if Oppressive Stress occurred today
+- Added `mentalAbilities` and `physicalAbilities` constants classifying abilities for Stress/Exhaustion targeting
+- Added `getEnduranceDieInfo(abilityName)` function that returns `{type, level}` when Endurance Die applies (Stress for INT/WIS/CHA, Exhaustion for STR/DEX/CON, only at levels 1-5)
+- Added `corruptionCount` computed (eclipse_blips with state === 2)
+- Added `burnoutLines` computed (eclipse_blips with state === 3)
+- Added `heartlessKnight` computed (true when corruptionCount >= 3): -1 SP gained, no Catharsis, lose Comforting Comrade
+- Added `fallenKnight` computed (true when corruptionCount >= 5): 1/2 Trauma received, Refreshing->Average Sleep, Risk of Relapse
+- Updated `rollAbility` to include Endurance Die (1d6) in roll components and subtitle note when applicable
+- Updated `rollSkill` to include Endurance Die (1d6) in roll components and subtitle note based on the skill's linked ability
+- Added `enduranceDieEnabled` and `freakingOutToday` to dehydrate/hydrate cycle for persistence
+- Added all new computeds and refs to store exports
+- Updated ARCHITECTURAL_ANALYSIS.md with Endurance Die & Attrition System documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`
 
