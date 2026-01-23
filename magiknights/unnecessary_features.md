@@ -120,18 +120,53 @@ The compendium only uses **Outsider** and **Mortal** as creature types.
 
 ## 8. Incorrect NPC Size Options
 
-| Size | Compendium Status |
-|------|-------------------|
-| **Tiny** | Does not exist |
-| **Gargantuan** | Does not exist |
-| Small | Exists |
-| Medium | Exists |
-| Large | Exists |
-| Huge | Exists |
+| Size | Sheet | Rulebook |
+|------|-------|----------|
+| **Tiny** | Present | Does not exist |
+| Small | Present | Exists |
+| Medium | Present | Exists |
+| Large | Present | Exists |
+| Huge | Present | Exists |
+| **Gargantuan** | Present | Does not exist |
+| **Massive** | Missing | Exists |
+| **Colossal** | Missing | Exists |
+
+Correct sizes per rulebook: Small, Medium, Large, Huge, Massive, Colossal.
 
 ---
 
-## 9. Empty/Stub Components
+## 9. Missing NPC Role System
+
+The rulebook defines a **Role** system for NPC stat modifications that is not implemented in the sheet:
+
+| Role | AC | HP(%) | Atk Bonus | DPR(%) |
+|------|-----|-------|-----------|--------|
+| None | — | — | — | — |
+| Assassin | — | -25 | +3 | — |
+| Brute | — | +33 | -3 | — |
+| Defender | — | +33 | — | -25 |
+| Heavy | -4 | +33 | — | — |
+| Lithe | +3 | -25 | — | — |
+| Merciless | — | — | -3 | +33 |
+| Savage | -4 | — | — | +33 |
+| Skirmisher | — | -25 | — | +33 |
+| Striker | -4 | — | +3 | — |
+| Tank | +3 | — | -3 | — |
+| Vanguard | +3 | — | — | -25 |
+| Watcher | — | — | +3 | -25 |
+
+Additionally, **Possible Ranks** have associated Damage % values:
+
+| Rank | Damage % |
+|------|----------|
+| Vassal | 50 |
+| Adversary | 55 |
+| Nemesis | 60 |
+| Harbinger | 70 |
+
+---
+
+## 10. Empty/Stub Components
 
 These files exist but contain no functionality:
 
@@ -151,5 +186,6 @@ These files exist but contain no functionality:
 | Fabricated gun qualities | Entire 7-quality system doesn't exist |
 | Wrong implement qualities | 4 fabricated, 1 incorrect, 5 missing |
 | Wrong NPC creature types | 4 D&D types that don't exist |
-| Wrong NPC sizes | 2 sizes that don't exist |
+| Wrong NPC sizes | 2 wrong (Tiny, Gargantuan), 2 missing (Massive, Colossal) |
+| Missing NPC Role system | 12 roles with stat modifiers not implemented |
 | Empty components | 2 stub files |
