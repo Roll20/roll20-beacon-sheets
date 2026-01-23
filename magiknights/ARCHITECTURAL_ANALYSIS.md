@@ -457,6 +457,36 @@ template: {
 - Heart Stages represent NPC relationship progression per compendium
 - Persisted automatically via generic section serialization (arrayToObject/objectToArray)
 
+### Magi-Squire Companion
+
+**Squire Data Model:**
+```javascript
+squire: {
+  name: ref(''),
+  level: ref(1),
+  healthBlips: ref([true x6]),   // 6 Health Blips (no Crystalline Fractures)
+  manaBlips: ref([true x3]),     // 3 Mana Blips (fixed)
+  studentArmor: ref(13),         // Armor in Student form
+  knightArmor: ref(15),          // Armor in Knight form (+2 vs melee)
+  spellPath1: ref(''),           // From: Beam, Explosion, Curing, Restoration
+  spellPath2: ref(''),
+  skills: ref(''),               // +2 assist on Squire Skills
+  notes: ref(''),
+  collapsed: ref(true)
+}
+```
+
+**Squire Damage Scaling (computed from mentor level):**
+- Levels 1-3: 1d6+3
+- Levels 4-6: 2d6+3
+- Levels 7-9: 2d6+4
+- Levels 10-12: 3d6+4
+- Levels 13-15: 4d6
+
+**Component:** `MagiSquire.vue` - collapsible panel in StudentView.vue after Herald section
+- Shows name, damage, armor stats, health/mana blip checkboxes, spell path selectors, skills, notes
+- Collapsed summary shows squire name and damage badge
+
 ### Equipment System
 
 **Soul Weapon Qualities (8 qualities in 3 categories):**

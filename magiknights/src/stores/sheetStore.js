@@ -574,6 +574,37 @@ export const useSheetStore = defineStore('sheet',() => {
   // Check if Tier VI spells are unlocked (requires Herald Bond Level IV+)
   const tierVIUnlocked = computed(() => herald.bondLevel.value >= 4);
 
+  // ==================== MAGI-SQUIRE COMPANION ====================
+  // Per compendium: NPC companions with 6 Health Blips, 3 Mana Blips, scaling damage.
+  // Squires have 2 spell paths (from Beam, Explosion, Curing, Restoration).
+  // Armor: 13 (Student) / 15 (Knight, +2 vs melee). Level syncs with mentor.
+  const squire = {
+    name: ref(''),
+    level: ref(1),
+    healthBlips: ref([true, true, true, true, true, true]),
+    manaBlips: ref([true, true, true]),
+    studentArmor: ref(13),
+    knightArmor: ref(15),
+    spellPath1: ref(''),
+    spellPath2: ref(''),
+    skills: ref(''),
+    notes: ref(''),
+    collapsed: ref(true)
+  };
+
+  // Squire damage scaling based on mentor level
+  const squireDamage = computed(() => {
+    const lvl = level.value;
+    if (lvl >= 13) return '4d6';
+    if (lvl >= 10) return '3d6+4';
+    if (lvl >= 7) return '2d6+4';
+    if (lvl >= 4) return '2d6+3';
+    return '1d6+3';
+  });
+
+  // Available spell paths for squires (limited selection)
+  const squireSpellPaths = ['Beam', 'Explosion', 'Curing', 'Restoration'];
+
   // ==================== SQUADRON FORMATIONS ====================
   // Per compendium/lists.json: Tactical Formations
   // Unlocked at Rep Level I, requires 3+ Magi-Knights within 60ft
@@ -1721,6 +1752,36 @@ export const useSheetStore = defineStore('sheet',() => {
     herald.notes.value = hydrateData.notes ?? herald.notes.value;
   }
 
+  function dehydrateSquire(squire) {
+    return {
+      name: squire.name.value,
+      level: squire.level.value,
+      healthBlips: [...squire.healthBlips.value],
+      manaBlips: [...squire.manaBlips.value],
+      studentArmor: squire.studentArmor.value,
+      knightArmor: squire.knightArmor.value,
+      spellPath1: squire.spellPath1.value,
+      spellPath2: squire.spellPath2.value,
+      skills: squire.skills.value,
+      notes: squire.notes.value,
+      collapsed: squire.collapsed.value
+    };
+  }
+
+  function hydrateSquire(squire, hydrateData = {}) {
+    squire.name.value = hydrateData.name ?? squire.name.value;
+    squire.level.value = hydrateData.level ?? squire.level.value;
+    if (hydrateData.healthBlips) squire.healthBlips.value = [...hydrateData.healthBlips];
+    if (hydrateData.manaBlips) squire.manaBlips.value = [...hydrateData.manaBlips];
+    squire.studentArmor.value = hydrateData.studentArmor ?? squire.studentArmor.value;
+    squire.knightArmor.value = hydrateData.knightArmor ?? squire.knightArmor.value;
+    squire.spellPath1.value = hydrateData.spellPath1 ?? squire.spellPath1.value;
+    squire.spellPath2.value = hydrateData.spellPath2 ?? squire.spellPath2.value;
+    squire.skills.value = hydrateData.skills ?? squire.skills.value;
+    squire.notes.value = hydrateData.notes ?? squire.notes.value;
+    squire.collapsed.value = hydrateData.collapsed ?? squire.collapsed.value;
+  }
+
   // Handles retrieving these values from the store
   const dehydrate = () => {
     const obj = {
@@ -1788,6 +1849,7 @@ export const useSheetStore = defineStore('sheet',() => {
       soul_gun: dehydrateSoulGun(soul_gun),
       magical_implement: dehydrateMagicalImplement(magical_implement),
       herald: dehydrateHerald(herald),
+      squire: dehydrateSquire(squire),
       student_damage_override: student_damage_override.value,
       student_armor_override: student_armor_override.value,
       student_move: student_move.value,
@@ -1964,6 +2026,7 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateSoulGun(soul_gun, hydrateStore.soul_gun);
     hydrateMagicalImplement(magical_implement, hydrateStore.magical_implement);
     hydrateHerald(herald, hydrateStore.herald);
+    if (hydrateStore.squire) hydrateSquire(squire, hydrateStore.squire);
 
     // NPC hydration
     npc_name.value = hydrateStore.npc_name ?? npc_name.value;
@@ -3347,6 +3410,11 @@ export const useSheetStore = defineStore('sheet',() => {
     unity_available: unityAvailable,
     herald,
     tierVIUnlocked,
+
+    // Magi-Squire
+    squire,
+    squireDamage,
+    squireSpellPaths,
 
     // Squadron Formations
     formationData,

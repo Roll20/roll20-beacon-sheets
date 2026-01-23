@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 14/17
-- **Current Task:** 15 - Implement Magi-Squire companion section
+- **Tasks Completed:** 15/17
+- **Current Task:** 16 - Add Relic capacity enforcement
 - **Last Updated:** 2026-01-23
 
 ---
@@ -306,6 +306,27 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 15: Implement Magi-Squire companion section
+
+**Changes Made:**
+- Added `squire` ref object to sheetStore.js with fields: name, level, healthBlips (6), manaBlips (3), studentArmor (13), knightArmor (15), spellPath1, spellPath2, skills, notes, collapsed
+- Added `squireDamage` computed that scales damage based on mentor level (1d6+3 at levels 1-3 up to 4d6 at levels 13+)
+- Added `squireSpellPaths` constant: ['Beam', 'Explosion', 'Curing', 'Restoration']
+- Added `dehydrateSquire`/`hydrateSquire` functions for state persistence
+- Created `src/components/MagiSquire.vue` component: collapsible panel with name input, damage/armor stats display, 6 health blip checkboxes, 3 mana blip checkboxes, 2 spell path dropdowns, skills textarea, notes textarea
+- Collapsed view shows squire name and damage badge; expanded view shows full configuration
+- Imported and added MagiSquire component to StudentView.vue after Herald section
+- Added squire, squireDamage, squireSpellPaths to store exports
+- Updated ARCHITECTURAL_ANALYSIS.md with Magi-Squire Companion documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/components/MagiSquire.vue` (new)
+- `src/views/PC/StudentView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

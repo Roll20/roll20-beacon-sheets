@@ -10,6 +10,7 @@ import RepeatingItem from '@/components/RepeatingItem.vue';
 import Collapsible from '@/components/Collapsible.vue';
 import SocialSection from '@/components/SocialSection.vue';
 import NotchContainer from '@/components/NotchContainer.vue';
+import MagiSquire from '@/components/MagiSquire.vue';
 
 const sheet = useSheetStore();
 const studentAttributes = [
@@ -177,6 +178,9 @@ function studentAbilitySummary()
       </div>
     </div>
   </NotchContainer>
+
+  <!-- Magi-Squire Companion -->
+  <MagiSquire />
 </template>
 
 <style lang="scss">

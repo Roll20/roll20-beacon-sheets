@@ -276,7 +276,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md with Magi-Squire section"
     ],
     "context": "The compendium defines a Magi-Squire companion system: NPC companions with 6 Health Blips (no Crystalline Fractures), 3 Mana Blips (fixed), Armor 13 (Student)/15 (Knight, +2 vs melee), damage scaling from 1d6+3 to 4d6 at level 15. Squires have access to only 2 spell paths (from Beam, Explosion, Curing, Restoration), have a Paired Attack (Immediate Action), and provide +2 assist on Squire Skills. Their level syncs with their mentor. The current sheet only has a basic Herald name/bond level - no squire mechanics.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 16,
