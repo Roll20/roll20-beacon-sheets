@@ -80,7 +80,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md weapon quality section"
     ],
     "context": "The weapon quality system in sheetStore.js has incorrect effects. Per the compendium: Accurate = trade-off choice per roll (-2 damage for +1 attack OR -4 for +2), Forceful = triggered on 16+ (add 1d6), Massive = trade-off choice (-1 atk/+2 dmg OR -2/+4), Veil-Piercing = 1/Combat auto-hit (not crit range), Ensnaring = 16+ triggers Restrained, Staggering Blow = 16+ triggers knockback. The sheet currently applies flat bonuses which is wrong - Accurate/Massive are per-roll choices that players make before rolling. The weaponCritRange computed (crit on 16+) is entirely fabricated.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 5,

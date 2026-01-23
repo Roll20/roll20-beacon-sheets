@@ -5,10 +5,9 @@ import { useSheetStore } from '@/stores/sheetStore';
 const sheet = useSheetStore();
 
 const categories = {
-  attack: { label: 'Attack Modifiers', keys: ['accurate', 'finesse', 'veilPiercing'] },
-  damage: { label: 'Damage Modifiers', keys: ['forceful', 'vicious'] },
-  both: { label: 'Attack & Damage', keys: ['massive'] },
-  special: { label: 'Special', keys: ['coupled', 'ensnaring', 'staggeringBlow', 'twoHanded'] }
+  trade: { label: 'Trade-Off (Per-Roll Choice)', keys: ['accurate', 'massive'] },
+  trigger: { label: 'Triggered (On Roll 16+)', keys: ['forceful', 'ensnaring', 'staggeringBlow'] },
+  special: { label: 'Special', keys: ['coupled', 'veilPiercing', 'twoHanded'] }
 };
 
 // Warning for two-handed + shield conflict
@@ -24,16 +23,8 @@ const hasTwoHandedConflict = computed(() => {
       <span class="quality-tag" v-for="q in sheet.activeWeaponQualities" :key="q">{{ q }}</span>
     </div>
 
-    <div class="modifiers-summary" v-if="sheet.weaponQualityAttackBonus !== 0 || sheet.weaponQualityDamageBonus !== 0">
-      <span v-if="sheet.weaponQualityAttackBonus !== 0" class="mod-badge attack">
-        Attack: {{ sheet.weaponQualityAttackBonus >= 0 ? '+' : '' }}{{ sheet.weaponQualityAttackBonus }}
-      </span>
-      <span v-if="sheet.weaponQualityDamageBonus !== 0" class="mod-badge damage">
-        Damage: {{ sheet.weaponQualityDamageBonus >= 0 ? '+' : '' }}{{ sheet.weaponQualityDamageBonus }}
-      </span>
-      <span v-if="sheet.weaponCritRange !== 20" class="mod-badge crit">
-        Crit: {{ sheet.weaponCritRange }}-20
-      </span>
+    <div class="modifiers-summary" v-if="sheet.veilPiercingUsed && sheet.soul_weapon.qualities.veilPiercing">
+      <span class="mod-badge used">Veil-Piercing: Used this encounter</span>
     </div>
 
     <div v-if="hasTwoHandedConflict" class="conflict-warning">
@@ -100,19 +91,9 @@ const hasTwoHandedConflict = computed(() => {
     padding: 2px 8px;
     border-radius: 3px;
 
-    &.attack {
-      background: #2e7d32;
+    &.used {
+      background: #9e9e9e;
       color: white;
-    }
-
-    &.damage {
-      background: #c62828;
-      color: white;
-    }
-
-    &.crit {
-      background: #f9a825;
-      color: black;
     }
   }
 }

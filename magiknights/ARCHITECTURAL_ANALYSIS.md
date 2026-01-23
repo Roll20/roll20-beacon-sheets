@@ -320,19 +320,23 @@ conditionDisadvantageOnSkillChecks: computed(() => distressed || disoriented)
 
 ### Equipment System
 
-**Soul Weapon Qualities:**
+**Soul Weapon Qualities (8 qualities in 3 categories):**
 ```javascript
 soul_weapon: {
   qualities: ref({
-    accurate: false,      // +1 attack
-    coupled: false,       // Dual-wield
-    finesse: false,       // DEX for attack/damage
-    massive: false,       // -2 attack, +4 damage
-    veilPiercing: false,  // Crit on 16+
-    vicious: false        // Max crit dice
-    // ... etc
+    accurate: false,      // Trade-off: -2 dmg for +1 atk, OR -4 dmg for +2 atk
+    coupled: false,       // Free Action: Split Primary + Secondary, Bonus Action secondary attack
+    ensnaring: false,     // On Roll 16+: Target Restrained (not Large+/Adversary+)
+    forceful: false,      // On Roll 16+: Add extra 1d6 damage
+    massive: false,       // Trade-off: -1 atk for +2 dmg, OR -2 atk for +4 dmg
+    staggeringBlow: false, // On Roll 16+: Knock target 10ft (not Large+/Adversary+)
+    twoHanded: false,     // Requires both hands
+    veilPiercing: false   // 1/Combat Encounter: Auto-hit instead of rolling
   })
 }
+// Trade-off qualities (Accurate/Massive) are per-roll player choices, NOT persistent bonuses
+// Trigger qualities (Forceful/Ensnaring/Staggering Blow) activate on natural 16+
+// veilPiercingUsed ref tracks 1/encounter usage
 ```
 
 **Soul Gun** and **Magical Implement** follow similar patterns with unique qualities.

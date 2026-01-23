@@ -736,54 +736,44 @@ export const useSheetStore = defineStore('sheet',() => {
     damage: ref(''),
     damageType: ref('physical'), // 'physical', 'magical', or 'true'
     qualities: ref({
-      accurate: false,      // +1 to attack rolls
-      coupled: false,       // Can be used with another weapon (informational)
-      ensnaring: false,     // Grapple on hit (informational)
-      finesse: false,       // Can use DEX instead of STR for attack/damage
-      forceful: false,      // +1 to damage rolls
-      massive: false,       // -2 to attack, +4 to damage
-      staggeringBlow: false, // Knockback effect (informational)
-      twoHanded: false,     // Requires both hands (informational)
-      veilPiercing: false,  // Critical hit on 16+ (instead of only 20)
-      vicious: false        // On crit, maximize duplicated damage dice
+      accurate: false,      // Trade-off: -2 dmg for +1 atk, OR -4 dmg for +2 atk
+      coupled: false,       // Free Action: Split into Primary + Secondary. Bonus Action secondary attack
+      ensnaring: false,     // On Attack Roll 16+: Target Restrained. Cannot affect Large+ or Adversary+
+      forceful: false,      // On Attack Roll 16+: Add extra 1d6 damage
+      massive: false,       // Trade-off: -1 atk for +2 dmg, OR -2 atk for +4 dmg
+      staggeringBlow: false, // On Attack Roll 16+: Knock target 10ft. Cannot affect Large+ or Adversary+
+      twoHanded: false,     // Requires both hands
+      veilPiercing: false   // 1/Combat Encounter: Instead of rolling, automatically hit
     }),
     collapsed: ref(true)
   };
 
   // Weapon quality definitions for UI
   const weaponQualityDefs = {
-    accurate: { name: 'Accurate', effect: '+1 to attack rolls', category: 'attack' },
-    coupled: { name: 'Coupled', effect: 'Can be used with another weapon', category: 'special' },
-    ensnaring: { name: 'Ensnaring', effect: 'Grapple on hit', category: 'special' },
-    finesse: { name: 'Finesse', effect: 'Use DEX instead of STR for attack/damage', category: 'attack' },
-    forceful: { name: 'Forceful', effect: '+1 to damage rolls', category: 'damage' },
-    massive: { name: 'Massive', effect: '-2 to attack, +4 to damage', category: 'both' },
-    staggeringBlow: { name: 'Staggering Blow', effect: 'Knockback effect on hit', category: 'special' },
+    accurate: { name: 'Accurate', effect: 'Before rolling: -2 damage for +1 Attack, OR -4 damage for +2 Attack', category: 'trade' },
+    coupled: { name: 'Coupled', effect: 'Free Action: Split into Primary + Secondary. Bonus Action secondary attack', category: 'special' },
+    ensnaring: { name: 'Ensnaring', effect: 'On Attack Roll 16+: Target Restrained. Cannot affect Large+ or Adversary+', category: 'trigger' },
+    forceful: { name: 'Forceful', effect: 'On Attack Roll 16+: Add extra 1d6 damage', category: 'trigger' },
+    massive: { name: 'Massive', effect: 'Before rolling: -1 Attack for +2 damage, OR -2 Attack for +4 damage', category: 'trade' },
+    staggeringBlow: { name: 'Staggering Blow', effect: 'On Attack Roll 16+: Knock target 10ft. Cannot affect Large+ or Adversary+', category: 'trigger' },
     twoHanded: { name: 'Two-Handed', effect: 'Requires both hands', category: 'special' },
-    veilPiercing: { name: 'Veil-Piercing', effect: 'Critical hit on 16+', category: 'attack' },
-    vicious: { name: 'Vicious', effect: 'On crit, maximize duplicated dice', category: 'damage' }
+    veilPiercing: { name: 'Veil-Piercing', effect: '1/Combat Encounter: Instead of rolling, automatically hit', category: 'special' }
   };
 
   // Computed: weapon quality attack bonus
+  // Accurate/Massive are per-roll trade-off choices, not persistent bonuses
   const weaponQualityAttackBonus = computed(() => {
-    let bonus = 0;
-    if (soul_weapon.qualities.value.accurate) bonus += 1;
-    if (soul_weapon.qualities.value.massive) bonus -= 2;
-    return bonus;
+    return 0;
   });
 
   // Computed: weapon quality damage bonus
+  // Forceful triggers on 16+ (not persistent), Massive is a per-roll trade-off choice
   const weaponQualityDamageBonus = computed(() => {
-    let bonus = 0;
-    if (soul_weapon.qualities.value.forceful) bonus += 1;
-    if (soul_weapon.qualities.value.massive) bonus += 4;
-    return bonus;
+    return 0;
   });
 
-  // Computed: critical hit range (default 20, veil-piercing makes it 16)
-  const weaponCritRange = computed(() => {
-    return soul_weapon.qualities.value.veilPiercing ? 16 : 20;
-  });
+  // Veil-Piercing: 1/Combat Encounter auto-hit tracking
+  const veilPiercingUsed = ref(false);
 
   // Computed: active qualities list for display
   const activeWeaponQualities = computed(() => {
@@ -1545,6 +1535,7 @@ export const useSheetStore = defineStore('sheet',() => {
       student_ability: dehydrateStudentAbility(student_ability),
       fate: dehydrateFate(fate),
       armor_weave: dehydrateArmorWeave(armor_weave),
+      veilPiercingUsed: veilPiercingUsed.value,
       soul_weapon: dehydrateSoulWeapon(soul_weapon),
       soul_gun: dehydrateSoulGun(soul_gun),
       magical_implement: dehydrateMagicalImplement(magical_implement),
@@ -1698,6 +1689,7 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateStudentAbility(student_ability, hydrateStore.student_ability);
     hydrateFate(fate, hydrateStore.fate);
     hydrateArmorWeave(armor_weave, hydrateStore.armor_weave);
+    veilPiercingUsed.value = hydrateStore.veilPiercingUsed ?? veilPiercingUsed.value;
     hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
     hydrateSoulGun(soul_gun, hydrateStore.soul_gun);
     hydrateMagicalImplement(magical_implement, hydrateStore.magical_implement);
@@ -2009,9 +2001,9 @@ export const useSheetStore = defineStore('sheet',() => {
       keyValues: {}
     };
 
-    // Show crit range if modified
-    if (weaponCritRange.value !== 20) {
-      rollObj.keyValues['Crit Range'] = `${weaponCritRange.value}-20`;
+    // Show Veil-Piercing status if weapon has it
+    if (soul_weapon.qualities.value.veilPiercing && !veilPiercingUsed.value) {
+      rollObj.keyValues['Veil-Piercing'] = 'Available (1/encounter auto-hit)';
     }
 
     rollToChat({rollObj});
@@ -2955,7 +2947,7 @@ export const useSheetStore = defineStore('sheet',() => {
     weaponQualityDefs,
     weaponQualityAttackBonus,
     weaponQualityDamageBonus,
-    weaponCritRange,
+    veilPiercingUsed,
     activeWeaponQualities,
     soul_gun,
     gunQualityDefs,

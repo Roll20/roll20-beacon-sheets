@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 3/17
-- **Current Task:** 4 - Fix weapon quality definitions and computed effects
+- **Tasks Completed:** 4/17
+- **Current Task:** 5 - Replace fabricated gun quality system with correct Soul Gun mechanics
 - **Last Updated:** 2026-01-23
 
 ---
@@ -60,6 +60,35 @@
 
 **Files Modified:**
 - `src/stores/sheetStore.js`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 4: Fix weapon quality definitions and computed effects to match compendium
+
+**Changes Made:**
+- Removed fabricated qualities from `soul_weapon.qualities` ref: `finesse` (DEX for attack/damage doesn't exist), `vicious` (maximize crit dice doesn't exist)
+- Updated `accurate` quality: from flat +1 attack to trade-off choice per roll (-2 dmg/+1 atk OR -4 dmg/+2 atk)
+- Updated `forceful` quality: from flat +1 damage to triggered effect on Attack Roll 16+ (add 1d6 damage)
+- Updated `massive` quality: from flat -2 atk/+4 dmg to trade-off choice per roll (-1 atk/+2 dmg OR -2 atk/+4 dmg)
+- Updated `veilPiercing` quality: from crit on 16+ to 1/Combat Encounter auto-hit
+- Updated `ensnaring` quality: from generic "grapple on hit" to "On Roll 16+: Target Restrained (not Large+/Adversary+)"
+- Updated `staggeringBlow` quality: from generic "knockback" to "On Roll 16+: Knock target 10ft (not Large+/Adversary+)"
+- Updated `coupled` quality: from generic "dual-wield" to "Free Action: Split Primary + Secondary, Bonus Action secondary attack"
+- Set `weaponQualityAttackBonus` computed to always return 0 (trade-offs are per-roll choices)
+- Set `weaponQualityDamageBonus` computed to always return 0 (same reason)
+- Removed `weaponCritRange` computed entirely (no crit range mechanic in Magi-Knights)
+- Added `veilPiercingUsed` ref (boolean) for tracking 1/encounter usage
+- Added `veilPiercingUsed` to dehydrate/hydrate cycle for persistence
+- Updated store exports: replaced `weaponCritRange` with `veilPiercingUsed`
+- Updated `rollKnightAttack`: replaced crit range display with Veil-Piercing availability note
+- Updated `WeaponQualitiesSelector.vue`: reorganized categories to trade/trigger/special, removed old modifier badges, added Veil-Piercing usage indicator
+- Updated `weaponQualityDefs` object with all correct compendium descriptions and new categories
+- Updated ARCHITECTURAL_ANALYSIS.md weapon quality section
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/components/WeaponQualitiesSelector.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`
