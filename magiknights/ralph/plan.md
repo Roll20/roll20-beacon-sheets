@@ -227,7 +227,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md with sleep and daily limits sections"
     ],
     "context": "The compendium defines three Sleep Phase effects that affect recovery: Average (reduce Stress and Exhaustion by 1), Feverish Dreams (no recovery, caused by trauma/relics), Refreshing Sleep (reduce by 2, full HP, -1 Fracture). Several abilities have daily or per-session limits that should be tracked: Crystalline Seal Implantation (1/day given AND 1/day received), Medical Triage (1/Sleep Phase per target), Soul Sacrifice (Rep Level times per career), Mana Conduit (1/Sleep Phase).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 13,

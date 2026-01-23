@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 11/17
-- **Current Task:** 12 - Implement Sleep Phase effect tracking and daily limits
+- **Tasks Completed:** 12/17
+- **Current Task:** 13 - Implement Heart Stage tracking for social bonds
 - **Last Updated:** 2026-01-23
 
 ---
@@ -236,6 +236,29 @@
 - Unlocked abilities show full opacity with green badge; locked abilities are dimmed
 - Added `levelAbilityData` and `levelAbilities` to store exports
 - Updated ARCHITECTURAL_ANALYSIS.md with Level-Locked Abilities documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 12: Implement Sleep Phase effect tracking and daily limits
+
+**Changes Made:**
+- Added `sleepEffect` ref (string, default 'average') with three options: average, feverish, refreshing
+- Added `sleepEffectData` constant with recovery values for each sleep type: Average (-1 Stress/-1 Exhaustion), Feverish (no recovery, nightmares), Refreshing (-2 Stress/-2 Exhaustion, full HP, -1 Fracture)
+- Added `sealImplantGiven` ref (boolean, default false) for 1/day Crystalline Seal given tracking
+- Added `sealImplantReceived` ref (boolean, default false) for 1/day Crystalline Seal received tracking
+- Added `soulSacrificeCount` ref (number, default 0) for career-total usage tracking
+- Added `soulSacrificeMax` computed (returns reputation value) for career max
+- Integrated `manaConduitUsed` (already existed from Task 6) into the Daily Limits UI
+- Added all new refs to dehydrate/hydrate cycle for persistence
+- Added "Sleep & Daily Limits" section in KnightView.vue after Level Abilities: Sleep Effect radio buttons, Daily Limits checkboxes (Seal Implant Given/Received, Mana Conduit Used), Soul Sacrifice counter with career max
+- Added CSS styling for the new section
+- Updated ARCHITECTURAL_ANALYSIS.md with Sleep Phase & Daily Limits documentation
+- All exports added to store return block
 
 **Files Modified:**
 - `src/stores/sheetStore.js`

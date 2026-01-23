@@ -76,6 +76,20 @@ export const useSheetStore = defineStore('sheet',() => {
     return null;
   };
 
+  // Sleep Phase effect tracking
+  const sleepEffect = ref('average');
+  const sleepEffectData = {
+    average: { name: 'Average Sleep', stressRecovery: 1, exhaustionRecovery: 1, hpRecovery: 'none', fractureRecovery: 0 },
+    feverish: { name: 'Feverish Dreams', stressRecovery: 0, exhaustionRecovery: 0, hpRecovery: 'none', fractureRecovery: 0, note: 'Nightmares, no recovery' },
+    refreshing: { name: 'Refreshing Sleep', stressRecovery: 2, exhaustionRecovery: 2, hpRecovery: 'full', fractureRecovery: 1, note: 'Full HP, -1 Fracture' }
+  };
+
+  // Daily/per-session limit tracking
+  const sealImplantGiven = ref(false);
+  const sealImplantReceived = ref(false);
+  const soulSacrificeCount = ref(0);
+  const soulSacrificeMax = computed(() => reputation.value);
+
   // Get the dice expression based on roll mode
   const getRollDice = (forceDisadvantage = false) => {
     const mode = forceDisadvantage ? 'disadvantage' : effectiveRollMode.value;
@@ -1646,6 +1660,10 @@ export const useSheetStore = defineStore('sheet',() => {
       exhaustion: exhaustion.value,
       enduranceDieEnabled: enduranceDieEnabled.value,
       freakingOutToday: freakingOutToday.value,
+      sleepEffect: sleepEffect.value,
+      sealImplantGiven: sealImplantGiven.value,
+      sealImplantReceived: sealImplantReceived.value,
+      soulSacrificeCount: soulSacrificeCount.value,
       rollMode: rollMode.value,
       conditions: { ...conditions.value },
       exceededMortalLimits: exceededMortalLimits.value,
@@ -1775,6 +1793,10 @@ export const useSheetStore = defineStore('sheet',() => {
     exhaustion.value = hydrateStore.exhaustion ?? exhaustion.value;
     enduranceDieEnabled.value = hydrateStore.enduranceDieEnabled ?? enduranceDieEnabled.value;
     freakingOutToday.value = hydrateStore.freakingOutToday ?? freakingOutToday.value;
+    sleepEffect.value = hydrateStore.sleepEffect ?? sleepEffect.value;
+    sealImplantGiven.value = hydrateStore.sealImplantGiven ?? sealImplantGiven.value;
+    sealImplantReceived.value = hydrateStore.sealImplantReceived ?? sealImplantReceived.value;
+    soulSacrificeCount.value = hydrateStore.soulSacrificeCount ?? soulSacrificeCount.value;
     rollMode.value = hydrateStore.rollMode ?? rollMode.value;
     // Hydrate conditions
     if (hydrateStore.conditions) {
@@ -3125,6 +3147,14 @@ export const useSheetStore = defineStore('sheet',() => {
     burnoutLines,
     heartlessKnight,
     fallenKnight,
+
+    // Sleep Phase and daily limits
+    sleepEffect,
+    sleepEffectData,
+    sealImplantGiven,
+    sealImplantReceived,
+    soulSacrificeCount,
+    soulSacrificeMax,
 
     // Roll mode (advantage/disadvantage)
     rollMode,

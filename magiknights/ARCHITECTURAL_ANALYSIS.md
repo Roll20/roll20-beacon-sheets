@@ -380,6 +380,28 @@ levelAbilities: computed  // Returns { counterBlast: bool, perfectParry: bool, .
 - Level badge shows required level for each ability
 - Unlocked abilities have full opacity; locked abilities are dimmed
 
+**Sleep Phase & Daily Limits:**
+```javascript
+// Sleep Phase effect tracking
+sleepEffect: ref('average')  // 'average', 'feverish', 'refreshing'
+sleepEffectData: {
+  average: { name: 'Average Sleep', stressRecovery: 1, exhaustionRecovery: 1, hpRecovery: 'none', fractureRecovery: 0 },
+  feverish: { name: 'Feverish Dreams', stressRecovery: 0, exhaustionRecovery: 0, hpRecovery: 'none', fractureRecovery: 0, note: 'Nightmares, no recovery' },
+  refreshing: { name: 'Refreshing Sleep', stressRecovery: 2, exhaustionRecovery: 2, hpRecovery: 'full', fractureRecovery: 1, note: 'Full HP, -1 Fracture' }
+}
+
+// Daily/per-session limit tracking
+sealImplantGiven: ref(false)       // 1/day: given a Crystalline Seal to another
+sealImplantReceived: ref(false)    // 1/day: received a Crystalline Seal from another
+manaConduitUsed: ref(false)        // 1/Sleep Phase: Bonus Action next spell -1 Tier MP
+soulSacrificeCount: ref(0)         // Uses count toward career max
+soulSacrificeMax: computed          // Max = Reputation Level (career total)
+```
+- UI: Sleep Effect radio buttons in KnightView.vue (Average/Feverish/Refreshing)
+- Daily Limits section with checkboxes for Seal Implant (given/received) and Mana Conduit
+- Soul Sacrifice counter with career max display
+- All values persist via dehydrate/hydrate cycle
+
 ### Equipment System
 
 **Soul Weapon Qualities (8 qualities in 3 categories):**
