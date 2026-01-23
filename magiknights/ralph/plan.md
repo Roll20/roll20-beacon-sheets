@@ -259,7 +259,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md resist section"
     ],
     "context": "The compendium defines 4 types of Rolls to Resist: Physical (STR/DEX/CON based), Magic (INT/WIS/CHA based), Horror (special d100 roll), Purity (moral/corruption checks). Various conditions and effects grant Advantage or Disadvantage on specific resist types. For example, Disoriented gives Disadvantage on Physical Resists, Horrified affects Horror resist checks. The current sheet has basic resist roll support but no per-type advantage/disadvantage tracking.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 15,

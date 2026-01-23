@@ -308,6 +308,31 @@ conditionDisadvantageOnSkillChecks: computed(() => distressed || disoriented)
 // No flat penalties are used - all condition effects use the Disadvantage mechanic.
 ```
 
+**Rolls to Resist Advantage/Disadvantage:**
+```javascript
+// Four resist types: Physical (STR/DEX/CON), Magic (INT/WIS/CHA), Horror (WIS/CHA), Purity (WIS/CHA)
+resistModifiers: ref({
+  physical: { advantage: false, disadvantage: false },
+  magic: { advantage: false, disadvantage: false },
+  horror: { advantage: false, disadvantage: false },
+  purity: { advantage: false, disadvantage: false }
+})
+
+// Condition-based resist disadvantage (auto-computed from conditions)
+// Disoriented → Disadvantage on Physical Resists
+conditionResistDisadvantage: computed(() => ({
+  physical: conditions.disoriented,
+  magic: false, horror: false, purity: false
+}))
+
+// Combined active modifiers (manual toggles + condition effects, adv/disadv cancel)
+activeResistModifiers: computed(() => per-type 'normal'|'advantage'|'disadvantage')
+
+// getResistRollMode(abilityName) → returns the roll mode for that ability's resist type
+// Integrated into rollAbility(): when rollToResist > 0, applies resist-specific adv/disadv
+// getRollDice() updated to accept (forceDisadvantage, forceAdvantage) parameters
+```
+
 **Endurance Die & Attrition System:**
 ```javascript
 // Endurance Die: roll 1d6 alongside d20 when affected by Stress or Exhaustion.

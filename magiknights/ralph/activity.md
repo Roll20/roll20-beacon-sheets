@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 13/17
-- **Current Task:** 14 - Implement Rolls to Resist advantage/disadvantage tracking
+- **Tasks Completed:** 14/17
+- **Current Task:** 15 - Implement Magi-Squire companion section
 - **Last Updated:** 2026-01-23
 
 ---
@@ -282,6 +282,30 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/components/SocialSection.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 14: Implement Rolls to Resist advantage/disadvantage tracking
+
+**Changes Made:**
+- Added `resistModifiers` ref with per-type (physical, magic, horror, purity) advantage/disadvantage boolean tracking
+- Added `abilityToResistType` constant mapping ability names to their resist type (STR/DEX/CON → physical, INT/WIS/CHA → magic)
+- Added `conditionResistDisadvantage` computed: Disoriented condition automatically applies Disadvantage on Physical Resists
+- Added `activeResistModifiers` computed: combines manual toggles and condition effects, handles advantage/disadvantage cancellation
+- Added `getResistRollMode(abilityName)` function that returns the effective roll mode for a given ability's resist type
+- Updated `getRollDice()` to accept both `forceDisadvantage` and `forceAdvantage` parameters (previously only supported disadvantage)
+- Updated `rollAbility` to detect resist rolls (rollToResist > 0) and apply the appropriate resist type's advantage/disadvantage to the dice formula
+- Roll subtitle now shows resist type and advantage/disadvantage source when making a Roll to Resist
+- Added resist modifiers UI in KnightView.vue: per-type checkboxes for Advantage and Disadvantage, with condition-based disadvantage shown as disabled+active with "(Condition)" note
+- Added `resistModifiers` to dehydrate/hydrate cycle for persistence
+- Added CSS styling for the resist grid (compact row layout with type labels and toggle checkboxes)
+- Added store exports: resistModifiers, conditionResistDisadvantage, activeResistModifiers, getResistRollMode
+- Updated ARCHITECTURAL_ANALYSIS.md with Rolls to Resist Advantage/Disadvantage documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

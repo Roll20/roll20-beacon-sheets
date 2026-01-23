@@ -102,8 +102,17 @@ export const useSheetStore = defineStore('sheet',() => {
   const soulSacrificeMax = computed(() => reputation.value);
 
   // Get the dice expression based on roll mode
-  const getRollDice = (forceDisadvantage = false) => {
-    const mode = forceDisadvantage ? 'disadvantage' : effectiveRollMode.value;
+  const getRollDice = (forceDisadvantage = false, forceAdvantage = false) => {
+    let mode;
+    if (forceDisadvantage && forceAdvantage) {
+      mode = 'normal'; // cancel out
+    } else if (forceDisadvantage) {
+      mode = 'disadvantage';
+    } else if (forceAdvantage) {
+      mode = 'advantage';
+    } else {
+      mode = effectiveRollMode.value;
+    }
     switch (mode) {
       case 'advantage':
         return { formula: '2d20kh1', display: '2d20kh' };
@@ -412,6 +421,61 @@ export const useSheetStore = defineStore('sheet',() => {
   const elemental_enhancement_1 = ref('');
   const elemental_enhancement_2 = ref('');
   const roll_resist_proficiency = ref('');
+
+  // Rolls to Resist advantage/disadvantage tracking per type
+  // Per compendium: Physical (STR/DEX/CON), Magic (INT/WIS/CHA), Horror (WIS/CHA), Purity (WIS/CHA)
+  const resistModifiers = ref({
+    physical: { advantage: false, disadvantage: false },
+    magic: { advantage: false, disadvantage: false },
+    horror: { advantage: false, disadvantage: false },
+    purity: { advantage: false, disadvantage: false }
+  });
+
+  // Map ability names to resist types for determining which resist type a roll belongs to
+  const abilityToResistType = {
+    strength: 'physical',
+    dexterity: 'physical',
+    constitution: 'physical',
+    intelligence: 'magic',
+    wisdom: 'magic',
+    charisma: 'magic'
+  };
+
+  // Condition-based resist disadvantage
+  // Per compendium: Disoriented gives Disadvantage on Rolls to Resist (Physical)
+  const conditionResistDisadvantage = computed(() => ({
+    physical: conditions.value.disoriented,
+    magic: false,
+    horror: false,
+    purity: false
+  }));
+
+  // Active resist modifiers combining manual toggles and condition effects
+  const activeResistModifiers = computed(() => {
+    const result = {};
+    for (const type of ['physical', 'magic', 'horror', 'purity']) {
+      const hasAdvantage = resistModifiers.value[type].advantage;
+      const hasDisadvantage = resistModifiers.value[type].disadvantage || conditionResistDisadvantage.value[type];
+      // If both, they cancel out
+      if (hasAdvantage && hasDisadvantage) {
+        result[type] = 'normal';
+      } else if (hasAdvantage) {
+        result[type] = 'advantage';
+      } else if (hasDisadvantage) {
+        result[type] = 'disadvantage';
+      } else {
+        result[type] = 'normal';
+      }
+    }
+    return result;
+  });
+
+  // Get the resist roll mode for a given ability name (used when rolling an ability as a Roll to Resist)
+  const getResistRollMode = (abilityName) => {
+    const resistType = abilityToResistType[abilityName.toLowerCase()];
+    if (!resistType) return 'normal';
+    return activeResistModifiers.value[resistType];
+  };
 
   const spell_attack_override = ref('');
   const spell_attack = computed({
@@ -1703,6 +1767,7 @@ export const useSheetStore = defineStore('sheet',() => {
       elemental_enhancement_1: elemental_enhancement_1.value,
       elemental_enhancement_2: elemental_enhancement_2.value,
       roll_resist_proficiency: roll_resist_proficiency.value,
+      resistModifiers: JSON.parse(JSON.stringify(resistModifiers.value)),
       skills: dehydrateSkills(skills),
       abilityScores: dehydrateAbilityScores(abilityScores),
       hp: dehydrateHp(hp),
@@ -1866,6 +1931,14 @@ export const useSheetStore = defineStore('sheet',() => {
     elemental_enhancement_1.value = hydrateStore.elemental_enhancement_1 ?? elemental_enhancement_1.value;
     elemental_enhancement_2.value = hydrateStore.elemental_enhancement_2 ?? elemental_enhancement_2.value;
     roll_resist_proficiency.value = hydrateStore.roll_resist_proficiency ?? roll_resist_proficiency.value;
+    if (hydrateStore.resistModifiers) {
+      for (const type of ['physical', 'magic', 'horror', 'purity']) {
+        if (hydrateStore.resistModifiers[type]) {
+          resistModifiers.value[type].advantage = hydrateStore.resistModifiers[type].advantage ?? false;
+          resistModifiers.value[type].disadvantage = hydrateStore.resistModifiers[type].disadvantage ?? false;
+        }
+      }
+    }
 
     hydrateEclipseBlipsArray(eclipse_blips.value, hydrateStore.eclipse_blips);
     hydrateEclipseBlipsArray(eclipse.value, hydrateStore.eclipse);
@@ -1943,11 +2016,30 @@ export const useSheetStore = defineStore('sheet',() => {
       rollToResist = proficiency.value;
     }
 
+    // Determine if this is a Roll to Resist (has resist proficiency bonus)
+    const isResistRoll = rollToResist > 0;
+    const resistRollMode = isResistRoll ? getResistRollMode(name) : 'normal';
+    const hasResistAdv = resistRollMode === 'advantage';
+    const hasResistDisadv = resistRollMode === 'disadvantage';
+
     const hasConditionDisadv = conditionDisadvantageOnSkillChecks.value;
-    const dice = getRollDice(hasConditionDisadv);
-    const rollModeLabel = (hasConditionDisadv || effectiveRollMode.value !== 'normal')
-      ? ` (${hasConditionDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
-      : '';
+    // Combine: condition disadvantage, resist advantage/disadvantage
+    const forceDisadv = hasConditionDisadv || hasResistDisadv;
+    const forceAdv = hasResistAdv;
+    const dice = getRollDice(forceDisadv, forceAdv);
+
+    // Build roll mode label
+    let rollModeLabel = '';
+    if (forceDisadv && forceAdv) {
+      rollModeLabel = ''; // cancel out
+    } else if (forceDisadv) {
+      const reason = hasConditionDisadv ? 'Condition' : 'Resist';
+      rollModeLabel = ` (Disadv - ${reason})`;
+    } else if (forceAdv) {
+      rollModeLabel = ' (Adv - Resist)';
+    } else if (effectiveRollMode.value !== 'normal') {
+      rollModeLabel = ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`;
+    }
 
     const enduranceInfo = getEnduranceDieInfo(name);
     const components = [
@@ -1963,9 +2055,13 @@ export const useSheetStore = defineStore('sheet',() => {
       ? ` | Endurance: negate if d6 >= ${enduranceInfo.level} (${enduranceInfo.type})`
       : '';
 
+    const resistTypeNote = isResistRoll
+      ? ` | Resist: ${toTitleCase(abilityToResistType[name.toLowerCase()] || 'unknown')}`
+      : '';
+
     const rollObj = {
       title: toTitleCase(name),
-      subtitle: `Ability Check${rollModeLabel}${enduranceNote}`,
+      subtitle: `Ability Check${rollModeLabel}${resistTypeNote}${enduranceNote}`,
       characterName: metaStore.name,
       components
     };
@@ -3181,6 +3277,12 @@ export const useSheetStore = defineStore('sheet',() => {
     activeConditions,
     conditionDisadvantageOnAttacks,
     conditionDisadvantageOnSkillChecks,
+
+    // Rolls to Resist
+    resistModifiers,
+    conditionResistDisadvantage,
+    activeResistModifiers,
+    getResistRollMode,
 
     hp,
     mp,
