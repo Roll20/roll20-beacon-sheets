@@ -55,8 +55,9 @@ export const useSheetStore = defineStore('sheet',() => {
   });
 
   // Get the dice expression based on roll mode
-  const getRollDice = () => {
-    switch (effectiveRollMode.value) {
+  const getRollDice = (forceDisadvantage = false) => {
+    const mode = forceDisadvantage ? 'disadvantage' : effectiveRollMode.value;
+    switch (mode) {
       case 'advantage':
         return { formula: '2d20kh1', display: '2d20kh' };
       case 'disadvantage':
@@ -75,26 +76,22 @@ export const useSheetStore = defineStore('sheet',() => {
     // Physical conditions
     bleeding: false,
     burning: false,
+    disoriented: false,
     exposed: false,
     paralyzed: false,
     prone: false,
     restrained: false,
+    unconscious: false,
     // Depletion conditions
     depleted: false,
     drained: false,
+    poisoned: false,
     silenced: false,
     soulSiphoned1: false,
     soulSiphoned2: false,
     soulSiphoned3: false,
-    soulTainted: false,
-    // Other conditions
-    blinded: false,
-    charmed: false,
-    frightened: false,
-    incapacitated: false,
-    invisible: false,
-    poisoned: false,
-    stunned: false
+    soulSiphoned4: false,
+    soulTainted: false
   });
 
   // Get list of active conditions
@@ -105,16 +102,20 @@ export const useSheetStore = defineStore('sheet',() => {
   });
 
   // Check if any condition grants disadvantage on attacks
+  // Per compendium: Depleted, Drained, Distressed, Disoriented cause Disadvantage on YOUR attacks
   const conditionDisadvantageOnAttacks = computed(() => {
-    return conditions.value.prone ||
-           conditions.value.restrained ||
-           conditions.value.blinded ||
-           conditions.value.frightened ||
-           conditions.value.poisoned;
+    return conditions.value.depleted ||
+           conditions.value.drained ||
+           conditions.value.distressed ||
+           conditions.value.disoriented;
   });
 
-  // Check if distressed (applies -1 to checks)
-  const distressedPenalty = computed(() => conditions.value.distressed ? -1 : 0);
+  // Check if any condition grants disadvantage on skill checks
+  // Per compendium: Distressed gives "Disadvantage on Skill Checks and Attack Actions"
+  // Disoriented gives "Disadvantage on Attacks, Physical Resists, Skill Checks"
+  const conditionDisadvantageOnSkillChecks = computed(() => {
+    return conditions.value.distressed || conditions.value.disoriented;
+  });
 
   // abilityScores
   const strength = ref(10);
@@ -1752,9 +1753,10 @@ export const useSheetStore = defineStore('sheet',() => {
       rollToResist = proficiency.value;
     }
 
-    const dice = getRollDice();
-    const rollModeLabel = effectiveRollMode.value !== 'normal'
-      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+    const hasConditionDisadv = conditionDisadvantageOnSkillChecks.value;
+    const dice = getRollDice(hasConditionDisadv);
+    const rollModeLabel = (hasConditionDisadv || effectiveRollMode.value !== 'normal')
+      ? ` (${hasConditionDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
     const rollObj = {
@@ -1764,8 +1766,7 @@ export const useSheetStore = defineStore('sheet',() => {
       components: [
         {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'Mod', value:abilityScores[name].mod.value,alwaysShowInBreakdown: true},
-        {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true},
-        {label: 'Distressed', value: distressedPenalty.value, alwaysShowInBreakdown: distressedPenalty.value !== 0}
+        {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true}
       ]
     };
     rollToChat({rollObj});
@@ -1776,9 +1777,10 @@ export const useSheetStore = defineStore('sheet',() => {
     const formattedTitle = toTitleCase(name.replace(/_/g, ' '));
     const skillOverrideValue = skills[name].overrideValue.value;
 
-    const dice = getRollDice();
-    const rollModeLabel = effectiveRollMode.value !== 'normal'
-      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+    const hasConditionDisadv = conditionDisadvantageOnSkillChecks.value;
+    const dice = getRollDice(hasConditionDisadv);
+    const rollModeLabel = (hasConditionDisadv || effectiveRollMode.value !== 'normal')
+      ? ` (${hasConditionDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
     if (skillOverrideValue !== '' && skillOverrideValue !== undefined){
@@ -1788,8 +1790,7 @@ export const useSheetStore = defineStore('sheet',() => {
         characterName: metaStore.name,
         components: [
           {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
-          {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true},
-          {label: 'Distressed', value: distressedPenalty.value, alwaysShowInBreakdown: distressedPenalty.value !== 0}
+          {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true}
         ]
       };
       rollToChat({rollObj});
@@ -1800,8 +1801,7 @@ export const useSheetStore = defineStore('sheet',() => {
         characterName: metaStore.name,
         components: [
           {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
-          {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true},
-          {label: 'Distressed', value: distressedPenalty.value, alwaysShowInBreakdown: distressedPenalty.value !== 0}
+          {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true}
         ]
       };
       if(skills[name].proficiency.value){
@@ -1814,9 +1814,10 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollWeapon = async (item,tier) => {
     let abMod = Number(knight_attack.value) || 0;
 
-    const dice = getRollDice();
-    const rollModeLabel = effectiveRollMode.value !== 'normal'
-      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+    const hasAttackDisadv = conditionDisadvantageOnAttacks.value;
+    const dice = getRollDice(hasAttackDisadv);
+    const rollModeLabel = (hasAttackDisadv || effectiveRollMode.value !== 'normal')
+      ? ` (${hasAttackDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
     const attackPromise = getRollResults(
@@ -1895,9 +1896,10 @@ export const useSheetStore = defineStore('sheet',() => {
   const rollSpell = async (item,tier) => {
     const abMod = abilityScores[mam.value]?.mod.value || 0;
 
-    const dice = getRollDice();
-    const rollModeLabel = effectiveRollMode.value !== 'normal'
-      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+    const hasAttackDisadv = conditionDisadvantageOnAttacks.value;
+    const dice = getRollDice(hasAttackDisadv);
+    const rollModeLabel = (hasAttackDisadv || effectiveRollMode.value !== 'normal')
+      ? ` (${hasAttackDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
     const attackPromise = getRollResults(
@@ -1982,9 +1984,10 @@ export const useSheetStore = defineStore('sheet',() => {
   };
 
   const rollKnightAttack = (name) => {
-    const dice = getRollDice();
-    const rollModeLabel = effectiveRollMode.value !== 'normal'
-      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+    const hasAttackDisadv = conditionDisadvantageOnAttacks.value;
+    const dice = getRollDice(hasAttackDisadv);
+    const rollModeLabel = (hasAttackDisadv || effectiveRollMode.value !== 'normal')
+      ? ` (${hasAttackDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
     const components = [
@@ -2015,9 +2018,10 @@ export const useSheetStore = defineStore('sheet',() => {
   };
 
   const rollStudentAttack = (name) => {
-    const dice = getRollDice();
-    const rollModeLabel = effectiveRollMode.value !== 'normal'
-      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+    const hasAttackDisadv = conditionDisadvantageOnAttacks.value;
+    const dice = getRollDice(hasAttackDisadv);
+    const rollModeLabel = (hasAttackDisadv || effectiveRollMode.value !== 'normal')
+      ? ` (${hasAttackDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
     const rollObj = {
@@ -2118,9 +2122,10 @@ export const useSheetStore = defineStore('sheet',() => {
   // ==================== SOUL GUN ROLL FUNCTIONS ====================
 
   const rollGunAttack = () => {
-    const dice = getRollDice();
-    const rollModeLabel = effectiveRollMode.value !== 'normal'
-      ? ` (${effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv'})`
+    const hasAttackDisadv = conditionDisadvantageOnAttacks.value;
+    const dice = getRollDice(hasAttackDisadv);
+    const rollModeLabel = (hasAttackDisadv || effectiveRollMode.value !== 'normal')
+      ? ` (${hasAttackDisadv ? 'Disadv - Condition' : (effectiveRollMode.value === 'advantage' ? 'Adv' : 'Disadv')})`
       : '';
 
     const components = [
@@ -2923,7 +2928,7 @@ export const useSheetStore = defineStore('sheet',() => {
     conditions,
     activeConditions,
     conditionDisadvantageOnAttacks,
-    distressedPenalty,
+    conditionDisadvantageOnSkillChecks,
 
     hp,
     mp,

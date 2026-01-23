@@ -266,17 +266,46 @@ const strengthMod = computed(() => {
 
 ### Combat Systems
 
-**Conditions Tracking (25+ conditions):**
+**Conditions Tracking (19 conditions in 3 categories):**
 ```javascript
 conditions: ref({
-  distressed: false,    // -1 to checks
-  horrified: false,     // Mental
-  berserk: false,
-  bleeding: false,      // Physical
-  burning: false,
-  exposed: false,
-  // ... etc
+  // Mental
+  distressed: false,    // Disadvantage on Skill Checks and Attack Actions
+  horrified: false,     // +1 Stress, Move 0, can't damage enemies, auto-hit vs you
+  berserk: false,       // Must attack, double STR damage, attacks have Advantage vs you
+  // Physical
+  bleeding: false,      // (N)-CON damage per Action (min 1). Medicine or healing to remove
+  burning: false,       // (N) damage per Action + at start of turn. Athletics/Mysticism to end
+  disoriented: false,   // Disadvantage on Attacks, Physical Resists, Skill Checks
+  exposed: false,       // Only one Free Action, Prone
+  paralyzed: false,     // No Actions, auto-hit
+  prone: false,         // Disadvantage on ranged, melee have adv vs you
+  restrained: false,    // Move 0, Disadvantage on attacks/DEX
+  unconscious: false,   // Knocked out, Prone, revert to Student Persona
+  // Depletion
+  depleted: false,      // Move 0, Disadvantage on Attacks, can't cast Spells, Armor = 10
+  drained: false,       // Move 0, Disadvantage on Attacks, spells cost +1 Tier MP
+  poisoned: false,      // Stress damage per Action, +1 Stress per Action
+  silenced: false,      // Can't speak or cast verbal spells
+  soulSiphoned1-4: false, // Progressive soul drain (IV = Paralyzed + 1 Trauma)
+  soulTainted: false    // Disadvantage vs Invading Evil, damage halved vs them
 })
+```
+
+**Condition Mechanics Computeds:**
+```javascript
+// Conditions that cause Disadvantage on YOUR attacks:
+// Depleted, Drained, Distressed, Disoriented
+conditionDisadvantageOnAttacks: computed(() => depleted || drained || distressed || disoriented)
+
+// Conditions that cause Disadvantage on skill checks:
+// Distressed ("Disadvantage on Skill Checks and Attack Actions")
+// Disoriented ("Disadvantage on Attacks, Physical Resists, Skill Checks")
+conditionDisadvantageOnSkillChecks: computed(() => distressed || disoriented)
+
+// These computeds are integrated into getRollDice() to force disadvantage
+// on attack rolls and skill/ability check rolls respectively.
+// No flat penalties are used - all condition effects use the Disadvantage mechanic.
 ```
 
 **Squadron Formations:**

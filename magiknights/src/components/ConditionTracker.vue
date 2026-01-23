@@ -10,44 +10,36 @@ const conditionCategories = {
   mental: {
     label: 'Mental',
     conditions: [
-      { key: 'distressed', name: 'Distressed', effect: '-1 to checks, can\'t Take Careful actions' },
-      { key: 'horrified', name: 'Horrified', effect: '+1 Stress, Disadvantage on checks, move 0' },
-      { key: 'berserk', name: 'Berserk', effect: 'Advantage on STR attacks, can\'t use Formations' }
+      { key: 'distressed', name: 'Distressed', effect: 'Disadvantage on Skill Checks and Attack Actions' },
+      { key: 'horrified', name: 'Horrified', effect: '+1 Stress, Move 0, can\'t damage enemies, auto-hit vs you' },
+      { key: 'berserk', name: 'Berserk', effect: 'Must attack, double STR damage, attacks have Advantage vs you' }
     ]
   },
   physical: {
     label: 'Physical',
     conditions: [
-      { key: 'bleeding', name: 'Bleeding', effect: '-2 HP/round until Medicine DC 12' },
-      { key: 'burning', name: 'Burning', effect: '-5 HP/round, DEX DC 12 to end' },
+      { key: 'bleeding', name: 'Bleeding', effect: '(N)-CON damage per Action (min 1). Medicine or healing to remove' },
+      { key: 'burning', name: 'Burning', effect: '(N) damage per Action + at start of turn. Athletics/Mysticism to end' },
+      { key: 'disoriented', name: 'Disoriented', effect: 'Disadvantage on Attacks, Physical Resists, Skill Checks' },
       { key: 'exposed', name: 'Exposed', effect: 'Only one Free Action, Prone' },
       { key: 'paralyzed', name: 'Paralyzed', effect: 'No Actions, auto-hit' },
       { key: 'prone', name: 'Prone', effect: 'Disadvantage on ranged, melee have adv vs you' },
-      { key: 'restrained', name: 'Restrained', effect: 'Move 0, Disadvantage on attacks/DEX' }
+      { key: 'restrained', name: 'Restrained', effect: 'Move 0, Disadvantage on attacks/DEX' },
+      { key: 'unconscious', name: 'Unconscious', effect: 'Knocked out, Prone, revert to Student Persona' }
     ]
   },
   depletion: {
     label: 'Depletion',
     conditions: [
-      { key: 'depleted', name: 'Depleted', effect: '-1 spell DC/attack, no Bonus Actions' },
-      { key: 'drained', name: 'Drained', effect: 'Can\'t regain HP/MP, Disadvantage on checks' },
+      { key: 'depleted', name: 'Depleted', effect: 'Move 0, Disadvantage on Attacks, can\'t cast Spells, Armor = 10' },
+      { key: 'drained', name: 'Drained', effect: 'Move 0, Disadvantage on Attacks, spells cost +1 Tier MP' },
+      { key: 'poisoned', name: 'Poisoned', effect: 'Stress damage per Action, +1 Stress per Action' },
       { key: 'silenced', name: 'Silenced', effect: 'Can\'t speak or cast verbal spells' },
       { key: 'soulSiphoned1', name: 'Soul-Siphoned I', effect: 'Minor soul drain effects' },
       { key: 'soulSiphoned2', name: 'Soul-Siphoned II', effect: 'Moderate soul drain effects' },
       { key: 'soulSiphoned3', name: 'Soul-Siphoned III', effect: 'Severe soul drain effects' },
-      { key: 'soulTainted', name: 'Soul-Tainted', effect: 'Disadvantage on all rolls' }
-    ]
-  },
-  other: {
-    label: 'Other',
-    conditions: [
-      { key: 'blinded', name: 'Blinded', effect: 'Auto-fail sight checks, Disadvantage on attacks' },
-      { key: 'charmed', name: 'Charmed', effect: 'Can\'t attack charmer, charmer has social advantage' },
-      { key: 'frightened', name: 'Frightened', effect: 'Disadvantage while source visible, can\'t move closer' },
-      { key: 'incapacitated', name: 'Incapacitated', effect: 'No actions or reactions' },
-      { key: 'invisible', name: 'Invisible', effect: 'Advantage on attacks, attacks vs you have disadvantage' },
-      { key: 'poisoned', name: 'Poisoned', effect: 'Disadvantage on attacks and ability checks' },
-      { key: 'stunned', name: 'Stunned', effect: 'Incapacitated, can\'t move, auto-fail STR/DEX saves' }
+      { key: 'soulSiphoned4', name: 'Soul-Siphoned IV', effect: 'Paralyzed + 1 Trauma' },
+      { key: 'soulTainted', name: 'Soul-Tainted', effect: 'Disadvantage vs Invading Evil, damage halved vs them' }
     ]
   }
 };

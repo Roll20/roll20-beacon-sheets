@@ -22,7 +22,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md to reflect the corrected condition list"
     ],
     "context": "The ConditionTracker.vue has 4 categories (mental, physical, depletion, other). The `other` category contains 7 D&D 5e conditions (blinded, charmed, frightened, incapacitated, invisible, poisoned, stunned) that don't exist in Magi-Knights. The compendium defines 17+ conditions: Berserk, Bleeding, Burning, Depleted, Disoriented, Distressed, Drained, Exposed, Horrified, Paralyzed, Poisoned, Prone, Restrained, Silenced, Soul-Siphoned I-IV, Soul-Tainted, Unconscious. The sheet is missing Disoriented, Unconscious, and Soul-Siphoned IV.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 2,
@@ -41,7 +41,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md condition section if it lists condition effects"
     ],
     "context": "Multiple condition descriptions in ConditionTracker.vue are simplified or incorrect compared to the compendium. The compendium defines precise mechanical effects for each condition. Key corrections: Bleeding uses (N)-CON formula not flat -2, Burning has per-Action AND start-of-turn damage, Depleted/Drained set Move to 0 and have specific spell restrictions, Berserk forces attacks and doubles STR (not advantage on attacks), Soul-Tainted only affects rolls vs Invading Evil.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 3,
@@ -58,7 +58,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md to document the corrected condition mechanics"
     ],
     "context": "In sheetStore.js, the `conditionDisadvantageOnAttacks` computed references non-existent conditions (blinded, frightened) and incorrect conditions (prone gives advantage to attackers within 15ft, not disadvantage to the prone creature's attacks; restrained doesn't cause attack disadvantage). Per the compendium, conditions that cause Disadvantage on YOUR attacks: Depleted ('Attacks made with Disadvantage'), Drained ('Attacks made with Disadvantage'), Distressed ('Disadvantage on Skill Checks and Attack Actions'), Disoriented ('Disadvantage on Attacks'). The `distressedPenalty` applies a flat -1 which is wrong - it should be Disadvantage.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 4,
