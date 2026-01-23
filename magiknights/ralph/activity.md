@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 10/17
-- **Current Task:** 11 - Implement level-locked ability tracking
+- **Tasks Completed:** 11/17
+- **Current Task:** 12 - Implement Sleep Phase effect tracking and daily limits
 - **Last Updated:** 2026-01-23
 
 ---
@@ -219,6 +219,23 @@
 - Rewrote Combat Forms section in KnightView.vue: Active Form dropdown selector, description display (with mastery effect when mastered), mastery checkbox grid (I-X), custom form notes preserved via collapsible repeating section
 - Added CSS styling for combat form UI (active form selector, detail panel, mastery grid, notes section)
 - Updated ARCHITECTURAL_ANALYSIS.md with Combat Forms documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 11: Implement level-locked ability tracking
+
+**Changes Made:**
+- Added `levelAbilityData` constant with 6 level-locked abilities: Counter Blast (5), Perfect Parry (6), Extricate Aether (6), Heroic Resolve (9), Knight's Insight (9), Knight's Resolution (9)
+- Added `levelAbilities` computed that returns boolean unlock status for each ability based on current level
+- Added Level Abilities section in KnightView.vue after Combat Forms: displays all 6 abilities with level badge, name, and description
+- Unlocked abilities show full opacity with green badge; locked abilities are dimmed
+- Added `levelAbilityData` and `levelAbilities` to store exports
+- Updated ARCHITECTURAL_ANALYSIS.md with Level-Locked Abilities documentation
 
 **Files Modified:**
 - `src/stores/sheetStore.js`

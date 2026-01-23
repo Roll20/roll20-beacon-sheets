@@ -316,6 +316,23 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     </template>
   </Collapsible>
 </NotchContainer>
+
+<NotchContainer class="level-abilities-container basic-item" width="thick" notchType="curve">
+  <h4>Level Abilities</h4>
+  <div class="level-abilities-list">
+    <div
+      v-for="(ability, key) in sheet.levelAbilityData"
+      :key="key"
+      class="level-ability-item"
+      :class="{ unlocked: sheet.levelAbilities[key], locked: !sheet.levelAbilities[key] }"
+    >
+      <span class="ability-level-badge">{{ ability.level }}</span>
+      <span class="ability-name">{{ ability.name }}</span>
+      <span class="ability-desc">{{ ability.description }}</span>
+    </div>
+  </div>
+</NotchContainer>
+
   <NotchContainer class="arm-rune-container basic-item" width="thick" notchType="curve">
     <h4>Soul Armament Runes</h4>
     <RepeatingSection name="runes">
@@ -810,6 +827,58 @@ html.dark {
     .form-mastery-effect {
       color: #64b5f6;
     }
+  }
+}
+
+.level-abilities-container {
+  .level-abilities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .level-ability-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+
+    &.locked {
+      opacity: 0.4;
+    }
+
+    &.unlocked {
+      opacity: 1;
+    }
+  }
+
+  .ability-level-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(100, 100, 200, 0.3);
+    font-size: 0.75em;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .ability-name {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .ability-desc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85em;
+  }
+
+  .unlocked .ability-level-badge {
+    background: rgba(100, 200, 100, 0.4);
   }
 }
 

@@ -209,7 +209,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md progression section"
     ],
     "context": "The compendium defines special abilities that unlock at specific levels: Counter Blast (5th+), Perfect Parry (6th+), Extricate Aether (6th+), Heroic Resolve (9th+), Knight's Insight (9th+), Knight's Resolution (9th+). These are distinct from Battle Techniques and Combat Tactics - they are permanent abilities that all Magi-Knights gain at the specified levels. The sheet should display which are unlocked based on the character's current level.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 12,

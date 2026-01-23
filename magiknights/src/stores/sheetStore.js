@@ -962,6 +962,27 @@ export const useSheetStore = defineStore('sheet',() => {
   // Whether Form X (Regulation) is mastered - needed for Soul Gun access
   const hasFormX = computed(() => combatFormMastery.value.formX);
 
+  // ==================== LEVEL-LOCKED ABILITIES ====================
+  // Special abilities that all Magi-Knights gain at specific levels
+  const levelAbilityData = {
+    counterBlast: { name: 'Counter Blast', level: 5, description: 'Reaction: When hit by spell, spend MP to counter' },
+    perfectParry: { name: 'Perfect Parry', level: 6, description: 'Immediate: Negate weapon damage received' },
+    extricateAether: { name: 'Extricate Aether', level: 6, description: 'Recover MP from defeated Outsiders' },
+    heroicResolve: { name: 'Heroic Resolve', level: 9, description: 'Resist conditions with enhanced willpower' },
+    knightsInsight: { name: "Knight's Insight", level: 9, description: 'Gain tactical information about enemies' },
+    knightsResolution: { name: "Knight's Resolution", level: 9, description: 'Enhanced resistance to attrition effects' }
+  };
+
+  // Computed: which level abilities are unlocked based on current level
+  const levelAbilities = computed(() => ({
+    counterBlast: level.value >= 5,
+    perfectParry: level.value >= 6,
+    extricateAether: level.value >= 6,
+    heroicResolve: level.value >= 9,
+    knightsInsight: level.value >= 9,
+    knightsResolution: level.value >= 9
+  }));
+
   // Damage type labels for display
   const damageTypeLabels = {
     physical: 'Physical',
@@ -3167,6 +3188,10 @@ export const useSheetStore = defineStore('sheet',() => {
     activeCombatForm,
     combatFormMastery,
     hasFormX,
+
+    // Level-Locked Abilities
+    levelAbilityData,
+    levelAbilities,
 
     damageTypeLabels,
     gloom_gems:gloom,
