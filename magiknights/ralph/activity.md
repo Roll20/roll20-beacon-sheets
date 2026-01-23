@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 7/17
-- **Current Task:** 8 - Remove empty stub components
+- **Tasks Completed:** 8/17
+- **Current Task:** 9 - Implement Endurance Die and attrition mechanics
 - **Last Updated:** 2026-01-23
 
 ---
@@ -165,6 +165,22 @@
 - `src/views/NPCView.vue`
 - `src/stores/sheetStore.js`
 - `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 8: Remove empty stub components
+
+**Changes Made:**
+- Confirmed `BurstDisplay.vue` and `DiamondDisplay.vue` are empty stubs (empty script/template/style blocks, no functionality)
+- Searched all `.vue` files and `ARCHITECTURAL_ANALYSIS.md` for any imports or references — none found
+- Deleted `src/components/BurstDisplay.vue`
+- Deleted `src/components/DiamondDisplay.vue`
+- No updates needed to `ARCHITECTURAL_ANALYSIS.md` (no references to these files existed)
+- Build verified successfully
+
+**Files Modified:**
+- `src/components/BurstDisplay.vue` (deleted)
+- `src/components/DiamondDisplay.vue` (deleted)
 - `ralph/plan.md`
 - `ralph/activity.md`
 
