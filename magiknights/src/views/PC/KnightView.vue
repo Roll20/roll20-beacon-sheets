@@ -276,29 +276,45 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 
 <NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
   <h4>Combat Forms</h4>
-  <RepeatingSection name="forms">
-    <RepeatingItem name="forms" v-for="item in sheet.sections.forms.rows" :key="item._id" :row="item">
-      <Collapsible class="form-item basic-item" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
-        <template v-slot:expanded>
-          <div class="flex-box half-gap grow-label">
-            <label :for="`form-${item._id}-name`">Name</label>
-            <input type="text" class="underline" v-model="item.name" :id="`form-${item._id}-name`">
+  <div class="combat-form-active">
+    <label for="active-combat-form">Active Form</label>
+    <select id="active-combat-form" v-model="sheet.activeCombatForm" class="underline">
+      <option value="">None</option>
+      <option v-for="(form, key) in sheet.combatFormData" :key="key" :value="key">
+        {{ form.name }}
+      </option>
+    </select>
+  </div>
+  <div v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="combat-form-detail">
+    <p class="form-effect">{{ sheet.combatFormData[sheet.activeCombatForm].description }}</p>
+    <p v-if="sheet.combatFormMastery[sheet.activeCombatForm]" class="form-mastery-effect">Mastery: {{ sheet.combatFormData[sheet.activeCombatForm].mastery }}</p>
+  </div>
+  <div class="combat-form-mastery-list">
+    <label class="properties-header">Mastery</label>
+    <div class="form-mastery-grid">
+      <label v-for="(form, key) in sheet.combatFormData" :key="key" class="form-mastery-item" :title="form.name">
+        <input type="checkbox" v-model="sheet.combatFormMastery[key]">
+        <span class="form-numeral">{{ key.replace('form', '') }}</span>
+      </label>
+    </div>
+  </div>
+  <Collapsible class="form-notes-section basic-item" :default="true">
+    <template v-slot:expanded>
+      <label class="properties-header">Custom Form Notes</label>
+      <RepeatingSection name="forms">
+        <RepeatingItem name="forms" v-for="item in sheet.sections.forms.rows" :key="item._id" :row="item">
+          <div class="form-note-item">
+            <input type="text" class="underline" v-model="item.name" placeholder="Form name">
+            <textarea class="underline" v-model="item.description" placeholder="Notes"></textarea>
+            <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('forms', item._id)">delete_forever</button>
           </div>
-          <div class="grid">
-            <label class="properties-header" :for="`form-${item._id}-description`">Description</label>
-            <textarea class="underline" v-model="item.description" :id="`form-${item._id}-description`"></textarea>
-          </div>
-        </template>
-        <template v-slot:collapsed>
-          <span>{{ item.name || 'New Form' }}</span>
-        </template>
-        <!-- Delete button -->
-        <div class="repcontrol">
-          <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('forms', item._id)">delete_forever</button>
-        </div>
-      </Collapsible>
-    </RepeatingItem>
-  </RepeatingSection>
+        </RepeatingItem>
+      </RepeatingSection>
+    </template>
+    <template v-slot:collapsed>
+      <span>Custom Notes ({{ sheet.sections.forms.rows.length }})</span>
+    </template>
+  </Collapsible>
 </NotchContainer>
   <NotchContainer class="arm-rune-container basic-item" width="thick" notchType="curve">
     <h4>Soul Armament Runes</h4>
@@ -699,6 +715,101 @@ html.dark {
     background: #1565c0;
     color: white;
     margin-left: 4px;
+  }
+}
+
+.combat-form-container {
+  .combat-form-active {
+    display: flex;
+    align-items: center;
+    gap: var(--half-gap);
+    margin-bottom: 4px;
+
+    label {
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    select {
+      flex: 1;
+    }
+  }
+
+  .combat-form-detail {
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    background: rgba(74, 74, 138, 0.08);
+    border-radius: 4px;
+    font-size: 0.85rem;
+
+    .form-effect {
+      margin: 2px 0;
+    }
+
+    .form-mastery-effect {
+      margin: 2px 0;
+      font-style: italic;
+      color: #1565c0;
+    }
+  }
+
+  .combat-form-mastery-list {
+    margin-bottom: 6px;
+
+    .form-mastery-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .form-mastery-item {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 0.8rem;
+      cursor: pointer;
+
+      .form-numeral {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .form-notes-section {
+    margin-top: 4px;
+  }
+
+  .form-note-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px;
+    margin-bottom: 4px;
+
+    input {
+      grid-column: 1;
+    }
+
+    textarea {
+      grid-column: 1;
+      min-height: 2em;
+    }
+
+    .delete-button {
+      grid-column: 2;
+      grid-row: 1 / -1;
+      align-self: center;
+    }
+  }
+}
+
+html.dark {
+  .combat-form-detail {
+    background: rgba(100, 100, 200, 0.15);
+
+    .form-mastery-effect {
+      color: #64b5f6;
+    }
   }
 }
 

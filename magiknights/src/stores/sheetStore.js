@@ -935,6 +935,33 @@ export const useSheetStore = defineStore('sheet',() => {
       .map(([key]) => implementQualityDefs[key]?.name || key);
   });
 
+  // ==================== COMBAT FORMS ====================
+  // The 10 Combat Forms from the compendium
+  const combatFormData = {
+    formI: { name: 'Form I - Adaptation', description: 'Choose One: +1 Weapon Attack OR +1 Attack for Summons', mastery: '+2 Attack (instead of +1)' },
+    formII: { name: 'Form II - Deflection', description: 'Choose One: +1 Armor OR +1 Armor for Summons', mastery: '+2 Armor (instead of +1)' },
+    formIII: { name: 'Form III - Vindication', description: 'Req: One-handed weapon only. +2 damage per Rep Level (min 1)', mastery: '+4 damage + Vicious Quality (or +1 die step, or +3 if d12)' },
+    formIV: { name: 'Form IV - Purgation', description: 'Req: Two-Handed Melee. Bonus Action: STR/DEX Mod × Rep Level damage to Horde/Swarm parts', mastery: 'Additionally add Proficiency Modifier to damage' },
+    formV: { name: 'Form V - Refraction', description: 'Reaction: Reduce ally damage by Xd6 (X=Rep Level, min 1), take damage instead', mastery: 'Xd8 instead of Xd6' },
+    formVI: { name: 'Form VI - Reflection', description: 'Req: Shield. 1/Round Reaction: Impose Disadvantage on attack vs adjacent ally; become target if hit', mastery: 'Range increased to 10 feet' },
+    formVII: { name: 'Form VII - Vibration', description: 'Req: Coupled weapon. 1/Round: If both weapons hit same target, free Primary attack', mastery: '+2 damage to Primary/Secondary + Vicious (or +5 on crit)' },
+    formVIII: { name: 'Form VIII - Constellation', description: 'Bonus Action: +1 Spell DC, +1 Spell Attack, +2×Rep healing, OR +Rep damage (until end of turn)', mastery: 'Full-Round: +3 Resist(Magic)/Spell Attack, OR +3×Rep Curing/Damage' },
+    formIX: { name: 'Form IX - Cessation', description: 'Req: 15ft+ range, enemy adjacent to ally. Bonus Action: +1 Attack, +2 damage, OR ally moves 10ft', mastery: 'Full-Round: +3 Attack, +6 Damage, OR ally moves 30ft' },
+    formX: { name: 'Form X - Regulation', description: 'Grants the ability to wield Soul Guns', mastery: 'Each successful Open Fire deals +Rep Level damage' }
+  };
+
+  // Currently active combat form
+  const activeCombatForm = ref('');
+
+  // Mastery tracking for each form
+  const combatFormMastery = ref({
+    formI: false, formII: false, formIII: false, formIV: false, formV: false,
+    formVI: false, formVII: false, formVIII: false, formIX: false, formX: false
+  });
+
+  // Whether Form X (Regulation) is mastered - needed for Soul Gun access
+  const hasFormX = computed(() => combatFormMastery.value.formX);
+
   // Damage type labels for display
   const damageTypeLabels = {
     physical: 'Physical',
@@ -1637,6 +1664,8 @@ export const useSheetStore = defineStore('sheet',() => {
       student_ability: dehydrateStudentAbility(student_ability),
       fate: dehydrateFate(fate),
       armor_weave: dehydrateArmorWeave(armor_weave),
+      activeCombatForm: activeCombatForm.value,
+      combatFormMastery: { ...combatFormMastery.value },
       veilPiercingUsed: veilPiercingUsed.value,
       manaConduitUsed: manaConduitUsed.value,
       soul_weapon: dehydrateSoulWeapon(soul_weapon),
@@ -1795,6 +1824,12 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateStudentAbility(student_ability, hydrateStore.student_ability);
     hydrateFate(fate, hydrateStore.fate);
     hydrateArmorWeave(armor_weave, hydrateStore.armor_weave);
+    activeCombatForm.value = hydrateStore.activeCombatForm ?? activeCombatForm.value;
+    if (hydrateStore.combatFormMastery) {
+      Object.keys(combatFormMastery.value).forEach(key => {
+        combatFormMastery.value[key] = hydrateStore.combatFormMastery[key] ?? combatFormMastery.value[key];
+      });
+    }
     veilPiercingUsed.value = hydrateStore.veilPiercingUsed ?? veilPiercingUsed.value;
     manaConduitUsed.value = hydrateStore.manaConduitUsed ?? manaConduitUsed.value;
     hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
@@ -3126,6 +3161,13 @@ export const useSheetStore = defineStore('sheet',() => {
     wardingReduction,
     manaConduitUsed,
     activeImplementQualities,
+
+    // Combat Forms
+    combatFormData,
+    activeCombatForm,
+    combatFormMastery,
+    hasFormX,
+
     damageTypeLabels,
     gloom_gems:gloom,
     unity_points:unity,

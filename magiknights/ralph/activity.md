@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 9/17
-- **Current Task:** 10 - Implement Combat Form selection and tracking
+- **Tasks Completed:** 10/17
+- **Current Task:** 11 - Implement level-locked ability tracking
 - **Last Updated:** 2026-01-23
 
 ---
@@ -203,6 +203,26 @@
 
 **Files Modified:**
 - `src/stores/sheetStore.js`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 10: Implement Combat Form selection and tracking
+
+**Changes Made:**
+- Added `combatFormData` constant with all 10 Combat Forms (I-X) including name, description, and mastery description for each
+- Added `activeCombatForm` ref (string, default '') for tracking which form is currently selected
+- Added `combatFormMastery` ref (object with formI-formX booleans) for tracking mastery unlocks
+- Added `hasFormX` computed (returns combatFormMastery.formX) for determining Soul Gun access
+- Added `activeCombatForm` and `combatFormMastery` to dehydrate/hydrate cycle for persistence
+- Added Combat Form exports: combatFormData, activeCombatForm, combatFormMastery, hasFormX
+- Rewrote Combat Forms section in KnightView.vue: Active Form dropdown selector, description display (with mastery effect when mastered), mastery checkbox grid (I-X), custom form notes preserved via collapsible repeating section
+- Added CSS styling for combat form UI (active form selector, detail panel, mastery grid, notes section)
+- Updated ARCHITECTURAL_ANALYSIS.md with Combat Forms documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

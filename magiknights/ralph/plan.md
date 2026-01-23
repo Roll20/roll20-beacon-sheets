@@ -195,7 +195,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md combat forms section"
     ],
     "context": "The compendium defines 10 Combat Forms (I-X) that Magi-Knights learn as they level up. Each form provides specific combat bonuses and can be Mastered for enhanced effects. Form X: Regulation is specifically required for Soul Gun access. The current sheet has a generic repeating section for forms but no structured selection, mastery tracking, or mechanical integration. Combat Forms are a core character sheet feature that players actively choose and switch between.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 11,

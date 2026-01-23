@@ -337,6 +337,31 @@ fallenKnight: computed(() => corruptionCount >= 5)     // 1/2 Trauma, Refreshing
 - Unity Point cost (unlocked at Rep II)
 - Effects scale with Reputation
 
+**Combat Forms (10 structured forms):**
+```javascript
+// The 10 Combat Forms from the compendium, with selection and mastery tracking
+combatFormData: {
+  formI: { name: 'Form I - Adaptation', description: '...', mastery: '...' },
+  formII: { name: 'Form II - Deflection', ... },
+  formIII: { name: 'Form III - Vindication', ... },
+  formIV: { name: 'Form IV - Purgation', ... },
+  formV: { name: 'Form V - Refraction', ... },
+  formVI: { name: 'Form VI - Reflection', ... },
+  formVII: { name: 'Form VII - Vibration', ... },
+  formVIII: { name: 'Form VIII - Constellation', ... },
+  formIX: { name: 'Form IX - Cessation', ... },
+  formX: { name: 'Form X - Regulation', ... }  // Required for Soul Gun access
+}
+
+activeCombatForm: ref('')           // Currently active form key
+combatFormMastery: ref({...})       // Boolean per form for mastery unlock
+hasFormX: computed(() => combatFormMastery.formX)  // Soul Gun prerequisite
+```
+- UI: Active Form dropdown selector with description display
+- Mastery checkboxes (I-X) with roman numeral labels
+- Mastery effect shown when active form is mastered
+- Custom form notes preserved via sections.forms repeating section
+
 ### Equipment System
 
 **Soul Weapon Qualities (8 qualities in 3 categories):**
