@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 4/17
-- **Current Task:** 5 - Replace fabricated gun quality system with correct Soul Gun mechanics
+- **Tasks Completed:** 5/17
+- **Current Task:** 6 - Fix implement quality system to match compendium
 - **Last Updated:** 2026-01-23
 
 ---
@@ -89,6 +89,32 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/components/WeaponQualitiesSelector.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 5: Replace fabricated gun quality system with correct Soul Gun mechanics
+
+**Changes Made:**
+- Replaced entire `soul_gun` object: removed `range`, `damage`, `damageType`, `qualities` refs; added `gunType` (string, default 'hdg'), `gunStyle` (string), `aimed` (boolean), `hasReloaded` (boolean), `firingPoolBonus` (number), `attachments` (array)
+- Added `gunTypeData` constant with all 7 gun types from compendium: HDG, SMG, ASR, DMR, STG, LMG, SDA with correct E-Range, damage, RF, MD, and special ability for each
+- Added `gunStyleData` constant with 5 styles: Akimbo, Aegis/Musketeer, Fast Reload (HDG); Mobile, Hail of Bullets (SMG)
+- Added `gunTypeStats` computed (returns stats for current gun type)
+- Added `availableGunStyles` computed (filters styles by current gun type)
+- Added `effectiveMD` computed (accounts for Akimbo +1 MD)
+- Removed fabricated computeds: `gunQualityDefs`, `gunQualityAttackBonus`, `gunQualityDamageBonus`, `gunCritRange`, `activeGunQualities`
+- Replaced `rollGunAttack` with `rollGunRapidFire` (rolls RF d8s + DEX + Prof) and `rollGunMagDump` (rolls MD d8s + DEX + Prof, sets hasReloaded=false)
+- Rewrote `rollGunDamage` to use gun type's damage die automatically
+- Updated `dehydrateSoulGun`/`hydrateSoulGun` for new field structure
+- Rewrote `GunQualitiesSelector.vue`: now shows Gun Type dropdown, stats display, Gun Style selector (HDG/SMG only), Aimed/Reloaded state toggles, and Attachments repeating section
+- Updated `KnightView.vue` gun section: collapsed view shows RF/MD/Dmg buttons with gun type tag and reload warning; expanded view shows name input + GunQualitiesSelector
+- Updated store exports: removed old gun quality exports, added gunTypeData, gunStyleData, gunTypeStats, availableGunStyles, effectiveMD, rollGunRapidFire, rollGunMagDump
+- Updated ARCHITECTURAL_ANALYSIS.md Soul Gun section with Firing Pool documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/components/GunQualitiesSelector.vue`
+- `src/views/PC/KnightView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

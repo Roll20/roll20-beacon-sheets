@@ -100,7 +100,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md Soul Gun section"
     ],
     "context": "The entire gun quality system is fabricated. Soul Guns in Magi-Knights use a completely different mechanic: a Firing Pool system where you roll multiple d8s (RF for rapid fire, MD for mag dump) + DEX + Proficiency vs Armor. Each '8' rolled is a Direct Hit (+Prof damage). The 7 gun types have different E-Range, damage, and ROF values. HDG and SMG have Gun Style choices. All guns can have Attachments (Scopes, Magazines, Rail/Underbarrel, Muzzles) that modify the Firing Pool. The sheet should track: gun type, style (if applicable), attachments, and firing pool state (aimed, reloaded).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 6,

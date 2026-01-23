@@ -339,7 +339,27 @@ soul_weapon: {
 // veilPiercingUsed ref tracks 1/encounter usage
 ```
 
-**Soul Gun** and **Magical Implement** follow similar patterns with unique qualities.
+**Soul Gun** uses a Firing Pool system (not d20-based):
+```javascript
+// Soul Gun data structure
+const soul_gun = {
+  name: ref(''),
+  gunType: ref('hdg'),        // 7 types: hdg, smg, asr, dmr, stg, lmg, sda
+  gunStyle: ref(''),          // HDG: akimbo/aegis/fastReload; SMG: mobile/hailOfBullets
+  aimed: ref(false),          // Bonus Action: +1 to one Firing Pool die
+  hasReloaded: ref(true),     // Must reload after Mag Dump
+  firingPoolBonus: ref(0),    // Additional pool modifiers
+  attachments: ref([]),       // Array of {name, type, effect}
+  collapsed: ref(true)
+}
+// Firing Pool: Roll Nd8 + DEX + Proficiency vs Armor
+// RF = Rapid Fire (standard), MD = Mag Dump (full burst, needs reload)
+// Each "8" rolled = Direct Hit (+Proficiency damage)
+// gunTypeData provides stats: eRange, damage, rf, md, special per type
+// gunStyleData provides style options for HDG/SMG only
+```
+
+**Magical Implement** follows a quality-based pattern.
 
 ### NPC/Monster System
 
