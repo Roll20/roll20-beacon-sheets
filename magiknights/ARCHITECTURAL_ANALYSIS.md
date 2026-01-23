@@ -487,6 +487,17 @@ squire: {
 - Shows name, damage, armor stats, health/mana blip checkboxes, spell path selectors, skills, notes
 - Collapsed summary shows squire name and damage badge
 
+### Relic Capacity
+
+```javascript
+relicCapacity: computed(() => reputation.value)    // Max relics = Reputation Level (0-5)
+relicsOverCapacity: computed(() => relicCount > relicCapacity)
+relicCount: computed(() => sections.relics.rows.length)
+```
+- UI shows current/max relic count in header (e.g., "2/3")
+- Warning displayed when over capacity
+- Relics are stored in `sections.relics` repeating section with name + description fields
+
 ### Equipment System
 
 **Soul Weapon Qualities (8 qualities in 3 categories):**

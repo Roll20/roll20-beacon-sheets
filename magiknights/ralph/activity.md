@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 15/17
-- **Current Task:** 16 - Add Relic capacity enforcement
+- **Tasks Completed:** 16/17
+- **Current Task:** 17 - Final verification and cleanup
 - **Last Updated:** 2026-01-23
 
 ---
@@ -327,6 +327,26 @@
 - `src/stores/sheetStore.js`
 - `src/components/MagiSquire.vue` (new)
 - `src/views/PC/StudentView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 16: Add Relic capacity enforcement
+
+**Changes Made:**
+- Added `relicCapacity` computed (returns reputation.value, i.e., max relics = Reputation Level 0-5)
+- Added `relicsOverCapacity` computed (true when relic count exceeds capacity)
+- Added `relicCount` computed (number of relics in sections.relics.rows)
+- Updated KnightView.vue relics section: added capacity indicator showing current/max (e.g., "2/3")
+- Added visual warning text when over capacity ("Over capacity! Max relics = Reputation Level")
+- Over-capacity indicator turns red; normal state has subtle green background
+- Added CSS styling for relic header row, capacity badge, and warning text
+- Added relicCapacity, relicsOverCapacity, relicCount to store exports
+- Updated ARCHITECTURAL_ANALYSIS.md with Relic Capacity documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

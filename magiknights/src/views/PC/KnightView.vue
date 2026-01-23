@@ -434,7 +434,13 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   </div>
   <div class="relics-section">
     <NotchContainer>
-      <h4>relics</h4>
+      <div class="relic-header-row">
+        <h4>relics</h4>
+        <span class="relic-capacity" :class="{ 'over-capacity': sheet.relicsOverCapacity }">
+          {{ sheet.relicCount }}/{{ sheet.relicCapacity }}
+        </span>
+      </div>
+      <div v-if="sheet.relicsOverCapacity" class="relic-warning">Over capacity! Max relics = Reputation Level</div>
       <RepeatingSection name="relics">
         <RepeatingItem v-for="item in sheet.sections.relics.rows" :key="item._id" :row="item" name="relics"
           class="relics-item">
@@ -601,7 +607,33 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 
   .relics-section {
   grid-column: 1 / -1;
-  
+
+  .relic-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    h4 { margin: 0; }
+  }
+
+  .relic-capacity {
+    font-size: 0.85em;
+    font-weight: bold;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: rgba(100, 200, 100, 0.15);
+    &.over-capacity {
+      background: rgba(200, 80, 80, 0.2);
+      color: #e55;
+    }
+  }
+
+  .relic-warning {
+    font-size: 0.8em;
+    color: #e55;
+    font-style: italic;
+    padding: 2px 0;
+  }
+
   .repcontainer {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

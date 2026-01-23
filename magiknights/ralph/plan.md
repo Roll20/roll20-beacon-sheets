@@ -293,7 +293,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md relics section"
     ],
     "context": "The compendium states that Magi-Knights can carry a maximum number of Relics equal to their Reputation Level (0-V, so 0-5 relics). The current sheet has a generic repeating section for relics with no capacity enforcement. Adding a simple capacity display and warning keeps players aware of their limit.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 17,

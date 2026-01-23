@@ -101,6 +101,10 @@ export const useSheetStore = defineStore('sheet',() => {
   const soulSacrificeCount = ref(0);
   const soulSacrificeMax = computed(() => reputation.value);
 
+  // Relic capacity: max relics = Reputation Level (0-5)
+  const relicCapacity = computed(() => reputation.value);
+  // NOTE: relicsOverCapacity is defined after sections object (requires sections.relics.rows)
+
   // Get the dice expression based on roll mode
   const getRollDice = (forceDisadvantage = false, forceAdvantage = false) => {
     let mode;
@@ -1462,6 +1466,10 @@ export const useSheetStore = defineStore('sheet',() => {
   const removeRow = (section,id) => {
     sections[section].rows.value = sections[section].rows.value.filter(row => row._id !== id);
   };
+
+  // Relic capacity enforcement (computed after sections defined)
+  const relicsOverCapacity = computed(() => sections.relics.rows.value.length > relicCapacity.value);
+  const relicCount = computed(() => sections.relics.rows.value.length);
 
   // Helper methods for Battle Techniques
   const resetTechniqueUses = (frequency = 'all') => {
@@ -3329,6 +3337,11 @@ export const useSheetStore = defineStore('sheet',() => {
     sealImplantReceived,
     soulSacrificeCount,
     soulSacrificeMax,
+
+    // Relic capacity
+    relicCapacity,
+    relicsOverCapacity,
+    relicCount,
 
     // Roll mode (advantage/disadvantage)
     rollMode,
