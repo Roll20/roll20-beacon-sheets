@@ -402,6 +402,36 @@ soulSacrificeMax: computed          // Max = Reputation Level (career total)
 - Soul Sacrifice counter with career max display
 - All values persist via dehydrate/hydrate cycle
 
+### Social Bonds & Heart Stages
+
+**Heart Stage Progression (7 stages):**
+```javascript
+heartStageData = [
+  { value: 'threatening', label: 'Threatening' },
+  { value: 'hostile', label: 'Hostile' },
+  { value: 'cold', label: 'Cold' },
+  { value: 'neutral', label: 'Neutral' },   // default
+  { value: 'warm', label: 'Warm' },
+  { value: 'friendly', label: 'Friendly' },
+  { value: 'sympathetic', label: 'Sympathetic' }
+]
+```
+
+**Social Bond Data Model (repeating sections: npc-social, squadron-social):**
+```javascript
+template: {
+  name: '',
+  points: 0,              // Social Points
+  heartStage: 'neutral',  // Heart Stage progression
+  bond_ability: '',        // Bond ability text
+  collapsed: false
+}
+```
+- UI: SocialSection.vue displays 4-column grid (Name, Heart Stage, SP, Bond Ability)
+- Collapsed view shows stage label; expanded view shows stage dropdown selector
+- Heart Stages represent NPC relationship progression per compendium
+- Persisted automatically via generic section serialization (arrayToObject/objectToArray)
+
 ### Equipment System
 
 **Soul Weapon Qualities (8 qualities in 3 categories):**

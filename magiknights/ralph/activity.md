@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 12/17
-- **Current Task:** 13 - Implement Heart Stage tracking for social bonds
+- **Tasks Completed:** 13/17
+- **Current Task:** 14 - Implement Rolls to Resist advantage/disadvantage tracking
 - **Last Updated:** 2026-01-23
 
 ---
@@ -263,6 +263,25 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 13: Implement Heart Stage tracking for social bonds
+
+**Changes Made:**
+- Added `heartStage` field (string, default 'neutral') to the social bond template in sheetStore.js for both `npc-social` and `squadron-social` repeating sections
+- Added `heartStageData` constant with 7 stages in progression order: Threatening, Hostile, Cold, Neutral, Warm, Friendly, Sympathetic
+- Updated `SocialSection.vue` grid from 3 columns to 4 columns (Name, Heart Stage, SP, Bond Ability)
+- Collapsed view shows the Heart Stage label text for each bond
+- Expanded view shows a dropdown selector with all 7 stage options
+- Added `heartStageData` to store exports for use in the component
+- Heart Stage persists automatically via generic section serialization (arrayToObject/objectToArray in dehydrate/hydrate)
+- Updated ARCHITECTURAL_ANALYSIS.md with Social Bonds & Heart Stages documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/components/SocialSection.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

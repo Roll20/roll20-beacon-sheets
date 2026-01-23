@@ -243,7 +243,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md social section"
     ],
     "context": "The compendium defines a Heart Stage progression system for NPC relationships: Threatening -> Hostile -> Cold -> Neutral -> Warm -> Friendly -> Sympathetic. Each stage represents how an NPC feels toward the character and affects what social actions are available. The current social section tracks Social Points and Bond Abilities but not the Heart Stage. This is a key character sheet feature for tracking NPC relationship progression.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 14,

@@ -84,6 +84,17 @@ export const useSheetStore = defineStore('sheet',() => {
     refreshing: { name: 'Refreshing Sleep', stressRecovery: 2, exhaustionRecovery: 2, hpRecovery: 'full', fractureRecovery: 1, note: 'Full HP, -1 Fracture' }
   };
 
+  // Heart Stage progression for NPC social bonds
+  const heartStageData = [
+    { value: 'threatening', label: 'Threatening' },
+    { value: 'hostile', label: 'Hostile' },
+    { value: 'cold', label: 'Cold' },
+    { value: 'neutral', label: 'Neutral' },
+    { value: 'warm', label: 'Warm' },
+    { value: 'friendly', label: 'Friendly' },
+    { value: 'sympathetic', label: 'Sympathetic' }
+  ];
+
   // Daily/per-session limit tracking
   const sealImplantGiven = ref(false);
   const sealImplantReceived = ref(false);
@@ -1306,6 +1317,7 @@ export const useSheetStore = defineStore('sheet',() => {
       template: {
         name: '',
         points: 0,
+        heartStage: 'neutral',
         bond_ability: '',
         collapsed: false
       },
@@ -3147,6 +3159,9 @@ export const useSheetStore = defineStore('sheet',() => {
     burnoutLines,
     heartlessKnight,
     fallenKnight,
+
+    // Heart Stage progression
+    heartStageData,
 
     // Sleep Phase and daily limits
     sleepEffect,

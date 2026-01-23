@@ -16,7 +16,8 @@ const props = defineProps({
   <div class="social-section">
     <div class="social-header">
       <h5>name</h5>
-      <h5>social points</h5>
+      <h5>heart stage</h5>
+      <h5>SP</h5>
       <h5>bond ability</h5>
     </div>
     <RepeatingSection :name="`${name}-social`">
@@ -24,13 +25,17 @@ const props = defineProps({
         <Collapsible class="social-content" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
           <template v-slot:collapsed>
             <span>{{ item.name || 'New Bond' }}</span>
+            <span class="heart-stage-label">{{ sheet.heartStageData.find(s => s.value === item.heartStage)?.label || 'Neutral' }}</span>
             <span>{{ item.points }}</span>
             <span>{{ item.bond_ability }}</span>
           </template>
           <template v-slot:expanded>
-            <input type="text" class="underline" v-model="item.name">
+            <input type="text" class="underline" v-model="item.name" placeholder="NPC Name">
+            <select class="underline heart-stage-select" v-model="item.heartStage">
+              <option v-for="stage in sheet.heartStageData" :key="stage.value" :value="stage.value">{{ stage.label }}</option>
+            </select>
             <input type="number" class="underline" v-model="item.points">
-            <textarea class="underline" v-model="item.bond_ability"></textarea>
+            <textarea class="underline" v-model="item.bond_ability" placeholder="Bond ability..."></textarea>
           </template>
         </Collapsible>
       </RepeatingItem>
@@ -41,7 +46,7 @@ const props = defineProps({
 <style lang="scss">
 .social-section{
   display: grid;
-  grid-template-columns: 1fr 50px 1fr;
+  grid-template-columns: 1fr 90px 40px 1fr;
   gap: 1px;
   &,
   .repcontainer{
@@ -51,7 +56,7 @@ const props = defineProps({
     grid-column: 1;
   }
   .rep-edit-button{
-    grid-column: 3;
+    grid-column: 4;
   }
   :is(.social-header,.repeating-section,.repcontainer,.repitem,.social-content){
     display: grid;
@@ -76,6 +81,13 @@ const props = defineProps({
       background-color: var(--masterBack);
       border: 0;
     }
+  }
+  .heart-stage-label{
+    font-size: 0.85em;
+    text-align: center;
+  }
+  .heart-stage-select{
+    font-size: 0.85em;
   }
 }
 </style>
