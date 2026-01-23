@@ -144,7 +144,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md NPC section"
     ],
     "context": "The NPC view has incorrect creature types (Construct/Undead/Beast/Aberration don't exist - only Outsider and Mortal), incorrect sizes (Tiny/Gargantuan don't exist - correct sizes are Small/Medium/Large/Huge/Massive/Colossal), and is missing the Role system entirely. Roles modify NPC stats: each role has AC, HP%, Atk Bonus, and DPR% adjustments. Sizes also have stat modifications. Ranks (Vassal/Adversary/Nemesis/Harbinger) have damage percentage values (50/55/60/70).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 8,

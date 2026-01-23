@@ -922,6 +922,7 @@ export const useSheetStore = defineStore('sheet',() => {
   const npc_type = ref('vassal');
   const npc_size = ref('Medium');
   const npc_creature_type = ref('Outsider');
+  const npc_role = ref('none');
   const npc_armor = ref(10);
   const npc_move = ref(30);
   const npc_invasion_level = ref(0);
@@ -1006,6 +1007,51 @@ export const useSheetStore = defineStore('sheet',() => {
 
   // NPC Notes
   const npc_notes = ref('');
+
+  // NPC Role modifiers (AC, HP%, Attack Bonus, DPR%)
+  const roleModifiers = {
+    none: { ac: 0, hpPct: 0, atkBonus: 0, dprPct: 0 },
+    assassin: { ac: 0, hpPct: -25, atkBonus: 3, dprPct: 0 },
+    brute: { ac: 0, hpPct: 33, atkBonus: -3, dprPct: 0 },
+    defender: { ac: 0, hpPct: 33, atkBonus: 0, dprPct: -25 },
+    heavy: { ac: -4, hpPct: 33, atkBonus: 0, dprPct: 0 },
+    lithe: { ac: 3, hpPct: -25, atkBonus: 0, dprPct: 0 },
+    merciless: { ac: 0, hpPct: 0, atkBonus: -3, dprPct: 33 },
+    savage: { ac: -4, hpPct: 0, atkBonus: 0, dprPct: 33 },
+    skirmisher: { ac: 0, hpPct: -25, atkBonus: 0, dprPct: 33 },
+    striker: { ac: -4, hpPct: 0, atkBonus: 3, dprPct: 0 },
+    tank: { ac: 3, hpPct: 0, atkBonus: -3, dprPct: 0 },
+    vanguard: { ac: 3, hpPct: 0, atkBonus: 0, dprPct: -25 },
+    watcher: { ac: 0, hpPct: 0, atkBonus: 3, dprPct: -25 }
+  };
+
+  // NPC Size modifiers (AC, HP%, Attack Bonus, DPR%)
+  const sizeModifiers = {
+    Small: { ac: 1, hpPct: -10, atkBonus: 1, dprPct: -10 },
+    Medium: { ac: 0, hpPct: 0, atkBonus: 0, dprPct: 0 },
+    Large: { ac: -1, hpPct: 5, atkBonus: 0, dprPct: 5 },
+    Huge: { ac: -1, hpPct: 10, atkBonus: -1, dprPct: 10 },
+    Massive: { ac: -2, hpPct: 15, atkBonus: -2, dprPct: 15 },
+    Colossal: { ac: -2, hpPct: 20, atkBonus: -2, dprPct: 20 }
+  };
+
+  // NPC Rank damage percentages
+  const rankDamagePct = {
+    vassal: 50,
+    adversary: 55,
+    nemesis: 60,
+    harbinger: 70
+  };
+
+  // Computed: get modifiers for current NPC role
+  const npc_role_modifiers = computed(() => {
+    return roleModifiers[npc_role.value] || roleModifiers.none;
+  });
+
+  // Computed: get modifiers for current NPC size
+  const npc_size_modifiers = computed(() => {
+    return sizeModifiers[npc_size.value] || sizeModifiers.Medium;
+  });
 
   // ==================== END NPC DATA ====================
 
@@ -1589,6 +1635,7 @@ export const useSheetStore = defineStore('sheet',() => {
       npc_type: npc_type.value,
       npc_size: npc_size.value,
       npc_creature_type: npc_creature_type.value,
+      npc_role: npc_role.value,
       npc_armor: npc_armor.value,
       npc_move: npc_move.value,
       npc_invasion_level: npc_invasion_level.value,
@@ -1721,6 +1768,7 @@ export const useSheetStore = defineStore('sheet',() => {
     npc_type.value = hydrateStore.npc_type ?? npc_type.value;
     npc_size.value = hydrateStore.npc_size ?? npc_size.value;
     npc_creature_type.value = hydrateStore.npc_creature_type ?? npc_creature_type.value;
+    npc_role.value = hydrateStore.npc_role ?? npc_role.value;
     npc_armor.value = hydrateStore.npc_armor ?? npc_armor.value;
     npc_move.value = hydrateStore.npc_move ?? npc_move.value;
     npc_invasion_level.value = hydrateStore.npc_invasion_level ?? npc_invasion_level.value;
@@ -3125,10 +3173,16 @@ export const useSheetStore = defineStore('sheet',() => {
 
     // NPC exports
     npcTypes,
+    roleModifiers,
+    sizeModifiers,
+    rankDamagePct,
     npc_name,
     npc_type,
     npc_size,
     npc_creature_type,
+    npc_role,
+    npc_role_modifiers,
+    npc_size_modifiers,
     npc_armor,
     npc_move,
     npc_invasion_level,

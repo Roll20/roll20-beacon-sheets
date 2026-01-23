@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 6/17
-- **Current Task:** 7 - Fix NPC creature types, sizes, and add Role system
+- **Tasks Completed:** 7/17
+- **Current Task:** 8 - Remove empty stub components
 - **Last Updated:** 2026-01-23
 
 ---
@@ -140,6 +140,30 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/components/ImplementQualitiesSelector.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 7: Fix NPC creature types, sizes, and add Role system
+
+**Changes Made:**
+- Replaced `creatureTypes` array in NPCView.vue: removed Construct, Undead, Beast, Aberration; kept only Outsider and Mortal (the only two creature types in Magi-Knights)
+- Replaced `sizeOptions` array in NPCView.vue: removed Tiny and Gargantuan; replaced with correct sizes Small, Medium, Large, Huge, Massive, Colossal
+- Added `roleOptions` array in NPCView.vue with 12 roles + None option: Assassin, Brute, Defender, Heavy, Lithe, Merciless, Savage, Skirmisher, Striker, Tank, Vanguard, Watcher
+- Added `npc_role` ref (string, default 'none') to sheetStore.js
+- Added `roleModifiers` data object with stat adjustments (AC, HP%, Atk Bonus, DPR%) for each of the 12 roles
+- Added `sizeModifiers` data object with stat adjustments for each of the 6 sizes
+- Added `rankDamagePct` data object with damage percentages per rank (Vassal 50%, Adversary 55%, Nemesis 60%, Harbinger 70%)
+- Added `npc_role_modifiers` computed (returns modifiers for current role)
+- Added `npc_size_modifiers` computed (returns modifiers for current size)
+- Added Role selector dropdown in NPCView.vue template type-row section after creature type
+- Added `npc_role` to dehydrate/hydrate cycle for persistence
+- Added new exports: roleModifiers, sizeModifiers, rankDamagePct, npc_role, npc_role_modifiers, npc_size_modifiers
+- Updated ARCHITECTURAL_ANALYSIS.md NPC section with creature types, sizes, roles, and rank damage documentation
+
+**Files Modified:**
+- `src/views/NPCView.vue`
+- `src/stores/sheetStore.js`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

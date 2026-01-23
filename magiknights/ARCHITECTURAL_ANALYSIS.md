@@ -387,12 +387,38 @@ const soul_gun = {
 
 ### NPC/Monster System
 
-**5 NPC Types:**
+**5 NPC Types (Ranks):**
 - **Horde** - 4 HP pools, scaling attack DC/damage
-- **Vassal** - Minion tier
-- **Adversary** - Standard enemy
-- **Nemesis** - Boss tier
-- **Harbinger** - Major threat
+- **Vassal** - Minion tier (50% DPR)
+- **Adversary** - Standard enemy (55% DPR)
+- **Nemesis** - Boss tier (60% DPR)
+- **Harbinger** - Major threat (70% DPR)
+
+**2 Creature Types:**
+- **Outsider** - Extraplanar entities
+- **Mortal** - Human/mortal creatures
+
+**6 Size Categories (with stat modifiers: AC, HP%, Atk, DPR%):**
+- **Small** - +1 AC, -10% HP, +1 Atk, -10% DPR
+- **Medium** - No modifiers (baseline)
+- **Large** - -1 AC, +5% HP, +0 Atk, +5% DPR
+- **Huge** - -1 AC, +10% HP, -1 Atk, +10% DPR
+- **Massive** - -2 AC, +15% HP, -2 Atk, +15% DPR
+- **Colossal** - -2 AC, +20% HP, -2 Atk, +20% DPR
+
+**12 NPC Roles (stat modifiers: AC, HP%, Atk, DPR%):**
+- **Assassin** - 0 AC, -25% HP, +3 Atk, 0% DPR
+- **Brute** - 0 AC, +33% HP, -3 Atk, 0% DPR
+- **Defender** - 0 AC, +33% HP, 0 Atk, -25% DPR
+- **Heavy** - -4 AC, +33% HP, 0 Atk, 0% DPR
+- **Lithe** - +3 AC, -25% HP, 0 Atk, 0% DPR
+- **Merciless** - 0 AC, 0% HP, -3 Atk, +33% DPR
+- **Savage** - -4 AC, 0% HP, 0 Atk, +33% DPR
+- **Skirmisher** - 0 AC, -25% HP, 0 Atk, +33% DPR
+- **Striker** - -4 AC, 0% HP, +3 Atk, 0% DPR
+- **Tank** - +3 AC, 0% HP, -3 Atk, 0% DPR
+- **Vanguard** - +3 AC, 0% HP, 0 Atk, -25% DPR
+- **Watcher** - 0 AC, 0% HP, +3 Atk, -25% DPR
 
 ```javascript
 // Horde scaling
@@ -400,6 +426,10 @@ const npc_active_units = computed(() => {
   if (npc_type.value !== 'horde') return 1;
   return npc_horde_hp.value.filter(unit => !unit.defeated).length;
 });
+
+// Role/Size modifiers applied as computeds
+const npc_role_modifiers = computed(() => roleModifiers[npc_role.value]);
+const npc_size_modifiers = computed(() => sizeModifiers[npc_size.value]);
 ```
 
 ---

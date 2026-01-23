@@ -17,9 +17,25 @@ const npcTypeOptions = [
   { value: 'harbinger', label: 'Harbinger' }
 ];
 
-const sizeOptions = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
+const sizeOptions = ['Small', 'Medium', 'Large', 'Huge', 'Massive', 'Colossal'];
 
-const creatureTypes = ['Outsider', 'Mortal', 'Construct', 'Undead', 'Beast', 'Aberration'];
+const creatureTypes = ['Outsider', 'Mortal'];
+
+const roleOptions = [
+  { value: 'none', label: 'None' },
+  { value: 'assassin', label: 'Assassin' },
+  { value: 'brute', label: 'Brute' },
+  { value: 'defender', label: 'Defender' },
+  { value: 'heavy', label: 'Heavy' },
+  { value: 'lithe', label: 'Lithe' },
+  { value: 'merciless', label: 'Merciless' },
+  { value: 'savage', label: 'Savage' },
+  { value: 'skirmisher', label: 'Skirmisher' },
+  { value: 'striker', label: 'Striker' },
+  { value: 'tank', label: 'Tank' },
+  { value: 'vanguard', label: 'Vanguard' },
+  { value: 'watcher', label: 'Watcher' }
+];
 
 const damageTypes = [
   { value: 'physical', label: 'Physical' },
@@ -59,6 +75,12 @@ const toggleUnitDefeated = (index) => {
         </select>
         <select v-model="sheet.npc_creature_type">
           <option v-for="ct in creatureTypes" :key="ct" :value="ct">{{ ct }}</option>
+        </select>
+        <span class="separator">|</span>
+        <select v-model="sheet.npc_role">
+          <option v-for="role in roleOptions" :key="role.value" :value="role.value">
+            {{ role.label }}
+          </option>
         </select>
       </div>
       <label class="whisper-toggle">
