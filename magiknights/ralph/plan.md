@@ -122,7 +122,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md implement section"
     ],
     "context": "The compendium defines 7 implement qualities (8 counting Two-Handed): Card Conductor (required for Divination/Release Magic), Embolden (+MK Level spell damage), Light (one-hand, no weapon limit), Mana Attunement (MP x3), Mana Conduit (1/Sleep -1 Tier cost), Radiance (+1+Level healing), Two-Handed, Warding (reduce spell damage by 1/2 Level). The 4 implements are: Witch's Force Wand (1d4, Mana Attunement+Mana Conduit+Radiance+Warding), Wizard's Magic Staff (1d6, Embolden+Mana Attunement+Mana Conduit+Two-Handed+Warding), Master's Instrument (1d4, Embolden+Mana Attunement+Mana Conduit+Radiance+Two-Handed), Collector's Spell Deck (no damage, Card Conductor+Light).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 7,

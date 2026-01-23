@@ -359,7 +359,31 @@ const soul_gun = {
 // gunStyleData provides style options for HDG/SMG only
 ```
 
-**Magical Implement** follows a quality-based pattern.
+**Magical Implement** uses a quality-based system with 8 qualities from the compendium:
+
+```javascript
+// Implement Qualities (per compendium):
+// Card Conductor - Required for Divination Spell Path or Release Magic Style
+// Embolden - Spell damage +MK Level (multi-target: choose one)
+// Light - One hand, does not count toward weapon limit
+// Mana Attunement - MP = Mana Coefficient × 3 (instead of × 2)
+// Mana Conduit - 1/Sleep Phase, Bonus Action: Next spell costs -1 Tier MP
+// Radiance - Healing spells: +1+Level HP (AoE: halved, min 1)
+// Two-Handed - Requires two hands, cannot use Shield or Light items
+// Warding - Reduce spell damage taken by 1/2 Level (min 1)
+
+// Computed bonuses:
+// emboldenDamageBonus = level when Embolden active
+// radianceHealBonus = 1 + level when Radiance active
+// wardingReduction = max(1, floor(level/2)) when Warding active
+// manaConduitUsed tracks 1/Sleep Phase usage
+```
+
+**4 Implement Types** (from compendium):
+- Witch's Force Wand (1d4): Mana Attunement, Mana Conduit, Radiance, Warding
+- Wizard's Magic Staff (1d6): Embolden, Mana Attunement, Mana Conduit, Two-Handed, Warding
+- Master's Instrument (1d4): Embolden, Mana Attunement, Mana Conduit, Radiance, Two-Handed
+- Collector's Spell Deck (no damage): Card Conductor, Light
 
 ### NPC/Monster System
 

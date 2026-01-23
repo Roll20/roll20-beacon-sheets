@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 5/17
-- **Current Task:** 6 - Fix implement quality system to match compendium
+- **Tasks Completed:** 6/17
+- **Current Task:** 7 - Fix NPC creature types, sizes, and add Role system
 - **Last Updated:** 2026-01-23
 
 ---
@@ -115,6 +115,31 @@
 - `src/stores/sheetStore.js`
 - `src/components/GunQualitiesSelector.vue`
 - `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 6: Fix implement quality system to match compendium
+
+**Changes Made:**
+- Replaced fabricated qualities (`spellFocus`, `channeling`, `quickCast`, `wardingFocus`) with correct compendium qualities: `cardConductor`, `embolden`, `light`, `manaAttunement`, `manaConduit`, `radiance`, `twoHanded`, `warding`
+- Replaced `implementQualityDefs` with correct definitions and categories (special, damage, handling, mana, healing, defense)
+- Removed fabricated `implementSpellAttackBonus` computed (+1 spell attack from spellFocus doesn't exist)
+- Removed fabricated `implementSpellDCBonus` computed (+1 spell DC from channeling doesn't exist)
+- Kept `hasManaAttunement` computed (correct)
+- Added `hasEmbolden` computed (returns true when Embolden quality active)
+- Added `emboldenDamageBonus` computed (returns MK Level when Embolden active, 0 otherwise)
+- Added `radianceHealBonus` computed (returns 1+Level when Radiance active, 0 otherwise)
+- Added `wardingReduction` computed (returns max(1, floor(level/2)) when Warding active, 0 otherwise)
+- Added `manaConduitUsed` ref (boolean) for tracking 1/Sleep Phase usage
+- Added `manaConduitUsed` to dehydrate/hydrate cycle for persistence
+- Rewrote `ImplementQualitiesSelector.vue`: new categories (Mana, Damage/Healing, Defense, Handling, Special), modifier badges show computed bonuses, Mana Conduit usage tracker with visual feedback
+- Updated store exports: removed `implementSpellAttackBonus`/`implementSpellDCBonus`, added `hasEmbolden`, `emboldenDamageBonus`, `radianceHealBonus`, `wardingReduction`, `manaConduitUsed`
+- Updated ARCHITECTURAL_ANALYSIS.md implement section with full quality documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/components/ImplementQualitiesSelector.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

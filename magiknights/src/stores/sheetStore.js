@@ -841,22 +841,31 @@ export const useSheetStore = defineStore('sheet',() => {
     name: ref(''),
     description: ref(''),
     qualities: ref({
-      manaAttunement: false,    // MP = MCO * 3 instead of MCO * 2
-      spellFocus: false,        // +1 to spell attack rolls
-      channeling: false,        // +1 to spell DC
-      quickCast: false,         // Can cast one Tier I spell as bonus action per rest
-      wardingFocus: false       // +1 to magical damage resistance
+      cardConductor: false,     // Required for Divination Spell Path or Release Magic Style
+      embolden: false,          // Spell damage +MK Level
+      light: false,             // One hand, does not count toward weapon limit
+      manaAttunement: false,    // MP = MCO × 3 (instead of × 2)
+      manaConduit: false,       // 1/Sleep Phase, Bonus Action: Next spell costs -1 Tier MP
+      radiance: false,          // Healing spells: +1+Level HP
+      twoHanded: false,         // Requires two hands
+      warding: false            // Reduce spell damage taken by 1/2 Level (min 1)
     }),
     collapsed: ref(true)
   };
 
+  // Track 1/Sleep Phase usage of Mana Conduit
+  const manaConduitUsed = ref(false);
+
   // Implement quality definitions for UI
   const implementQualityDefs = {
-    manaAttunement: { name: 'Mana Attunement', effect: 'MP = MCO × 3 (instead of × 2)', category: 'mana' },
-    spellFocus: { name: 'Spell Focus', effect: '+1 to spell attack rolls', category: 'attack' },
-    channeling: { name: 'Channeling', effect: '+1 to Spell DC', category: 'dc' },
-    quickCast: { name: 'Quick Cast', effect: 'Cast one Tier I spell as bonus action per rest', category: 'special' },
-    wardingFocus: { name: 'Warding Focus', effect: '+1 to magical damage resistance', category: 'defense' }
+    cardConductor: { name: 'Card Conductor', effect: 'Required for Divination Spell Path or Release Magic Style', category: 'special' },
+    embolden: { name: 'Embolden', effect: 'Spell damage +MK Level. Multi-target: choose one target for bonus', category: 'damage' },
+    light: { name: 'Light', effect: 'One hand, does not count toward weapon limit', category: 'handling' },
+    manaAttunement: { name: 'Mana Attunement', effect: 'MP = Mana Coefficient × 3 (instead of × 2)', category: 'mana' },
+    manaConduit: { name: 'Mana Conduit', effect: '1/Sleep Phase, Bonus Action: Next spell costs -1 Tier MP', category: 'mana' },
+    radiance: { name: 'Radiance', effect: 'Healing spells: +1+Level HP. AoE: halved (min 1)', category: 'healing' },
+    twoHanded: { name: 'Two-Handed', effect: 'Requires two hands. Cannot use Shield or Light items', category: 'handling' },
+    warding: { name: 'Warding', effect: 'Reduce spell damage taken by 1/2 Level (min 1)', category: 'defense' }
   };
 
   // Computed: check if Mana Attunement is active (for MP calculation)
@@ -864,14 +873,24 @@ export const useSheetStore = defineStore('sheet',() => {
     return magical_implement.qualities.value.manaAttunement;
   });
 
-  // Computed: implement quality spell attack bonus
-  const implementSpellAttackBonus = computed(() => {
-    return magical_implement.qualities.value.spellFocus ? 1 : 0;
+  // Computed: check if Embolden is active
+  const hasEmbolden = computed(() => {
+    return magical_implement.qualities.value.embolden;
   });
 
-  // Computed: implement quality spell DC bonus
-  const implementSpellDCBonus = computed(() => {
-    return magical_implement.qualities.value.channeling ? 1 : 0;
+  // Computed: Embolden damage bonus (+MK Level to spell damage)
+  const emboldenDamageBonus = computed(() => {
+    return hasEmbolden.value ? level.value : 0;
+  });
+
+  // Computed: Radiance healing bonus (+1+Level to healing spells)
+  const radianceHealBonus = computed(() => {
+    return magical_implement.qualities.value.radiance ? 1 + level.value : 0;
+  });
+
+  // Computed: Warding damage reduction (1/2 Level, min 1)
+  const wardingReduction = computed(() => {
+    return magical_implement.qualities.value.warding ? Math.max(1, Math.floor(level.value / 2)) : 0;
   });
 
   // Computed: active implement qualities list for display
@@ -1536,6 +1555,7 @@ export const useSheetStore = defineStore('sheet',() => {
       fate: dehydrateFate(fate),
       armor_weave: dehydrateArmorWeave(armor_weave),
       veilPiercingUsed: veilPiercingUsed.value,
+      manaConduitUsed: manaConduitUsed.value,
       soul_weapon: dehydrateSoulWeapon(soul_weapon),
       soul_gun: dehydrateSoulGun(soul_gun),
       magical_implement: dehydrateMagicalImplement(magical_implement),
@@ -1690,6 +1710,7 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateFate(fate, hydrateStore.fate);
     hydrateArmorWeave(armor_weave, hydrateStore.armor_weave);
     veilPiercingUsed.value = hydrateStore.veilPiercingUsed ?? veilPiercingUsed.value;
+    manaConduitUsed.value = hydrateStore.manaConduitUsed ?? manaConduitUsed.value;
     hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
     hydrateSoulGun(soul_gun, hydrateStore.soul_gun);
     hydrateMagicalImplement(magical_implement, hydrateStore.magical_implement);
@@ -2981,8 +3002,11 @@ export const useSheetStore = defineStore('sheet',() => {
     magical_implement,
     implementQualityDefs,
     hasManaAttunement,
-    implementSpellAttackBonus,
-    implementSpellDCBonus,
+    hasEmbolden,
+    emboldenDamageBonus,
+    radianceHealBonus,
+    wardingReduction,
+    manaConduitUsed,
     activeImplementQualities,
     damageTypeLabels,
     gloom_gems:gloom,
