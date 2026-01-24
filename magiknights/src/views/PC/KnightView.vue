@@ -164,131 +164,177 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     <span class="armament-label">Soul Armament (Rep {{ sheet.reputation }})</span>
   </div>
 
-  <NotchContainer class="armor-weave-container basic-item" width="thick" notchType="curve">
-    <h4>Soul Armor Weave</h4>
-    <Collapsible class="basic-item" :default="sheet.armor_weave.collapsed" @collapse="sheet.armor_weave.collapsed = !sheet.armor_weave.collapsed">
-      <template v-slot:expanded>
-        <div class="flex-box half-gap grow-label">
-          <label :for="`armor-weave-name`">Name</label>
-          <input class="underline" type="text" v-model="sheet.armor_weave.name" :id="`armor-weave-name`">
-        </div>
-        <div class="grid">
-          <label class="properties-header" :for="`armor-weave-description`">Description</label>
-          <textarea class="underline" :id="`armor-weave-description`" v-model="sheet.armor_weave.description"></textarea>
-        </div>
-      </template>
-      <template v-slot:collapsed>
-        <span>{{ sheet.armor_weave.name || 'New Weave' }}</span>
-      </template>
-    </Collapsible>
-    
-    <!-- static content data here -->
-  </NotchContainer>
+  <div class="soul-armament-group grid-span-all">
+    <h3 class="group-header">Soul Armament</h3>
+    <div class="soul-armament-grid">
+      <div class="soul-armament-left">
+        <NotchContainer class="armor-weave-container basic-item" width="thick" notchType="curve">
+          <h4>Soul Armor Weave</h4>
+          <Collapsible class="basic-item" :default="sheet.armor_weave.collapsed" @collapse="sheet.armor_weave.collapsed = !sheet.armor_weave.collapsed">
+            <template v-slot:expanded>
+              <div class="flex-box half-gap grow-label">
+                <label :for="`armor-weave-name`">Name</label>
+                <input class="underline" type="text" v-model="sheet.armor_weave.name" :id="`armor-weave-name`">
+              </div>
+              <div class="grid">
+                <label class="properties-header" :for="`armor-weave-description`">Description</label>
+                <textarea class="underline" :id="`armor-weave-description`" v-model="sheet.armor_weave.description"></textarea>
+              </div>
+            </template>
+            <template v-slot:collapsed>
+              <span>{{ sheet.armor_weave.name || 'New Weave' }}</span>
+            </template>
+          </Collapsible>
+        </NotchContainer>
 
-  <NotchContainer class="soul-weapon-container basic-item" width="thick" notchType="curve">
-    <h4>Soul Weapon</h4>
-    <Collapsible class="basic-item" :default="sheet.soul_weapon.collapsed" @collapse="sheet.soul_weapon.collapsed = !sheet.soul_weapon.collapsed">
-      <template v-slot:expanded>
-        <div class="flex-box half-gap grow-label">
-          <label :for="`soul-weapon-name`">Name</label>
-          <input class="input-field" type="text" v-model="sheet.soul_weapon.name" :id="`soul-weapon-name`">
-        </div>
-        <div class="flex-box half-gap grow-label">
-          <label :for="`soul-weapon-range`">Range</label>
-          <input class="input-field" type="text" v-model="sheet.soul_weapon.range" :id="`soul-weapon-range`">
-        </div>
-        <div class="flex-box half-gap grow-label">
-          <label :for="`soul-weapon-damage`">Damage</label>
-          <input class="input-field" type="text" v-model="sheet.soul_weapon.damage" :id="`soul-weapon-damage`">
-        </div>
-        <div class="flex-box half-gap grow-label">
-          <label :for="`soul-weapon-damage-type`">Damage Type</label>
-          <select class="input-field" v-model="sheet.soul_weapon.damageType" :id="`soul-weapon-damage-type`">
-            <option value="physical">Physical</option>
-            <option value="magical">Magical</option>
-            <option value="true">True Damage</option>
-          </select>
-        </div>
-        <div class="grid">
-          <label class="properties-header">Qualities</label>
-          <WeaponQualitiesSelector />
-        </div>
-      </template>
-      <template v-slot:collapsed>
-        <button @click="sheet.rollWeapon">{{ sheet.soul_weapon.name || 'New Weapon' }}</button>
-        <span class="damage-type-tag" :class="sheet.soul_weapon.damageType">
-          {{ sheet.damageTypeLabels[sheet.soul_weapon.damageType] || 'Physical' }}
-        </span>
-        <span v-if="sheet.activeWeaponQualities.length > 0" class="qualities-summary">
-          {{ sheet.activeWeaponQualities.join(', ') }}
-        </span>
-      </template>
-    </Collapsible>
-    <!-- Static content here -->
-  </NotchContainer>
+        <NotchContainer class="visor-container basic-item" width="thick" notchType="curve">
+          <h4>Visor</h4>
+          <div class="visor-selector">
+            <select class="underline" v-model="sheet.visor.type">
+              <option v-for="(data, key) in sheet.visorData" :key="key" :value="key">{{ data.name }}</option>
+            </select>
+            <p v-if="sheet.activeVisorEffect" class="visor-effect">{{ sheet.activeVisorEffect }}</p>
+          </div>
+        </NotchContainer>
 
-  <NotchContainer class="magical-implement-container basic-item" width="thick" notchType="curve">
-    <h4>Magical Implement</h4>
-    <Collapsible class="basic-item" :default="sheet.magical_implement.collapsed" @collapse="sheet.magical_implement.collapsed = !sheet.magical_implement.collapsed">
-      <template v-slot:expanded>
-        <div class="flex-box half-gap grow-label">
-          <label :for="`magical-implement-name`">Name</label>
-          <input class="input-field" type="text" v-model="sheet.magical_implement.name" :id="`magical-implement-name`">
-        </div>
-        <div class="grid">
-          <label class="properties-header" :for="`magical-implement-description`">Description</label>
-          <textarea class="input-field" v-model="sheet.magical_implement.description" :id="`magical-implement-description`"></textarea>
-        </div>
-        <div class="grid">
-          <label class="properties-header">Qualities</label>
-          <ImplementQualitiesSelector />
-        </div>
-      </template>
-      <template v-slot:collapsed>
-        <span class="implement-name">{{ sheet.magical_implement.name || 'New Implement' }}</span>
-        <span v-if="sheet.hasManaAttunement" class="mana-attunement-badge">
-          Mana Attunement
-        </span>
-        <span v-if="sheet.activeImplementQualities.length > 0" class="qualities-summary">
-          {{ sheet.activeImplementQualities.join(', ') }}
-        </span>
-      </template>
-    </Collapsible>
-  </NotchContainer>
+        <NotchContainer class="arm-rune-container basic-item" width="thick" notchType="curve">
+          <div class="rune-header-row">
+            <h4>Soul Armament Runes</h4>
+            <span class="rune-capacity" :class="{ 'over-capacity': sheet.runesOverCapacity }">
+              Slots: {{ sheet.runeSlotsUsed }}/{{ sheet.runeSlotCapacity }}
+            </span>
+          </div>
+          <div v-if="sheet.runesOverCapacity" class="rune-warning">Over capacity! Max slots = Reputation Level</div>
+          <RepeatingSection name="runes">
+            <RepeatingItem name="runes" v-for="item in sheet.sections.runes.rows" :key="item._id" :row="item">
+              <Collapsible class="form-item basic-item" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
+                <template v-slot:expanded>
+                  <div class="flex-box half-gap grow-label">
+                    <label :for="`rune-${item._id}-name`">Name</label>
+                    <input class="underline" type="text" v-model="item.name" :id="`rune-${item._id}-name`">
+                  </div>
+                  <div class="flex-box half-gap grow-label">
+                    <label :for="`rune-${item._id}-slots`">Slots</label>
+                    <select class="underline" v-model="item.slotCost" :id="`rune-${item._id}-slots`">
+                      <option :value="1">1</option>
+                      <option :value="2">2</option>
+                      <option :value="3">3</option>
+                    </select>
+                  </div>
+                  <div class="grid">
+                    <label class="properties-header" :for="`rune-${item._id}-description`">Description</label>
+                    <textarea class="underline" :id="`rune-${item._id}-description`" v-model="item.description"></textarea>
+                  </div>
+                </template>
+                <template v-slot:collapsed>
+                  <span>{{ item.name || 'New Rune' }} <span class="rune-slot-badge">({{ item.slotCost || 1 }})</span></span>
+                </template>
+                <div class="repcontrol">
+                  <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('runes', item._id)">delete_forever</button>
+                </div>
+              </Collapsible>
+            </RepeatingItem>
+          </RepeatingSection>
+        </NotchContainer>
+      </div>
 
-  <NotchContainer class="visor-container basic-item" width="thick" notchType="curve">
-    <h4>Visor</h4>
-    <div class="visor-selector">
-      <select class="underline" v-model="sheet.visor.type">
-        <option v-for="(data, key) in sheet.visorData" :key="key" :value="key">{{ data.name }}</option>
-      </select>
-      <p v-if="sheet.activeVisorEffect" class="visor-effect">{{ sheet.activeVisorEffect }}</p>
+      <div class="soul-armament-right">
+        <NotchContainer class="soul-weapon-container basic-item" width="thick" notchType="curve">
+          <h4>Soul Weapon</h4>
+          <Collapsible class="basic-item" :default="sheet.soul_weapon.collapsed" @collapse="sheet.soul_weapon.collapsed = !sheet.soul_weapon.collapsed">
+            <template v-slot:expanded>
+              <div class="flex-box half-gap grow-label">
+                <label :for="`soul-weapon-name`">Name</label>
+                <input class="input-field" type="text" v-model="sheet.soul_weapon.name" :id="`soul-weapon-name`">
+              </div>
+              <div class="flex-box half-gap grow-label">
+                <label :for="`soul-weapon-range`">Range</label>
+                <input class="input-field" type="text" v-model="sheet.soul_weapon.range" :id="`soul-weapon-range`">
+              </div>
+              <div class="flex-box half-gap grow-label">
+                <label :for="`soul-weapon-damage`">Damage</label>
+                <input class="input-field" type="text" v-model="sheet.soul_weapon.damage" :id="`soul-weapon-damage`">
+              </div>
+              <div class="flex-box half-gap grow-label">
+                <label :for="`soul-weapon-damage-type`">Damage Type</label>
+                <select class="input-field" v-model="sheet.soul_weapon.damageType" :id="`soul-weapon-damage-type`">
+                  <option value="physical">Physical</option>
+                  <option value="magical">Magical</option>
+                  <option value="true">True Damage</option>
+                </select>
+              </div>
+              <div class="grid">
+                <label class="properties-header">Qualities</label>
+                <WeaponQualitiesSelector />
+              </div>
+            </template>
+            <template v-slot:collapsed>
+              <button @click="sheet.rollWeapon">{{ sheet.soul_weapon.name || 'New Weapon' }}</button>
+              <span class="damage-type-tag" :class="sheet.soul_weapon.damageType">
+                {{ sheet.damageTypeLabels[sheet.soul_weapon.damageType] || 'Physical' }}
+              </span>
+              <span v-if="sheet.activeWeaponQualities.length > 0" class="qualities-summary">
+                {{ sheet.activeWeaponQualities.join(', ') }}
+              </span>
+            </template>
+          </Collapsible>
+        </NotchContainer>
+
+        <NotchContainer class="magical-implement-container basic-item" width="thick" notchType="curve">
+          <h4>Magical Implement</h4>
+          <Collapsible class="basic-item" :default="sheet.magical_implement.collapsed" @collapse="sheet.magical_implement.collapsed = !sheet.magical_implement.collapsed">
+            <template v-slot:expanded>
+              <div class="flex-box half-gap grow-label">
+                <label :for="`magical-implement-name`">Name</label>
+                <input class="input-field" type="text" v-model="sheet.magical_implement.name" :id="`magical-implement-name`">
+              </div>
+              <div class="grid">
+                <label class="properties-header" :for="`magical-implement-description`">Description</label>
+                <textarea class="input-field" v-model="sheet.magical_implement.description" :id="`magical-implement-description`"></textarea>
+              </div>
+              <div class="grid">
+                <label class="properties-header">Qualities</label>
+                <ImplementQualitiesSelector />
+              </div>
+            </template>
+            <template v-slot:collapsed>
+              <span class="implement-name">{{ sheet.magical_implement.name || 'New Implement' }}</span>
+              <span v-if="sheet.hasManaAttunement" class="mana-attunement-badge">
+                Mana Attunement
+              </span>
+              <span v-if="sheet.activeImplementQualities.length > 0" class="qualities-summary">
+                {{ sheet.activeImplementQualities.join(', ') }}
+              </span>
+            </template>
+          </Collapsible>
+        </NotchContainer>
+
+        <NotchContainer class="soul-gun-container basic-item" width="thick" notchType="curve">
+          <h4>Soul Gun</h4>
+          <Collapsible class="basic-item" :default="sheet.soul_gun.collapsed" @collapse="sheet.soul_gun.collapsed = !sheet.soul_gun.collapsed">
+            <template v-slot:expanded>
+              <div class="flex-box half-gap grow-label">
+                <label for="soul-gun-name">Name</label>
+                <input class="input-field" type="text" v-model="sheet.soul_gun.name" id="soul-gun-name">
+              </div>
+              <GunQualitiesSelector />
+            </template>
+            <template v-slot:collapsed>
+              <div class="collapsed-gun-actions">
+                <button class="gun-roll-btn" @click="sheet.rollGunRapidFire">RF</button>
+                <button class="gun-roll-btn" @click="sheet.rollGunMagDump" :disabled="!sheet.soul_gun.hasReloaded || sheet.gunTypeStats.md === 0">MD</button>
+                <button class="gun-roll-btn" @click="sheet.rollGunDamage">Dmg</button>
+                <span class="gun-name">{{ sheet.soul_gun.name || sheet.gunTypeStats.name }}</span>
+              </div>
+              <span class="gun-type-tag">{{ sheet.gunTypeStats.abbr }}</span>
+              <span class="gun-range-tag">{{ sheet.gunTypeStats.eRange }}ft</span>
+              <span v-if="!sheet.soul_gun.hasReloaded" class="reload-warning">Needs Reload</span>
+            </template>
+          </Collapsible>
+        </NotchContainer>
+      </div>
     </div>
-  </NotchContainer>
-
-  <NotchContainer class="soul-gun-container basic-item" width="thick" notchType="curve">
-    <h4>Soul Gun</h4>
-    <Collapsible class="basic-item" :default="sheet.soul_gun.collapsed" @collapse="sheet.soul_gun.collapsed = !sheet.soul_gun.collapsed">
-      <template v-slot:expanded>
-        <div class="flex-box half-gap grow-label">
-          <label for="soul-gun-name">Name</label>
-          <input class="input-field" type="text" v-model="sheet.soul_gun.name" id="soul-gun-name">
-        </div>
-        <GunQualitiesSelector />
-      </template>
-      <template v-slot:collapsed>
-        <div class="collapsed-gun-actions">
-          <button class="gun-roll-btn" @click="sheet.rollGunRapidFire">RF</button>
-          <button class="gun-roll-btn" @click="sheet.rollGunMagDump" :disabled="!sheet.soul_gun.hasReloaded || sheet.gunTypeStats.md === 0">MD</button>
-          <button class="gun-roll-btn" @click="sheet.rollGunDamage">Dmg</button>
-          <span class="gun-name">{{ sheet.soul_gun.name || sheet.gunTypeStats.name }}</span>
-        </div>
-        <span class="gun-type-tag">{{ sheet.gunTypeStats.abbr }}</span>
-        <span class="gun-range-tag">{{ sheet.gunTypeStats.eRange }}ft</span>
-        <span v-if="!sheet.soul_gun.hasReloaded" class="reload-warning">Needs Reload</span>
-      </template>
-    </Collapsible>
-  </NotchContainer>
+  </div>
 
 <NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
   <h4>Combat Forms</h4>
@@ -335,110 +381,142 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 
 <NotchContainer class="level-abilities-container basic-item" width="thick" notchType="curve">
   <h4>Level Abilities</h4>
-  <div class="level-abilities-list">
-    <div
-      v-for="(ability, key) in sheet.levelAbilityData"
-      :key="key"
-      class="level-ability-item"
-      :class="{ unlocked: sheet.levelAbilities[key], locked: !sheet.levelAbilities[key] }"
-    >
-      <span class="ability-level-badge">{{ ability.level }}</span>
-      <span class="ability-name">{{ ability.name }}</span>
-      <span class="ability-desc">{{ ability.description }}</span>
-      <label v-if="key === 'energySurge' && sheet.levelAbilities[key]" class="ability-toggle">
-        <input type="checkbox" v-model="sheet.energySurgeUsed" />
-        <span>Used</span>
-      </label>
-      <label v-if="key === 'flight' && sheet.levelAbilities[key]" class="ability-toggle">
-        <input type="checkbox" v-model="sheet.isFlying" />
-        <span>Active</span>
-      </label>
-    </div>
-  </div>
+  <Collapsible class="basic-item" :default="sheet.levelAbilitiesCollapsed" @collapse="sheet.levelAbilitiesCollapsed = !sheet.levelAbilitiesCollapsed">
+    <template v-slot:expanded>
+      <div class="level-abilities-list">
+        <div
+          v-for="(ability, key) in sheet.levelAbilityData"
+          :key="key"
+          class="level-ability-item"
+          :class="{ unlocked: sheet.levelAbilities[key], locked: !sheet.levelAbilities[key] }"
+          :title="ability.description"
+        >
+          <span class="ability-level-badge">{{ ability.level }}</span>
+          <span class="ability-name">{{ ability.name }}</span>
+          <label v-if="key === 'energySurge' && sheet.levelAbilities[key]" class="ability-toggle">
+            <input type="checkbox" v-model="sheet.energySurgeUsed" />
+            <span>Used</span>
+          </label>
+          <label v-if="key === 'flight' && sheet.levelAbilities[key]" class="ability-toggle">
+            <input type="checkbox" v-model="sheet.isFlying" />
+            <span>Active</span>
+          </label>
+        </div>
+      </div>
+    </template>
+    <template v-slot:collapsed>
+      <span class="level-abilities-summary">Level Abilities ({{ Object.values(sheet.levelAbilities).filter(v => v).length }}/{{ Object.keys(sheet.levelAbilityData).length }} unlocked)</span>
+    </template>
+  </Collapsible>
 </NotchContainer>
 
-
-  <NotchContainer class="arm-rune-container basic-item" width="thick" notchType="curve">
-    <div class="rune-header-row">
-      <h4>Soul Armament Runes</h4>
-      <span class="rune-capacity" :class="{ 'over-capacity': sheet.runesOverCapacity }">
-        Slots: {{ sheet.runeSlotsUsed }}/{{ sheet.runeSlotCapacity }}
-      </span>
-    </div>
-    <div v-if="sheet.runesOverCapacity" class="rune-warning">Over capacity! Max slots = Reputation Level</div>
-    <RepeatingSection name="runes">
-      <RepeatingItem name="runes" v-for="item in sheet.sections.runes.rows" :key="item._id" :row="item">
-        <Collapsible class="form-item basic-item" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
-          <template v-slot:expanded>
-            <div class="flex-box half-gap grow-label">
-              <label :for="`rune-${item._id}-name`">Name</label>
-              <input class="underline" type="text" v-model="item.name" :id="`rune-${item._id}-name`">
-            </div>
-            <div class="flex-box half-gap grow-label">
-              <label :for="`rune-${item._id}-slots`">Slots</label>
-              <select class="underline" v-model="item.slotCost" :id="`rune-${item._id}-slots`">
-                <option :value="1">1</option>
-                <option :value="2">2</option>
-                <option :value="3">3</option>
+  <div class="elemental-magic-group grid-span-all">
+    <h3 class="group-header">Elemental &amp; Magic</h3>
+    <div class="elemental-magic-grid">
+      <div class="elemental-magic-left">
+        <div class="flex-box half-gap flex-wrap grow-label">
+          <LabelStacked>
+            <template v-slot:number>
+              <select class="underline" v-model="sheet.elemental_affinity">
+                <option selected value="">Select Element</option>
+                <option v-for="element in elements" :value="element.name" :key="element.name">{{ capitalize(element.name) }}</option>
               </select>
-            </div>
-            <div class="grid">
-              <label class="properties-header" :for="`rune-${item._id}-description`">Description</label>
-              <textarea class="underline" :id="`rune-${item._id}-description`" v-model="item.description"></textarea>
-            </div>
-          </template>
-          <template v-slot:collapsed>
-            <span>{{ item.name || 'New Rune' }} <span class="rune-slot-badge">({{ item.slotCost || 1 }})</span></span>
-          </template>
-          <!-- Delete button -->
-          <div class="repcontrol">
-            <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('runes', item._id)">delete_forever</button>
-          </div>
-        </Collapsible>
-      </RepeatingItem>
-    </RepeatingSection>
-  </NotchContainer>
+            </template>
+            <template v-slot:label>
+              <span class="elemental_label">Elemental Affinity</span>
+            </template>
+          </LabelStacked>
+          <LabelStacked>
+            <template v-slot:number>
+              <input type="text" class="underline element-name-underline" v-model="sheet.element_name">
+            </template>
+            <template v-slot:label>
+              <span class="elemental_label">Element Name</span>
+            </template>
+          </LabelStacked>
+          <LabelStacked v-if="sheet.availableBranches.length > 0">
+            <template v-slot:number>
+              <select class="underline" v-model="sheet.branchingElement">
+                <option value="">Select Branch</option>
+                <option v-for="branch in sheet.availableBranches" :key="branch" :value="branch">{{ branch }}</option>
+              </select>
+            </template>
+            <template v-slot:label>
+              <span class="elemental_label">Branching Element</span>
+            </template>
+          </LabelStacked>
+        </div>
+        <NotchContainer class="elemental_enhancements" notch="5">
+          <select v-model="sheet.elemental_enhancement_1">
+            <option selected value="">Select Enhancement</option>
+            <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
+          </select>
+        </NotchContainer>
+        <NotchContainer class="elemental_enhancements" notch="5">
+          <select v-model="sheet.elemental_enhancement_2">
+            <option selected value="">Select Enhancement</option>
+            <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
+          </select>
+        </NotchContainer>
+      </div>
 
-  <NotchContainer class="summon-container basic-item" width="thick" notchType="curve">
-    <div class="summon-header-row">
-      <h4>Elemental Summon</h4>
-      <label class="summon-active-toggle">
-        <input type="checkbox" v-model="sheet.elementalSummon.active" />
-        <span>Active</span>
-      </label>
+      <div class="elemental-magic-right">
+        <span class="elemental_label">Roll to Resist Proficiency</span>
+        <NotchContainer class="elemental_enhancements" notch="5">
+          <select v-model="sheet.roll_resist_proficiency">
+            <option selected value="">Select Roll to Resist Proficiency</option>
+            <option v-for="proficiency in availableResistProficiency" :value="proficiency" :key="proficiency">{{ proficiency }}</option>
+          </select>
+        </NotchContainer>
+        <div class="resist-modifiers">
+          <span class="elemental_label">Resist Advantage / Disadvantage</span>
+          <div class="resist-grid">
+            <div v-for="type in ['physical', 'magic', 'horror', 'purity']" :key="type" class="resist-row">
+              <span class="resist-type-label">{{ type.charAt(0).toUpperCase() + type.slice(1) }}</span>
+              <label class="resist-toggle" :class="{ active: sheet.resistModifiers[type].advantage }">
+                <input type="checkbox" v-model="sheet.resistModifiers[type].advantage" />
+                Adv
+              </label>
+              <label class="resist-toggle disadv" :class="{ active: sheet.resistModifiers[type].disadvantage || sheet.conditionResistDisadvantage[type] }">
+                <input type="checkbox" v-model="sheet.resistModifiers[type].disadvantage" :disabled="sheet.conditionResistDisadvantage[type]" />
+                Dis
+              </label>
+              <span v-if="sheet.conditionResistDisadvantage[type]" class="resist-condition-note">(Condition)</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex-box half-gap flex-wrap grow-label">
+          <LabelStacked>
+            <template v-slot:number>
+              <select class="underline element-name-underline" v-model="sheet.magic_style">
+                <option value="">Select Magic Style</option>
+                <option value="Ethereal">Ethereal</option>
+                <option value="Memento">Memento</option>
+                <option value="Shaper">Shaper</option>
+                <option value="Soul">Soul</option>
+                <option value="Verse">Verse</option>
+                <option value="Release">Release</option>
+              </select>
+            </template>
+            <template v-slot:label>
+              <span class="elemental_label">Magic Style</span>
+            </template>
+          </LabelStacked>
+          <LabelStacked>
+            <template v-slot:number>
+              <select class="underline" v-model="sheet.mam">
+                <option selected value="">Select Ability</option>
+                <option v-for="(o,ability) in sheet.abilityScores" :key="ability.name" :value="ability">{{ capitalize(ability) }}</option>
+              </select>
+            </template>
+            <template v-slot:label>
+              <span class="elemental_label">Magic Ability Modifier</span>
+            </template>
+          </LabelStacked>
+        </div>
+      </div>
     </div>
-    <Collapsible class="basic-item" :default="sheet.elementalSummon.collapsed" @collapse="sheet.elementalSummon.collapsed = !sheet.elementalSummon.collapsed">
-      <template v-slot:expanded>
-        <div class="flex-box half-gap grow-label">
-          <label for="summon-name">Name</label>
-          <input class="underline" type="text" v-model="sheet.elementalSummon.name" id="summon-name">
-        </div>
-        <div class="summon-stats-grid">
-          <label>HP</label>
-          <input type="number" class="underline" v-model.number="sheet.elementalSummon.hp">
-          <span>/</span>
-          <input type="number" class="underline" v-model.number="sheet.elementalSummon.hpMax">
-          <label>Armor</label>
-          <input type="number" class="underline" v-model.number="sheet.elementalSummon.armor">
-          <label>Attack</label>
-          <input type="number" class="underline" v-model.number="sheet.elementalSummon.attack">
-          <label>Damage</label>
-          <input type="text" class="underline" v-model="sheet.elementalSummon.damage">
-          <label>Move</label>
-          <input type="number" class="underline" v-model.number="sheet.elementalSummon.move">
-        </div>
-        <div class="grid">
-          <label class="properties-header" for="summon-description">Notes</label>
-          <textarea class="underline" id="summon-description" v-model="sheet.elementalSummon.description"></textarea>
-        </div>
-      </template>
-      <template v-slot:collapsed>
-        <span>{{ sheet.elementalSummon.name || 'No Summon' }}
-          <span v-if="sheet.elementalSummon.active" class="summon-active-badge">Active</span>
-        </span>
-      </template>
-    </Collapsible>
-  </NotchContainer>
+  </div>
 
   <!-- Squadron Formations - Per compendium: requires 3+ Magi-Knights within 60ft -->
   <div class="formations-section grid-span-all">
@@ -509,114 +587,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   </div>
   </div>
 
-  <NotchContainer>
-      <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
-      <LabelStacked>
-        <template v-slot:number>
-          <select class="underline" v-model="sheet.elemental_affinity">
-            <option selected value="">Select Element</option>
-            <option v-for="element in elements" :value="element.name" :key="element.name">{{ capitalize(element.name) }}</option>
-          </select>
-        </template>
-        <template v-slot:label>
-          <span class="elemental_label">Elemental Affinity</span>
-        </template>
-      </LabelStacked>
-      <LabelStacked>
-        <template v-slot:number>
-          <input type="text" class="underline element-name-underline" v-model="sheet.element_name">
-        </template>
-        <template v-slot:label>
-          <span class="elemental_label">Element Name</span>
-        </template>
-      </LabelStacked>
-      <LabelStacked v-if="sheet.availableBranches.length > 0">
-        <template v-slot:number>
-          <select class="underline" v-model="sheet.branchingElement">
-            <option value="">Select Branch</option>
-            <option v-for="branch in sheet.availableBranches" :key="branch" :value="branch">{{ branch }}</option>
-          </select>
-        </template>
-        <template v-slot:label>
-          <span class="elemental_label">Branching Element</span>
-        </template>
-      </LabelStacked>
-      </div>
-      <!-- Elemental Enhancements Dropdown (filtered by selected element) -->
-      <div>
-      <NotchContainer class=elemental_enhancements notch="5">
-        <select v-model="sheet.elemental_enhancement_1">
-          <option selected value="">Select Enhancement</option>
-          <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
-        </select>
-      </NotchContainer>
-      </div>
-      <div>
-      
-      <NotchContainer class=elemental_enhancements notch="5">
-        <select v-model="sheet.elemental_enhancement_2">
-          <option selected value="">Select Enhancement</option>
-          <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
-        </select>
-      </NotchContainer>
-      </div>
-      <span class="elemental_label">Roll to Resist Proficiency</span>
-      <NotchContainer class=elemental_enhancements notch="5">
-                <select v-model="sheet.roll_resist_proficiency">
-                  <option selected value="">Select Roll to Resist Proficiency</option>
-                  <option v-for="proficiency in availableResistProficiency" :value="proficiency" :key="proficiency">{{ proficiency }}</option>
-                </select>
-              </NotchContainer>
-      <div class="resist-modifiers">
-        <span class="elemental_label">Resist Advantage / Disadvantage</span>
-        <div class="resist-grid">
-          <div v-for="type in ['physical', 'magic', 'horror', 'purity']" :key="type" class="resist-row">
-            <span class="resist-type-label">{{ type.charAt(0).toUpperCase() + type.slice(1) }}</span>
-            <label class="resist-toggle" :class="{ active: sheet.resistModifiers[type].advantage }">
-              <input type="checkbox" v-model="sheet.resistModifiers[type].advantage" />
-              Adv
-            </label>
-            <label class="resist-toggle disadv" :class="{ active: sheet.resistModifiers[type].disadvantage || sheet.conditionResistDisadvantage[type] }">
-              <input type="checkbox" v-model="sheet.resistModifiers[type].disadvantage" :disabled="sheet.conditionResistDisadvantage[type]" />
-              Dis
-            </label>
-            <span v-if="sheet.conditionResistDisadvantage[type]" class="resist-condition-note">(Condition)</span>
-          </div>
-        </div>
-      </div>
-  </NotchContainer>
-  <NotchContainer>
-    <div class="flex-box half-gap flex-wrap grid-span-all justify-space-between">
-      <LabelStacked>
-        <template v-slot:number>
-          <select class="underline element-name-underline" v-model="sheet.magic_style">
-            <option value="">Select Magic Style</option>
-            <option value="Ethereal">Ethereal</option>
-            <option value="Memento">Memento</option>
-            <option value="Shaper">Shaper</option>
-            <option value="Soul">Soul</option>
-            <option value="Verse">Verse</option>
-            <option value="Release">Release</option>
-          </select>
-        </template>
-        <template v-slot:label>
-          <span class="elemental_label">Magic Style</span>
-        </template>
-      </LabelStacked>
-      <LabelStacked>
-        <template v-slot:number>
-          <select class="underline" v-model="sheet.mam">
-            <option selected value="">Select Ability</option>
-            <option v-for="(o,ability) in sheet.abilityScores" :key="ability.name" :value="ability">{{ capitalize(ability) }}</option>
-          </select>
-        </template>
-        <template v-slot:label>
-          <span class="elemental_label">Magic Ability Modifier</span>
-        </template>
-      </LabelStacked>
-      </div>
-  </NotchContainer>
-
 </template>
 
 <style lang="scss">
@@ -625,33 +595,54 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   gap: var(--half-gap);
   align-items: center;
   justify-content: center;
-  font-size: 0.8em;
-  padding: 2px var(--half-gap);
-  opacity: 0.85;
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 4px var(--half-gap);
+  grid-column: 1 / -1;
   span {
-    padding: 1px 5px;
-    background: rgba(100, 150, 200, 0.12);
-    border-radius: 3px;
+    padding: 2px 8px;
+    background: rgba(100, 150, 200, 0.18);
+    border-radius: 4px;
+    color: var(--header-blue);
   }
   .armament-label {
     font-style: italic;
+    font-weight: normal;
     background: none;
     opacity: 0.7;
+    color: var(--color);
   }
 }
 .knight-view {
   position: relative;
   display: grid;
-  gap: var(--half-gap);
+  gap: var(--gap, 8px);
   grid-auto-flow: dense;
+
   > .split-display{
     grid-column: 1 / -1;
     max-width: 90cap;
     grid-template-rows: auto;
   }
 
-  @container (500px < width <=650px) {
+  .grid-span-all {
+    grid-column: 1 / -1;
+  }
+
+  @container (width > 650px) {
     grid-template-columns: 1fr 1fr;
+  }
+
+  @container (500px < width <= 650px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @container (width <= 500px) {
+    grid-template-columns: 1fr;
+    .soul-armament-grid,
+    .elemental-magic-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .skill-container {
@@ -748,6 +739,65 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   }
   }
 }
+
+.group-header {
+  color: var(--header-blue);
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0 0 var(--half-gap, 4px);
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border, rgba(100, 100, 200, 0.2));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  &::before,
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-image: var(--starImage);
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+  }
+}
+
+.soul-armament-group {
+  display: grid;
+  gap: var(--half-gap, 4px);
+
+  .soul-armament-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--half-gap, 4px);
+  }
+
+  .soul-armament-left,
+  .soul-armament-right {
+    display: grid;
+    gap: var(--half-gap, 4px);
+    align-content: start;
+  }
+}
+
+.elemental-magic-group {
+  display: grid;
+  gap: var(--half-gap, 4px);
+
+  .elemental-magic-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap, 8px);
+  }
+
+  .elemental-magic-left,
+  .elemental-magic-right {
+    display: grid;
+    gap: var(--half-gap, 4px);
+    align-content: start;
+  }
+}
 .rune-header-row {
   display: flex;
   align-items: center;
@@ -777,7 +827,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 }
 .elemental_enhancements {
     display: grid;
-    grid-column: span;
     margin-top: 0.5cap;
   }
   .element-name-underline{
@@ -847,7 +896,7 @@ h4{
 }
 
 input{
-  color: var(--lm-color);
+  color: var(--color);
 }
 
 .damage-type-tag {
@@ -942,37 +991,6 @@ html.dark {
   }
 }
 
-.summon-container {
-  .summon-header-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    h4 { margin: 0; }
-  }
-  .summon-active-toggle {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    font-size: 0.85em;
-    cursor: pointer;
-    input[type="checkbox"] { margin: 0; }
-  }
-  .summon-stats-grid {
-    display: grid;
-    grid-template-columns: auto 1fr auto 1fr;
-    gap: 4px var(--half-gap);
-    align-items: center;
-    font-size: 0.9em;
-    label { font-weight: 600; }
-    input { max-width: 60px; }
-  }
-  .summon-active-badge {
-    font-size: 0.75em;
-    padding: 1px 5px;
-    border-radius: 3px;
-    background: rgba(100, 200, 100, 0.3);
-  }
-}
 
 .visor-container {
   .visor-selector {
@@ -1102,19 +1120,28 @@ html.dark {
   .level-abilities-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+  }
+
+  .level-abilities-summary {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--color);
+    opacity: 0.8;
   }
 
   .level-ability-item {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 6px;
+    padding: 2px 4px;
     border-radius: 4px;
     font-size: 0.85em;
+    cursor: default;
 
     &.locked {
-      opacity: 0.4;
+      opacity: 0.3;
+      font-size: 0.8em;
     }
 
     &.unlocked {
@@ -1126,11 +1153,11 @@ html.dark {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: rgba(100, 100, 200, 0.3);
-    font-size: 0.75em;
+    font-size: 0.7em;
     font-weight: bold;
     flex-shrink: 0;
   }
@@ -1138,11 +1165,6 @@ html.dark {
   .ability-name {
     font-weight: 600;
     white-space: nowrap;
-  }
-
-  .ability-desc {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.85em;
   }
 
   .unlocked .ability-level-badge {

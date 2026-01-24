@@ -1222,6 +1222,7 @@ export const useSheetStore = defineStore('sheet',() => {
   // Tracking refs for level-locked ability usage
   const energySurgeUsed = ref(false);
   const isFlying = ref(false);
+  const levelAbilitiesCollapsed = ref(false);
 
   // Computed: which level abilities are unlocked based on current level
   const levelAbilities = computed(() => ({
@@ -3691,6 +3692,7 @@ export const useSheetStore = defineStore('sheet',() => {
     // Level-Locked Abilities
     levelAbilityData,
     levelAbilities,
+    levelAbilitiesCollapsed,
     energySurgeUsed,
     isFlying,
 
