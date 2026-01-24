@@ -252,45 +252,78 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
       </div>
 
       <div class="soul-armament-right">
-        <NotchContainer class="soul-weapon-container basic-item" width="thick" notchType="curve">
-          <h4>Soul Weapon</h4>
-          <Collapsible class="basic-item" :default="sheet.soul_weapon.collapsed" @collapse="sheet.soul_weapon.collapsed = !sheet.soul_weapon.collapsed">
-            <template v-slot:expanded>
-              <div class="flex-box half-gap grow-label">
-                <label :for="`soul-weapon-name`">Name</label>
-                <input class="input-field" type="text" v-model="sheet.soul_weapon.name" :id="`soul-weapon-name`">
-              </div>
-              <div class="flex-box half-gap grow-label">
-                <label :for="`soul-weapon-range`">Range</label>
-                <input class="input-field" type="text" v-model="sheet.soul_weapon.range" :id="`soul-weapon-range`">
-              </div>
-              <div class="flex-box half-gap grow-label">
-                <label :for="`soul-weapon-damage`">Damage</label>
-                <input class="input-field" type="text" v-model="sheet.soul_weapon.damage" :id="`soul-weapon-damage`">
-              </div>
-              <div class="flex-box half-gap grow-label">
-                <label :for="`soul-weapon-damage-type`">Damage Type</label>
-                <select class="input-field" v-model="sheet.soul_weapon.damageType" :id="`soul-weapon-damage-type`">
-                  <option value="physical">Physical</option>
-                  <option value="magical">Magical</option>
-                  <option value="true">True Damage</option>
-                </select>
-              </div>
-              <div class="grid">
-                <label class="properties-header">Qualities</label>
-                <WeaponQualitiesSelector />
-              </div>
-            </template>
-            <template v-slot:collapsed>
-              <button @click="sheet.rollWeapon">{{ sheet.soul_weapon.name || 'New Weapon' }}</button>
-              <span class="damage-type-tag" :class="sheet.soul_weapon.damageType">
-                {{ sheet.damageTypeLabels[sheet.soul_weapon.damageType] || 'Physical' }}
-              </span>
-              <span v-if="sheet.activeWeaponQualities.length > 0" class="qualities-summary">
-                {{ sheet.activeWeaponQualities.join(', ') }}
-              </span>
-            </template>
-          </Collapsible>
+        <NotchContainer class="soul-armament-mode-container basic-item" width="thick" notchType="curve">
+          <div class="armament-mode-header">
+            <select class="armament-mode-select" v-model="sheet.soulArmamentMode">
+              <option value="weapon">Soul Weapon</option>
+              <option value="gun">Soul Gun</option>
+            </select>
+          </div>
+
+          <!-- SOUL WEAPON MODE -->
+          <template v-if="sheet.soulArmamentMode === 'weapon'">
+            <Collapsible class="basic-item" :default="sheet.soul_weapon.collapsed" @collapse="sheet.soul_weapon.collapsed = !sheet.soul_weapon.collapsed">
+              <template v-slot:expanded>
+                <div class="flex-box half-gap grow-label">
+                  <label :for="`soul-weapon-name`">Name</label>
+                  <input class="input-field" type="text" v-model="sheet.soul_weapon.name" :id="`soul-weapon-name`">
+                </div>
+                <div class="flex-box half-gap grow-label">
+                  <label :for="`soul-weapon-range`">Range</label>
+                  <input class="input-field" type="text" v-model="sheet.soul_weapon.range" :id="`soul-weapon-range`">
+                </div>
+                <div class="flex-box half-gap grow-label">
+                  <label :for="`soul-weapon-damage`">Damage</label>
+                  <input class="input-field" type="text" v-model="sheet.soul_weapon.damage" :id="`soul-weapon-damage`">
+                </div>
+                <div class="flex-box half-gap grow-label">
+                  <label :for="`soul-weapon-damage-type`">Damage Type</label>
+                  <select class="input-field" v-model="sheet.soul_weapon.damageType" :id="`soul-weapon-damage-type`">
+                    <option value="physical">Physical</option>
+                    <option value="magical">Magical</option>
+                    <option value="true">True Damage</option>
+                  </select>
+                </div>
+                <div class="grid">
+                  <label class="properties-header">Qualities</label>
+                  <WeaponQualitiesSelector />
+                </div>
+              </template>
+              <template v-slot:collapsed>
+                <button @click="sheet.rollWeapon">{{ sheet.soul_weapon.name || 'New Weapon' }}</button>
+                <span class="damage-type-tag" :class="sheet.soul_weapon.damageType">
+                  {{ sheet.damageTypeLabels[sheet.soul_weapon.damageType] || 'Physical' }}
+                </span>
+                <span v-if="sheet.activeWeaponQualities.length > 0" class="qualities-summary">
+                  {{ sheet.activeWeaponQualities.join(', ') }}
+                </span>
+              </template>
+            </Collapsible>
+          </template>
+
+          <!-- SOUL GUN MODE -->
+          <template v-if="sheet.soulArmamentMode === 'gun'">
+            <Collapsible class="basic-item" :default="sheet.soul_gun.collapsed" @collapse="sheet.soul_gun.collapsed = !sheet.soul_gun.collapsed">
+              <template v-slot:expanded>
+                <div class="flex-box half-gap grow-label">
+                  <label for="soul-gun-name">Name</label>
+                  <input class="input-field" type="text" v-model="sheet.soul_gun.name" id="soul-gun-name">
+                </div>
+                <GunQualitiesSelector />
+              </template>
+              <template v-slot:collapsed>
+                <div class="collapsed-gun-actions">
+                  <button class="gun-roll-btn" @click="sheet.rollGunRapidFire">RF</button>
+                  <button class="gun-roll-btn" @click="sheet.rollGunMagDump" :disabled="!sheet.soul_gun.hasReloaded || sheet.gunTypeStats.md === 0">MD</button>
+                  <button class="gun-roll-btn" @click="sheet.rollGunDamage">Dmg</button>
+                  <span class="gun-name">{{ sheet.soul_gun.name || sheet.gunTypeStats.name }}</span>
+                </div>
+                <span class="gun-type-tag">{{ sheet.gunTypeStats.abbr }}</span>
+                <span class="gun-range-tag">{{ sheet.gunTypeStats.eRange }}ft</span>
+                <span v-if="!sheet.soul_gun.hasReloaded" class="reload-warning">Needs Reload</span>
+              </template>
+            </Collapsible>
+          </template>
         </NotchContainer>
 
         <NotchContainer class="magical-implement-container basic-item" width="thick" notchType="curve">
@@ -322,29 +355,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           </Collapsible>
         </NotchContainer>
 
-        <NotchContainer class="soul-gun-container basic-item" width="thick" notchType="curve">
-          <h4>Soul Gun</h4>
-          <Collapsible class="basic-item" :default="sheet.soul_gun.collapsed" @collapse="sheet.soul_gun.collapsed = !sheet.soul_gun.collapsed">
-            <template v-slot:expanded>
-              <div class="flex-box half-gap grow-label">
-                <label for="soul-gun-name">Name</label>
-                <input class="input-field" type="text" v-model="sheet.soul_gun.name" id="soul-gun-name">
-              </div>
-              <GunQualitiesSelector />
-            </template>
-            <template v-slot:collapsed>
-              <div class="collapsed-gun-actions">
-                <button class="gun-roll-btn" @click="sheet.rollGunRapidFire">RF</button>
-                <button class="gun-roll-btn" @click="sheet.rollGunMagDump" :disabled="!sheet.soul_gun.hasReloaded || sheet.gunTypeStats.md === 0">MD</button>
-                <button class="gun-roll-btn" @click="sheet.rollGunDamage">Dmg</button>
-                <span class="gun-name">{{ sheet.soul_gun.name || sheet.gunTypeStats.name }}</span>
-              </div>
-              <span class="gun-type-tag">{{ sheet.gunTypeStats.abbr }}</span>
-              <span class="gun-range-tag">{{ sheet.gunTypeStats.eRange }}ft</span>
-              <span v-if="!sheet.soul_gun.hasReloaded" class="reload-warning">Needs Reload</span>
-            </template>
-          </Collapsible>
-        </NotchContainer>
       </div>
     </div>
   </div>
@@ -923,7 +933,25 @@ input{
   margin-left: 4px;
 }
 
-.soul-gun-container {
+.soul-armament-mode-container {
+  .armament-mode-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--half-gap, 4px);
+  }
+
+  .armament-mode-select {
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--masterBack);
+    border: 1px solid var(--borderColor);
+    color: var(--color);
+    cursor: pointer;
+    width: 100%;
+  }
+
   .collapsed-gun-actions {
     display: flex;
     align-items: center;

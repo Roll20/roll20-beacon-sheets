@@ -998,6 +998,8 @@ export const useSheetStore = defineStore('sheet',() => {
     description: ref(''),
     collapsed: ref(true)
   };
+  const soulArmamentMode = ref('weapon'); // 'weapon' or 'gun'
+
   const soul_weapon = {
     name: ref(''),
     range: ref(''),
@@ -2079,6 +2081,7 @@ export const useSheetStore = defineStore('sheet',() => {
       combatFormMastery: { ...combatFormMastery.value },
       veilPiercingUsed: veilPiercingUsed.value,
       manaConduitUsed: manaConduitUsed.value,
+      soulArmamentMode: soulArmamentMode.value,
       soul_weapon: dehydrateSoulWeapon(soul_weapon),
       soul_gun: dehydrateSoulGun(soul_gun),
       magical_implement: dehydrateMagicalImplement(magical_implement),
@@ -2282,6 +2285,7 @@ export const useSheetStore = defineStore('sheet',() => {
     }
     veilPiercingUsed.value = hydrateStore.veilPiercingUsed ?? veilPiercingUsed.value;
     manaConduitUsed.value = hydrateStore.manaConduitUsed ?? manaConduitUsed.value;
+    soulArmamentMode.value = hydrateStore.soulArmamentMode ?? soulArmamentMode.value;
     hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
     hydrateSoulGun(soul_gun, hydrateStore.soul_gun);
     hydrateMagicalImplement(magical_implement, hydrateStore.magical_implement);
@@ -3685,6 +3689,7 @@ export const useSheetStore = defineStore('sheet',() => {
     student_type,
     armor_weave,
     armorWeaveData,
+    soulArmamentMode,
     soul_weapon,
     weaponQualityDefs,
     weaponQualityAttackBonus,
