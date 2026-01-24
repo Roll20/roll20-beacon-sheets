@@ -563,6 +563,15 @@ knightArmorTotal: computed(...)          // knight_armor + soulArmamentArmorBonu
 ```
 Weapon bonus is added to knight attack roll as an 'Armament' component. Armor bonus is displayed as a tier info banner below the stat cards.
 
+**Elemental Summon:** Stat block for summoned elemental creature (from Summoning spell path).
+```javascript
+elementalSummon: ref({
+  name: '', hp: 0, hpMax: 0, armor: 10, attack: 0, damage: '', move: 30,
+  description: '', active: false, collapsed: true
+})
+```
+UI: Collapsible stat block in KnightView.vue with Active toggle, HP/HPMax/Armor/Attack/Damage/Move fields, and notes textarea.
+
 **Magi-Knight Visor:** Optional equipment slot (0 rune slots, limit 1).
 ```javascript
 visor: ref({ type: 'none' })

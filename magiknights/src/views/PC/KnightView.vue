@@ -439,6 +439,47 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     </RepeatingSection>
   </NotchContainer>
 
+  <NotchContainer class="summon-container basic-item" width="thick" notchType="curve">
+    <div class="summon-header-row">
+      <h4>Elemental Summon</h4>
+      <label class="summon-active-toggle">
+        <input type="checkbox" v-model="sheet.elementalSummon.active" />
+        <span>Active</span>
+      </label>
+    </div>
+    <Collapsible class="basic-item" :default="sheet.elementalSummon.collapsed" @collapse="sheet.elementalSummon.collapsed = !sheet.elementalSummon.collapsed">
+      <template v-slot:expanded>
+        <div class="flex-box half-gap grow-label">
+          <label for="summon-name">Name</label>
+          <input class="underline" type="text" v-model="sheet.elementalSummon.name" id="summon-name">
+        </div>
+        <div class="summon-stats-grid">
+          <label>HP</label>
+          <input type="number" class="underline" v-model.number="sheet.elementalSummon.hp">
+          <span>/</span>
+          <input type="number" class="underline" v-model.number="sheet.elementalSummon.hpMax">
+          <label>Armor</label>
+          <input type="number" class="underline" v-model.number="sheet.elementalSummon.armor">
+          <label>Attack</label>
+          <input type="number" class="underline" v-model.number="sheet.elementalSummon.attack">
+          <label>Damage</label>
+          <input type="text" class="underline" v-model="sheet.elementalSummon.damage">
+          <label>Move</label>
+          <input type="number" class="underline" v-model.number="sheet.elementalSummon.move">
+        </div>
+        <div class="grid">
+          <label class="properties-header" for="summon-description">Notes</label>
+          <textarea class="underline" id="summon-description" v-model="sheet.elementalSummon.description"></textarea>
+        </div>
+      </template>
+      <template v-slot:collapsed>
+        <span>{{ sheet.elementalSummon.name || 'No Summon' }}
+          <span v-if="sheet.elementalSummon.active" class="summon-active-badge">Active</span>
+        </span>
+      </template>
+    </Collapsible>
+  </NotchContainer>
+
   <!-- Squadron Formations - Per compendium: requires 3+ Magi-Knights within 60ft -->
   <div class="formations-section grid-span-all">
     <SquadronFormations />
@@ -951,6 +992,38 @@ input{
 html.dark {
   .qualities-summary {
     color: #aaa;
+  }
+}
+
+.summon-container {
+  .summon-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    h4 { margin: 0; }
+  }
+  .summon-active-toggle {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.85em;
+    cursor: pointer;
+    input[type="checkbox"] { margin: 0; }
+  }
+  .summon-stats-grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    gap: 4px var(--half-gap);
+    align-items: center;
+    font-size: 0.9em;
+    label { font-weight: 600; }
+    input { max-width: 60px; }
+  }
+  .summon-active-badge {
+    font-size: 0.75em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(100, 200, 100, 0.3);
   }
 }
 

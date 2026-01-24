@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 26/33
-- **Current Task:** Task 27 (Elemental Summon)
+- **Tasks Completed:** 27/33
+- **Current Task:** Task 28 (Trauma Track)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -539,6 +539,24 @@
 - Added CSS styling for visor section
 - Added store exports: visor, visorData, activeVisorEffect
 - Updated ARCHITECTURAL_ANALYSIS.md Equipment section with Visor documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 27: Add Elemental Summon stat block tracking
+
+**Changes Made:**
+- Added `elementalSummon` ref (object: name, hp, hpMax, armor, attack, damage, move, description, active, collapsed)
+- Added elementalSummon to dehydrate/hydrate cycle
+- Added Elemental Summon collapsible section in KnightView.vue with: Active toggle, name input, HP/HPMax/Armor/Attack/Damage/Move stat grid, notes textarea
+- Added CSS styling for summon container (header row, stats grid, active badge)
+- Added store export: elementalSummon
+- Updated ARCHITECTURAL_ANALYSIS.md with Elemental Summon documentation
 - Build verified successfully
 
 **Files Modified:**

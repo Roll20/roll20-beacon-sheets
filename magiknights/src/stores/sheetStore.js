@@ -1105,6 +1105,20 @@ export const useSheetStore = defineStore('sheet',() => {
       .map(([key]) => implementQualityDefs[key]?.name || key);
   });
 
+  // ==================== ELEMENTAL SUMMON ====================
+  const elementalSummon = ref({
+    name: '',
+    hp: 0,
+    hpMax: 0,
+    armor: 10,
+    attack: 0,
+    damage: '',
+    move: 30,
+    description: '',
+    active: false,
+    collapsed: true
+  });
+
   // ==================== VISOR ====================
   const visor = ref({ type: 'none' });
   const visorData = {
@@ -1940,6 +1954,7 @@ export const useSheetStore = defineStore('sheet',() => {
       soul_gun: dehydrateSoulGun(soul_gun),
       magical_implement: dehydrateMagicalImplement(magical_implement),
       visor: { type: visor.value.type },
+      elementalSummon: { ...elementalSummon.value },
       herald: dehydrateHerald(herald),
       squire: dehydrateSquire(squire),
       student_damage_override: student_damage_override.value,
@@ -2128,6 +2143,9 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateMagicalImplement(magical_implement, hydrateStore.magical_implement);
     if (hydrateStore.visor) {
       visor.value.type = hydrateStore.visor.type ?? visor.value.type;
+    }
+    if (hydrateStore.elementalSummon) {
+      Object.assign(elementalSummon.value, hydrateStore.elementalSummon);
     }
     hydrateHerald(herald, hydrateStore.herald);
     if (hydrateStore.squire) hydrateSquire(squire, hydrateStore.squire);
@@ -3534,6 +3552,7 @@ export const useSheetStore = defineStore('sheet',() => {
     visor,
     visorData,
     activeVisorEffect,
+    elementalSummon,
     activeImplementQualities,
 
     // Combat Forms
