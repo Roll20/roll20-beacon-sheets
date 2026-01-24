@@ -447,7 +447,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md level abilities section"
     ],
     "context": "The levelAbilityData from task 11 included Counter Blast, Perfect Parry, Extricate Aether, Heroic Resolve, Knight's Insight, and Knight's Resolution. However, three important level-locked abilities were omitted: Swift Attack (level 5: weapon attack as Bonus Action, level 10: additional attack), Energy Surge (level 4: 1/Sleep Phase recovery of HP/MP/Exhaustion/Stress), and Flight (level 10: fly speed = move speed, Standard Action to activate). Energy Surge is a once-per-rest resource that needs usage tracking. Flight is a toggleable state affecting movement and prone mechanics.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 25,

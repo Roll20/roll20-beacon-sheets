@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 23/33
-- **Current Task:** Task 24 (Level-Locked Abilities: Swift Attack, Energy Surge, Flight)
+- **Tasks Completed:** 24/33
+- **Current Task:** Task 25 (Well Fed and Studied variants)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -479,6 +479,27 @@
 - Added CSS styling for rune header row, capacity badge, warning text, and slot badge
 - Added store exports: runeSlotCapacity, runeSlotsUsed, runesOverCapacity
 - Updated ARCHITECTURAL_ANALYSIS.md Equipment section with Rune Slot documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 24: Add Swift Attack, Energy Surge, and Flight to level-locked abilities
+
+**Changes Made:**
+- Added Energy Surge (level 4), Swift Attack (level 5), Swift Attack II (level 10), and Flight (level 10) to `levelAbilityData`
+- Added `energySurgeUsed` ref (boolean, default false) for 1/Sleep Phase usage tracking
+- Added `isFlying` ref (boolean, default false) for active flight state
+- Updated `levelAbilities` computed to include the 4 new abilities
+- Added both refs to dehydrate/hydrate cycle for persistence
+- Updated KnightView.vue Level Abilities section: Energy Surge shows "Used" checkbox, Flight shows "Active" toggle when unlocked
+- Added `.ability-toggle` CSS styling for the usage/state toggles
+- Added store exports: energySurgeUsed, isFlying
+- Updated ARCHITECTURAL_ANALYSIS.md Level-Locked Abilities section (now 10 abilities)
 - Build verified successfully
 
 **Files Modified:**

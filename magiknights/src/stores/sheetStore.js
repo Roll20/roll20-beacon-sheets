@@ -1133,22 +1133,34 @@ export const useSheetStore = defineStore('sheet',() => {
   // ==================== LEVEL-LOCKED ABILITIES ====================
   // Special abilities that all Magi-Knights gain at specific levels
   const levelAbilityData = {
+    energySurge: { name: 'Energy Surge', level: 4, description: '1/Sleep Phase, Bonus Action: Recover HP (Rep d10s+CON), MP (Rep d4s+Spell Mod), remove 1 Exhaustion, or remove 3 Stress' },
     counterBlast: { name: 'Counter Blast', level: 5, description: 'Reaction: When hit by spell, spend MP to counter' },
+    swiftAttack1: { name: 'Swift Attack', level: 5, description: 'Weapon Attack as Bonus Action 1/round' },
     perfectParry: { name: 'Perfect Parry', level: 6, description: 'Immediate: Negate weapon damage received' },
     extricateAether: { name: 'Extricate Aether', level: 6, description: 'Recover MP from defeated Outsiders' },
     heroicResolve: { name: 'Heroic Resolve', level: 9, description: 'Resist conditions with enhanced willpower' },
     knightsInsight: { name: "Knight's Insight", level: 9, description: 'Gain tactical information about enemies' },
-    knightsResolution: { name: "Knight's Resolution", level: 9, description: 'Enhanced resistance to attrition effects' }
+    knightsResolution: { name: "Knight's Resolution", level: 9, description: 'Enhanced resistance to attrition effects' },
+    swiftAttack2: { name: 'Swift Attack II', level: 10, description: 'Additional Weapon Attack as Bonus Action 1/round' },
+    flight: { name: 'Flight', level: 10, description: 'Standard Action: Gain Fly speed equal to Move speed' }
   };
+
+  // Tracking refs for level-locked ability usage
+  const energySurgeUsed = ref(false);
+  const isFlying = ref(false);
 
   // Computed: which level abilities are unlocked based on current level
   const levelAbilities = computed(() => ({
+    energySurge: level.value >= 4,
     counterBlast: level.value >= 5,
+    swiftAttack1: level.value >= 5,
     perfectParry: level.value >= 6,
     extricateAether: level.value >= 6,
     heroicResolve: level.value >= 9,
     knightsInsight: level.value >= 9,
-    knightsResolution: level.value >= 9
+    knightsResolution: level.value >= 9,
+    swiftAttack2: level.value >= 10,
+    flight: level.value >= 10
   }));
 
   // Damage type labels for display
@@ -1860,6 +1872,8 @@ export const useSheetStore = defineStore('sheet',() => {
       sleepEffect: sleepEffect.value,
       sealImplantGiven: sealImplantGiven.value,
       sealImplantReceived: sealImplantReceived.value,
+      energySurgeUsed: energySurgeUsed.value,
+      isFlying: isFlying.value,
       soulSacrificeCount: soulSacrificeCount.value,
       rollMode: rollMode.value,
       conditions: { ...conditions.value },
@@ -2000,6 +2014,8 @@ export const useSheetStore = defineStore('sheet',() => {
     sleepEffect.value = hydrateStore.sleepEffect ?? sleepEffect.value;
     sealImplantGiven.value = hydrateStore.sealImplantGiven ?? sealImplantGiven.value;
     sealImplantReceived.value = hydrateStore.sealImplantReceived ?? sealImplantReceived.value;
+    energySurgeUsed.value = hydrateStore.energySurgeUsed ?? energySurgeUsed.value;
+    isFlying.value = hydrateStore.isFlying ?? isFlying.value;
     soulSacrificeCount.value = hydrateStore.soulSacrificeCount ?? soulSacrificeCount.value;
     rollMode.value = hydrateStore.rollMode ?? rollMode.value;
     // Hydrate conditions
@@ -3498,6 +3514,8 @@ export const useSheetStore = defineStore('sheet',() => {
     // Level-Locked Abilities
     levelAbilityData,
     levelAbilities,
+    energySurgeUsed,
+    isFlying,
 
     damageTypeLabels,
     gloom_gems:gloom,

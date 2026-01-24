@@ -335,6 +335,14 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
       <span class="ability-level-badge">{{ ability.level }}</span>
       <span class="ability-name">{{ ability.name }}</span>
       <span class="ability-desc">{{ ability.description }}</span>
+      <label v-if="key === 'energySurge' && sheet.levelAbilities[key]" class="ability-toggle">
+        <input type="checkbox" v-model="sheet.energySurgeUsed" />
+        <span>Used</span>
+      </label>
+      <label v-if="key === 'flight' && sheet.levelAbilities[key]" class="ability-toggle">
+        <input type="checkbox" v-model="sheet.isFlying" />
+        <span>Active</span>
+      </label>
     </div>
   </div>
 </NotchContainer>
@@ -1097,6 +1105,17 @@ html.dark {
 
   .unlocked .ability-level-badge {
     background: rgba(100, 200, 100, 0.4);
+  }
+
+  .ability-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.85em;
+    cursor: pointer;
+    flex-shrink: 0;
+    input[type="checkbox"] { margin: 0; }
   }
 }
 

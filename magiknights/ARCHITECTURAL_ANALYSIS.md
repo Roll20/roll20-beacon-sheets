@@ -413,23 +413,29 @@ hasFormX: computed(() => combatFormMastery.formX)  // Soul Gun prerequisite
 - Mastery effect shown when active form is mastered
 - Custom form notes preserved via sections.forms repeating section
 
-**Level-Locked Abilities:**
+**Level-Locked Abilities (10 abilities):**
 ```javascript
 // Special abilities that all Magi-Knights gain at specific levels
 levelAbilityData: {
-  counterBlast: { name: 'Counter Blast', level: 5, description: 'Reaction: When hit by spell, spend MP to counter' },
-  perfectParry: { name: 'Perfect Parry', level: 6, description: 'Immediate: Negate weapon damage received' },
-  extricateAether: { name: 'Extricate Aether', level: 6, description: 'Recover MP from defeated Outsiders' },
-  heroicResolve: { name: 'Heroic Resolve', level: 9, description: 'Resist conditions with enhanced willpower' },
-  knightsInsight: { name: "Knight's Insight", level: 9, description: 'Gain tactical information about enemies' },
-  knightsResolution: { name: "Knight's Resolution", level: 9, description: 'Enhanced resistance to attrition effects' }
+  energySurge: { level: 4, '1/Sleep Phase: Recover HP/MP/Exhaustion/Stress' },
+  counterBlast: { level: 5, 'Reaction: Counter spell with MP' },
+  swiftAttack1: { level: 5, 'Weapon Attack as Bonus Action 1/round' },
+  perfectParry: { level: 6, 'Negate weapon damage received' },
+  extricateAether: { level: 6, 'Recover MP from defeated Outsiders' },
+  heroicResolve: { level: 9, 'Resist conditions with enhanced willpower' },
+  knightsInsight: { level: 9, 'Tactical information about enemies' },
+  knightsResolution: { level: 9, 'Enhanced resistance to attrition effects' },
+  swiftAttack2: { level: 10, 'Additional Bonus Action attack' },
+  flight: { level: 10, 'Fly speed = Move speed' }
 }
 
-levelAbilities: computed  // Returns { counterBlast: bool, perfectParry: bool, ... } based on level
+energySurgeUsed: ref(false)   // 1/Sleep Phase usage tracker
+isFlying: ref(false)          // Active flight state toggle
+levelAbilities: computed      // Returns unlock booleans based on level
 ```
-- UI: Listed in KnightView.vue with locked/unlocked visual states
-- Level badge shows required level for each ability
-- Unlocked abilities have full opacity; locked abilities are dimmed
+- UI: Listed in KnightView.vue with locked/unlocked visual states and usage toggles
+- Energy Surge shows "Used" checkbox when unlocked
+- Flight shows "Active" toggle when unlocked
 
 **Budget & Training Tallies:**
 ```javascript
