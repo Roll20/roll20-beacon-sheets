@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 28/33
-- **Current Task:** Task 29 (Veil-Piercing Quality)
+- **Tasks Completed:** 29/33
+- **Current Task:** Task 30 (Heart Stage SP threshold)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -584,6 +584,24 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/BasicView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 29: Implement Detention Tickets counter
+
+**Changes Made:**
+- Added `detentionTickets` ref (number, default 0)
+- Added to dehydrate/hydrate cycle
+- Added detention counter in StudentView.vue with warning display when tickets > 0
+- Added CSS styling for detention display
+- Added store export: detentionTickets
+- Updated ARCHITECTURAL_ANALYSIS.md with Detention Tickets documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/StudentView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

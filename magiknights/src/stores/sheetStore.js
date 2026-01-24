@@ -56,6 +56,8 @@ export const useSheetStore = defineStore('sheet',() => {
     president: { name: 'President', bonus: '+4 Persuasion with club members, Grant VP benefits to others' }
   };
 
+  const detentionTickets = ref(0);
+
   const stress = ref(0);
   const exhaustion = ref(0);
   const student_type = ref('');
@@ -1908,6 +1910,7 @@ export const useSheetStore = defineStore('sheet',() => {
       inspiration: inspiration.value,
       stress: stress.value,
       exhaustion: exhaustion.value,
+      detentionTickets: detentionTickets.value,
       enduranceDieEnabled: enduranceDieEnabled.value,
       freakingOutToday: freakingOutToday.value,
       sleepEffect: sleepEffect.value,
@@ -2057,6 +2060,7 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration.value = hydrateStore.inspiration ?? inspiration.value;
     stress.value = hydrateStore.stress ?? stress.value;
     exhaustion.value = hydrateStore.exhaustion ?? exhaustion.value;
+    detentionTickets.value = hydrateStore.detentionTickets ?? detentionTickets.value;
     enduranceDieEnabled.value = hydrateStore.enduranceDieEnabled ?? enduranceDieEnabled.value;
     freakingOutToday.value = hydrateStore.freakingOutToday ?? freakingOutToday.value;
     sleepEffect.value = hydrateStore.sleepEffect ?? sleepEffect.value;
@@ -3476,6 +3480,7 @@ export const useSheetStore = defineStore('sheet',() => {
     inspiration,
     stress,
     exhaustion,
+    detentionTickets,
     trauma,
     exceededMortalLimits,
     proficiency,

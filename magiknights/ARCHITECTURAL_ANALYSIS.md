@@ -448,6 +448,13 @@ trainingTalliesMax: 8       // Tallies needed to gain a level
 - Training Tallies: earned from Grinding, missions; accumulate 8 to level up (4 for New Rice Squires)
 - Both persist via dehydrate/hydrate cycle
 
+**Detention Tickets:**
+```javascript
+detentionTickets: ref(0)  // Outstanding detention obligations
+```
+- Each ticket = 1 Free Time spent. Skipping = +1 Trauma/day
+- UI: Counter in StudentView.vue with warning display when tickets > 0
+
 **Club System:**
 ```javascript
 clubTallies: ref(0)            // 0-8 counter, resets at Resounding Growth

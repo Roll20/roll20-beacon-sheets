@@ -90,6 +90,14 @@ function studentAbilitySummary()
         </ImageBackedLabel>
       </template>
     </SplitMods>
+    <div v-if="sheet.detentionTickets > 0" class="detention-tickets-display">
+      <span class="detention-label">Detention Tickets: {{ sheet.detentionTickets }}</span>
+      <span class="detention-note">Each = 1 Free Time. Skipping = +1 Trauma/day</span>
+    </div>
+    <div class="detention-counter">
+      <label>Detention Tickets</label>
+      <input type="number" min="0" class="underline detention-input" v-model.number="sheet.detentionTickets">
+    </div>
     <NotchContainer class="student-ability" notchType="none" width="thick">
       <h4>Student Ability</h4>
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
@@ -200,6 +208,23 @@ function studentAbilitySummary()
 </template>
 
 <style lang="scss">
+.detention-counter {
+  display: flex;
+  align-items: center;
+  gap: var(--half-gap);
+  padding: 4px var(--half-gap);
+  font-size: 0.85em;
+  .detention-input { width: 4ch; text-align: center; }
+}
+.detention-tickets-display {
+  display: flex;
+  flex-direction: column;
+  padding: 4px var(--half-gap);
+  background: rgba(200, 80, 80, 0.1);
+  border-radius: 4px;
+  .detention-label { font-weight: bold; font-size: 0.85em; }
+  .detention-note { font-size: 0.75em; opacity: 0.7; font-style: italic; }
+}
 .student-view {
   display: grid;
   gap: var(--half-gap);

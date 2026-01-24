@@ -542,7 +542,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md student section with Detention documentation"
     ],
     "context": "Per the compendium: 'Detention: For each Detention Ticket: Must spend 1 Free Time doing Mandatory Detention. Skipping: +1 Trauma per day avoided.' Detention Tickets represent mandatory school obligations that consume Free Time Phase slots. Accumulating them without serving has severe consequences (Trauma). This is a simple counter but important for Student phase gameplay tracking.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 30,
