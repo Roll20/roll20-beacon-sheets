@@ -1,6 +1,7 @@
 <script setup>
 
 import { useSheetStore } from '@/stores/sheetStore';
+import { computed } from 'vue';
 
 import SplitMods from '@/components/SplitMods.vue';
 import BackgroundItems from '@/components/BackgroundItems.vue';
@@ -49,6 +50,98 @@ function studentAbilitySummary()
   }
   return sheet.student_ability.description;
 }
+
+// Studied toggle: cycles empty → X (Combat) → O (School) → XO (Both) → empty
+const studiedDisplay = computed(() => {
+  if (sheet.studiedCombat && sheet.studiedSchool) return 'XO';
+  if (sheet.studiedCombat) return 'X';
+  if (sheet.studiedSchool) return 'O';
+  return '';
+});
+
+function cycleStudied() {
+  if (!sheet.studiedCombat && !sheet.studiedSchool) {
+    sheet.studiedCombat = true;
+  } else if (sheet.studiedCombat && !sheet.studiedSchool) {
+    sheet.studiedCombat = false;
+    sheet.studiedSchool = true;
+  } else if (!sheet.studiedCombat && sheet.studiedSchool) {
+    sheet.studiedCombat = true;
+  } else {
+    sheet.studiedCombat = false;
+    sheet.studiedSchool = false;
+  }
+}
+
+const studiedTooltip = computed(() => {
+  if (sheet.studiedCombat && sheet.studiedSchool) {
+    return 'Studied [Combat] + [School]\n'
+      + 'Combat: +1d8 to a Weapon Attack roll (one-time use). Expires at Sleep Phase or when used.\n'
+      + 'School: +1d8 to a Student Class Check (one-time use). Expires at end of School Phase or when used.';
+  }
+  if (sheet.studiedCombat) {
+    return 'Studied [Combat]\n'
+      + 'Earned by choosing the "Combat Training" activity during Free Time Phase\n'
+      + 'Grants +1d8 to a Weapon Attack roll (one-time use)\n'
+      + 'Expires at Sleep Phase or when used, whichever comes first';
+  }
+  if (sheet.studiedSchool) {
+    return 'Studied [School]\n'
+      + 'Earned by choosing the "Study and Complete Homework" activity during Free Time Phase\n'
+      + 'Grants +1d8 to a Student Class Check (one-time use)\n'
+      + 'Expires at end of School Phase or when used, whichever comes first';
+  }
+  return 'Studied Effect\n'
+    + 'Click to cycle: Empty → X (Combat) → O (School) → XO (Both)\n'
+    + 'X = Studied [Combat]: +1d8 to Weapon Attack (one-time use)\n'
+    + 'O = Studied [School]: +1d8 to Student Class Check (one-time use)';
+});
+
+// Nourished toggle: cycles empty → X (Well Fed) → O (Rested) → XO (Both) → empty
+const nourishedDisplay = computed(() => {
+  if (sheet.wellFed && sheet.rested) return 'XO';
+  if (sheet.wellFed) return 'X';
+  if (sheet.rested) return 'O';
+  return '';
+});
+
+function cycleNourished() {
+  if (!sheet.wellFed && !sheet.rested) {
+    sheet.wellFed = true;
+  } else if (sheet.wellFed && !sheet.rested) {
+    sheet.wellFed = false;
+    sheet.rested = true;
+  } else if (!sheet.wellFed && sheet.rested) {
+    sheet.wellFed = true;
+  } else {
+    sheet.wellFed = false;
+    sheet.rested = false;
+  }
+}
+
+const nourishedTooltip = computed(() => {
+  if (sheet.wellFed && sheet.rested) {
+    return 'Well Fed + Well Rested\n'
+      + 'Well Fed: Reroll all dice on a Physical Skill Check (one-time use). Expires at Sleep Phase.\n'
+      + 'Well Rested: Reroll all dice on a Mental Skill Check (one-time use). Lost at start of next Sleep Phase.';
+  }
+  if (sheet.wellFed) {
+    return 'Well Fed\n'
+      + 'Earned by choosing "Visit a Restaurant" during Free Time Phase, or from attending a School Festival\n'
+      + 'Reroll all dice on a Physical Skill Check (one-time use)\n'
+      + 'Expires at Sleep Phase';
+  }
+  if (sheet.rested) {
+    return 'Well Rested\n'
+      + 'Earned from Refreshing or Average sleep during Sleep Phase\n'
+      + 'Reroll all dice on a Mental Skill Check (one-time use)\n'
+      + 'Lost at the start of the next Sleep Phase';
+  }
+  return 'Nourished/Rested Effect\n'
+    + 'Click to cycle: Empty → X (Well Fed) → O (Well Rested) → XO (Both)\n'
+    + 'X = Well Fed: Reroll Physical Skill Check dice (one-time use)\n'
+    + 'O = Well Rested: Reroll Mental Skill Check dice (one-time use)';
+});
 </script>
 
 <template>
@@ -56,33 +149,17 @@ function studentAbilitySummary()
 
     <SplitMods :attributes="studentAttributes" class="student-split">
       <template v-slot:content>
-        <ImageBackedLabel image="studied">
+        <ImageBackedLabel image="studied" :title="studiedTooltip">
           <template v-slot:value>
-            <input type="checkbox" v-model="sheet.studiedCombat" class="rest-check">
+            <span class="rest-check studied-toggle" @click="cycleStudied">{{ studiedDisplay }}</span>
           </template>
           <template v-slot:text>
-            Studied [C]
+            Studied
           </template>
         </ImageBackedLabel>
-        <ImageBackedLabel image="studied">
+        <ImageBackedLabel image="apple" :title="nourishedTooltip">
           <template v-slot:value>
-            <input type="checkbox" v-model="sheet.studiedSchool" class="rest-check">
-          </template>
-          <template v-slot:text>
-            Studied [S]
-          </template>
-        </ImageBackedLabel>
-        <ImageBackedLabel image="apple">
-          <template v-slot:value>
-            <input type="checkbox" v-model="sheet.wellFed" class="rest-check">
-          </template>
-          <template v-slot:text>
-            Well Fed
-          </template>
-        </ImageBackedLabel>
-        <ImageBackedLabel image="apple">
-          <template v-slot:value>
-            <input type="checkbox" v-model="sheet.rested" class="rest-check">
+            <span class="rest-check studied-toggle" @click="cycleNourished">{{ nourishedDisplay }}</span>
           </template>
           <template v-slot:text>
             Rested
@@ -345,6 +422,10 @@ function studentAbilitySummary()
         font-family: 'Material Symbols Outlined';
       }
     }
+  }
+  .studied-toggle{
+    font-weight: bold;
+    user-select: none;
   }
   .gear-section{
     grid-column: 1 / -1;

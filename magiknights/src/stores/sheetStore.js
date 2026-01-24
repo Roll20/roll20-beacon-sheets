@@ -2593,12 +2593,6 @@ export const useSheetStore = defineStore('sheet',() => {
       components.push({label: 'Qualities', value: qualityBonus, alwaysShowInBreakdown: true});
     }
 
-    // Add Studied [Combat] bonus: +1d8 (consumed on use)
-    if (studiedCombat.value) {
-      components.push({label: 'Studied', formula: '1d8', alwaysShowInBreakdown: true});
-      studiedCombat.value = false;
-    }
-
     const rollObj = {
       title: 'Attack Roll',
       subtitle: `Magi-Knight Persona${rollModeLabel}`,
