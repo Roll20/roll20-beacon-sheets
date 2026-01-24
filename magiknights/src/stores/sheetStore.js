@@ -893,6 +893,19 @@ export const useSheetStore = defineStore('sheet',() => {
   const knight_hasShield = ref(false);
   const knight_move = ref('');
 
+  // Soul Armament Progression - auto-calculated bonuses based on Reputation Level
+  const soulArmamentData = {
+    0: { weapon: 0, armor: 0 },
+    1: { weapon: 1, armor: 0 },
+    2: { weapon: 1, armor: 1 },
+    3: { weapon: 2, armor: 1 },
+    4: { weapon: 2, armor: 2 },
+    5: { weapon: 3, armor: 3 }
+  };
+  const soulArmamentWeaponBonus = computed(() => (soulArmamentData[reputation.value] || soulArmamentData[0]).weapon);
+  const soulArmamentArmorBonus = computed(() => (soulArmamentData[reputation.value] || soulArmamentData[0]).armor);
+  const knightArmorTotal = computed(() => Number(knight_armor.value) + soulArmamentArmorBonus.value);
+
   const knight_attack_override = ref('');
   const knight_attack = computed({
     get() {
@@ -2426,6 +2439,12 @@ export const useSheetStore = defineStore('sheet',() => {
       {label:'Attack', value:Number(knight_attack.value),alwaysShowInBreakdown: true}
     ];
 
+    // Add Soul Armament weapon bonus if any
+    const armamentBonus = soulArmamentWeaponBonus.value;
+    if (armamentBonus !== 0) {
+      components.push({label: 'Armament', value: armamentBonus, alwaysShowInBreakdown: true});
+    }
+
     // Add weapon quality bonus if any
     const qualityBonus = weaponQualityAttackBonus.value;
     if (qualityBonus !== 0) {
@@ -3543,6 +3562,10 @@ export const useSheetStore = defineStore('sheet',() => {
     shp_max_override,
     knight_damage,
     knight_armor,
+    knightArmorTotal,
+    soulArmamentData,
+    soulArmamentWeaponBonus,
+    soulArmamentArmorBonus,
     knight_hasShield,
     knight_move,
     knight_attack,

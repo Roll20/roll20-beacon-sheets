@@ -537,6 +537,15 @@ relicCount: computed(() => sections.relics.rows.length)
 
 ### Equipment System
 
+**Soul Armament Progression:** Auto-calculated bonuses based on Reputation Level.
+```javascript
+soulArmamentData = { 0: {weapon:0, armor:0}, 1: {weapon:1, armor:0}, 2: {weapon:1, armor:1}, 3: {weapon:2, armor:1}, 4: {weapon:2, armor:2}, 5: {weapon:3, armor:3} }
+soulArmamentWeaponBonus: computed(...)   // +0 to +3 weapon attack bonus
+soulArmamentArmorBonus: computed(...)    // +0 to +3 armor bonus
+knightArmorTotal: computed(...)          // knight_armor + soulArmamentArmorBonus
+```
+Weapon bonus is added to knight attack roll as an 'Armament' component. Armor bonus is displayed as a tier info banner below the stat cards.
+
 **Soul Weapon Qualities (8 qualities in 3 categories):**
 ```javascript
 soul_weapon: {

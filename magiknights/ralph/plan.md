@@ -404,7 +404,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md equipment section with Soul Armament Progression documentation"
     ],
     "context": "Per the compendium's Soul Armament Progression table: Rep 0 = +0 weapon/+0 armor, Rep I = +1/+0, Rep II = +1/+1, Rep III = +2/+1, Rep IV = +2/+2, Rep V = +3/+3. These bonuses are deterministic based on reputation level and should be auto-calculated rather than manually entered. Currently knight_armor is a raw ref(0) with manual entry, and weapon attack bonuses don't include the armament tier. The base armor comes from Elemental Affinity (13-16 depending on element) plus this reputation-based bonus.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 23,

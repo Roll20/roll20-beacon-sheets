@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 21/33
-- **Current Task:** Task 22 (Soul Armament Tier Bonus)
+- **Tasks Completed:** 22/33
+- **Current Task:** Task 23 (Rune Slot Capacity)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -437,6 +437,27 @@
 - Updated elemental_affinity watcher to reset branchingElement when affinity changes
 - Added store exports: branchingElement, branchingElementOptions, availableBranches
 - Updated ARCHITECTURAL_ANALYSIS.md with Branching Elements documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 22: Implement Soul Armament tier bonus auto-calculation
+
+**Changes Made:**
+- Added `soulArmamentData` constant with progression table: Rep 0→+0/+0, Rep I→+1/+0, Rep II→+1/+1, Rep III→+2/+1, Rep IV→+2/+2, Rep V→+3/+3
+- Added `soulArmamentWeaponBonus` computed (returns weapon bonus for current reputation)
+- Added `soulArmamentArmorBonus` computed (returns armor bonus for current reputation)
+- Added `knightArmorTotal` computed (knight_armor + soulArmamentArmorBonus)
+- Integrated weapon bonus into `rollKnightAttack`: adds 'Armament' component to roll breakdown when bonus > 0
+- Added armament tier info banner in KnightView.vue below stat cards (shows Weapon +N, Armor +N, and reputation level)
+- Added CSS styling for armament-tier-info display
+- Added store exports: soulArmamentData, soulArmamentWeaponBonus, soulArmamentArmorBonus, knightArmorTotal
+- Updated ARCHITECTURAL_ANALYSIS.md Equipment section with Soul Armament Progression documentation
 - Build verified successfully
 
 **Files Modified:**

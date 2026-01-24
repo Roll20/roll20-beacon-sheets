@@ -158,6 +158,11 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
       <label for="customCheckbox"></label>
     </div>
   <SplitMods :attributes="knightAttributes" class="knight-split"/>
+  <div v-if="sheet.soulArmamentWeaponBonus || sheet.soulArmamentArmorBonus" class="armament-tier-info">
+    <span v-if="sheet.soulArmamentWeaponBonus">Weapon +{{ sheet.soulArmamentWeaponBonus }}</span>
+    <span v-if="sheet.soulArmamentArmorBonus">Armor +{{ sheet.soulArmamentArmorBonus }}</span>
+    <span class="armament-label">Soul Armament (Rep {{ sheet.reputation }})</span>
+  </div>
 
   <NotchContainer class="armor-weave-container basic-item" width="thick" notchType="curve">
     <h4>Soul Armor Weave</h4>
@@ -583,6 +588,25 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 </template>
 
 <style lang="scss">
+.armament-tier-info {
+  display: flex;
+  gap: var(--half-gap);
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  padding: 2px var(--half-gap);
+  opacity: 0.85;
+  span {
+    padding: 1px 5px;
+    background: rgba(100, 150, 200, 0.12);
+    border-radius: 3px;
+  }
+  .armament-label {
+    font-style: italic;
+    background: none;
+    opacity: 0.7;
+  }
+}
 .knight-view {
   position: relative;
   display: grid;
