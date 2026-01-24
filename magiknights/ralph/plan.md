@@ -487,7 +487,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md equipment section with Visor documentation"
     ],
     "context": "Per the compendium: Magi-Knight Visors cost 150 Gloom Gems, take 0 Rune Slots, and are limited to 1 at a time. Three types exist: (1) Ether Identification Visor - Bonus Action to add 1d6 to Investigation/Perception for identifying magical signatures; (2) Medical Diagnostic Visor - Advantage on Medicine checks, can see HP values of willing allies within 30ft; (3) Virtual HUD Visor - Darksight 60ft, Bonus Action to mark a target granting +1d4 to next attack against it. These are a separate equipment category from runes and relics.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 27,

@@ -563,6 +563,14 @@ knightArmorTotal: computed(...)          // knight_armor + soulArmamentArmorBonu
 ```
 Weapon bonus is added to knight attack roll as an 'Armament' component. Armor bonus is displayed as a tier info banner below the stat cards.
 
+**Magi-Knight Visor:** Optional equipment slot (0 rune slots, limit 1).
+```javascript
+visor: ref({ type: 'none' })
+visorData = { none, etherIdentification, medicalDiagnostic, virtualHUD }
+activeVisorEffect: computed(...)  // Returns effect string for current visor type
+```
+Three types: Ether Identification (+1d6 Investigation/Perception), Medical Diagnostic (Advantage Medicine), Virtual HUD (Darksight 60ft + mark target). UI shows dropdown selector with effect description.
+
 **Rune Slot Capacity:** Tracks slot usage per rune and enforces capacity limits.
 ```javascript
 runeSlotCapacity: computed(...)    // max(1, reputation) = 1-5 slots

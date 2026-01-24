@@ -256,6 +256,16 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     </Collapsible>
   </NotchContainer>
 
+  <NotchContainer class="visor-container basic-item" width="thick" notchType="curve">
+    <h4>Visor</h4>
+    <div class="visor-selector">
+      <select class="underline" v-model="sheet.visor.type">
+        <option v-for="(data, key) in sheet.visorData" :key="key" :value="key">{{ data.name }}</option>
+      </select>
+      <p v-if="sheet.activeVisorEffect" class="visor-effect">{{ sheet.activeVisorEffect }}</p>
+    </div>
+  </NotchContainer>
+
   <NotchContainer class="soul-gun-container basic-item" width="thick" notchType="curve">
     <h4>Soul Gun</h4>
     <Collapsible class="basic-item" :default="sheet.soul_gun.collapsed" @collapse="sheet.soul_gun.collapsed = !sheet.soul_gun.collapsed">
@@ -941,6 +951,18 @@ input{
 html.dark {
   .qualities-summary {
     color: #aaa;
+  }
+}
+
+.visor-container {
+  .visor-selector {
+    select { width: 100%; }
+  }
+  .visor-effect {
+    font-size: 0.8em;
+    margin: 4px 0 0;
+    opacity: 0.8;
+    font-style: italic;
   }
 }
 

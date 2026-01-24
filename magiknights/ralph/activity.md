@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 25/33
-- **Current Task:** Task 26 (Magi-Knight Visor)
+- **Tasks Completed:** 26/33
+- **Current Task:** Task 27 (Elemental Summon)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -524,6 +524,26 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/StudentView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 26: Implement Magi-Knight Visor equipment slot
+
+**Changes Made:**
+- Added `visor` ref (object with `type` string, default 'none')
+- Added `visorData` constant with 4 options: None, Ether Identification, Medical Diagnostic, Virtual HUD
+- Added `activeVisorEffect` computed returning effect string for current visor type
+- Added visor to dehydrate/hydrate cycle
+- Added Visor NotchContainer in KnightView.vue with dropdown selector and effect description
+- Added CSS styling for visor section
+- Added store exports: visor, visorData, activeVisorEffect
+- Updated ARCHITECTURAL_ANALYSIS.md Equipment section with Visor documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

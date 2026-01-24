@@ -1105,6 +1105,16 @@ export const useSheetStore = defineStore('sheet',() => {
       .map(([key]) => implementQualityDefs[key]?.name || key);
   });
 
+  // ==================== VISOR ====================
+  const visor = ref({ type: 'none' });
+  const visorData = {
+    none: { name: 'None', effect: '' },
+    etherIdentification: { name: 'Ether Identification Visor', effect: 'Bonus Action: +1d6 to Investigation/Perception to identify magical signatures' },
+    medicalDiagnostic: { name: 'Medical Diagnostic Visor', effect: 'Advantage on Medicine checks, see HP values of willing allies' },
+    virtualHUD: { name: 'Virtual HUD Visor', effect: 'Darksight 60ft, Bonus Action: Mark target for +1d4 to next attack against it' }
+  };
+  const activeVisorEffect = computed(() => visorData[visor.value.type]?.effect || '');
+
   // ==================== COMBAT FORMS ====================
   // The 10 Combat Forms from the compendium
   const combatFormData = {
@@ -1929,6 +1939,7 @@ export const useSheetStore = defineStore('sheet',() => {
       soul_weapon: dehydrateSoulWeapon(soul_weapon),
       soul_gun: dehydrateSoulGun(soul_gun),
       magical_implement: dehydrateMagicalImplement(magical_implement),
+      visor: { type: visor.value.type },
       herald: dehydrateHerald(herald),
       squire: dehydrateSquire(squire),
       student_damage_override: student_damage_override.value,
@@ -2115,6 +2126,9 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateSoulWeapon(soul_weapon, hydrateStore.soul_weapon);
     hydrateSoulGun(soul_gun, hydrateStore.soul_gun);
     hydrateMagicalImplement(magical_implement, hydrateStore.magical_implement);
+    if (hydrateStore.visor) {
+      visor.value.type = hydrateStore.visor.type ?? visor.value.type;
+    }
     hydrateHerald(herald, hydrateStore.herald);
     if (hydrateStore.squire) hydrateSquire(squire, hydrateStore.squire);
 
@@ -3517,6 +3531,9 @@ export const useSheetStore = defineStore('sheet',() => {
     radianceHealBonus,
     wardingReduction,
     manaConduitUsed,
+    visor,
+    visorData,
+    activeVisorEffect,
     activeImplementQualities,
 
     // Combat Forms
