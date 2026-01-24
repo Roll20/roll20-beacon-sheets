@@ -980,7 +980,20 @@ export const useSheetStore = defineStore('sheet',() => {
     }
   });
 
+  const armorWeaveData = {
+    lustrous: { name: 'Lustrous Gemstone Weave', rep: 'I', description: '+1d6 to Leadership and Persuasion. 1/Sleep Phase: Auto-pass Leadership Check during Formation/Combo' },
+    reflecting: { name: 'Reflecting Stardust Weave', rep: 'I', description: '1/Sleep Phase: Stealth result = 15 auto. OR Free Action: Move without Provoking, next Attack with Advantage' },
+    lightning: { name: 'Lightning Dust Weave', rep: 'II', description: 'Attackers within 15ft take 1 + Rep Level Magical Damage' },
+    shimmering: { name: 'Shimmering Moon Weave', rep: 'II', description: '1/Sleep Phase: If would become Exposed/Unconscious from damage, heal 1/2 HP and teleport 60ft' },
+    singing: { name: 'Singing Steel Weave', rep: 'III', description: '1/Sleep Phase Immediate: Gain Magical Resistance until end of next turn' },
+    starLithium: { name: 'Star Lithium Weave', rep: 'III', description: '1/Sleep Phase: -2 Exhaustion, -1 Stress' },
+    phoenix: { name: 'Phoenix Imbued Weave', rep: 'IV', description: '1/Episode Immediate: If would become Unconscious, cast Explosion Tier III at location, regain 1/2 HP, fly 60ft up. Adjacent enemies take 20 Magical Damage' },
+    starCrystal: { name: 'Star Crystal Weave', rep: 'IV', description: 'Gain Warding. With Warding Implement: Add Level to reduction. With Ultra Warding: Reduce by Level + 2x Rep Level' },
+    soulCrystal: { name: 'Soul Crystal Weave', rep: 'V', description: '1/Sleep Phase Immediate: Resistance to Physical and Magical until next turn, reduce triggering damage by 25. 1/Character: At 0 HP with 5+ Fractures, gain Shard of the Magi-Knight effects' },
+  };
+
   const armor_weave = {
+    selected: ref(''),
     name: ref(''),
     description: ref(''),
     collapsed: ref(true)
@@ -1843,16 +1856,28 @@ export const useSheetStore = defineStore('sheet',() => {
   // Dehydrate and Hydrate methods for 'armor_weave'
   function dehydrateArmorWeave(armorWeave) {
     return {
+      selected: armorWeave.selected.value,
       name: armorWeave.name.value,
       description: armorWeave.description.value,
       collapsed: armorWeave.collapsed.value,
     };
   }
-  
+
   function hydrateArmorWeave(armorWeave, hydrateData = {}) {
     armorWeave.name.value = hydrateData.name ?? armorWeave.name.value;
     armorWeave.description.value = hydrateData.description ?? armorWeave.description.value;
     armorWeave.collapsed.value = hydrateData.collapsed ?? armorWeave.collapsed.value;
+
+    if (hydrateData.selected !== undefined) {
+      armorWeave.selected.value = hydrateData.selected;
+    } else {
+      // Migration: match existing name to a compendium weave
+      const name = armorWeave.name.value;
+      if (name) {
+        const matchKey = Object.keys(armorWeaveData).find(k => armorWeaveData[k].name === name);
+        armorWeave.selected.value = matchKey || 'custom';
+      }
+    }
   }
   
   // Dehydrate and Hydrate methods for 'soul_weapon'
@@ -3659,6 +3684,7 @@ export const useSheetStore = defineStore('sheet',() => {
     student_ability,
     student_type,
     armor_weave,
+    armorWeaveData,
     soul_weapon,
     weaponQualityDefs,
     weaponQualityAttackBonus,

@@ -173,16 +173,29 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           <Collapsible class="basic-item" :default="sheet.armor_weave.collapsed" @collapse="sheet.armor_weave.collapsed = !sheet.armor_weave.collapsed">
             <template v-slot:expanded>
               <div class="flex-box half-gap grow-label">
-                <label :for="`armor-weave-name`">Name</label>
-                <input class="underline" type="text" v-model="sheet.armor_weave.name" :id="`armor-weave-name`">
+                <label for="armor-weave-select">Weave</label>
+                <select class="underline" id="armor-weave-select" v-model="sheet.armor_weave.selected">
+                  <option value="">-- None --</option>
+                  <option v-for="(data, key) in sheet.armorWeaveData" :key="key" :value="key">{{ data.name }} (Rep {{ data.rep }})</option>
+                  <option value="custom">Custom</option>
+                </select>
               </div>
-              <div class="grid">
-                <label class="properties-header" :for="`armor-weave-description`">Description</label>
-                <textarea class="underline" :id="`armor-weave-description`" v-model="sheet.armor_weave.description"></textarea>
-              </div>
+              <p v-if="sheet.armor_weave.selected && sheet.armor_weave.selected !== 'custom' && sheet.armorWeaveData[sheet.armor_weave.selected]" class="weave-effect-display">
+                {{ sheet.armorWeaveData[sheet.armor_weave.selected].description }}
+              </p>
+              <template v-if="sheet.armor_weave.selected === 'custom'">
+                <div class="flex-box half-gap grow-label">
+                  <label for="armor-weave-name">Name</label>
+                  <input class="underline" type="text" v-model="sheet.armor_weave.name" id="armor-weave-name">
+                </div>
+                <div class="grid">
+                  <label class="properties-header" for="armor-weave-description">Description</label>
+                  <textarea class="underline" id="armor-weave-description" v-model="sheet.armor_weave.description"></textarea>
+                </div>
+              </template>
             </template>
             <template v-slot:collapsed>
-              <span>{{ sheet.armor_weave.name || 'New Weave' }}</span>
+              <span>{{ sheet.armor_weave.selected && sheet.armor_weave.selected !== 'custom' && sheet.armorWeaveData[sheet.armor_weave.selected] ? sheet.armorWeaveData[sheet.armor_weave.selected].name : (sheet.armor_weave.name || 'No Weave') }}</span>
             </template>
           </Collapsible>
         </NotchContainer>
@@ -981,6 +994,15 @@ html.dark {
     opacity: 0.8;
     font-style: italic;
   }
+}
+
+.weave-effect-display {
+  font-size: 0.8em;
+  margin: 4px 0 0;
+  padding: 4px 8px;
+  border-left: 3px solid var(--theme-color, #666);
+  opacity: 0.85;
+  font-style: italic;
 }
 
 .magical-implement-container {
