@@ -2523,17 +2523,13 @@ export const useSheetStore = defineStore('sheet',() => {
       rollObj.subtitle = `Range: ${soul_weapon.range.value}`;
     }
 
-    if(soul_weapon.qualities.value){
-      rollObj.textContent = soul_weapon.qualities.value;
+    if(activeWeaponQualities.value.length > 0){
+      rollObj.textContent = activeWeaponQualities.value.join(', ');
     }
     if(soul_weapon.damage.value) {
       const dmgType = damageTypeLabels[soul_weapon.damageType.value] || 'Physical';
       rollObj.keyValues[`Damage Type`] = dmgType;
       rollObj.keyValues[`Soul Weapon Damage Roll`] = soul_weapon.damage.value;
-
-    if(item.range){
-      rollObj.keyValues.Range = item.range;
-    }
 
     if (damageBreakdownRoll){
       rollObj.keyValues[`Roll`] = damageBreakdownRoll;
