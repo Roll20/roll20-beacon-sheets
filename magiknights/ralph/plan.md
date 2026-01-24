@@ -313,6 +313,308 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
     ],
     "context": "This is the final verification step. The build must succeed, all old references must be cleaned up, and all new state must be properly serialized. The ARCHITECTURAL_ANALYSIS.md should reflect the current state of the sheet after all corrections.",
     "passes": true
+  },
+  {
+    "id": 18,
+    "category": "missing-feature",
+    "description": "Implement Budget Tallies and Training Tallies resource counters",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the resource/currency section (near reputation, level refs)",
+      "Add `budgetTallies` ref (number, default 0) - the game's currency for purchasing gear and services",
+      "Add `trainingTallies` ref (number, default 0) - the XP system, 0-8 counter that resets on level-up",
+      "Add `trainingTalliesMax` constant (8) - tallies needed to gain a level",
+      "Add `budgetTallies` and `trainingTallies` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/BasicView.vue`, find a suitable location near the level/reputation display",
+      "Add a Budget Tallies numeric input (label 'Budget Tallies', min 0, no max)",
+      "Add a Training Tallies display showing current/max (e.g., '3/8') with a numeric input (min 0, max 8)",
+      "Add store exports for budgetTallies, trainingTallies, trainingTalliesMax",
+      "Update ARCHITECTURAL_ANALYSIS.md with Budget and Training Tallies documentation"
+    ],
+    "context": "Budget Tallies are the game's currency system. Players earn them from part-time jobs (+1-2 per session), quest rewards, and downtime activities. They spend them at shops, the mall, and for social tactics like 'Greasing Palms' (-1 Budget). Training Tallies are the XP system: accumulate 8 to level up (4 for New Rice Squires). Sources: Grinding the New Rice activity (+1 Training Tally), mission completions, and other activities. Both are simple numeric counters that must persist between sessions.",
+    "passes": false
+  },
+  {
+    "id": 19,
+    "category": "missing-feature",
+    "description": "Implement Skill Mastery designation and bonus calculation",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the skills section (the object with athletics, acrobatics, etc.)",
+      "Add a `masteredSkill` ref (string, default '') to designate which skill has Mastery",
+      "Find the skill roll function in `src/rollFuncs/skill.js` or the store's `rollSkill`",
+      "Modify the skill roll calculation: when the rolled skill matches `masteredSkill`, add the `reputation` value (min 1) as a bonus to the roll",
+      "In the roll components, when mastery bonus applies, add a component like {label: 'Mastery', value: reputationValue}",
+      "In `src/components/SkillSection.vue`, add a visual indicator for the mastered skill (e.g., a filled diamond icon or highlight) and a way to designate mastery (right-click, dropdown, or a selector at the top of the skills section)",
+      "Add `masteredSkill` to the dehydrate/hydrate cycle for persistence",
+      "Add `masteredSkill` to store exports",
+      "Update ARCHITECTURAL_ANALYSIS.md skills section with Mastery documentation"
+    ],
+    "context": "Per the compendium: 'Select one Skill Proficiency from Court Card or Student Type. Add Reputation Level (min 1) to that Skill. Circle the Proficiency Diamond to indicate Mastery.' This means one skill gets a permanent +Reputation Level bonus (1-5) in addition to its normal proficiency bonus. For Squadron Checks, Mastery grants '+3 (+ reroll one d4)'. The current skill system only tracks binary proficiency (true/false) per skill with no mastery option. The mastery bonus should be added to the roll result alongside the ability modifier and proficiency bonus.",
+    "passes": false
+  },
+  {
+    "id": 20,
+    "category": "missing-feature",
+    "description": "Implement Spell Paths Known selection and tracking",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the spells section",
+      "Add `spellPathsKnown` ref (array of strings, default []) to track which spell paths the character has chosen",
+      "Add `maxSpellPaths` computed: returns 2 if level < 4, 3 if level < 8, 4 if level >= 8",
+      "Add `availableSpellPaths` constant array with all 11 spell paths: ['Beam', 'Explosion', 'Ward', 'Curing', 'Restoration', 'Augmentation', 'Summoning', 'Chronomancy', 'Divination', 'Psionics', 'Necromancy']",
+      "Add `spellPathsKnown` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/KnightView.vue`, find the Spells section header area",
+      "Add a 'Spell Paths' sub-section above the spells list showing: current selections (checkboxes or multi-select from availableSpellPaths), count indicator (e.g., '2/2 Paths' or '3/4 Paths'), visual warning if over max",
+      "Add store exports for spellPathsKnown, maxSpellPaths, availableSpellPaths",
+      "Update ARCHITECTURAL_ANALYSIS.md spells section with Spell Paths Known documentation"
+    ],
+    "context": "Per the compendium, each Magic Style (Enchanter, Shaper, Occultist, Cleric) has access to 7 of the 11 spell paths, and characters choose 2 paths at level 1, gaining +1 at levels 4 and 8 (max 4). The spell paths are: Beam, Explosion, Ward, Curing, Restoration, Augmentation, Summoning, Chronomancy, Divination, Psionics, Necromancy. The current sheet has a spells repeating section for individual spells but no way to record WHICH paths the character has chosen. This is needed for reference and validation during play.",
+    "passes": false
+  },
+  {
+    "id": 21,
+    "category": "missing-feature",
+    "description": "Implement Branching Element selection",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the `elemental_affinity` ref",
+      "Add `branchingElement` ref (string, default '') for the sub-element choice",
+      "Add `branchingElementOptions` constant mapping primary elements to their branches: { earth: ['Wood', 'Metal'], fire: ['Lightning', 'Toxins'], air: ['Force', 'Sonance'], water: ['Ice', 'Blood'], void: ['Light', 'Dark'] }",
+      "Add `availableBranches` computed that returns the branch options for the current elemental_affinity (or empty array if no affinity set)",
+      "Add `branchingElement` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/BasicView.vue`, find where elemental_affinity is displayed",
+      "Add a Branching Element dropdown below or next to the elemental affinity selector, showing only the 2 options available for the chosen primary element",
+      "If elemental_affinity changes, reset branchingElement to '' (since the old branch may not be valid)",
+      "Add store exports for branchingElement, branchingElementOptions, availableBranches",
+      "Update ARCHITECTURAL_ANALYSIS.md character identity section"
+    ],
+    "context": "Per the compendium's Elemental Affinity section, each primary element branches into two sub-elements: Earth→Wood/Metal, Fire→Lightning/Toxins, Air→Force/Sonance, Water→Ice/Blood, Void→Light/Dark. Characters eventually choose one branching element which affects spell/technique flavor and some mechanical interactions. The sheet stores elemental_affinity (primary) and element_name (custom name) but has no field for the branching sub-element choice.",
+    "passes": false
+  },
+  {
+    "id": 22,
+    "category": "missing-feature",
+    "description": "Implement Soul Armament tier bonus auto-calculation",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the `knight_armor` ref and weapon damage/attack calculations",
+      "Add `soulArmamentData` constant with the progression table: { 0: {weapon: 0, armor: 0}, 1: {weapon: 1, armor: 0}, 2: {weapon: 1, armor: 1}, 3: {weapon: 2, armor: 1}, 4: {weapon: 2, armor: 2}, 5: {weapon: 3, armor: 3} }",
+      "Add `soulArmamentWeaponBonus` computed that returns soulArmamentData[reputation.value].weapon",
+      "Add `soulArmamentArmorBonus` computed that returns soulArmamentData[reputation.value].armor",
+      "Find the knight attack roll function (rollKnightAttack or similar) and add soulArmamentWeaponBonus to the attack roll components",
+      "Find where knight_armor is used in computeds or display and add soulArmamentArmorBonus to it. If knight_armor is already a manual override, add a `knightArmorTotal` computed that includes base armor + soulArmamentArmorBonus",
+      "In `src/views/PC/KnightView.vue`, find the armor display and show the breakdown (base + armament bonus = total), or at minimum display the Soul Armament tier bonus value",
+      "Add store exports for soulArmamentData, soulArmamentWeaponBonus, soulArmamentArmorBonus",
+      "Update ARCHITECTURAL_ANALYSIS.md equipment section with Soul Armament Progression documentation"
+    ],
+    "context": "Per the compendium's Soul Armament Progression table: Rep 0 = +0 weapon/+0 armor, Rep I = +1/+0, Rep II = +1/+1, Rep III = +2/+1, Rep IV = +2/+2, Rep V = +3/+3. These bonuses are deterministic based on reputation level and should be auto-calculated rather than manually entered. Currently knight_armor is a raw ref(0) with manual entry, and weapon attack bonuses don't include the armament tier. The base armor comes from Elemental Affinity (13-16 depending on element) plus this reputation-based bonus.",
+    "passes": false
+  },
+  {
+    "id": 23,
+    "category": "missing-feature",
+    "description": "Implement Rune Slot capacity tracking and enforcement",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the `sections.runes` repeating section",
+      "Add a `slotCost` field (number, default 1) to the rune template object in the repeating section definition",
+      "Add `runeSlotCapacity` computed that returns reputation.value (max rune slots = Reputation Level, 1-5)",
+      "Add `runeSlotsUsed` computed that sums all slotCost values from sections.runes.rows",
+      "Add `runesOverCapacity` computed that returns runeSlotsUsed > runeSlotCapacity",
+      "In `src/views/PC/KnightView.vue`, find where runes are displayed (similar to how relics were done in task 16)",
+      "Add a slot capacity indicator showing 'Slots: X/Y' (used/max) in the runes section header",
+      "Add visual warning when over capacity (red text or border, similar to relic over-capacity)",
+      "In the individual rune item template, add a slot cost selector (1, 2, or 3) since compendium runes cost 1-3 slots each",
+      "Add store exports for runeSlotCapacity, runeSlotsUsed, runesOverCapacity",
+      "Update ARCHITECTURAL_ANALYSIS.md equipment section with Rune Slot documentation"
+    ],
+    "context": "Per the compendium: 'Reputation I: 1 Rune Slot each... Reputation II: 2 Rune Slots... Rep III: 3... Rep IV: 4... Rep V: 5'. Each Armament Rune costs 1-3 slots depending on its power. Examples: Warrior's Rune (1 slot, +1d4 damage), Piercing Rune (1 slot, ignore 1 AC), Titan's Rune (2 slots, +1d8 damage), Sundering Rune (3 slots, ignore 3 AC). The sheet has a runes repeating section but no slot cost per rune and no capacity enforcement, unlike relics which already have capacity tracking from task 16.",
+    "passes": false
+  },
+  {
+    "id": 24,
+    "category": "missing-feature",
+    "description": "Add Swift Attack, Energy Surge, and Flight to level-locked abilities",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the `levelAbilityData` constant (added in task 11)",
+      "Add Swift Attack 1 to levelAbilityData: {name: 'Swift Attack', level: 5, description: 'Weapon Attack as Bonus Action 1/round'}",
+      "Add Swift Attack 2 to levelAbilityData: {name: 'Swift Attack II', level: 10, description: 'Additional Weapon Attack as Bonus Action 1/round'}",
+      "Add Energy Surge to levelAbilityData: {name: 'Energy Surge', level: 4, description: '1/Sleep Phase, Bonus Action: Recover HP (Rep d10s+CON), MP (Rep d4s+Spell Mod), remove 1 Exhaustion, or remove 3 Stress'}",
+      "Add Flight to levelAbilityData: {name: 'Flight', level: 10, description: 'Standard Action: Gain Fly speed equal to Move speed'}",
+      "Add `energySurgeUsed` ref (boolean, default false) for tracking 1/Sleep Phase usage",
+      "Add `isFlying` ref (boolean, default false) for tracking active flight state",
+      "Add `energySurgeUsed` and `isFlying` to the dehydrate/hydrate cycle for persistence",
+      "Update the `levelAbilities` computed to include the new abilities (swiftAttack1: level >= 5, swiftAttack2: level >= 10, energySurge: level >= 4, flight: level >= 10)",
+      "In `src/views/PC/KnightView.vue`, find the Level Abilities display section and ensure the new abilities show up with their unlock status",
+      "Add an Energy Surge 'Used' checkbox next to it (similar to manaConduitUsed or veilPiercingUsed)",
+      "Add a Flight 'Active' toggle next to Flight when unlocked",
+      "Add store exports for energySurgeUsed, isFlying",
+      "Update ARCHITECTURAL_ANALYSIS.md level abilities section"
+    ],
+    "context": "The levelAbilityData from task 11 included Counter Blast, Perfect Parry, Extricate Aether, Heroic Resolve, Knight's Insight, and Knight's Resolution. However, three important level-locked abilities were omitted: Swift Attack (level 5: weapon attack as Bonus Action, level 10: additional attack), Energy Surge (level 4: 1/Sleep Phase recovery of HP/MP/Exhaustion/Stress), and Flight (level 10: fly speed = move speed, Standard Action to activate). Energy Surge is a once-per-rest resource that needs usage tracking. Flight is a toggleable state affecting movement and prone mechanics.",
+    "passes": false
+  },
+  {
+    "id": 25,
+    "category": "missing-feature",
+    "description": "Implement Well Fed effect and split Studied into Combat/School variants",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the `studied` and `rested` refs",
+      "Rename or replace the existing `studied` ref with two separate refs: `studiedCombat` ref (boolean, default false) and `studiedSchool` ref (boolean, default false)",
+      "Add `wellFed` ref (boolean, default false) for the restaurant buff",
+      "Update any computed properties or roll functions that reference the old `studied` ref to use `studiedCombat` instead (these would be weapon/combat rolls)",
+      "Find where student class checks or school-related rolls are made and integrate `studiedSchool` (+1d8 to student class checks)",
+      "Find where physical skill checks are made and integrate `wellFed` (reroll Physical Skill dice once)",
+      "In the roll functions, when studiedCombat is true and a weapon attack is rolled, add +1d8 component and set studiedCombat to false after use",
+      "When studiedSchool is true and a student class check is rolled, add +1d8 component and set studiedSchool to false after use",
+      "When wellFed is true and a physical skill check is rolled, note reroll available and set wellFed to false after use",
+      "Add `wellFed`, `studiedCombat`, `studiedSchool` to the dehydrate/hydrate cycle (remove old `studied` if it existed)",
+      "In the UI (BasicView.vue or KnightView.vue), find where the Studied/Rested checkboxes are displayed and update to show: Rested checkbox, Studied [Combat] checkbox, Studied [School] checkbox, Well Fed checkbox",
+      "Add store exports for wellFed, studiedCombat, studiedSchool (remove old studied export if present)",
+      "Update ARCHITECTURAL_ANALYSIS.md temporary effects section"
+    ],
+    "context": "The compendium defines three distinct temporary effects: (1) Well Fed (from restaurants): 'Reroll Physical Skill Check dice (once). Expires at Sleep Phase.' (2) Studied [Combat] (from Combat Training): '+1d8 to Weapon Attack (once, post-roll). Expires at Sleep Phase or use.' (3) Studied [School] (from Study/Homework): '+1d8 to Student Class Check (once, post-roll). Expires at School Phase end or use.' The current sheet has a single `studied: ref(false)` that doesn't distinguish Combat vs School, and has no Well Fed tracking. These are separate effects that can all be active simultaneously.",
+    "passes": false
+  },
+  {
+    "id": 26,
+    "category": "missing-feature",
+    "description": "Implement Magi-Knight Visor equipment slot",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the equipment section (near soul_weapon, soul_gun, magical_implement)",
+      "Add `visor` ref object: { equipped: '', type: 'none' }",
+      "Add `visorData` constant with the 3 visor types: { none: {name: 'None', effect: ''}, etherIdentification: {name: 'Ether Identification Visor', effect: 'Bonus Action: +1d6 to Investigation/Perception to identify magical signatures', cost: 150}, medicalDiagnostic: {name: 'Medical Diagnostic Visor', effect: 'Advantage on Medicine checks, see HP values of willing allies', cost: 150}, virtualHUD: {name: 'Virtual HUD Visor', effect: 'Darksight 60ft, Bonus Action: Mark target for +1d4 to next attack against it', cost: 150} }",
+      "Add `activeVisorEffect` computed that returns the effect string for the currently equipped visor type",
+      "Add `visor` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/KnightView.vue`, find the equipment section (near weapons/implements)",
+      "Add a Visor selector: dropdown with None + 3 visor options, showing the effect description when a visor is selected",
+      "Add store exports for visor, visorData, activeVisorEffect",
+      "Update ARCHITECTURAL_ANALYSIS.md equipment section with Visor documentation"
+    ],
+    "context": "Per the compendium: Magi-Knight Visors cost 150 Gloom Gems, take 0 Rune Slots, and are limited to 1 at a time. Three types exist: (1) Ether Identification Visor - Bonus Action to add 1d6 to Investigation/Perception for identifying magical signatures; (2) Medical Diagnostic Visor - Advantage on Medicine checks, can see HP values of willing allies within 30ft; (3) Virtual HUD Visor - Darksight 60ft, Bonus Action to mark a target granting +1d4 to next attack against it. These are a separate equipment category from runes and relics.",
+    "passes": false
+  },
+  {
+    "id": 27,
+    "category": "missing-feature",
+    "description": "Implement Elemental Summon companion stat block",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the `squire` ref object (added in task 15) as a reference pattern",
+      "Add `elementalSummon` ref object: { name: '', active: false, currentHP: 0, type: 'basic', enhancement: 'none', notes: '' }",
+      "Add `summonBaseStats` constant with stats scaling by level: { 1: {hp:8, armor:12, move:30, attack:4, damage:'1d6+2'}, 3: {hp:14, armor:13, move:30, attack:5, damage:'1d8+3'}, 5: {hp:22, armor:14, move:35, attack:6, damage:'2d6+3'}, 7: {hp:30, armor:15, move:35, attack:7, damage:'2d8+4'}, 9: {hp:40, armor:16, move:40, attack:8, damage:'3d6+4'}, 11: {hp:52, armor:17, move:40, attack:9, damage:'3d8+5'}, 13: {hp:66, armor:18, move:45, attack:10, damage:'4d6+5'}, 15: {hp:80, armor:19, move:45, attack:11, damage:'4d8+6'} }",
+      "Add `summonEnhancements` constant: { none: {name:'Basic Summon'}, companion: {name:'Enhanced Companion', bonus:'Permanent, shares spell paths, telepathic link'}, guardian: {name:'Guardian Form', bonus:'+50% HP, +2 Armor, Taunt ability'}, striker: {name:'Striker Form', bonus:'+50% damage, +10 Move, Flanking bonus'} }",
+      "Add `activeSummonStats` computed that returns the base stats for the current level (use the highest level tier <= current level)",
+      "Add `elementalSummon` to the dehydrate/hydrate cycle for persistence",
+      "Create `src/components/ElementalSummon.vue` component: collapsible panel with name input, Active toggle, HP tracker (current/max from computed), Armor/Move/Attack/Damage display from computed stats, Enhancement selector dropdown, Notes textarea",
+      "Import and add ElementalSummon component in KnightView.vue in the spells section area (since summoning is a spell path)",
+      "Add store exports for elementalSummon, summonBaseStats, summonEnhancements, activeSummonStats",
+      "Update ARCHITECTURAL_ANALYSIS.md with Elemental Summon Companion documentation"
+    ],
+    "context": "The Summoning Spell Path creates a persistent companion entity. Per the compendium, summons have HP, Armor, Move, Attack bonus, and Damage that all scale with MK level. Enhanced Summoning (Companion Path) makes the summon permanent with shared spell paths and telepathic link. The Guardian and Striker forms modify stats further. This is analogous to the Magi-Squire companion (task 15) but for Summoner builds. Summons need HP tracking since they can be damaged and dismissed. Multiple Summoning techniques (Reinforced Connection, Telepathic Summoner, etc.) modify summon behavior.",
+    "passes": false
+  },
+  {
+    "id": 28,
+    "category": "missing-feature",
+    "description": "Implement Club Tallies counter and Club Position tracking",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the social/club section (look for club or goal references)",
+      "Add `clubTallies` ref (number, default 0) - counter from 0-8 that resets at Resounding Growth",
+      "Add `clubTalliesMax` constant (8) - tallies needed for Resounding Growth",
+      "Add `resoundingGrowths` ref (number, default 0) - total Resounding Growths achieved (track for advancement)",
+      "Add `clubPosition` ref (string, default 'member') with options: 'member', 'vicePresident', 'president'",
+      "Add `clubPositionData` constant: { member: {name:'Member', bonus:''}, vicePresident: {name:'Vice-President', bonus:'+5 Influence with Faculty, 1/Sleep: Auto-pass Student Body Influence'}, president: {name:'President', bonus:'+4 Persuasion with club members, Grant VP benefits to others'} }",
+      "Add `clubTallies`, `resoundingGrowths`, `clubPosition` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/StudentView.vue` or `src/views/PC/BasicView.vue`, find the clubs/social area",
+      "Add a Club section with: Club Tallies counter (0-8) with visual pips or numeric input, Resounding Growths count, Club Position dropdown (Member/VP/President) showing the bonus text for the selected position",
+      "Add store exports for clubTallies, clubTalliesMax, resoundingGrowths, clubPosition, clubPositionData",
+      "Update ARCHITECTURAL_ANALYSIS.md social section with Club System documentation"
+    ],
+    "context": "Per the compendium: Club participation gives +1 Club Tally per activity. At 8 Club Tallies, 'Resounding Growth' occurs: choose 3 NPCs to gain +2 SP each, then erase all tallies. After 3 Resounding Growths (24 cumulative tallies), club advancement unlocks Vice-President and President positions. VP grants '+5 Influence with Faculty' and '1/Sleep: Auto-pass Influence with Student Body'. President grants '+4 Persuasion with club members' and can share VP benefits. These are persistent mechanical bonuses affecting social skill checks.",
+    "passes": false
+  },
+  {
+    "id": 29,
+    "category": "missing-feature",
+    "description": "Implement Detention Tickets counter",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find a suitable location near stress/exhaustion or daily tracking refs",
+      "Add `detentionTickets` ref (number, default 0) - counter for outstanding detention obligations",
+      "Add `detentionTickets` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/StudentView.vue`, find the student-specific info area",
+      "Add a Detention Tickets counter (numeric input, min 0) with a brief note: 'Each ticket = 1 Free Time spent. Skipping = +1 Trauma/day'",
+      "Add store exports for detentionTickets",
+      "Update ARCHITECTURAL_ANALYSIS.md student section with Detention documentation"
+    ],
+    "context": "Per the compendium: 'Detention: For each Detention Ticket: Must spend 1 Free Time doing Mandatory Detention. Skipping: +1 Trauma per day avoided.' Detention Tickets represent mandatory school obligations that consume Free Time Phase slots. Accumulating them without serving has severe consequences (Trauma). This is a simple counter but important for Student phase gameplay tracking.",
+    "passes": false
+  },
+  {
+    "id": 30,
+    "category": "missing-feature",
+    "description": "Implement Heart Stage SP threshold display",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the `heartStageData` constant (added in task 13)",
+      "Update `heartStageData` to include SP thresholds for each stage: threatening: {min: -999, max: -16}, hostile: {min: -15, max: -6}, cold: {min: -5, max: -1}, neutral: {min: 0, max: 5}, warm: {min: 6, max: 11}, friendly: {min: 12, max: 19}, sympathetic: {min: 20, max: 999}",
+      "Add `getHeartStageForSP(sp)` function that returns the appropriate heart stage string based on SP value",
+      "Read `src/components/SocialSection.vue`",
+      "In the expanded bond view, add a small SP threshold reference next to the Heart Stage dropdown showing the range for the current stage (e.g., 'Warm: 6-11 SP')",
+      "Optionally add a visual indicator if the current SP value doesn't match the selected Heart Stage (suggesting it should be updated), displayed as a subtle hint rather than forced auto-update",
+      "Add store exports for getHeartStageForSP",
+      "Update ARCHITECTURAL_ANALYSIS.md social bonds section with SP threshold documentation"
+    ],
+    "context": "The compendium defines specific SP thresholds that determine Heart Stage progression. While the sheet (from task 13) tracks both SP points and Heart Stage per bond, they are set independently with no reference to the threshold values. Players need to know what SP range corresponds to each stage to update appropriately. The thresholds are approximately: Threatening (very negative), Hostile (-15 to -6), Cold (-5 to -1), Neutral (0-5), Warm (6-11), Friendly (12-19), Sympathetic (20+). Showing these helps players without forcing auto-updates (since GMs may override).",
+    "passes": false
+  },
+  {
+    "id": 31,
+    "category": "missing-feature",
+    "description": "Implement Statistic Increase tracking for level-up choices",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the ability scores section",
+      "Add `statIncreases` ref (array of objects, default []) to log applied increases. Each entry: { level: number, choices: [{ability: string, amount: number}] }",
+      "Add `statIncreaseLevels` constant: [3, 6, 9, 12, 15] - the 5 levels that grant stat increases",
+      "Add `statIncreasesApplied` computed that returns statIncreases.value.length (how many have been applied)",
+      "Add `statIncreasesAvailable` computed that returns the number of increase levels <= current level (e.g., at level 7, 2 increases are available: levels 3 and 6)",
+      "Add `statIncreasesMissing` computed that returns statIncreasesAvailable - statIncreasesApplied (positive = needs attention)",
+      "Add `statIncreases` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/BasicView.vue`, near the ability scores display, add a small 'Stat Increases' indicator showing 'X/Y applied' (e.g., '2/2' at level 7 with both applied). If missing increases, show a reminder note",
+      "Add store exports for statIncreases, statIncreaseLevels, statIncreasesApplied, statIncreasesAvailable, statIncreasesMissing",
+      "Update ARCHITECTURAL_ANALYSIS.md progression section with Statistic Increase documentation"
+    ],
+    "context": "Per the compendium: 'Statistic Increase (3rd, 6th, 9th, 12th, 15th): +2 to one Statistic OR +1 to two different Statistics.' At 5 different levels, characters get permanent ability score increases. While the scores themselves are tracked, there is no log or reminder of which increases have been applied. This helps players ensure they haven't missed or double-applied an increase during level-up. The tracking is a reference/reminder, not a hard enforcement (since the actual scores are manually editable).",
+    "passes": false
+  },
+  {
+    "id": 32,
+    "category": "missing-feature",
+    "description": "Implement Fortune Pool resource counter",
+    "steps": [
+      "Read `src/stores/sheetStore.js` and find the resource section (near unity points or other pools)",
+      "Add `fortunePool` ref (number, default 0) - current Fortune points available",
+      "Add `fortunePoolEnabled` ref (boolean, default false) - whether the character has the Fortune Box crystal",
+      "Add `fortunePoolMax` computed that returns the proficiency bonus value when fortunePoolEnabled is true, 0 otherwise. Proficiency bonus in Magi-Knights: levels 1-4 = 2, levels 5-8 = 3, levels 9-12 = 4, levels 13-16 = 5, levels 17+ = 6",
+      "Add `fortunePool` and `fortunePoolEnabled` to the dehydrate/hydrate cycle for persistence",
+      "In `src/views/PC/KnightView.vue` or `src/views/PC/BasicView.vue`, add a Fortune Pool display that only shows when fortunePoolEnabled is true: current/max counter (e.g., '2/3 Fortune'), brief description 'Spend 1: +1d6 to non-combat Skill Check'",
+      "Add a toggle or checkbox in Settings or the resource area to enable/disable Fortune Pool (for characters who acquire or lose the Fortune Box crystal)",
+      "Add store exports for fortunePool, fortunePoolEnabled, fortunePoolMax",
+      "Update ARCHITECTURAL_ANALYSIS.md resources section with Fortune Pool documentation"
+    ],
+    "context": "Per the compendium: 'Enchanted Crystal: Fortune Box - Gain a Pool of Fortune equal to your Proficiency Bonus. Replenishes on Refreshing Sleep Effect. During non-Combat Encounter: Spend 1 Fortune to add 1d6 to a Skill Check.' This is a conditional resource that only exists if the character has the Fortune Box enchanted crystal. It functions like Unity Points - a consumable pool that replenishes at rest. The pool size scales with proficiency bonus (2-6).",
+    "passes": false
+  },
+  {
+    "id": 33,
+    "category": "verification",
+    "description": "Final verification of missing rules implementation",
+    "steps": [
+      "Run the build: npm run build",
+      "Fix any build errors that arise from the new additions",
+      "Verify all new refs are included in the store's dehydrate/hydrate functions for persistence: budgetTallies, trainingTallies, masteredSkill, spellPathsKnown, branchingElement, elementalSummon, clubTallies, resoundingGrowths, clubPosition, detentionTickets, statIncreases, fortunePool, fortunePoolEnabled, visor, energySurgeUsed, isFlying, wellFed, studiedCombat, studiedSchool",
+      "Verify all new store exports are properly added to the store return block",
+      "Verify the Vue components render without errors by checking for missing imports or undefined references",
+      "Verify that the old `studied` ref migration is clean (no remaining references to the single `studied` boolean)",
+      "Run a grep for any TODO or FIXME comments that may have been left behind",
+      "Update ARCHITECTURAL_ANALYSIS.md with a summary of all missing rules now implemented",
+      "Commit all changes with message: 'Implement missing compendium rules: tallies, mastery, paths, elements, armament, runes, abilities, effects, visor, summons, clubs, fortune'"
+    ],
+    "context": "This is the final verification step for the missing rules batch (tasks 18-32). All new state must be properly serialized in dehydrate/hydrate, all exports must be in the store return block, and the application must build without errors. This task ensures everything from the 15 new feature tasks integrates correctly.",
+    "passes": false
   }
 ]
 ```
