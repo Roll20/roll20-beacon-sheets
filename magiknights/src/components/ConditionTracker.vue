@@ -203,15 +203,15 @@ const clearAllConditions = () => {
 .clear-all-btn {
   width: 100%;
   padding: 6px;
-  background: var(--borderColor);
-  color: var(--masterBack);
-  border: none;
+  background: transparent;
+  color: var(--color);
+  border: 1px solid var(--borderColor);
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.75rem;
 
   &:hover {
-    opacity: 0.9;
+    background: color-mix(in srgb, var(--borderColor) 15%, transparent);
   }
 }
 
