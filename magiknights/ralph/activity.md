@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 34/37
-- **Current Task:** 35
+- **Tasks Completed:** 35/37
+- **Current Task:** 36
 - **Last Updated:** 2026-01-23
 
 ---
@@ -696,6 +696,18 @@
 - `src/views/PC/BasicView.vue`
 - `src/views/PC/SettingsView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 35: Rename 'Settings' tab to 'Misc' in navigation
+
+**Changes Made:**
+- Changed the tab label text from "Settings" to "Misc" in KnightNav.vue (line 37)
+- Route path `/settings` remains unchanged (only the display label changed)
+- Build verified successfully
+
+**Files Modified:**
+- `src/components/KnightNav.vue`
 - `ralph/plan.md`
 - `ralph/activity.md`
 

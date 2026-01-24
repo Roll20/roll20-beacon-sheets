@@ -34,7 +34,7 @@ import NotchContainer from './NotchContainer.vue';
       <li>
         <RouterLink to="/settings">
           <NotchContainer class="nav-notch" notchType="wedge">
-            Settings
+            Misc
           </NotchContainer>
         </RouterLink>
       </li>

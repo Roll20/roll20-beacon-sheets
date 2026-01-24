@@ -647,7 +647,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Run `npm run build` to verify no build errors"
     ],
     "context": "The Settings tab is being repurposed to hold miscellaneous tracking items (tallies, fortune pool, etc.) in addition to its current sheet mode and token settings. Renaming it to 'Misc' better reflects its broader content. The route path '/settings' does not need to change - only the visible tab label. This is a simple text change in KnightNav.vue line 37.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 36,
