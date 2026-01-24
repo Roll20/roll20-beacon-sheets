@@ -20,32 +20,6 @@ const sheet = useSheetStore();
       </div>
     </NotchContainer>
 
-    <h3>Token Settings</h3>
-    <p class="settings-description">
-      Configure token images for automatic switching when transforming between Student and Magi-Knight forms.
-      Paste the full URL of your uploaded Roll20 token images below.
-    </p>
-    <div class="token-images-grid">
-      <NotchContainer class="token-image-field" notchType="wedge">
-        <h4>Student Token Image</h4>
-        <input
-          class="underline"
-          type="text"
-          v-model="sheet.studentTokenImage"
-          placeholder="Paste student form token image URL"
-        >
-      </NotchContainer>
-      <NotchContainer class="token-image-field" notchType="wedge">
-        <h4>Magi-Knight Token Image</h4>
-        <input
-          class="underline"
-          type="text"
-          v-model="sheet.knightTokenImage"
-          placeholder="Paste magi-knight form token image URL"
-        >
-      </NotchContainer>
-    </div>
-
     <h3>Tallies & Resources</h3>
     <div class="tallies-and-pools">
       <div class="tallies-section">
@@ -101,6 +75,85 @@ const sheet = useSheetStore();
           <p class="fortune-pool-desc">Spend 1: +1d6 to non-combat Skill Check</p>
         </template>
       </div>
+    </div>
+
+    <h3>Detention Tickets</h3>
+    <div class="detention-section">
+      <div v-if="sheet.detentionTickets > 0" class="detention-tickets-display">
+        <span class="detention-label">Detention Tickets: {{ sheet.detentionTickets }}</span>
+        <span class="detention-note">Each = 1 Free Time. Skipping = +1 Trauma/day</span>
+      </div>
+      <div class="detention-counter">
+        <label>Detention Tickets</label>
+        <input type="number" min="0" class="underline detention-input" v-model.number="sheet.detentionTickets">
+      </div>
+    </div>
+
+    <h3>Sleep &amp; Daily Limits</h3>
+    <NotchContainer class="sleep-daily-container" notchType="wedge">
+      <div class="sleep-effect-section">
+        <label class="properties-header">Sleep Effect</label>
+        <div class="sleep-effect-options">
+          <label v-for="(data, key) in sheet.sleepEffectData" :key="key" class="sleep-option" :class="{ active: sheet.sleepEffect === key }">
+            <input type="radio" :value="key" v-model="sheet.sleepEffect" />
+            <span class="sleep-option-name">{{ data.name }}</span>
+            <span class="sleep-option-detail">
+              <template v-if="data.stressRecovery > 0">-{{ data.stressRecovery }} Stress, -{{ data.exhaustionRecovery }} Exhaustion</template>
+              <template v-if="data.note">{{ data.note }}</template>
+            </span>
+          </label>
+        </div>
+      </div>
+      <div class="daily-limits-section">
+        <label class="properties-header">Daily Limits</label>
+        <div class="daily-limits-grid">
+          <label class="daily-limit-item">
+            <input type="checkbox" v-model="sheet.sealImplantGiven" />
+            <span>Seal Implant Given</span>
+          </label>
+          <label class="daily-limit-item">
+            <input type="checkbox" v-model="sheet.sealImplantReceived" />
+            <span>Seal Implant Received</span>
+          </label>
+          <label class="daily-limit-item">
+            <input type="checkbox" v-model="sheet.manaConduitUsed" />
+            <span>Mana Conduit Used</span>
+          </label>
+        </div>
+        <div class="soul-sacrifice-tracker">
+          <label>Soul Sacrifice</label>
+          <div class="soul-sacrifice-display">
+            <input type="number" min="0" :max="sheet.soulSacrificeMax" v-model.number="sheet.soulSacrificeCount" class="underline soul-sacrifice-input" />
+            <span class="soul-sacrifice-max">/ {{ sheet.soulSacrificeMax }} (career)</span>
+          </div>
+        </div>
+      </div>
+    </NotchContainer>
+
+    <h3>Token Settings</h3>
+    <p class="settings-description">
+      Configure token images for automatic switching when transforming between Student and Magi-Knight forms.
+      Paste the full URL of your uploaded Roll20 token images below.
+    </p>
+    <div class="token-images-grid">
+      <NotchContainer class="token-image-field" notchType="wedge">
+        <h4>Student Token Image</h4>
+        <input
+          class="underline"
+          type="text"
+          v-model="sheet.studentTokenImage"
+          placeholder="Paste student form token image URL"
+        >
+      </NotchContainer>
+      <NotchContainer class="token-image-field" notchType="wedge">
+        <h4>Magi-Knight Token Image</h4>
+        <input
+          class="underline"
+          type="text"
+          v-model="sheet.knightTokenImage"
+          placeholder="Paste magi-knight form token image URL"
+        >
+      </NotchContainer>
     </div>
   </div>
 </template>
@@ -241,6 +294,119 @@ const sheet = useSheetStore();
       margin: 4px 0 0;
       opacity: 0.8;
       font-style: italic;
+    }
+  }
+
+  .detention-section {
+    display: grid;
+    gap: var(--half-gap);
+  }
+
+  .detention-counter {
+    display: flex;
+    align-items: center;
+    gap: var(--half-gap);
+    padding: 4px var(--half-gap);
+    font-size: 0.85em;
+    .detention-input { width: 4ch; text-align: center; }
+  }
+
+  .detention-tickets-display {
+    display: flex;
+    flex-direction: column;
+    padding: 4px var(--half-gap);
+    background: rgba(200, 80, 80, 0.1);
+    border-radius: 4px;
+    .detention-label { font-weight: bold; font-size: 0.85em; }
+    .detention-note { font-size: 0.75em; opacity: 0.7; font-style: italic; }
+  }
+
+  .sleep-daily-container {
+    .sleep-effect-section {
+      margin-bottom: 8px;
+    }
+
+    .sleep-effect-options {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sleep-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      cursor: pointer;
+
+      &.active {
+        background: rgba(100, 150, 255, 0.15);
+      }
+
+      input[type="radio"] {
+        margin: 0;
+      }
+    }
+
+    .sleep-option-name {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .sleep-option-detail {
+      opacity: 0.7;
+      font-size: 0.85em;
+    }
+
+    .daily-limits-section {
+      margin-top: 8px;
+    }
+
+    .daily-limits-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .daily-limit-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85em;
+      cursor: pointer;
+
+      input[type="checkbox"] {
+        margin: 0;
+      }
+    }
+
+    .soul-sacrifice-tracker {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85em;
+
+      label {
+        font-weight: 600;
+      }
+    }
+
+    .soul-sacrifice-display {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .soul-sacrifice-input {
+      width: 36px;
+      text-align: center;
+    }
+
+    .soul-sacrifice-max {
+      opacity: 0.7;
     }
   }
 
