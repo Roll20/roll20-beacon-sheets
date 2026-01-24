@@ -38,6 +38,12 @@ export const useSheetStore = defineStore('sheet',() => {
   const reputation = ref(0);
   const player = ref('');
   const inspiration = ref(0);
+
+  // Budget Tallies: the game's currency for purchasing gear and services
+  const budgetTallies = ref(0);
+  // Training Tallies: XP counter, 0-8 that resets on level-up
+  const trainingTallies = ref(0);
+  const trainingTalliesMax = 8;
   const stress = ref(0);
   const exhaustion = ref(0);
   const student_type = ref('');
@@ -1799,6 +1805,8 @@ export const useSheetStore = defineStore('sheet',() => {
       knightTokenImage: knightTokenImage.value,
       level: level.value,
       reputation: reputation.value,
+      budgetTallies: budgetTallies.value,
+      trainingTallies: trainingTallies.value,
       player: player.value,
       inspiration: inspiration.value,
       stress: stress.value,
@@ -1932,6 +1940,8 @@ export const useSheetStore = defineStore('sheet',() => {
     knightTokenImage.value = hydrateStore.knightTokenImage ?? knightTokenImage.value;
     level.value = hydrateStore.level ?? level.value;
     reputation.value = hydrateStore.reputation ?? reputation.value;
+    budgetTallies.value = hydrateStore.budgetTallies ?? budgetTallies.value;
+    trainingTallies.value = hydrateStore.trainingTallies ?? trainingTallies.value;
     customProficiency.value = hydrateStore.customProficiency ?? customProficiency.value;
     proficiency.value = calculateProficiency();
     player.value = hydrateStore.player ?? player.value;
@@ -3310,6 +3320,9 @@ export const useSheetStore = defineStore('sheet',() => {
     knightTokenImage,
     level,
     reputation,
+    budgetTallies,
+    trainingTallies,
+    trainingTalliesMax,
     player,
     inspiration,
     stress,

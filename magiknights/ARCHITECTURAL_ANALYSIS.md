@@ -405,6 +405,17 @@ levelAbilities: computed  // Returns { counterBlast: bool, perfectParry: bool, .
 - Level badge shows required level for each ability
 - Unlocked abilities have full opacity; locked abilities are dimmed
 
+**Budget & Training Tallies:**
+```javascript
+budgetTallies: ref(0)       // Currency for purchasing gear/services (no max)
+trainingTallies: ref(0)     // XP counter, 0-8, resets on level-up
+trainingTalliesMax: 8       // Tallies needed to gain a level
+```
+- UI: Numeric inputs in BasicView.vue showing Budget Tallies and Training Tallies (current/8)
+- Budget Tallies: earned from part-time jobs (+1-2/session), quest rewards, downtime
+- Training Tallies: earned from Grinding, missions; accumulate 8 to level up (4 for New Rice Squires)
+- Both persist via dehydrate/hydrate cycle
+
 **Sleep Phase & Daily Limits:**
 ```javascript
 // Sleep Phase effect tracking

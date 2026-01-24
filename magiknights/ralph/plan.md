@@ -331,7 +331,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md with Budget and Training Tallies documentation"
     ],
     "context": "Budget Tallies are the game's currency system. Players earn them from part-time jobs (+1-2 per session), quest rewards, and downtime activities. They spend them at shops, the mall, and for social tactics like 'Greasing Palms' (-1 Budget). Training Tallies are the XP system: accumulate 8 to level up (4 for New Rice Squires). Sources: Grinding the New Rice activity (+1 Training Tally), mission completions, and other activities. Both are simple numeric counters that must persist between sessions.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 19,

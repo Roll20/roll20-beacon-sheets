@@ -1,9 +1,9 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 17/33
-- **Current Task:** Task 18 (Budget Tallies and Training Tallies)
-- **Last Updated:** 2026-01-24
+- **Tasks Completed:** 18/33
+- **Current Task:** Task 19 (Skill Mastery)
+- **Last Updated:** 2026-01-23
 
 ---
 
@@ -365,4 +365,24 @@
 - ARCHITECTURAL_ANALYSIS.md reflects current state: VERIFIED
 
 **All 17 tasks complete.**
+
+### 2026-01-23 - Task 18: Implement Budget Tallies and Training Tallies resource counters
+
+**Changes Made:**
+- Added `budgetTallies` ref (number, default 0) for the game's currency system
+- Added `trainingTallies` ref (number, default 0) for the XP counter (0-8)
+- Added `trainingTalliesMax` constant (8) for tallies needed to level up
+- Added both refs to the dehydrate/hydrate cycle for persistence
+- Added all three to the store return/exports block
+- Added tallies UI in BasicView.vue: Budget Tallies numeric input (no max), Training Tallies numeric input with /8 max display
+- Added CSS styling for the tallies section (bordered flex row with labeled inputs)
+- Updated ARCHITECTURAL_ANALYSIS.md with Budget & Training Tallies documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/BasicView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
 
