@@ -2324,7 +2324,10 @@ export const useSheetStore = defineStore('sheet',() => {
       npc_hp.value = { ...npc_hp.value, ...hydrateStore.npc_hp };
     }
     if (hydrateStore.npc_horde_hp) {
-      npc_horde_hp.value = hydrateStore.npc_horde_hp.map((unit, i) => ({
+      const hordeArr = Array.isArray(hydrateStore.npc_horde_hp)
+        ? hydrateStore.npc_horde_hp
+        : Object.values(hydrateStore.npc_horde_hp);
+      npc_horde_hp.value = hordeArr.map((unit, i) => ({
         ...npc_horde_hp.value[i],
         ...unit
       }));
