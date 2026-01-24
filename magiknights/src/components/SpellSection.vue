@@ -26,6 +26,16 @@ const addSpell = (id) => {
 const onPathSelect = (event) => {
   sheet.populateSpellPath(modalObj.value, event.target.value);
 };
+const tierTooltip = (item, tier) => {
+  const fields = [
+    ['Name', item[`tier_${tier}_name`]],
+    ['Dice', item[`tier_${tier}_dice`]],
+    ['Action', item[`tier_${tier}_action`]],
+    ['Special', item[`tier_${tier}_special`]],
+    ['Description', item[`tier_${tier}_description`]]
+  ];
+  return fields.filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join('\n');
+};
 </script>
 
 <template>
@@ -77,7 +87,7 @@ const onPathSelect = (event) => {
     <RepeatingItem v-for="item in sheet.sections.spells.rows" :key="item._id" :row="item" name="spells" class="gear-item">
       <h5 class="spell-header">{{ item.name || 'Spell Path' }}</h5>
       <button class="overlay-opener material-symbols-outlined" @click="openSpellEdit(item)">edit</button>
-      <button v-for="tier in ['I','II','III','IV','V','VI']" @click="sheet.rollSpell(item,tier)">{{ item[`tier_${tier}_name`] || item[`tier_${tier}_dice`] || "Spell's effect" }}</button>
+      <button v-for="tier in ['I','II','III','IV','V','VI']" :title="tierTooltip(item, tier)" @click="sheet.rollSpell(item,tier)">{{ item[`tier_${tier}_name`] || item[`tier_${tier}_dice`] || "Spell's effect" }}</button>
     </RepeatingItem>
   </RepeatingSection>
 </template>
