@@ -510,12 +510,14 @@ export const useSheetStore = defineStore('sheet',() => {
   };
 
   // Condition-based resist disadvantage
-  // Per compendium: Disoriented gives Disadvantage on Rolls to Resist (Physical)
+  // Disoriented: Disadvantage on Physical Resists
+  // Restrained: Disadvantage on DEX (DEX → Physical resist)
+  // Horrified: Disadvantage on Rolls to Resist (all EXCEPT Horror, which is explicitly exempt)
   const conditionResistDisadvantage = computed(() => ({
-    physical: conditions.value.disoriented,
-    magic: false,
+    physical: conditions.value.disoriented || conditions.value.restrained || conditions.value.horrified,
+    magic: conditions.value.horrified,
     horror: false,
-    purity: false
+    purity: conditions.value.horrified
   }));
 
   // Active resist modifiers combining manual toggles and condition effects
