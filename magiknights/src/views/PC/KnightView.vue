@@ -338,43 +338,39 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 
 <NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
   <h4>Combat Forms</h4>
-  <div class="combat-form-active">
-    <label for="active-combat-form">Active Form</label>
-    <select id="active-combat-form" v-model="sheet.activeCombatForm" class="underline">
-      <option value="">None</option>
-      <option v-for="(form, key) in sheet.combatFormData" :key="key" :value="key">
-        {{ form.name }}
-      </option>
-    </select>
-  </div>
-  <div v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="combat-form-detail">
-    <p class="form-effect">{{ sheet.combatFormData[sheet.activeCombatForm].description }}</p>
-    <p v-if="sheet.combatFormMastery[sheet.activeCombatForm]" class="form-mastery-effect">Mastery: {{ sheet.combatFormData[sheet.activeCombatForm].mastery }}</p>
-  </div>
-  <div class="combat-form-mastery-list">
-    <label class="properties-header">Mastery</label>
-    <div class="form-mastery-grid">
-      <label v-for="(form, key) in sheet.combatFormData" :key="key" class="form-mastery-item" :title="form.name">
-        <input type="checkbox" v-model="sheet.combatFormMastery[key]">
-        <span class="form-numeral">{{ key.replace('form', '') }}</span>
-      </label>
-    </div>
-  </div>
-  <Collapsible class="form-notes-section basic-item" :default="true">
-    <template v-slot:expanded>
-      <label class="properties-header">Custom Form Notes</label>
-      <RepeatingSection name="forms">
-        <RepeatingItem name="forms" v-for="item in sheet.sections.forms.rows" :key="item._id" :row="item">
-          <div class="form-note-item">
-            <input type="text" class="underline" v-model="item.name" placeholder="Form name">
-            <textarea class="underline" v-model="item.description" placeholder="Notes"></textarea>
-            <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('forms', item._id)">delete_forever</button>
-          </div>
-        </RepeatingItem>
-      </RepeatingSection>
-    </template>
+  <Collapsible class="basic-item" :default="sheet.combatFormsCollapsed" @collapse="sheet.combatFormsCollapsed = !sheet.combatFormsCollapsed">
     <template v-slot:collapsed>
-      <span>Custom Notes ({{ sheet.sections.forms.rows.length }})</span>
+      <div class="combat-form-summary">
+        <span v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="form-badge active-badge">Active</span>
+        <span v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="form-badge form-name-badge">{{ sheet.combatFormData[sheet.activeCombatForm].name.split(' - ')[1] }}</span>
+        <span v-if="sheet.activeCombatForm && sheet.combatFormMastery[sheet.activeCombatForm]" class="form-badge mastery-badge">Mastered</span>
+        <span v-if="!sheet.activeCombatForm" class="form-badge inactive-badge">No Active Form</span>
+      </div>
+    </template>
+    <template v-slot:expanded>
+      <div v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="active-form-banner">
+        <div class="banner-header">
+          <strong>{{ sheet.combatFormData[sheet.activeCombatForm].name }}</strong>
+          <button class="form-deactivate-btn" @click="sheet.activeCombatForm = ''" title="Deactivate form">&times;</button>
+        </div>
+        <p class="banner-description">{{ sheet.combatFormData[sheet.activeCombatForm].description }}</p>
+        <p v-if="sheet.combatFormMastery[sheet.activeCombatForm]" class="banner-mastery">Mastery: {{ sheet.combatFormData[sheet.activeCombatForm].mastery }}</p>
+      </div>
+      <div class="combat-form-list">
+        <div v-for="(form, key) in sheet.combatFormData" :key="key" class="form-row" :class="{ active: sheet.activeCombatForm === key }">
+          <button
+            class="form-activate-btn"
+            :class="{ active: sheet.activeCombatForm === key }"
+            @click="sheet.activeCombatForm = sheet.activeCombatForm === key ? '' : key"
+            :title="form.name"
+          >{{ key.replace('form', '') }}</button>
+          <span class="form-short-name">{{ form.name.split(' - ')[1] }}</span>
+          <label class="form-mastery-toggle" :title="'Mastery: ' + form.mastery">
+            <input type="checkbox" v-model="sheet.combatFormMastery[key]">
+            <span class="star-icon material-symbols-outlined" :class="{ mastered: sheet.combatFormMastery[key] }">star</span>
+          </label>
+        </div>
+      </div>
     </template>
   </Collapsible>
 </NotchContainer>
@@ -1005,96 +1001,223 @@ html.dark {
 }
 
 .combat-form-container {
-  .combat-form-active {
+  .combat-form-summary {
     display: flex;
     align-items: center;
-    gap: var(--half-gap);
-    margin-bottom: 4px;
+    gap: 6px;
+    flex-wrap: wrap;
 
-    label {
-      font-weight: bold;
-      white-space: nowrap;
+    .form-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
     }
 
-    select {
-      flex: 1;
+    .active-badge {
+      background: var(--header-blue, #1565c0);
+      color: white;
+    }
+
+    .form-name-badge {
+      background: rgba(74, 74, 138, 0.12);
+      color: var(--color, #333);
+    }
+
+    .mastery-badge {
+      background: rgba(218, 165, 32, 0.15);
+      color: #b8860b;
+    }
+
+    .inactive-badge {
+      background: rgba(120, 120, 120, 0.12);
+      color: #777;
     }
   }
 
-  .combat-form-detail {
-    padding: 4px 8px;
-    margin-bottom: 6px;
-    background: rgba(74, 74, 138, 0.08);
-    border-radius: 4px;
-    font-size: 0.85rem;
+  .active-form-banner {
+    border-left: 3px solid var(--header-blue, #1565c0);
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    background: rgba(74, 74, 138, 0.06);
+    border-radius: 0 4px 4px 0;
 
-    .form-effect {
-      margin: 2px 0;
+    .banner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
     }
 
-    .form-mastery-effect {
+    .form-deactivate-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #999;
+      padding: 0 4px;
+      line-height: 1;
+
+      &:hover {
+        color: #c62828;
+      }
+    }
+
+    .banner-description {
       margin: 2px 0;
+      font-size: 0.85rem;
+    }
+
+    .banner-mastery {
+      margin: 2px 0;
+      font-size: 0.85rem;
       font-style: italic;
       color: #1565c0;
     }
   }
 
-  .combat-form-mastery-list {
-    margin-bottom: 6px;
+  .combat-form-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+    padding-right: 24px;
+  }
 
-    .form-mastery-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 2px;
+  .form-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(74, 74, 138, 0.06);
     }
 
-    .form-mastery-item {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      font-size: 0.8rem;
-      cursor: pointer;
-
-      .form-numeral {
-        font-weight: bold;
-      }
+    &.active {
+      background: rgba(21, 101, 192, 0.08);
     }
   }
 
-  .form-notes-section {
-    margin-top: 4px;
+  .form-activate-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid #aaa;
+    background: transparent;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.15s;
+    color: var(--color, #555);
+    flex-shrink: 0;
+
+    &:hover {
+      border-color: var(--header-blue, #1565c0);
+    }
+
+    &.active {
+      background: var(--header-blue, #1565c0);
+      border-color: var(--header-blue, #1565c0);
+      color: white;
+    }
   }
 
-  .form-note-item {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 4px;
-    margin-bottom: 4px;
+  .form-short-name {
+    flex: 1;
+    font-size: 0.85rem;
+  }
+
+  .form-mastery-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 
     input {
-      grid-column: 1;
+      display: none;
     }
 
-    textarea {
-      grid-column: 1;
-      min-height: 2em;
+    .star-icon {
+      font-size: 1.2rem;
+      color: #ccc;
+      transition: color 0.15s;
+
+      &.mastered {
+        color: #daa520;
+      }
     }
 
-    .delete-button {
-      grid-column: 2;
-      grid-row: 1 / -1;
-      align-self: center;
+    &:hover .star-icon {
+      color: #daa520;
+      opacity: 0.7;
+    }
+
+    &:hover .star-icon.mastered {
+      opacity: 1;
     }
   }
+
 }
 
 html.dark {
-  .combat-form-detail {
-    background: rgba(100, 100, 200, 0.15);
+  .combat-form-container {
+    .active-form-banner {
+      background: rgba(100, 100, 200, 0.12);
 
-    .form-mastery-effect {
-      color: #64b5f6;
+      .banner-mastery {
+        color: #64b5f6;
+      }
+    }
+
+    .form-badge.form-name-badge {
+      background: rgba(100, 100, 200, 0.2);
+      color: #ccc;
+    }
+
+    .form-badge.mastery-badge {
+      background: rgba(218, 165, 32, 0.2);
+      color: #daa520;
+    }
+
+    .form-badge.inactive-badge {
+      background: rgba(150, 150, 150, 0.2);
+      color: #aaa;
+    }
+
+    .form-row:hover {
+      background: rgba(100, 100, 200, 0.1);
+    }
+
+    .form-row.active {
+      background: rgba(100, 149, 237, 0.15);
+    }
+
+    .form-activate-btn {
+      border-color: #666;
+
+      &:hover {
+        border-color: #64b5f6;
+      }
+
+      &.active {
+        background: #1976d2;
+        border-color: #1976d2;
+      }
+    }
+
+    .form-mastery-toggle .star-icon {
+      color: #555;
+
+      &.mastered {
+        color: #ffd54f;
+      }
     }
   }
 }

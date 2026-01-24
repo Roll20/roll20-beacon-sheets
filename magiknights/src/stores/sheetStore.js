@@ -1224,6 +1224,7 @@ export const useSheetStore = defineStore('sheet',() => {
   // Tracking refs for level-locked ability usage
   const energySurgeUsed = ref(false);
   const isFlying = ref(false);
+  const combatFormsCollapsed = ref(true);
   const levelAbilitiesCollapsed = ref(false);
 
   // Computed: which level abilities are unlocked based on current level
@@ -2015,6 +2016,7 @@ export const useSheetStore = defineStore('sheet',() => {
       fortunePoolEnabled: fortunePoolEnabled.value,
       active_formation: activeFormation.value,
       formations_collapsed: formationsCollapsed.value,
+      combat_forms_collapsed: combatFormsCollapsed.value,
       combo_participants: comboParticipants.value,
       combos_collapsed: combosCollapsed.value,
       elemental_affinity: elemental_affinity.value,
@@ -2179,6 +2181,7 @@ export const useSheetStore = defineStore('sheet',() => {
     fortunePoolEnabled.value = hydrateStore.fortunePoolEnabled ?? fortunePoolEnabled.value;
     activeFormation.value = hydrateStore.active_formation ?? activeFormation.value;
     formationsCollapsed.value = hydrateStore.formations_collapsed ?? formationsCollapsed.value;
+    combatFormsCollapsed.value = hydrateStore.combat_forms_collapsed ?? combatFormsCollapsed.value;
     comboParticipants.value = hydrateStore.combo_participants ?? comboParticipants.value;
     combosCollapsed.value = hydrateStore.combos_collapsed ?? combosCollapsed.value;
 
@@ -3689,6 +3692,7 @@ export const useSheetStore = defineStore('sheet',() => {
     combatFormData,
     activeCombatForm,
     combatFormMastery,
+    combatFormsCollapsed,
     hasFormX,
 
     // Level-Locked Abilities
