@@ -1093,6 +1093,35 @@ export const onDragOver = async ({ compendiumDropData }) => {
 
 ---
 
+## Missing Compendium Rules - Implementation Summary (Tasks 18-32)
+
+The following features were added to implement missing rules from the compendium:
+
+| Feature | Refs/Computeds | UI Location |
+|---------|---------------|-------------|
+| Budget Tallies | `budgetTallies` | BasicView |
+| Training Tallies | `trainingTallies`, `trainingTalliesMax` | BasicView |
+| Club Tallies | `clubTallies`, `clubTalliesMax` | BasicView |
+| Resounding Growths | `resoundingGrowths` | BasicView |
+| Club Position | `clubPosition`, `clubPositionData` | BasicView |
+| Skill Mastery | `masteredSkill` | StudentView |
+| Spell Paths Known | `spellPathsKnown`, `maxSpellPaths` | KnightView |
+| Branching Element | `branchingElement`, `branchingElementOptions` | KnightView |
+| Soul Armament Tier | `soulArmamentData`, weapon/armor bonus computeds | KnightView |
+| Rune Slot Capacity | `runeSlotCapacity`, `runeSlotsUsed`, `runesOverCapacity` | KnightView |
+| Level-Locked Abilities | `energySurgeUsed`, `isFlying`, `levelAbilityData` | KnightView |
+| Well Fed / Studied Split | `studiedCombat`, `studiedSchool`, `wellFed` | StudentView |
+| Visor | `visor`, `visorData`, `activeVisorEffect` | KnightView |
+| Elemental Summon | `elementalSummon` (stat block object) | KnightView |
+| Detention Tickets | `detentionTickets` | StudentView |
+| Heart Stage SP Thresholds | `heartStageData` (min/max), `getHeartStageForSP` | SocialSection |
+| Statistic Increases | `statIncreases`, `statIncreaseLevels`, applied/available/missing | BasicView |
+| Fortune Pool | `fortunePool`, `fortunePoolEnabled`, `fortunePoolMax` | BasicView |
+
+All features follow the standard pattern: ref → dehydrate/hydrate → UI → exports.
+
+---
+
 ## Conclusion
 
 The Magi-Knights character sheet demonstrates a well-architected Vue 3 application with clear separation of concerns between state management, UI components, and platform integration. The Beacon SDK relay layer provides a clean abstraction over Roll20's infrastructure, while the Pinia stores effectively model the complex game system data.

@@ -614,7 +614,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Commit all changes with message: 'Implement missing compendium rules: tallies, mastery, paths, elements, armament, runes, abilities, effects, visor, summons, clubs, fortune'"
     ],
     "context": "This is the final verification step for the missing rules batch (tasks 18-32). All new state must be properly serialized in dehydrate/hydrate, all exports must be in the store return block, and the application must build without errors. This task ensures everything from the 15 new feature tasks integrates correctly.",
-    "passes": false
+    "passes": true
   }
 ]
 ```
