@@ -9,7 +9,12 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Read",
       "Edit",
-      "Write"
+      "Write",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(npm run *)"
     ],
     "deny": [
       "Bash(git push *)",
@@ -38,7 +43,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@anthropic-ai/mcp-server-playwright",
+        "@playwright/mcp",
         "--headless"
       ]
     }

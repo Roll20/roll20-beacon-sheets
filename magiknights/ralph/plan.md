@@ -633,7 +633,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md to note that tallies, club position, stat increases, and fortune pool are now on the Settings/Misc tab"
     ],
     "context": "The Base Stats tab (BasicView.vue) currently contains Budget Tallies, Training Tallies, Club Tallies, Resounding Growths, Club Position selector, Stat Increases indicator, and Fortune Pool. These are resource counters that are not frequently accessed during gameplay and are cluttering the Base Stats page which should focus on ability scores, techniques, power shards, and the eclipse chart. Moving them to Settings (soon to be renamed Misc) consolidates infrequently-changed tracking values in one place. The SettingsView.vue currently only has Sheet Mode toggle and Token Settings, so there is plenty of room.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 35,

@@ -183,7 +183,7 @@ PCView (provides layout)
     │
     └── RouterView (nested routes)
             │
-            ├── BasicView (base stats)
+            ├── BasicView (base stats, eclipse chart, techniques, power shards)
             ├── StudentView (student form)
             ├── KnightView (magi-knight form)
             │       ├── SpellSection
@@ -191,7 +191,7 @@ PCView (provides layout)
             │       ├── SquadronFormations
             │       └── CombinationManeuvers
             ├── BackgroundView (roleplay)
-            └── SettingsView (config)
+            └── SettingsView (config, tallies, club position, stat increases, fortune pool)
 ```
 
 ---
@@ -443,7 +443,7 @@ budgetTallies: ref(0)       // Currency for purchasing gear/services (no max)
 trainingTallies: ref(0)     // XP counter, 0-8, resets on level-up
 trainingTalliesMax: 8       // Tallies needed to gain a level
 ```
-- UI: Numeric inputs in BasicView.vue showing Budget Tallies and Training Tallies (current/8)
+- UI: Numeric inputs in SettingsView.vue (Tallies & Resources section) showing Budget Tallies and Training Tallies (current/8)
 - Budget Tallies: earned from part-time jobs (+1-2/session), quest rewards, downtime
 - Training Tallies: earned from Grinding, missions; accumulate 8 to level up (4 for New Rice Squires)
 - Both persist via dehydrate/hydrate cycle
@@ -463,7 +463,7 @@ statIncreasesApplied: computed(...)      // statIncreases.length
 statIncreasesAvailable: computed(...)    // Count of levels <= current level
 statIncreasesMissing: computed(...)      // available - applied (positive = needs attention)
 ```
-- UI: "Stat Increases: X/Y applied" indicator in BasicView.vue when increases are available
+- UI: "Stat Increases: X/Y applied" indicator in SettingsView.vue (Tallies & Resources section) when increases are available
 - Shows reminder with missing increase levels when statIncreasesMissing > 0
 - Non-enforcing: players manually apply increases to ability scores
 
@@ -475,7 +475,7 @@ resoundingGrowths: ref(0)      // Total Resounding Growths achieved
 clubPosition: ref('member')    // 'member', 'vicePresident', 'president'
 clubPositionData = { member: {...}, vicePresident: {...}, president: {...} }
 ```
-- UI: Club Tallies counter (current/8), Resounding Growths counter, and Position dropdown in BasicView.vue
+- UI: Club Tallies counter (current/8), Resounding Growths counter, and Position dropdown in SettingsView.vue (Tallies & Resources section)
 - Position bonus text shown for VP (+5 Influence) and President (+4 Persuasion)
 
 **Sleep Phase & Daily Limits:**
@@ -595,7 +595,7 @@ fortunePoolMax: computed(...)    // Proficiency bonus when enabled (level-based:
 - Pool size equals proficiency bonus (2-6), replenishes on Refreshing Sleep
 - Spend 1 Fortune to add 1d6 to a non-combat Skill Check
 - UI shows enable checkbox; when enabled, displays current/max counter and usage description
-- Only visible in BasicView when `fortunePoolEnabled` is true
+- Only visible in SettingsView (Tallies & Resources section) when `fortunePoolEnabled` is true
 
 ### Equipment System
 
@@ -1099,11 +1099,11 @@ The following features were added to implement missing rules from the compendium
 
 | Feature | Refs/Computeds | UI Location |
 |---------|---------------|-------------|
-| Budget Tallies | `budgetTallies` | BasicView |
-| Training Tallies | `trainingTallies`, `trainingTalliesMax` | BasicView |
-| Club Tallies | `clubTallies`, `clubTalliesMax` | BasicView |
-| Resounding Growths | `resoundingGrowths` | BasicView |
-| Club Position | `clubPosition`, `clubPositionData` | BasicView |
+| Budget Tallies | `budgetTallies` | SettingsView |
+| Training Tallies | `trainingTallies`, `trainingTalliesMax` | SettingsView |
+| Club Tallies | `clubTallies`, `clubTalliesMax` | SettingsView |
+| Resounding Growths | `resoundingGrowths` | SettingsView |
+| Club Position | `clubPosition`, `clubPositionData` | SettingsView |
 | Skill Mastery | `masteredSkill` | StudentView |
 | Spell Paths Known | `spellPathsKnown`, `maxSpellPaths` | KnightView |
 | Branching Element | `branchingElement`, `branchingElementOptions` | KnightView |
@@ -1115,8 +1115,8 @@ The following features were added to implement missing rules from the compendium
 | Elemental Summon | `elementalSummon` (stat block object) | KnightView |
 | Detention Tickets | `detentionTickets` | StudentView |
 | Heart Stage SP Thresholds | `heartStageData` (min/max), `getHeartStageForSP` | SocialSection |
-| Statistic Increases | `statIncreases`, `statIncreaseLevels`, applied/available/missing | BasicView |
-| Fortune Pool | `fortunePool`, `fortunePoolEnabled`, `fortunePoolMax` | BasicView |
+| Statistic Increases | `statIncreases`, `statIncreaseLevels`, applied/available/missing | SettingsView |
+| Fortune Pool | `fortunePool`, `fortunePoolEnabled`, `fortunePoolMax` | SettingsView |
 
 All features follow the standard pattern: ref → dehydrate/hydrate → UI → exports.
 
