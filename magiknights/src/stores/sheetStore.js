@@ -315,6 +315,9 @@ export const useSheetStore = defineStore('sheet',() => {
     return m;
   },{});
 
+  // Skill Mastery: one skill gets +Reputation Level (min 1) bonus
+  const masteredSkill = ref('');
+
   const initiative_override = ref('');
   const initiative = computed({
     get() {
@@ -1846,6 +1849,7 @@ export const useSheetStore = defineStore('sheet',() => {
       roll_resist_proficiency: roll_resist_proficiency.value,
       resistModifiers: JSON.parse(JSON.stringify(resistModifiers.value)),
       skills: dehydrateSkills(skills),
+      masteredSkill: masteredSkill.value,
       abilityScores: dehydrateAbilityScores(abilityScores),
       hp: dehydrateHp(hp),
       hp_max: hp_max.value,
@@ -2024,6 +2028,7 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateEclipseBlipsArray(eclipse.value, hydrateStore.eclipse);
 
     hydrateSkills(skills, hydrateStore.skills);
+    masteredSkill.value = hydrateStore.masteredSkill ?? masteredSkill.value;
     hydrateAbilityScores(abilityScores, hydrateStore.abilityScores);
     hydrateHp(hp, hydrateStore.hp);
     hydrateMp(mp, hydrateStore.mp);
@@ -2165,11 +2170,18 @@ export const useSheetStore = defineStore('sheet',() => {
       ? ` | Endurance: negate if d6 >= ${enduranceInfo.level} (${enduranceInfo.type})`
       : '';
 
+    // Skill Mastery: +Reputation Level (min 1) when this skill is mastered
+    const hasMastery = masteredSkill.value === name;
+    const masteryBonus = hasMastery ? Math.max(1, reputation.value) : 0;
+
     if (skillOverrideValue !== '' && skillOverrideValue !== undefined){
       const components = [
         {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
         {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true}
       ];
+      if (masteryBonus > 0) {
+        components.push({label: 'Mastery', value: masteryBonus, alwaysShowInBreakdown: true});
+      }
       if (enduranceInfo) {
         components.push({label: 'Endurance Die (1d6)', formula: '1d6', alwaysShowInBreakdown: true});
       }
@@ -2187,6 +2199,9 @@ export const useSheetStore = defineStore('sheet',() => {
       ];
       if(skills[name].proficiency.value){
         components.push({label: 'Prof',value:Number(proficiency.value),alwaysShowInBreakdown: true});
+      }
+      if (masteryBonus > 0) {
+        components.push({label: 'Mastery', value: masteryBonus, alwaysShowInBreakdown: true});
       }
       if (enduranceInfo) {
         components.push({label: 'Endurance Die (1d6)', formula: '1d6', alwaysShowInBreakdown: true});
@@ -3381,6 +3396,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     abilityScores,
     skills,
+    masteredSkill,
 
     initiative,
     initiative_override,

@@ -349,7 +349,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md skills section with Mastery documentation"
     ],
     "context": "Per the compendium: 'Select one Skill Proficiency from Court Card or Student Type. Add Reputation Level (min 1) to that Skill. Circle the Proficiency Diamond to indicate Mastery.' This means one skill gets a permanent +Reputation Level bonus (1-5) in addition to its normal proficiency bonus. For Squadron Checks, Mastery grants '+3 (+ reroll one d4)'. The current skill system only tracks binary proficiency (true/false) per skill with no mastery option. The mastery bonus should be added to the roll result alongside the ability modifier and proficiency bonus.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 20,

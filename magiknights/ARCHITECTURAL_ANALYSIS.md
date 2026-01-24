@@ -242,6 +242,8 @@ const strengthMod = computed(() => {
 
 **17 Skills:** Each linked to 1-6 abilities with proficiency toggle
 
+**Skill Mastery:** One skill can be designated as "Mastered" via the `masteredSkill` ref (string, skill key or ''). The mastered skill receives a +Reputation Level (min 1) bonus on all rolls. In the UI, the mastered skill's proficiency diamond is highlighted in accent color and the skill name is bolded. The mastery selector dropdown is shown at the bottom of the skills section. The mastery bonus is added as a separate 'Mastery' component in the roll breakdown.
+
 ### Magic System
 
 **Two Magic Styles:**

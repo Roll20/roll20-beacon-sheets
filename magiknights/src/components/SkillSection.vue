@@ -1,11 +1,15 @@
 <script setup>
-import { watch } from 'vue';
+import { watch, computed } from 'vue';
 import NotchContainer from './NotchContainer.vue';
 import Skill from './Skill.vue';
 import { useSheetStore } from '@/stores/sheetStore';
 
 const sheet = useSheetStore();
 const skills = ['academic arts', 'athletics','coordination','creativity','deception','influence','insight','investigation','leadership','medicine','mysticism','perception','performance','persuasion','purity','stealth','stem']
+
+const skillRefs = skills.map(s => s.replace(/\s+/g, '_'));
+
+const masteryBonus = computed(() => Math.max(1, sheet.reputation));
 
 const proficiencyMap = {
     0: 2,  // or use a more detailed lookup based on the table
@@ -37,7 +41,7 @@ const proficiencyMap = {
 
     watch(
       () => sheet.reputation,
-      (newValue, oldValue) => 
+      (newValue, oldValue) =>
       {
       if (newValue > 5){
         sheet.proficiency = 6;
@@ -62,13 +66,21 @@ const proficiencyMap = {
 <template>
   <NotchContainer width="thick" :notch="20" class="skill-container">
     <h3>skills</h3>
-    <Skill v-for="name in skills" :key="name" :skillName="name"></Skill>
+    <Skill v-for="name in skills" :key="name" :skillName="name" :isMastered="sheet.masteredSkill === name.replace(/\s+/g, '_')"></Skill>
+    <div class="mastery-row">
+      <label>Mastery</label>
+      <select v-model="sheet.masteredSkill" class="mastery-select">
+        <option value="">None</option>
+        <option v-for="ref in skillRefs" :key="ref" :value="ref">{{ ref.replace(/_/g, ' ') }}</option>
+      </select>
+      <span v-if="sheet.masteredSkill" class="mastery-bonus">+{{ masteryBonus }}</span>
+    </div>
     <div class="flex-box half-gap">
       <span>Proficiency Bonus</span>
-      <input 
+      <input
         type="number"
-        v-model="sheet.customProficiency" 
-        :placeholder="sheet.proficiency" 
+        v-model="sheet.customProficiency"
+        :placeholder="sheet.proficiency"
         class="proficiency-input" />
     </div>
   </NotchContainer>
@@ -83,5 +95,24 @@ const proficiencyMap = {
   }
   .proficiency-input {
     width: 50px;
+  }
+  .mastery-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 4px 0;
+    label {
+      font-size: 0.85em;
+      font-weight: bold;
+    }
+    .mastery-select {
+      text-transform: capitalize;
+      flex: 1;
+    }
+    .mastery-bonus {
+      font-size: 0.85em;
+      font-weight: bold;
+      color: var(--accent, #4a9);
+    }
   }
 </style>

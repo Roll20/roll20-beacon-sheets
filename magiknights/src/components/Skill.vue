@@ -4,9 +4,11 @@ import { useSheetStore } from '@/stores/sheetStore';
 const sheet = useSheetStore();
 const {skills} = sheet
 const {
-  skillName
+  skillName,
+  isMastered
 } = defineProps({
-  skillName: String
+  skillName: String,
+  isMastered: { type: Boolean, default: false }
 });
 
 const skillRef = skillName.replace(/\s+/g,'_');
@@ -30,7 +32,7 @@ const resetToDefault = () => {
 </script>
 
 <template>
-  <div class="skill-row">
+  <div class="skill-row" :class="{ mastered: isMastered }">
     <select :name="`${skillRef}_ability`" v-model="skillObj.ability">
       <option v-for="ability in skillObj.abilitiesList" :key="ability.id" :value="ability">{{ abilityAbbreviations[ability] }}</option>
     </select>
@@ -41,7 +43,7 @@ const resetToDefault = () => {
       :placeholder="skillObj.value"
       @blur="resetToDefault"
     />
-    <input type="checkbox" :name="`${skillRef}_proficiency`" value="1" v-model="skillObj.proficiency">
+    <input type="checkbox" :name="`${skillRef}_proficiency`" value="1" v-model="skillObj.proficiency" :class="{ 'mastery-diamond': isMastered }">
     <button @click="sheet.rollSkill(skillRef)" class="skill-name">{{ skillName }}</button>
   </div>
 </template>
@@ -70,11 +72,21 @@ const resetToDefault = () => {
       &:checked{
         background-color: var(--borderColor);
       }
+      &.mastery-diamond {
+        border-color: var(--accent, #4a9);
+        &:checked {
+          background-color: var(--accent, #4a9);
+        }
+      }
     }
     .skill-value{
       width: 3ch;
       text-align: center;
       color: var(--color);
+    }
+    &.mastered .skill-name {
+      color: var(--accent, #4a9);
+      font-weight: bold;
     }
   }
 </style>

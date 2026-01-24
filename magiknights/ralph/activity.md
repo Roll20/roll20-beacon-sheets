@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 18/33
-- **Current Task:** Task 19 (Skill Mastery)
+- **Tasks Completed:** 19/33
+- **Current Task:** Task 20 (Spell Paths Known)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -382,6 +382,26 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/BasicView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 19: Implement Skill Mastery designation and bonus calculation
+
+**Changes Made:**
+- Added `masteredSkill` ref (string, default '') to sheetStore.js to designate which skill has Mastery
+- Modified `rollSkill` function: when the rolled skill matches `masteredSkill`, adds a 'Mastery' component with value Math.max(1, reputation) to the roll breakdown
+- Mastery bonus applies to both normal rolls and override-value rolls
+- Added `masteredSkill` to dehydrate/hydrate cycle for persistence
+- Added `masteredSkill` to store exports
+- Updated `SkillSection.vue`: added Mastery dropdown selector at bottom of skills section (None + all 17 skills), shows +N bonus indicator when a skill is selected
+- Updated `Skill.vue`: added `isMastered` prop, mastered skill name is bolded in accent color, proficiency diamond border turns accent color when mastered
+- Updated ARCHITECTURAL_ANALYSIS.md with Skill Mastery documentation
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/components/SkillSection.vue`
+- `src/components/Skill.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`
