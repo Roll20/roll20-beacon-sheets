@@ -495,7 +495,7 @@ manaConduitUsed: ref(false)        // 1/Sleep Phase: Bonus Action next spell -1 
 soulSacrificeCount: ref(0)         // Uses count toward career max
 soulSacrificeMax: computed          // Max = Reputation Level (career total)
 ```
-- UI: Sleep Effect radio buttons in KnightView.vue (Average/Feverish/Refreshing)
+- UI: Sleep Effect radio buttons in StudentView.vue (Average/Feverish/Refreshing)
 - Daily Limits section with checkboxes for Seal Implant (given/received) and Mana Conduit
 - Soul Sacrifice counter with career max display
 - All values persist via dehydrate/hydrate cycle

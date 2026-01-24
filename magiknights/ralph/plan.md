@@ -666,7 +666,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md to note Sleep & Daily Limits moved to Student tab"
     ],
     "context": "Sleep & Daily Limits is currently on the Magi-Knight tab (KnightView.vue lines 360-399). It contains: Sleep Effect radio buttons (Average/Feverish/Refreshing), Daily Limits checkboxes (Seal Implant Given/Received, Mana Conduit Used), and Soul Sacrifice tracker. These are daily/session tracking features that relate to the Student phase of play (sleep happens during downtime, between school phases). The Student tab already has related tracking (Detention Tickets, Studied/Rested checkboxes) making it the natural home for sleep and daily limit tracking. The Magi-Knight tab is already crowded with combat-focused content (weapons, armor, spells, runes, relics, forms, level abilities).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 37,

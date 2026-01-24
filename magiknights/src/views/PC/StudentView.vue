@@ -98,6 +98,46 @@ function studentAbilitySummary()
       <label>Detention Tickets</label>
       <input type="number" min="0" class="underline detention-input" v-model.number="sheet.detentionTickets">
     </div>
+    <NotchContainer class="sleep-daily-container" notchType="none" width="thick">
+      <h4>Sleep &amp; Daily Limits</h4>
+      <div class="sleep-effect-section">
+        <label class="properties-header">Sleep Effect</label>
+        <div class="sleep-effect-options">
+          <label v-for="(data, key) in sheet.sleepEffectData" :key="key" class="sleep-option" :class="{ active: sheet.sleepEffect === key }">
+            <input type="radio" :value="key" v-model="sheet.sleepEffect" />
+            <span class="sleep-option-name">{{ data.name }}</span>
+            <span class="sleep-option-detail">
+              <template v-if="data.stressRecovery > 0">-{{ data.stressRecovery }} Stress, -{{ data.exhaustionRecovery }} Exhaustion</template>
+              <template v-if="data.note">{{ data.note }}</template>
+            </span>
+          </label>
+        </div>
+      </div>
+      <div class="daily-limits-section">
+        <label class="properties-header">Daily Limits</label>
+        <div class="daily-limits-grid">
+          <label class="daily-limit-item">
+            <input type="checkbox" v-model="sheet.sealImplantGiven" />
+            <span>Seal Implant Given</span>
+          </label>
+          <label class="daily-limit-item">
+            <input type="checkbox" v-model="sheet.sealImplantReceived" />
+            <span>Seal Implant Received</span>
+          </label>
+          <label class="daily-limit-item">
+            <input type="checkbox" v-model="sheet.manaConduitUsed" />
+            <span>Mana Conduit Used</span>
+          </label>
+        </div>
+        <div class="soul-sacrifice-tracker">
+          <label>Soul Sacrifice</label>
+          <div class="soul-sacrifice-display">
+            <input type="number" min="0" :max="sheet.soulSacrificeMax" v-model.number="sheet.soulSacrificeCount" class="underline soul-sacrifice-input" />
+            <span class="soul-sacrifice-max">/ {{ sheet.soulSacrificeMax }} (career)</span>
+          </div>
+        </div>
+      </div>
+    </NotchContainer>
     <NotchContainer class="student-ability" notchType="none" width="thick">
       <h4>Student Ability</h4>
       <Collapsible class="student-ability-content" :default="sheet.student_ability.collapsed" @collapse="sheet.student_ability.collapsed = !sheet.student_ability.collapsed">
@@ -412,6 +452,95 @@ html.dark {
       background: #444;
       color: #888;
     }
+  }
+}
+
+.sleep-daily-container {
+  .sleep-effect-section {
+    margin-bottom: 8px;
+  }
+
+  .sleep-effect-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sleep-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    cursor: pointer;
+
+    &.active {
+      background: rgba(100, 150, 255, 0.15);
+    }
+
+    input[type="radio"] {
+      margin: 0;
+    }
+  }
+
+  .sleep-option-name {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .sleep-option-detail {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85em;
+  }
+
+  .daily-limits-section {
+    margin-top: 8px;
+  }
+
+  .daily-limits-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .daily-limit-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+  }
+
+  .soul-sacrifice-tracker {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+
+    label {
+      font-weight: 600;
+    }
+  }
+
+  .soul-sacrifice-display {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .soul-sacrifice-input {
+    width: 36px;
+    text-align: center;
+  }
+
+  .soul-sacrifice-max {
+    color: rgba(255, 255, 255, 0.6);
   }
 }
 </style>

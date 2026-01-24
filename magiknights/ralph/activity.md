@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 35/37
-- **Current Task:** 36
+- **Tasks Completed:** 36/37
+- **Current Task:** 37
 - **Last Updated:** 2026-01-23
 
 ---
@@ -708,6 +708,23 @@
 
 **Files Modified:**
 - `src/components/KnightNav.vue`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 36: Move Sleep & Daily Limits section from Magi-Knight tab to Student tab
+
+**Changes Made:**
+- Removed the sleep-daily-container NotchContainer (Sleep Effect radio buttons, Daily Limits checkboxes, Soul Sacrifice tracker) from KnightView.vue template
+- Removed corresponding CSS (.sleep-daily-container and all nested rules) from KnightView.vue
+- Added the same NotchContainer section to StudentView.vue, placed after the detention-counter div and before the student-ability section
+- Added corresponding CSS to StudentView.vue style block
+- Updated ARCHITECTURAL_ANALYSIS.md: changed Sleep & Daily Limits UI location from KnightView to StudentView
+- Build verified successfully
+
+**Files Modified:**
+- `src/views/PC/KnightView.vue`
+- `src/views/PC/StudentView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`
 
