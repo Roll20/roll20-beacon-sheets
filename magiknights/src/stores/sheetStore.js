@@ -271,8 +271,16 @@ export const useSheetStore = defineStore('sheet',() => {
   const statIncreasesAvailable = computed(() => statIncreaseLevels.filter(l => l <= level.value).length);
   const statIncreasesMissing = computed(() => statIncreasesAvailable.value - statIncreasesApplied.value);
 
-  const levelSpellDict = [,1,1,2,2,3,3,3,4,4,4,5,5,5,6,6]
-  const max_spell_tier = computed(() => levelSpellDict[level]);
+  // Per compendium: Tier I=Lv1, II=Lv3, III=Lv5, IV=Lv7, V=Lv11, VI=Lv14+(Herald Bond IV+)
+  const levelSpellDict = [,1,1,2,2,3,3,4,4,4,4,5,5,5,6,6];
+  const max_spell_tier = computed(() => {
+    const tierByLevel = levelSpellDict[level.value] || 1;
+    // Tier VI requires Herald Bond Level IV+
+    if (tierByLevel >= 6 && herald.bondLevel.value < 4) return 5;
+    return tierByLevel;
+  });
+  const tierRomanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6 };
+  const isTierUnlocked = (tier) => tierRomanToNum[tier] <= max_spell_tier.value;
 
   const proficiencyMap = {
     0: 2,  // or use a more detailed lookup based on the table
@@ -3785,6 +3793,7 @@ export const useSheetStore = defineStore('sheet',() => {
     spell_dc,
     sections,
     max_spell_tier,
+    isTierUnlocked,
     availableSpellPaths,
     maxSpellPaths,
     spellPathsCount,

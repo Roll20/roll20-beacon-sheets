@@ -292,24 +292,22 @@ const nourishedTooltip = computed(() => {
       <div class="flex-box half-gap grow-label">
         <label for="herald-bond-level">Bond Level</label>
         <select class="underline" v-model="sheet.herald.bondLevel" id="herald-bond-level">
-          <option :value="1">I - Initial Bond</option>
-          <option :value="2">II - Strengthened</option>
-          <option :value="3">III - Deep Connection</option>
-          <option :value="4">IV - Profound Bond</option>
-          <option :value="5">V - Ultimate Bond</option>
+          <option :value="1">I - Envoy of Doom</option>
+          <option :value="2">II - Envoy of Imitation</option>
+          <option :value="3">III - Medium of Doubt</option>
+          <option :value="4">IV - Mentor of Advent</option>
+          <option :value="5">V - Advocate of Hope</option>
         </select>
       </div>
       <div class="herald-tier-access">
         <span class="tier-label">Spell Tier Access:</span>
         <span class="tier-badges">
-          <span class="tier-badge unlocked">I</span>
-          <span class="tier-badge unlocked">II</span>
-          <span class="tier-badge unlocked">III</span>
-          <span class="tier-badge unlocked">IV</span>
-          <span class="tier-badge unlocked">V</span>
-          <span class="tier-badge" :class="{ 'unlocked': sheet.tierVIUnlocked, 'locked': !sheet.tierVIUnlocked }">
-            VI
-            <span v-if="!sheet.tierVIUnlocked" class="lock-icon" title="Requires Bond Level IV+">🔒</span>
+          <span v-for="tier in ['I','II','III','IV','V','VI']" :key="tier"
+                class="tier-badge"
+                :class="{ 'unlocked': sheet.isTierUnlocked(tier), 'locked': !sheet.isTierUnlocked(tier) }"
+                :title="!sheet.isTierUnlocked(tier) ? (tier === 'VI' ? 'Requires Level 14+ and Herald Bond IV+' : 'Requires higher level') : ''">
+            {{ tier }}
+            <span v-if="!sheet.isTierUnlocked(tier)" class="lock-icon">🔒</span>
           </span>
         </span>
       </div>
