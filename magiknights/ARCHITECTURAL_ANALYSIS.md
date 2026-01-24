@@ -244,6 +244,22 @@ const strengthMod = computed(() => {
 
 **Skill Mastery:** One skill can be designated as "Mastered" via the `masteredSkill` ref (string, skill key or ''). The mastered skill receives a +Reputation Level (min 1) bonus on all rolls. In the UI, the mastered skill's proficiency diamond is highlighted in accent color and the skill name is bolded. The mastery selector dropdown is shown at the bottom of the skills section. The mastery bonus is added as a separate 'Mastery' component in the roll breakdown.
 
+### Branching Elements
+
+Each primary elemental affinity branches into two sub-elements:
+```javascript
+branchingElementOptions = {
+  earth: ['Wood', 'Metal'],
+  fire: ['Lightning', 'Toxins'],
+  air: ['Force', 'Sonance'],
+  water: ['Ice', 'Blood'],
+  void: ['Light', 'Dark']
+}
+branchingElement: ref('')              // Selected sub-element
+availableBranches: computed(...)        // Returns options for current affinity
+```
+UI shows a dropdown selector in the Elemental Affinity section (only visible when an affinity is selected). Changing elemental affinity resets the branching element.
+
 ### Magic System
 
 **Two Magic Styles:**

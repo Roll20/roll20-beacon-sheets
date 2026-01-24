@@ -386,7 +386,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md character identity section"
     ],
     "context": "Per the compendium's Elemental Affinity section, each primary element branches into two sub-elements: Earth→Wood/Metal, Fire→Lightning/Toxins, Air→Force/Sonance, Water→Ice/Blood, Void→Light/Dark. Characters eventually choose one branching element which affects spell/technique flavor and some mechanical interactions. The sheet stores elemental_affinity (primary) and element_name (custom name) but has no field for the branching sub-element choice.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 22,

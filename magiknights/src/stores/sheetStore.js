@@ -352,6 +352,19 @@ export const useSheetStore = defineStore('sheet',() => {
   const element_name = ref('');
   const mam = ref('');
 
+  // Branching Element - sub-element choice based on primary affinity
+  const branchingElement = ref('');
+  const branchingElementOptions = {
+    earth: ['Wood', 'Metal'],
+    fire: ['Lightning', 'Toxins'],
+    air: ['Force', 'Sonance'],
+    water: ['Ice', 'Blood'],
+    void: ['Light', 'Dark']
+  };
+  const availableBranches = computed(() => {
+    return branchingElementOptions[elemental_affinity.value] || [];
+  });
+
   // Spell Paths Known - tracks which paths the character has chosen
   const availableSpellPaths = ['Beam', 'Explosion', 'Ward', 'Curing', 'Restoration', 'Augmentation', 'Summoning', 'Chronomancy', 'Divination', 'Psionics', 'Necromancy'];
   const spellPathsKnown = ref([]);
@@ -1842,6 +1855,7 @@ export const useSheetStore = defineStore('sheet',() => {
       combo_participants: comboParticipants.value,
       combos_collapsed: combosCollapsed.value,
       elemental_affinity: elemental_affinity.value,
+      branchingElement: branchingElement.value,
       magic_style: magic_style.value,
       spellPathsKnown: [...spellPathsKnown.value],
       release_magic_deck: releaseMagicDeck.value,
@@ -2019,6 +2033,7 @@ export const useSheetStore = defineStore('sheet',() => {
     backstory.value = hydrateStore.backstory ?? backstory.value;
 
     elemental_affinity.value = hydrateStore.elemental_affinity ?? elemental_affinity.value;
+    branchingElement.value = hydrateStore.branchingElement ?? branchingElement.value;
     magic_style.value = hydrateStore.magic_style ?? magic_style.value;
     spellPathsKnown.value = hydrateStore.spellPathsKnown ?? spellPathsKnown.value;
     element_name.value = hydrateStore.element_name ?? element_name.value;
@@ -3535,6 +3550,9 @@ export const useSheetStore = defineStore('sheet',() => {
     spell_attack_override,
     spell_dc_override,
     elemental_affinity,
+    branchingElement,
+    branchingElementOptions,
+    availableBranches,
     magic_style,
     element_name,
     mam,

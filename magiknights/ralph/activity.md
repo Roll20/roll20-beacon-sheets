@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 20/33
-- **Current Task:** Task 21 (Branching Element)
+- **Tasks Completed:** 21/33
+- **Current Task:** Task 22 (Soul Armament Tier Bonus)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -417,6 +417,26 @@
 - Added CSS styling for the paths-known section (bordered container, flex-wrap checkboxes, count badge, warning text)
 - Added store exports: availableSpellPaths, spellPathsKnown, maxSpellPaths
 - Updated ARCHITECTURAL_ANALYSIS.md Magic System section with Spell Paths Known documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 21: Implement Branching Element selection
+
+**Changes Made:**
+- Added `branchingElement` ref (string, default '') for sub-element choice
+- Added `branchingElementOptions` constant mapping primary elements to branches: earth→Wood/Metal, fire→Lightning/Toxins, air→Force/Sonance, water→Ice/Blood, void→Light/Dark
+- Added `availableBranches` computed that returns branch options for current elemental_affinity
+- Added `branchingElement` to dehydrate/hydrate cycle for persistence
+- Added Branching Element dropdown selector in KnightView.vue after Element Name field (only shown when affinity is selected)
+- Updated elemental_affinity watcher to reset branchingElement when affinity changes
+- Added store exports: branchingElement, branchingElementOptions, availableBranches
+- Updated ARCHITECTURAL_ANALYSIS.md with Branching Elements documentation
 - Build verified successfully
 
 **Files Modified:**

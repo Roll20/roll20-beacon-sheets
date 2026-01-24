@@ -136,11 +136,12 @@ const availableResistProficiency = computed(() => {
   return element ? element.resistProficiency : [];
 });
 
-// Watch for changes in elemental affinity and reset enhancements and roll to resist proficiency
+// Watch for changes in elemental affinity and reset enhancements, resist proficiency, and branching element
 watch(() => sheet.elemental_affinity, (newAffinity) => {
     sheet.elemental_enhancement_1 = '';
     sheet.elemental_enhancement_2 = '';
     sheet.roll_resist_proficiency = '';
+    sheet.branchingElement = '';
 });
 
 </script>
@@ -490,6 +491,17 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
         </template>
         <template v-slot:label>
           <span class="elemental_label">Element Name</span>
+        </template>
+      </LabelStacked>
+      <LabelStacked v-if="sheet.availableBranches.length > 0">
+        <template v-slot:number>
+          <select class="underline" v-model="sheet.branchingElement">
+            <option value="">Select Branch</option>
+            <option v-for="branch in sheet.availableBranches" :key="branch" :value="branch">{{ branch }}</option>
+          </select>
+        </template>
+        <template v-slot:label>
+          <span class="elemental_label">Branching Element</span>
         </template>
       </LabelStacked>
       </div>
