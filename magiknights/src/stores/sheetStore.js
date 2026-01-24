@@ -584,7 +584,9 @@ export const useSheetStore = defineStore('sheet',() => {
   };
 
   const rested = ref(false);
-  const studied = ref(false);
+  const studiedCombat = ref(false);
+  const studiedSchool = ref(false);
+  const wellFed = ref(false);
   const gloom = ref(0);
   const unity = ref(0);
 
@@ -1880,7 +1882,9 @@ export const useSheetStore = defineStore('sheet',() => {
       exceededMortalLimits: exceededMortalLimits.value,
       dexterityMod: dexterityMod.value,
       rested: rested.value,
-      studied: studied.value,
+      studiedCombat: studiedCombat.value,
+      studiedSchool: studiedSchool.value,
+      wellFed: wellFed.value,
       gloom_gems: gloom.value,
       unity_points: unity.value,
       active_formation: activeFormation.value,
@@ -2026,7 +2030,9 @@ export const useSheetStore = defineStore('sheet',() => {
     }
     // exceededMortalLimits is now computed based on reputation >= 4
     rested.value = hydrateStore.rested ?? rested.value;
-    studied.value = hydrateStore.studied ?? studied.value;
+    studiedCombat.value = hydrateStore.studiedCombat ?? hydrateStore.studied ?? studiedCombat.value;
+    studiedSchool.value = hydrateStore.studiedSchool ?? studiedSchool.value;
+    wellFed.value = hydrateStore.wellFed ?? wellFed.value;
     gloom.value = hydrateStore.gloom_gems ?? gloom.value;
     unity.value = hydrateStore.unity_points ?? unity.value;
     activeFormation.value = hydrateStore.active_formation ?? activeFormation.value;
@@ -2471,6 +2477,12 @@ export const useSheetStore = defineStore('sheet',() => {
     const qualityBonus = weaponQualityAttackBonus.value;
     if (qualityBonus !== 0) {
       components.push({label: 'Qualities', value: qualityBonus, alwaysShowInBreakdown: true});
+    }
+
+    // Add Studied [Combat] bonus: +1d8 (consumed on use)
+    if (studiedCombat.value) {
+      components.push({label: 'Studied', formula: '1d8', alwaysShowInBreakdown: true});
+      studiedCombat.value = false;
     }
 
     const rollObj = {
@@ -3474,7 +3486,9 @@ export const useSheetStore = defineStore('sheet',() => {
     eclipse,
     eclipse_blips,
     eclipse_phase,
-    studied,
+    studiedCombat,
+    studiedSchool,
+    wellFed,
     rested,
     fate,
     student_ability,

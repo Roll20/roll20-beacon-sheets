@@ -469,7 +469,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md temporary effects section"
     ],
     "context": "The compendium defines three distinct temporary effects: (1) Well Fed (from restaurants): 'Reroll Physical Skill Check dice (once). Expires at Sleep Phase.' (2) Studied [Combat] (from Combat Training): '+1d8 to Weapon Attack (once, post-roll). Expires at Sleep Phase or use.' (3) Studied [School] (from Study/Homework): '+1d8 to Student Class Check (once, post-roll). Expires at School Phase end or use.' The current sheet has a single `studied: ref(false)` that doesn't distinguish Combat vs School, and has no Well Fed tracking. These are separate effects that can all be active simultaneously.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 26,

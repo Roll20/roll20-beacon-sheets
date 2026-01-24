@@ -470,6 +470,17 @@ soulSacrificeMax: computed          // Max = Reputation Level (career total)
 - Soul Sacrifice counter with career max display
 - All values persist via dehydrate/hydrate cycle
 
+**Temporary Effects (session-based):**
+```javascript
+studiedCombat: ref(false)    // +1d8 to Weapon Attack (once, consumed on use)
+studiedSchool: ref(false)    // +1d8 to Student Class Check (once)
+wellFed: ref(false)          // Reroll Physical Skill Check dice (once)
+rested: ref(false)           // Rested status (generic)
+```
+- UI: Four checkboxes in StudentView.vue (Studied [C], Studied [S], Well Fed, Rested)
+- studiedCombat is consumed in rollKnightAttack (adds 1d8 component, then sets to false)
+- Replaces the old single `studied` ref with two distinct variants per compendium
+
 ### Social Bonds & Heart Stages
 
 **Heart Stage Progression (7 stages):**

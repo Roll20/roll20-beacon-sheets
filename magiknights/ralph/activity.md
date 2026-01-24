@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 24/33
-- **Current Task:** Task 25 (Well Fed and Studied variants)
+- **Tasks Completed:** 25/33
+- **Current Task:** Task 26 (Magi-Knight Visor)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -505,6 +505,25 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 25: Implement Well Fed effect and split Studied into Combat/School variants
+
+**Changes Made:**
+- Replaced `studied` ref with `studiedCombat` ref and `studiedSchool` ref (both boolean, default false)
+- Added `wellFed` ref (boolean, default false) for restaurant buff
+- Updated dehydrate/hydrate: removed `studied`, added `studiedCombat`/`studiedSchool`/`wellFed` (with backward-compatible migration from old `studied`)
+- Integrated `studiedCombat` into `rollKnightAttack`: adds +1d8 component to attack roll, consumed after use
+- Updated StudentView.vue: replaced single "Studied" checkbox with 4 checkboxes: Studied [C] (combat), Studied [S] (school), Well Fed, Rested
+- Updated store exports: removed `studied`, added `studiedCombat`, `studiedSchool`, `wellFed`
+- Updated ARCHITECTURAL_ANALYSIS.md with Temporary Effects documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/StudentView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

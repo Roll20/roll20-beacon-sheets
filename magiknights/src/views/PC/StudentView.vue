@@ -58,10 +58,26 @@ function studentAbilitySummary()
       <template v-slot:content>
         <ImageBackedLabel image="studied">
           <template v-slot:value>
-            <input type="checkbox" v-model="sheet.studied" class="rest-check">
+            <input type="checkbox" v-model="sheet.studiedCombat" class="rest-check">
           </template>
           <template v-slot:text>
-            Studied
+            Studied [C]
+          </template>
+        </ImageBackedLabel>
+        <ImageBackedLabel image="studied">
+          <template v-slot:value>
+            <input type="checkbox" v-model="sheet.studiedSchool" class="rest-check">
+          </template>
+          <template v-slot:text>
+            Studied [S]
+          </template>
+        </ImageBackedLabel>
+        <ImageBackedLabel image="apple">
+          <template v-slot:value>
+            <input type="checkbox" v-model="sheet.wellFed" class="rest-check">
+          </template>
+          <template v-slot:text>
+            Well Fed
           </template>
         </ImageBackedLabel>
         <ImageBackedLabel image="apple">
@@ -69,7 +85,7 @@ function studentAbilitySummary()
             <input type="checkbox" v-model="sheet.rested" class="rest-check">
           </template>
           <template v-slot:text>
-            Fed/Rested
+            Rested
           </template>
         </ImageBackedLabel>
       </template>
