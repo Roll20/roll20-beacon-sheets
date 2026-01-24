@@ -615,6 +615,86 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
     ],
     "context": "This is the final verification step for the missing rules batch (tasks 18-32). All new state must be properly serialized in dehydrate/hydrate, all exports must be in the store return block, and the application must build without errors. This task ensures everything from the 15 new feature tasks integrates correctly.",
     "passes": true
+  },
+  {
+    "id": 34,
+    "category": "layout-reorganization",
+    "description": "Move tallies, club position, stat increases, and fortune pool from Base Stats tab to Settings tab",
+    "steps": [
+      "Read `src/views/PC/BasicView.vue`",
+      "Identify the tallies-section div (lines 24-47), the club-position-section div (lines 48-54), the stat-increases-section div (lines 55-63), and the fortune-pool-section div (lines 64-76)",
+      "Cut all four of these sections from BasicView.vue template (remove lines 24-76 from the template)",
+      "Also cut the corresponding CSS from BasicView.vue: `.tallies-section` (lines 106-140), `.stat-increases-section` (lines 141-160), `.club-position-section` (lines 161-172), `.fortune-pool-section` (lines 173-198)",
+      "Read `src/views/PC/SettingsView.vue`",
+      "Paste the four sections into SettingsView.vue template, after the Token Settings section (after the closing </div> of token-images-grid). Wrap them in a container div with class 'tallies-and-pools' and add an <h3>Tallies & Resources</h3> heading above them for visual grouping consistent with the existing Settings page style",
+      "Add the cut CSS to SettingsView.vue's <style> block (inside .settings-view or as standalone classes)",
+      "Ensure SettingsView.vue imports `useSheetStore` (it already does as `@/stores`) and that the `sheet` variable is available (it already is)",
+      "Run `npm run build` to verify no build errors",
+      "Update ARCHITECTURAL_ANALYSIS.md to note that tallies, club position, stat increases, and fortune pool are now on the Settings/Misc tab"
+    ],
+    "context": "The Base Stats tab (BasicView.vue) currently contains Budget Tallies, Training Tallies, Club Tallies, Resounding Growths, Club Position selector, Stat Increases indicator, and Fortune Pool. These are resource counters that are not frequently accessed during gameplay and are cluttering the Base Stats page which should focus on ability scores, techniques, power shards, and the eclipse chart. Moving them to Settings (soon to be renamed Misc) consolidates infrequently-changed tracking values in one place. The SettingsView.vue currently only has Sheet Mode toggle and Token Settings, so there is plenty of room.",
+    "passes": false
+  },
+  {
+    "id": 35,
+    "category": "layout-reorganization",
+    "description": "Rename 'Settings' tab to 'Misc' in navigation",
+    "steps": [
+      "Read `src/components/KnightNav.vue`",
+      "Find the RouterLink to '/settings' (around line 35-39)",
+      "Change the text inside the NotchContainer from 'Settings' to 'Misc'",
+      "The route path '/settings' can remain the same (only the display label changes, not the URL)",
+      "Run `npm run build` to verify no build errors"
+    ],
+    "context": "The Settings tab is being repurposed to hold miscellaneous tracking items (tallies, fortune pool, etc.) in addition to its current sheet mode and token settings. Renaming it to 'Misc' better reflects its broader content. The route path '/settings' does not need to change - only the visible tab label. This is a simple text change in KnightNav.vue line 37.",
+    "passes": false
+  },
+  {
+    "id": 36,
+    "category": "layout-reorganization",
+    "description": "Move 'Sleep & Daily Limits' section from Magi-Knight tab to Student tab",
+    "steps": [
+      "Read `src/views/PC/KnightView.vue`",
+      "Find the Sleep & Daily Limits NotchContainer (lines 360-399): starts with `<NotchContainer class=\"sleep-daily-container basic-item\" width=\"thick\" notchType=\"curve\">` and ends with the closing `</NotchContainer>` before the arm-rune-container",
+      "Cut the entire Sleep & Daily Limits block (the NotchContainer with class 'sleep-daily-container' and all its children including the sleep-effect-section, daily-limits-section, and soul-sacrifice-tracker)",
+      "Also find and cut the associated CSS from KnightView.vue: look for `.sleep-daily-container`, `.sleep-effect-section`, `.sleep-effect-options`, `.sleep-option`, `.daily-limits-section`, `.daily-limits-grid`, `.daily-limit-item`, `.soul-sacrifice-tracker`, `.soul-sacrifice-display`, `.soul-sacrifice-input` style rules",
+      "Read `src/views/PC/StudentView.vue`",
+      "Paste the Sleep & Daily Limits section into StudentView.vue, placing it after the detention-counter div (after line 100) and before the student-ability NotchContainer. This positions it with other Student phase concerns (detention, rest status)",
+      "Add the cut CSS to StudentView.vue's <style> block",
+      "Verify that StudentView.vue's script already has access to `sheet.sleepEffect`, `sheet.sleepEffectData`, `sheet.sealImplantGiven`, `sheet.sealImplantReceived`, `sheet.manaConduitUsed`, `sheet.soulSacrificeCount`, `sheet.soulSacrificeMax` through the existing `useSheetStore()` import (it does)",
+      "Run `npm run build` to verify no build errors",
+      "Update ARCHITECTURAL_ANALYSIS.md to note Sleep & Daily Limits moved to Student tab"
+    ],
+    "context": "Sleep & Daily Limits is currently on the Magi-Knight tab (KnightView.vue lines 360-399). It contains: Sleep Effect radio buttons (Average/Feverish/Refreshing), Daily Limits checkboxes (Seal Implant Given/Received, Mana Conduit Used), and Soul Sacrifice tracker. These are daily/session tracking features that relate to the Student phase of play (sleep happens during downtime, between school phases). The Student tab already has related tracking (Detention Tickets, Studied/Rested checkboxes) making it the natural home for sleep and daily limit tracking. The Magi-Knight tab is already crowded with combat-focused content (weapons, armor, spells, runes, relics, forms, level abilities).",
+    "passes": false
+  },
+  {
+    "id": 37,
+    "category": "layout-reorganization",
+    "description": "Remove Magi-Squire from Student tab and add triple-view NPC page with NPC, Monster, and Magi-Squire modes",
+    "steps": [
+      "Read `src/views/PC/StudentView.vue`",
+      "Remove the MagiSquire import from the script section: delete `import MagiSquire from '@/components/MagiSquire.vue';`",
+      "Remove the `<!-- Magi-Squire Companion -->` comment and `<MagiSquire />` component usage (around line 206-207)",
+      "Read `src/views/NPCView.vue` fully to understand the complete template structure",
+      "Read `src/components/MagiSquire.vue` fully to understand its template and dependencies",
+      "In `src/stores/sheetStore.js`, add a `npc_sheet_type` ref (string, default 'monster') with options: 'npc', 'monster', and 'squire'. Add it to the dehydrate/hydrate cycle for persistence. Add it to store exports",
+      "In `src/stores/sheetStore.js`, add NPC-specific refs for the social NPC view: `npc_social_name` ref (string, default ''), `npc_social_role` ref (string, default '') for the NPC's role/occupation, `npc_social_heart_stage` ref (string, default 'neutral') using the same heart stage options as SocialSection (threatening/hostile/cold/neutral/warm/friendly/sympathetic), `npc_social_sp` ref (number, default 0), `npc_social_personality` ref (string, default '') for personality traits/notes, `npc_social_abilities` ref (string, default '') for special social abilities, `npc_social_notes` ref (string, default ''). Add all to dehydrate/hydrate and store exports",
+      "In NPCView.vue script section, add the import for MagiSquire: `import MagiSquire from '@/components/MagiSquire.vue';`",
+      "In NPCView.vue script section, add the npc_sheet_type options array: `const sheetTypeOptions = [{value:'npc', label:'NPC'}, {value:'monster', label:'Monster'}, {value:'squire', label:'Magi-Squire'}];`",
+      "In NPCView.vue script section, add the heartStageOptions array for the NPC view: `const heartStageOptions = [{value:'threatening', label:'Threatening'}, {value:'hostile', label:'Hostile'}, {value:'cold', label:'Cold'}, {value:'neutral', label:'Neutral'}, {value:'warm', label:'Warm'}, {value:'friendly', label:'Friendly'}, {value:'sympathetic', label:'Sympathetic'}];`",
+      "In NPCView.vue template, add a dropdown selector ABOVE the existing npc-header NotchContainer. Create a new div with class 'npc-type-selector' containing: a label 'Sheet Type:', a <select> bound to `sheet.npc_sheet_type` with the three sheetTypeOptions, and a button to switch to PC mode (`sheet.sheet_mode = 'pc'`)",
+      "Wrap the entire existing NPC/Monster content (from the npc-header NotchContainer through the npc-notes section) in a `<div v-if=\"sheet.npc_sheet_type === 'monster'\" class=\"monster-view\">` block",
+      "After the monster-view block, add a `<div v-else-if=\"sheet.npc_sheet_type === 'npc'\" class=\"npc-social-view\">` block containing: a NotchContainer with the NPC name input (bound to `sheet.npc_social_name`), a Role/Occupation text input (bound to `sheet.npc_social_role`), a Heart Stage dropdown (bound to `sheet.npc_social_heart_stage` using heartStageOptions), a Social Points number input (bound to `sheet.npc_social_sp`), a Personality textarea (bound to `sheet.npc_social_personality`, placeholder 'Personality traits, quirks, mannerisms...'), an Abilities textarea (bound to `sheet.npc_social_abilities`, placeholder 'Special abilities, social tactics...'), and a Notes textarea (bound to `sheet.npc_social_notes`, placeholder 'Additional notes...')",
+      "After the npc-social-view block, add `<div v-else-if=\"sheet.npc_sheet_type === 'squire'\" class=\"squire-view\"><MagiSquire /></div>` to show the Magi-Squire component",
+      "Remove the existing 'Switch to PC' button from inside the npc-header (header-row) since it's now in the npc-type-selector bar at the top",
+      "Add CSS for the npc-type-selector: display flex, align-items center, gap var(--half-gap), padding var(--half-gap), margin-bottom var(--half-gap), and style the select/button to match the existing NPC page styling",
+      "Add CSS for the npc-social-view: display grid, gap var(--gap), with NotchContainer sections for each field group. Use similar styling to the existing NPC header/stats sections for visual consistency",
+      "Run `npm run build` to verify no build errors",
+      "Update ARCHITECTURAL_ANALYSIS.md to document: Magi-Squire removed from Student tab, NPC page now has triple-view (NPC social / Monster combat / Magi-Squire companion) controlled by npc_sheet_type dropdown"
+    ],
+    "context": "The NPC sheet page needs to serve three distinct use cases: (1) NPC mode - for social/non-combat NPCs like townspeople, shop owners, quest givers, and other characters the players interact with socially. These need a name, role/occupation, Heart Stage (the relationship progression system from Threatening to Sympathetic), Social Points, personality notes, and abilities. This is a simpler view focused on social interaction mechanics. (2) Monster mode - the current NPCView.vue content with combat ranks (Horde/Vassal/Adversary/Nemesis/Harbinger), roles, sizes, creature types, attacks, HP, armor, etc. This is for combat encounter stat blocks. (3) Magi-Squire mode - the companion NPC (currently src/components/MagiSquire.vue rendered in StudentView.vue) with its own health blips, mana blips, armor, damage scaling, and spell paths. Since Magi-Squires are separate NPC entities with independent stats, they belong on the NPC sheet rather than the Student tab. A dropdown at the top switches between the three views. The MagiSquire component is already self-contained.",
+    "passes": false
   }
 ]
 ```
