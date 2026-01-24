@@ -1398,6 +1398,7 @@ export const useSheetStore = defineStore('sheet',() => {
       template: {
         name: '',
         description: '',
+        slotCost: 1,
         collapsed: true
       },
       addItem(item){
@@ -1514,6 +1515,11 @@ export const useSheetStore = defineStore('sheet',() => {
   // Relic capacity enforcement (computed after sections defined)
   const relicsOverCapacity = computed(() => sections.relics.rows.value.length > relicCapacity.value);
   const relicCount = computed(() => sections.relics.rows.value.length);
+
+  // Rune slot capacity enforcement (computed after sections defined)
+  const runeSlotCapacity = computed(() => Math.max(1, reputation.value));
+  const runeSlotsUsed = computed(() => sections.runes.rows.value.reduce((sum, rune) => sum + (Number(rune.slotCost) || 1), 0));
+  const runesOverCapacity = computed(() => runeSlotsUsed.value > runeSlotCapacity.value);
 
   // Helper methods for Battle Techniques
   const resetTechniqueUses = (frequency = 'all') => {
@@ -3415,6 +3421,9 @@ export const useSheetStore = defineStore('sheet',() => {
     relicCapacity,
     relicsOverCapacity,
     relicCount,
+    runeSlotCapacity,
+    runeSlotsUsed,
+    runesOverCapacity,
 
     // Roll mode (advantage/disadvantage)
     rollMode,

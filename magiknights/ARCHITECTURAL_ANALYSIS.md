@@ -546,6 +546,14 @@ knightArmorTotal: computed(...)          // knight_armor + soulArmamentArmorBonu
 ```
 Weapon bonus is added to knight attack roll as an 'Armament' component. Armor bonus is displayed as a tier info banner below the stat cards.
 
+**Rune Slot Capacity:** Tracks slot usage per rune and enforces capacity limits.
+```javascript
+runeSlotCapacity: computed(...)    // max(1, reputation) = 1-5 slots
+runeSlotsUsed: computed(...)       // Sum of slotCost across all runes
+runesOverCapacity: computed(...)   // runeSlotsUsed > runeSlotCapacity
+```
+Each rune has a `slotCost` field (1-3). UI shows "Slots: X/Y" header with over-capacity warning. Collapsed rune items show their slot cost in parentheses.
+
 **Soul Weapon Qualities (8 qualities in 3 categories):**
 ```javascript
 soul_weapon: {

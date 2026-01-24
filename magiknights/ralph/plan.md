@@ -424,7 +424,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md equipment section with Rune Slot documentation"
     ],
     "context": "Per the compendium: 'Reputation I: 1 Rune Slot each... Reputation II: 2 Rune Slots... Rep III: 3... Rep IV: 4... Rep V: 5'. Each Armament Rune costs 1-3 slots depending on its power. Examples: Warrior's Rune (1 slot, +1d4 damage), Piercing Rune (1 slot, ignore 1 AC), Titan's Rune (2 slots, +1d8 damage), Sundering Rune (3 slots, ignore 3 AC). The sheet has a runes repeating section but no slot cost per rune and no capacity enforcement, unlike relics which already have capacity tracking from task 16.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 24,

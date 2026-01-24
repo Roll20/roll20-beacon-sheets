@@ -381,14 +381,28 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 </NotchContainer>
 
   <NotchContainer class="arm-rune-container basic-item" width="thick" notchType="curve">
-    <h4>Soul Armament Runes</h4>
+    <div class="rune-header-row">
+      <h4>Soul Armament Runes</h4>
+      <span class="rune-capacity" :class="{ 'over-capacity': sheet.runesOverCapacity }">
+        Slots: {{ sheet.runeSlotsUsed }}/{{ sheet.runeSlotCapacity }}
+      </span>
+    </div>
+    <div v-if="sheet.runesOverCapacity" class="rune-warning">Over capacity! Max slots = Reputation Level</div>
     <RepeatingSection name="runes">
       <RepeatingItem name="runes" v-for="item in sheet.sections.runes.rows" :key="item._id" :row="item">
         <Collapsible class="form-item basic-item" :default="item.collapsed" @collapse="item.collapsed = !item.collapsed">
           <template v-slot:expanded>
             <div class="flex-box half-gap grow-label">
-              <label :for="`form-${item._id}-name`">Name</label>
+              <label :for="`rune-${item._id}-name`">Name</label>
               <input class="underline" type="text" v-model="item.name" :id="`rune-${item._id}-name`">
+            </div>
+            <div class="flex-box half-gap grow-label">
+              <label :for="`rune-${item._id}-slots`">Slots</label>
+              <select class="underline" v-model="item.slotCost" :id="`rune-${item._id}-slots`">
+                <option :value="1">1</option>
+                <option :value="2">2</option>
+                <option :value="3">3</option>
+              </select>
             </div>
             <div class="grid">
               <label class="properties-header" :for="`rune-${item._id}-description`">Description</label>
@@ -396,16 +410,15 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
             </div>
           </template>
           <template v-slot:collapsed>
-            <span>{{ item.name || 'New Rune' }}</span>
+            <span>{{ item.name || 'New Rune' }} <span class="rune-slot-badge">({{ item.slotCost || 1 }})</span></span>
           </template>
           <!-- Delete button -->
           <div class="repcontrol">
-            <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('forms', item._id)">delete_forever</button>
+            <button class="delete-button material-symbols-outlined" @click="sheet.removeRow('runes', item._id)">delete_forever</button>
           </div>
         </Collapsible>
       </RepeatingItem>
     </RepeatingSection>
-    <!-- repeating section here -->
   </NotchContainer>
 
   <!-- Squadron Formations - Per compendium: requires 3+ Magi-Knights within 60ft -->
@@ -728,6 +741,33 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
     grid-column: 1 / -1;
   }
   }
+}
+.rune-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  h4 { margin: 0; }
+}
+.rune-capacity {
+  font-size: 0.85em;
+  font-weight: bold;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(100, 200, 100, 0.15);
+  &.over-capacity {
+    background: rgba(200, 80, 80, 0.2);
+    color: #e55;
+  }
+}
+.rune-warning {
+  font-size: 0.8em;
+  color: #e55;
+  font-style: italic;
+  padding: 2px 0;
+}
+.rune-slot-badge {
+  font-size: 0.8em;
+  opacity: 0.7;
 }
 .elemental_enhancements {
     display: grid;

@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 22/33
-- **Current Task:** Task 23 (Rune Slot Capacity)
+- **Tasks Completed:** 23/33
+- **Current Task:** Task 24 (Level-Locked Abilities: Swift Attack, Energy Surge, Flight)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -458,6 +458,27 @@
 - Added CSS styling for armament-tier-info display
 - Added store exports: soulArmamentData, soulArmamentWeaponBonus, soulArmamentArmorBonus, knightArmorTotal
 - Updated ARCHITECTURAL_ANALYSIS.md Equipment section with Soul Armament Progression documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 23: Implement Rune Slot capacity tracking and enforcement
+
+**Changes Made:**
+- Added `slotCost` field (number, default 1) to the rune template in sections.runes
+- Added `runeSlotCapacity` computed (max(1, reputation) = 1-5 slots)
+- Added `runeSlotsUsed` computed (sums slotCost across all runes)
+- Added `runesOverCapacity` computed (runeSlotsUsed > runeSlotCapacity)
+- Updated KnightView.vue runes section: header shows "Slots: X/Y" capacity indicator, over-capacity warning, slot cost selector (1-3) in expanded view, slot cost badge in collapsed view
+- Fixed bug in rune delete button (was calling removeRow('forms') instead of removeRow('runes'))
+- Added CSS styling for rune header row, capacity badge, warning text, and slot badge
+- Added store exports: runeSlotCapacity, runeSlotsUsed, runesOverCapacity
+- Updated ARCHITECTURAL_ANALYSIS.md Equipment section with Rune Slot documentation
 - Build verified successfully
 
 **Files Modified:**
