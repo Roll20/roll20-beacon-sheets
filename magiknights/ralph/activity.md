@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 27/33
-- **Current Task:** Task 28 (Trauma Track)
+- **Tasks Completed:** 28/33
+- **Current Task:** Task 29 (Veil-Piercing Quality)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -562,6 +562,28 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/KnightView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 28: Implement Club Tallies counter and Club Position tracking
+
+**Changes Made:**
+- Added `clubTallies` ref (number, default 0) - 0-8 counter for club activities
+- Added `clubTalliesMax` constant (8) - tallies needed for Resounding Growth
+- Added `resoundingGrowths` ref (number, default 0) - total growths achieved
+- Added `clubPosition` ref (string, default 'member') with 3 options
+- Added `clubPositionData` constant with position bonuses for VP and President
+- Added all to dehydrate/hydrate cycle for persistence
+- Added Club Tallies (current/8), Resounding Growths counter, and Club Position dropdown in BasicView.vue
+- Added CSS styling for club-position-section
+- Added store exports: clubTallies, clubTalliesMax, resoundingGrowths, clubPosition, clubPositionData
+- Updated ARCHITECTURAL_ANALYSIS.md with Club System documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/BasicView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

@@ -44,6 +44,18 @@ export const useSheetStore = defineStore('sheet',() => {
   // Training Tallies: XP counter, 0-8 that resets on level-up
   const trainingTallies = ref(0);
   const trainingTalliesMax = 8;
+
+  // Club System
+  const clubTallies = ref(0);
+  const clubTalliesMax = 8;
+  const resoundingGrowths = ref(0);
+  const clubPosition = ref('member');
+  const clubPositionData = {
+    member: { name: 'Member', bonus: '' },
+    vicePresident: { name: 'Vice-President', bonus: '+5 Influence with Faculty, 1/Sleep: Auto-pass Student Body Influence' },
+    president: { name: 'President', bonus: '+4 Persuasion with club members, Grant VP benefits to others' }
+  };
+
   const stress = ref(0);
   const exhaustion = ref(0);
   const student_type = ref('');
@@ -1889,6 +1901,9 @@ export const useSheetStore = defineStore('sheet',() => {
       reputation: reputation.value,
       budgetTallies: budgetTallies.value,
       trainingTallies: trainingTallies.value,
+      clubTallies: clubTallies.value,
+      resoundingGrowths: resoundingGrowths.value,
+      clubPosition: clubPosition.value,
       player: player.value,
       inspiration: inspiration.value,
       stress: stress.value,
@@ -2033,6 +2048,9 @@ export const useSheetStore = defineStore('sheet',() => {
     reputation.value = hydrateStore.reputation ?? reputation.value;
     budgetTallies.value = hydrateStore.budgetTallies ?? budgetTallies.value;
     trainingTallies.value = hydrateStore.trainingTallies ?? trainingTallies.value;
+    clubTallies.value = hydrateStore.clubTallies ?? clubTallies.value;
+    resoundingGrowths.value = hydrateStore.resoundingGrowths ?? resoundingGrowths.value;
+    clubPosition.value = hydrateStore.clubPosition ?? clubPosition.value;
     customProficiency.value = hydrateStore.customProficiency ?? customProficiency.value;
     proficiency.value = calculateProficiency();
     player.value = hydrateStore.player ?? player.value;
@@ -3449,6 +3467,11 @@ export const useSheetStore = defineStore('sheet',() => {
     budgetTallies,
     trainingTallies,
     trainingTalliesMax,
+    clubTallies,
+    clubTalliesMax,
+    resoundingGrowths,
+    clubPosition,
+    clubPositionData,
     player,
     inspiration,
     stress,

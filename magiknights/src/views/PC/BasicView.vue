@@ -33,6 +33,24 @@ const sheet = useSheetStore();
           <span class="tally-max">/ {{ sheet.trainingTalliesMax }}</span>
         </div>
       </div>
+      <div class="tally-group">
+        <label class="tally-label">Club Tallies</label>
+        <div class="tally-counter">
+          <input type="number" class="tally-input" min="0" :max="sheet.clubTalliesMax" v-model.number="sheet.clubTallies">
+          <span class="tally-max">/ {{ sheet.clubTalliesMax }}</span>
+        </div>
+      </div>
+      <div class="tally-group">
+        <label class="tally-label">Resounding Growths</label>
+        <input type="number" class="tally-input" min="0" v-model.number="sheet.resoundingGrowths">
+      </div>
+    </div>
+    <div class="club-position-section">
+      <label class="tally-label">Club Position</label>
+      <select class="underline" v-model="sheet.clubPosition">
+        <option v-for="(data, key) in sheet.clubPositionData" :key="key" :value="key">{{ data.name }}</option>
+      </select>
+      <p v-if="sheet.clubPositionData[sheet.clubPosition]?.bonus" class="club-position-bonus">{{ sheet.clubPositionData[sheet.clubPosition].bonus }}</p>
     </div>
   </div>
 </template>
@@ -98,7 +116,17 @@ const sheet = useSheetStore();
     opacity: 0.7;
   }
 }
-
-
+.club-position-section {
+  padding: var(--half-gap) var(--gap);
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  select { width: 100%; margin-top: 4px; }
+  .club-position-bonus {
+    font-size: 0.8em;
+    margin: 4px 0 0;
+    opacity: 0.8;
+    font-style: italic;
+  }
+}
 
 </style>

@@ -448,6 +448,17 @@ trainingTalliesMax: 8       // Tallies needed to gain a level
 - Training Tallies: earned from Grinding, missions; accumulate 8 to level up (4 for New Rice Squires)
 - Both persist via dehydrate/hydrate cycle
 
+**Club System:**
+```javascript
+clubTallies: ref(0)            // 0-8 counter, resets at Resounding Growth
+clubTalliesMax: 8              // Tallies needed for Resounding Growth
+resoundingGrowths: ref(0)      // Total Resounding Growths achieved
+clubPosition: ref('member')    // 'member', 'vicePresident', 'president'
+clubPositionData = { member: {...}, vicePresident: {...}, president: {...} }
+```
+- UI: Club Tallies counter (current/8), Resounding Growths counter, and Position dropdown in BasicView.vue
+- Position bonus text shown for VP (+5 Influence) and President (+4 Persuasion)
+
 **Sleep Phase & Daily Limits:**
 ```javascript
 // Sleep Phase effect tracking

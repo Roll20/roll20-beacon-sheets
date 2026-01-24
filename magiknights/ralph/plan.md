@@ -526,7 +526,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md social section with Club System documentation"
     ],
     "context": "Per the compendium: Club participation gives +1 Club Tally per activity. At 8 Club Tallies, 'Resounding Growth' occurs: choose 3 NPCs to gain +2 SP each, then erase all tallies. After 3 Resounding Growths (24 cumulative tallies), club advancement unlocks Vice-President and President positions. VP grants '+5 Influence with Faculty' and '1/Sleep: Auto-pass Influence with Student Body'. President grants '+4 Persuasion with club members' and can share VP benefits. These are persistent mechanical bonuses affecting social skill checks.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 29,
