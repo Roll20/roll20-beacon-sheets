@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { arrayToObject, getRollResults, objectToArray, rollToChat } from '@/utility';
 import { useMetaStore } from './metaStore';
+import { SPELL_PATH_DATA, CANONICAL_SPELL_PATHS } from '@/data/spellPathData';
 // import { ability, skill, spell, weapon } from '@/rollFuncs';
 
 export default {
@@ -390,9 +391,8 @@ export const useSheetStore = defineStore('sheet',() => {
     return branchingElementOptions[elemental_affinity.value] || [];
   });
 
-  // Spell Paths Known - tracks which paths the character has chosen
-  const availableSpellPaths = ['Beam', 'Explosion', 'Ward', 'Curing', 'Restoration', 'Augmentation', 'Summoning', 'Chronomancy', 'Divination', 'Psionics', 'Necromancy'];
-  const spellPathsKnown = ref([]);
+  // Spell Paths Known - derived from spell section rows
+  const availableSpellPaths = CANONICAL_SPELL_PATHS;
   const maxSpellPaths = computed(() => {
     if (level.value < 4) return 2;
     if (level.value < 8) return 3;
@@ -1536,7 +1536,8 @@ export const useSheetStore = defineStore('sheet',() => {
         tier_VI_description: '',
         tier_VI_special: '',
         tier_VI_action: '',
-        tier_VI_dice: ''
+        tier_VI_dice: '',
+        pathSelection: 'Custom'
       },
       addItem(item){
         const newItem = {...this.template,...item};
@@ -1600,6 +1601,38 @@ export const useSheetStore = defineStore('sheet',() => {
 
   const removeRow = (section,id) => {
     sections[section].rows.value = sections[section].rows.value.filter(row => row._id !== id);
+  };
+
+  // Spell path count enforcement (computed after sections defined)
+  const spellPathsCount = computed(() => sections.spells.rows.value.length);
+  const spellPathsOverMax = computed(() => spellPathsCount.value > maxSpellPaths.value);
+
+  const populateSpellPath = (item, pathKey) => {
+    item.pathSelection = pathKey;
+    if (pathKey === 'Custom') {
+      item.name = '';
+      item.range = '';
+      for (const tier of ['I', 'II', 'III', 'IV', 'V', 'VI']) {
+        item[`tier_${tier}_name`] = '';
+        item[`tier_${tier}_dice`] = '';
+        item[`tier_${tier}_special`] = '';
+        item[`tier_${tier}_description`] = '';
+        item[`tier_${tier}_action`] = '';
+      }
+    } else {
+      const data = SPELL_PATH_DATA[pathKey];
+      if (data) {
+        item.name = data.name || '';
+        item.range = data.range || '';
+        for (const tier of ['I', 'II', 'III', 'IV', 'V', 'VI']) {
+          item[`tier_${tier}_name`] = data[`tier_${tier}_name`] || '';
+          item[`tier_${tier}_dice`] = data[`tier_${tier}_dice`] || '';
+          item[`tier_${tier}_special`] = data[`tier_${tier}_special`] || '';
+          item[`tier_${tier}_description`] = data[`tier_${tier}_description`] || '';
+          item[`tier_${tier}_action`] = data[`tier_${tier}_action`] || '';
+        }
+      }
+    }
   };
 
   // Relic capacity enforcement (computed after sections defined)
@@ -1976,7 +2009,6 @@ export const useSheetStore = defineStore('sheet',() => {
       elemental_affinity: elemental_affinity.value,
       branchingElement: branchingElement.value,
       magic_style: magic_style.value,
-      spellPathsKnown: [...spellPathsKnown.value],
       release_magic_deck: releaseMagicDeck.value,
       release_magic_collapsed: releaseMagicCollapsed.value,
       signature_card_1: signatureCard1.value,
@@ -2175,7 +2207,6 @@ export const useSheetStore = defineStore('sheet',() => {
     elemental_affinity.value = hydrateStore.elemental_affinity ?? elemental_affinity.value;
     branchingElement.value = hydrateStore.branchingElement ?? branchingElement.value;
     magic_style.value = hydrateStore.magic_style ?? magic_style.value;
-    spellPathsKnown.value = hydrateStore.spellPathsKnown ?? spellPathsKnown.value;
     element_name.value = hydrateStore.element_name ?? element_name.value;
     mam.value = hydrateStore.mam ?? mam.value;
     elemental_enhancement_1.value = hydrateStore.elemental_enhancement_1 ?? elemental_enhancement_1.value;
@@ -3755,8 +3786,10 @@ export const useSheetStore = defineStore('sheet',() => {
     sections,
     max_spell_tier,
     availableSpellPaths,
-    spellPathsKnown,
     maxSpellPaths,
+    spellPathsCount,
+    spellPathsOverMax,
+    populateSpellPath,
     addRow,
     removeRow,
     removeTrait: (traitId) => removeTrait(traits, traitId),

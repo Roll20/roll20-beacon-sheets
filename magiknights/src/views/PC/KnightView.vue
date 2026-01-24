@@ -458,14 +458,14 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   <NotchContainer v-else class="spell-container" width="thick" notchType="curve">
     <h3>Spell Paths</h3>
     <div class="spell-paths-known">
-      <label class="paths-known-label">Paths Known <span class="paths-count" :class="{ 'over-max': sheet.spellPathsKnown.length > sheet.maxSpellPaths }">{{ sheet.spellPathsKnown.length }}/{{ sheet.maxSpellPaths }}</span></label>
-      <div class="paths-checkboxes">
-        <label v-for="path in sheet.availableSpellPaths" :key="path" class="path-option">
-          <input type="checkbox" :value="path" v-model="sheet.spellPathsKnown" />
-          <span>{{ path }}</span>
-        </label>
+      <label class="paths-known-label">Paths Known
+        <span class="paths-count" :class="{ 'over-max': sheet.spellPathsOverMax }">
+          {{ sheet.spellPathsCount }}/{{ sheet.maxSpellPaths }}
+        </span>
+      </label>
+      <div v-if="sheet.spellPathsOverMax" class="paths-warning">
+        Over max! {{ sheet.maxSpellPaths }} paths allowed at level {{ sheet.level }}
       </div>
-      <div v-if="sheet.spellPathsKnown.length > sheet.maxSpellPaths" class="paths-warning">Over max! {{ sheet.maxSpellPaths }} paths allowed at level {{ sheet.level }}</div>
     </div>
     <div class="spell-path-layout">
       <div class="spell-tier-headers">
@@ -683,19 +683,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
         background: rgba(200, 50, 50, 0.15);
         color: var(--error, #c33);
       }
-    }
-    .paths-checkboxes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--tiny-gap) var(--half-gap);
-    }
-    .path-option {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 0.85em;
-      cursor: pointer;
-      input[type="checkbox"] { margin: 0; }
     }
     .paths-warning {
       margin-top: var(--tiny-gap);
