@@ -1246,6 +1246,18 @@ export const useSheetStore = defineStore('sheet',() => {
     harbinger: { name: 'Harbinger', hasMultipleHP: false }
   };
 
+  // NPC sheet type (monster/npc/squire)
+  const npc_sheet_type = ref('monster');
+
+  // NPC social view fields
+  const npc_social_name = ref('');
+  const npc_social_role = ref('');
+  const npc_social_heart_stage = ref('neutral');
+  const npc_social_sp = ref(0);
+  const npc_social_personality = ref('');
+  const npc_social_abilities = ref('');
+  const npc_social_notes = ref('');
+
   // NPC basic info
   const npc_name = ref('');
   const npc_type = ref('vassal');
@@ -2029,6 +2041,14 @@ export const useSheetStore = defineStore('sheet',() => {
       backstory: backstory.value,
 
       // NPC data
+      npc_sheet_type: npc_sheet_type.value,
+      npc_social_name: npc_social_name.value,
+      npc_social_role: npc_social_role.value,
+      npc_social_heart_stage: npc_social_heart_stage.value,
+      npc_social_sp: npc_social_sp.value,
+      npc_social_personality: npc_social_personality.value,
+      npc_social_abilities: npc_social_abilities.value,
+      npc_social_notes: npc_social_notes.value,
       npc_name: npc_name.value,
       npc_type: npc_type.value,
       npc_size: npc_size.value,
@@ -2205,6 +2225,14 @@ export const useSheetStore = defineStore('sheet',() => {
     if (hydrateStore.squire) hydrateSquire(squire, hydrateStore.squire);
 
     // NPC hydration
+    npc_sheet_type.value = hydrateStore.npc_sheet_type ?? npc_sheet_type.value;
+    npc_social_name.value = hydrateStore.npc_social_name ?? npc_social_name.value;
+    npc_social_role.value = hydrateStore.npc_social_role ?? npc_social_role.value;
+    npc_social_heart_stage.value = hydrateStore.npc_social_heart_stage ?? npc_social_heart_stage.value;
+    npc_social_sp.value = hydrateStore.npc_social_sp ?? npc_social_sp.value;
+    npc_social_personality.value = hydrateStore.npc_social_personality ?? npc_social_personality.value;
+    npc_social_abilities.value = hydrateStore.npc_social_abilities ?? npc_social_abilities.value;
+    npc_social_notes.value = hydrateStore.npc_social_notes ?? npc_social_notes.value;
     npc_name.value = hydrateStore.npc_name ?? npc_name.value;
     npc_type.value = hydrateStore.npc_type ?? npc_type.value;
     npc_size.value = hydrateStore.npc_size ?? npc_size.value;
@@ -3771,6 +3799,14 @@ export const useSheetStore = defineStore('sheet',() => {
     roleModifiers,
     sizeModifiers,
     rankDamagePct,
+    npc_sheet_type,
+    npc_social_name,
+    npc_social_role,
+    npc_social_heart_stage,
+    npc_social_sp,
+    npc_social_personality,
+    npc_social_abilities,
+    npc_social_notes,
     npc_name,
     npc_type,
     npc_size,

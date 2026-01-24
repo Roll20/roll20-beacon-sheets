@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 36/37
-- **Current Task:** 37
+- **Tasks Completed:** 37/37
+- **Current Task:** ALL COMPLETE
 - **Last Updated:** 2026-01-23
 
 ---
@@ -724,6 +724,29 @@
 **Files Modified:**
 - `src/views/PC/KnightView.vue`
 - `src/views/PC/StudentView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 37: Remove Magi-Squire from Student tab and add triple-view NPC page
+
+**Changes Made:**
+- Removed MagiSquire import and component usage from StudentView.vue
+- Added `npc_sheet_type` ref (string, default 'monster') to sheetStore.js with 3 options: 'npc', 'monster', 'squire'
+- Added NPC social refs: `npc_social_name`, `npc_social_role`, `npc_social_heart_stage`, `npc_social_sp`, `npc_social_personality`, `npc_social_abilities`, `npc_social_notes`
+- Added all new refs to dehydrate/hydrate cycle and store exports
+- Updated NPCView.vue: added MagiSquire import, sheet type selector dropdown at top with Switch to PC button
+- Wrapped existing monster content in `v-if="sheet.npc_sheet_type === 'monster'"` block, removed old Switch to PC button from header
+- Added NPC social view (`v-else-if="sheet.npc_sheet_type === 'npc'"`) with name, role/occupation, Heart Stage dropdown, SP input, personality/abilities/notes textareas
+- Added Magi-Squire view (`v-else-if="sheet.npc_sheet_type === 'squire'"`) rendering the MagiSquire component
+- Added CSS for npc-type-selector, monster-view, npc-social-view, npc-social-header, npc-social-field, npc-social-details, squire-view
+- Updated ARCHITECTURAL_ANALYSIS.md: NPCView description, Magi-Squire section, NPC System section with triple-view architecture docs
+- Build verified successfully
+
+**Files Modified:**
+- `src/views/PC/StudentView.vue`
+- `src/views/NPCView.vue`
+- `src/stores/sheetStore.js`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

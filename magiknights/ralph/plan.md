@@ -694,7 +694,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md to document: Magi-Squire removed from Student tab, NPC page now has triple-view (NPC social / Monster combat / Magi-Squire companion) controlled by npc_sheet_type dropdown"
     ],
     "context": "The NPC sheet page needs to serve three distinct use cases: (1) NPC mode - for social/non-combat NPCs like townspeople, shop owners, quest givers, and other characters the players interact with socially. These need a name, role/occupation, Heart Stage (the relationship progression system from Threatening to Sympathetic), Social Points, personality notes, and abilities. This is a simpler view focused on social interaction mechanics. (2) Monster mode - the current NPCView.vue content with combat ranks (Horde/Vassal/Adversary/Nemesis/Harbinger), roles, sizes, creature types, attacks, HP, armor, etc. This is for combat encounter stat blocks. (3) Magi-Squire mode - the companion NPC (currently src/components/MagiSquire.vue rendered in StudentView.vue) with its own health blips, mana blips, armor, damage scaling, and spell paths. Since Magi-Squires are separate NPC entities with independent stats, they belong on the NPC sheet rather than the Student tab. A dropdown at the top switches between the three views. The MagiSquire component is already self-contained.",
-    "passes": false
+    "passes": true
   }
 ]
 ```

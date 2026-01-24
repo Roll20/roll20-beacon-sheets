@@ -44,7 +44,7 @@ magiknights/
 │   ├── components/             # Reusable UI components (40+)
 │   ├── views/                  # Page-level components
 │   │   ├── PCView.vue          # Player character wrapper
-│   │   ├── NPCView.vue         # NPC/Monster sheet
+│   │   ├── NPCView.vue         # Triple-view: NPC/Monster/Magi-Squire
 │   │   └── PC/                 # PC sub-views
 │   │       ├── BasicView.vue
 │   │       ├── StudentView.vue
@@ -164,7 +164,7 @@ The UI follows a **container/presentational** pattern:
 **Container Components (Views):**
 - `PCView.vue` - Main layout, permission checks, router outlet
 - `KnightView.vue` - Magi-Knight form with equipment/spells
-- `NPCView.vue` - Monster/NPC stat block
+- `NPCView.vue` - Triple-view: NPC (social), Monster (combat), Magi-Squire (companion)
 
 **Presentational Components:**
 - `NotchContainer.vue` - Stylized bordered container
@@ -569,9 +569,10 @@ squire: {
 - Levels 10-12: 3d6+4
 - Levels 13-15: 4d6
 
-**Component:** `MagiSquire.vue` - collapsible panel in StudentView.vue after Herald section
+**Component:** `MagiSquire.vue` - collapsible panel shown in NPCView.vue (Magi-Squire mode)
 - Shows name, damage, armor stats, health/mana blip checkboxes, spell path selectors, skills, notes
 - Collapsed summary shows squire name and damage badge
+- Accessible via NPC sheet type selector (Monster/NPC/Magi-Squire dropdown)
 
 ### Relic Capacity
 
@@ -699,6 +700,14 @@ const soul_gun = {
 - Collector's Spell Deck (no damage): Card Conductor, Light
 
 ### NPC/Monster System
+
+**Triple-View Architecture:**
+NPCView.vue serves three distinct use cases controlled by `npc_sheet_type` ref:
+- **Monster** (`'monster'`) - Combat stat blocks with ranks, roles, sizes, attacks, traits
+- **NPC** (`'npc'`) - Social NPCs with name, role/occupation, Heart Stage, SP, personality, abilities, notes
+- **Magi-Squire** (`'squire'`) - Companion NPC using the MagiSquire.vue component
+
+NPC Social refs: `npc_social_name`, `npc_social_role`, `npc_social_heart_stage`, `npc_social_sp`, `npc_social_personality`, `npc_social_abilities`, `npc_social_notes`
 
 **5 NPC Types (Ranks):**
 - **Horde** - 4 HP pools, scaling attack DC/damage

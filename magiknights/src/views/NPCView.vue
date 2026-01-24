@@ -3,9 +3,26 @@ import { computed } from 'vue';
 import { useSheetStore } from '@/stores/sheetStore';
 import { useMetaStore } from '@/stores/metaStore';
 import NotchContainer from '@/components/NotchContainer.vue';
+import MagiSquire from '@/components/MagiSquire.vue';
 
 const sheet = useSheetStore();
 const meta = useMetaStore();
+
+const sheetTypeOptions = [
+  { value: 'npc', label: 'NPC' },
+  { value: 'monster', label: 'Monster' },
+  { value: 'squire', label: 'Magi-Squire' }
+];
+
+const heartStageOptions = [
+  { value: 'threatening', label: 'Threatening' },
+  { value: 'hostile', label: 'Hostile' },
+  { value: 'cold', label: 'Cold' },
+  { value: 'neutral', label: 'Neutral' },
+  { value: 'warm', label: 'Warm' },
+  { value: 'friendly', label: 'Friendly' },
+  { value: 'sympathetic', label: 'Sympathetic' }
+];
 
 const isHorde = computed(() => sheet.npc_type === 'horde');
 
@@ -50,6 +67,17 @@ const toggleUnitDefeated = (index) => {
 
 <template>
   <div class="npc-view">
+    <!-- Sheet Type Selector -->
+    <div class="npc-type-selector">
+      <label>Sheet Type:</label>
+      <select v-model="sheet.npc_sheet_type">
+        <option v-for="opt in sheetTypeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+      </select>
+      <button class="mode-toggle" @click="sheet.sheet_mode = 'pc'">Switch to PC</button>
+    </div>
+
+    <!-- Monster View -->
+    <div v-if="sheet.npc_sheet_type === 'monster'" class="monster-view">
     <!-- Header Section -->
     <NotchContainer width="thick" :notch="20" class="npc-header">
       <div class="header-row">
@@ -57,11 +85,8 @@ const toggleUnitDefeated = (index) => {
           type="text"
           class="npc-name-input"
           v-model="sheet.npc_name"
-          placeholder="NPC Name"
+          placeholder="Monster Name"
         />
-        <button class="mode-toggle" @click="sheet.sheet_mode = 'pc'">
-          Switch to PC
-        </button>
       </div>
       <div class="type-row">
         <select v-model="sheet.npc_type">
@@ -304,6 +329,54 @@ const toggleUnitDefeated = (index) => {
       <h3>notes</h3>
       <textarea v-model="sheet.npc_notes" placeholder="Additional notes, tactics, behavior..." class="notes-textarea"></textarea>
     </NotchContainer>
+    </div>
+
+    <!-- NPC Social View -->
+    <div v-else-if="sheet.npc_sheet_type === 'npc'" class="npc-social-view">
+      <NotchContainer width="thick" :notch="20" class="npc-social-header">
+        <input
+          type="text"
+          class="npc-name-input"
+          v-model="sheet.npc_social_name"
+          placeholder="NPC Name"
+        />
+        <div class="npc-social-fields">
+          <div class="npc-social-field">
+            <label>Role / Occupation</label>
+            <input type="text" class="underline" v-model="sheet.npc_social_role" placeholder="Shopkeeper, Teacher, etc.">
+          </div>
+          <div class="npc-social-field">
+            <label>Heart Stage</label>
+            <select v-model="sheet.npc_social_heart_stage">
+              <option v-for="opt in heartStageOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+          <div class="npc-social-field">
+            <label>Social Points</label>
+            <input type="number" class="underline sp-input" v-model.number="sheet.npc_social_sp">
+          </div>
+        </div>
+      </NotchContainer>
+      <NotchContainer width="thick" :notch="20" class="npc-social-details">
+        <div class="npc-social-field">
+          <label>Personality</label>
+          <textarea class="underline" v-model="sheet.npc_social_personality" placeholder="Personality traits, quirks, mannerisms..." rows="3"></textarea>
+        </div>
+        <div class="npc-social-field">
+          <label>Abilities</label>
+          <textarea class="underline" v-model="sheet.npc_social_abilities" placeholder="Special abilities, social tactics..." rows="3"></textarea>
+        </div>
+        <div class="npc-social-field">
+          <label>Notes</label>
+          <textarea class="underline" v-model="sheet.npc_social_notes" placeholder="Additional notes..." rows="3"></textarea>
+        </div>
+      </NotchContainer>
+    </div>
+
+    <!-- Magi-Squire View -->
+    <div v-else-if="sheet.npc_sheet_type === 'squire'" class="squire-view">
+      <MagiSquire />
+    </div>
   </div>
 </template>
 
@@ -756,5 +829,111 @@ const toggleUnitDefeated = (index) => {
     border-radius: 4px;
     resize: vertical;
   }
+}
+
+.npc-type-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--half-gap);
+  padding: var(--half-gap);
+
+  label {
+    font-weight: bold;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  select {
+    padding: 4px 8px;
+    border: 1px solid var(--borderColor);
+    border-radius: 4px;
+    background: var(--masterBack);
+  }
+
+  .mode-toggle {
+    margin-left: auto;
+    padding: 6px 12px;
+    background: var(--borderColor);
+    color: var(--masterBack);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+.monster-view {
+  display: grid;
+  gap: var(--half-gap);
+}
+
+.npc-social-view {
+  display: grid;
+  gap: var(--half-gap);
+}
+
+.npc-social-header {
+  display: grid;
+  gap: var(--half-gap);
+
+  .npc-name-input {
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid var(--borderColor);
+    background: transparent;
+    padding: 4px 0;
+    width: 100%;
+  }
+
+  .npc-social-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: var(--half-gap);
+    align-items: end;
+  }
+}
+
+.npc-social-field {
+  display: grid;
+  gap: 2px;
+
+  label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--header-blue);
+  }
+
+  select, input, textarea {
+    padding: 4px 8px;
+    border: 1px solid var(--borderColor);
+    border-radius: 4px;
+    width: 100%;
+  }
+
+  .sp-input {
+    width: 60px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+    font-size: 0.85rem;
+  }
+}
+
+.npc-social-details {
+  display: grid;
+  gap: var(--half-gap);
+}
+
+.squire-view {
+  display: grid;
+  gap: var(--half-gap);
 }
 </style>
