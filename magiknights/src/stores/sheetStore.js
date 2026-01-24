@@ -106,14 +106,18 @@ export const useSheetStore = defineStore('sheet',() => {
 
   // Heart Stage progression for NPC social bonds
   const heartStageData = [
-    { value: 'threatening', label: 'Threatening' },
-    { value: 'hostile', label: 'Hostile' },
-    { value: 'cold', label: 'Cold' },
-    { value: 'neutral', label: 'Neutral' },
-    { value: 'warm', label: 'Warm' },
-    { value: 'friendly', label: 'Friendly' },
-    { value: 'sympathetic', label: 'Sympathetic' }
+    { value: 'threatening', label: 'Threatening', min: -999, max: -16 },
+    { value: 'hostile', label: 'Hostile', min: -15, max: -6 },
+    { value: 'cold', label: 'Cold', min: -5, max: -1 },
+    { value: 'neutral', label: 'Neutral', min: 0, max: 5 },
+    { value: 'warm', label: 'Warm', min: 6, max: 11 },
+    { value: 'friendly', label: 'Friendly', min: 12, max: 19 },
+    { value: 'sympathetic', label: 'Sympathetic', min: 20, max: 999 }
   ];
+  const getHeartStageForSP = (sp) => {
+    const stage = heartStageData.find(s => sp >= s.min && sp <= s.max);
+    return stage ? stage.value : 'neutral';
+  };
 
   // Daily/per-session limit tracking
   const sealImplantGiven = ref(false);
@@ -3496,6 +3500,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     // Heart Stage progression
     heartStageData,
+    getHeartStageForSP,
 
     // Sleep Phase and daily limits
     sleepEffect,

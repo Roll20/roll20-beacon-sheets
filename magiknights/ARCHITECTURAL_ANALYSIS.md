@@ -501,18 +501,20 @@ rested: ref(false)           // Rested status (generic)
 
 ### Social Bonds & Heart Stages
 
-**Heart Stage Progression (7 stages):**
+**Heart Stage Progression (7 stages with SP thresholds):**
 ```javascript
 heartStageData = [
-  { value: 'threatening', label: 'Threatening' },
-  { value: 'hostile', label: 'Hostile' },
-  { value: 'cold', label: 'Cold' },
-  { value: 'neutral', label: 'Neutral' },   // default
-  { value: 'warm', label: 'Warm' },
-  { value: 'friendly', label: 'Friendly' },
-  { value: 'sympathetic', label: 'Sympathetic' }
+  { value: 'threatening', label: 'Threatening', min: -999, max: -16 },
+  { value: 'hostile', label: 'Hostile', min: -15, max: -6 },
+  { value: 'cold', label: 'Cold', min: -5, max: -1 },
+  { value: 'neutral', label: 'Neutral', min: 0, max: 5 },
+  { value: 'warm', label: 'Warm', min: 6, max: 11 },
+  { value: 'friendly', label: 'Friendly', min: 12, max: 19 },
+  { value: 'sympathetic', label: 'Sympathetic', min: 20, max: 999 }
 ]
+getHeartStageForSP(sp)  // Returns stage value for given SP
 ```
+UI shows SP threshold range next to Heart Stage dropdown, and a mismatch hint when SP doesn't match selected stage.
 
 **Social Bond Data Model (repeating sections: npc-social, squadron-social):**
 ```javascript

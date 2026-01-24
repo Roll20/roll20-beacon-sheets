@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 29/33
-- **Current Task:** Task 30 (Heart Stage SP threshold)
+- **Tasks Completed:** 30/33
+- **Current Task:** Task 31 (Statistic Increase tracking)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -602,6 +602,24 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/views/PC/StudentView.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 30: Implement Heart Stage SP threshold display
+
+**Changes Made:**
+- Updated `heartStageData` to include min/max SP thresholds for each stage
+- Added `getHeartStageForSP(sp)` function that returns the appropriate stage for a given SP value
+- Updated SocialSection.vue expanded view: shows SP threshold range next to Heart Stage dropdown, and a mismatch hint (orange text) when SP doesn't match selected stage
+- Added CSS styling for heart-stage-row, sp-threshold-hint, sp-mismatch-hint
+- Added store export: getHeartStageForSP
+- Updated ARCHITECTURAL_ANALYSIS.md Heart Stage section with SP thresholds documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/components/SocialSection.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`

@@ -31,9 +31,17 @@ const props = defineProps({
           </template>
           <template v-slot:expanded>
             <input type="text" class="underline" v-model="item.name" placeholder="NPC Name">
-            <select class="underline heart-stage-select" v-model="item.heartStage">
-              <option v-for="stage in sheet.heartStageData" :key="stage.value" :value="stage.value">{{ stage.label }}</option>
-            </select>
+            <div class="heart-stage-row">
+              <select class="underline heart-stage-select" v-model="item.heartStage">
+                <option v-for="stage in sheet.heartStageData" :key="stage.value" :value="stage.value">{{ stage.label }}</option>
+              </select>
+              <span class="sp-threshold-hint">
+                {{ sheet.heartStageData.find(s => s.value === item.heartStage)?.min ?? 0 }}–{{ Math.min(sheet.heartStageData.find(s => s.value === item.heartStage)?.max ?? 0, 99) }} SP
+              </span>
+              <span v-if="sheet.getHeartStageForSP(Number(item.points) || 0) !== item.heartStage" class="sp-mismatch-hint">
+                (SP suggests: {{ sheet.heartStageData.find(s => s.value === sheet.getHeartStageForSP(Number(item.points) || 0))?.label }})
+              </span>
+            </div>
             <input type="number" class="underline" v-model="item.points">
             <textarea class="underline" v-model="item.bond_ability" placeholder="Bond ability..."></textarea>
           </template>
@@ -88,6 +96,22 @@ const props = defineProps({
   }
   .heart-stage-select{
     font-size: 0.85em;
+  }
+  .heart-stage-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sp-threshold-hint {
+    font-size: 0.7em;
+    opacity: 0.6;
+    text-align: center;
+  }
+  .sp-mismatch-hint {
+    font-size: 0.7em;
+    color: #e90;
+    text-align: center;
+    font-style: italic;
   }
 }
 </style>

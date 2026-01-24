@@ -559,7 +559,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md social bonds section with SP threshold documentation"
     ],
     "context": "The compendium defines specific SP thresholds that determine Heart Stage progression. While the sheet (from task 13) tracks both SP points and Heart Stage per bond, they are set independently with no reference to the threshold values. Players need to know what SP range corresponds to each stage to update appropriately. The thresholds are approximately: Threatening (very negative), Hostile (-15 to -6), Cold (-5 to -1), Neutral (0-5), Warm (6-11), Friendly (12-19), Sympathetic (20+). Showing these helps players without forcing auto-updates (since GMs may override).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 31,
