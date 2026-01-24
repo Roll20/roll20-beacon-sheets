@@ -261,6 +261,14 @@ const strengthMod = computed(() => {
    }
    ```
 
+**Spell Paths Known:** Tracks which of the 11 spell paths the character has chosen.
+```javascript
+availableSpellPaths = ['Beam', 'Explosion', 'Ward', 'Curing', 'Restoration', 'Augmentation', 'Summoning', 'Chronomancy', 'Divination', 'Psionics', 'Necromancy']
+spellPathsKnown: ref([])           // Array of selected path strings
+maxSpellPaths: computed(() => ...)  // 2 at level 1-3, 3 at level 4-7, 4 at level 8+
+```
+UI shows checkboxes for all 11 paths with a count indicator (e.g., "2/2 Paths") and a warning when over max. Each Magic Style (Enchanter, Shaper, Occultist, Cleric) has access to 7 of the 11 paths; characters choose 2 at level 1, gaining +1 at levels 4 and 8.
+
 2. **Release Magic** - Card-based spell system (Bakugan/Magic: The Gathering inspired)
    - Deck of 6 cards
    - 2 signature cards

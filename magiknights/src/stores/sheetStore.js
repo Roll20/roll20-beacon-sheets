@@ -352,6 +352,15 @@ export const useSheetStore = defineStore('sheet',() => {
   const element_name = ref('');
   const mam = ref('');
 
+  // Spell Paths Known - tracks which paths the character has chosen
+  const availableSpellPaths = ['Beam', 'Explosion', 'Ward', 'Curing', 'Restoration', 'Augmentation', 'Summoning', 'Chronomancy', 'Divination', 'Psionics', 'Necromancy'];
+  const spellPathsKnown = ref([]);
+  const maxSpellPaths = computed(() => {
+    if (level.value < 4) return 2;
+    if (level.value < 8) return 3;
+    return 4;
+  });
+
   // Auto-calculated HP: 10 + CON Mod + (Level - 1) × (6 + CON Mod)
   // Tough as Nails Tactic adds: +2 Student HP + 2 HP/Level while transformed
   const hp_max_override = ref('');
@@ -1834,6 +1843,7 @@ export const useSheetStore = defineStore('sheet',() => {
       combos_collapsed: combosCollapsed.value,
       elemental_affinity: elemental_affinity.value,
       magic_style: magic_style.value,
+      spellPathsKnown: [...spellPathsKnown.value],
       release_magic_deck: releaseMagicDeck.value,
       release_magic_collapsed: releaseMagicCollapsed.value,
       signature_card_1: signatureCard1.value,
@@ -2010,6 +2020,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     elemental_affinity.value = hydrateStore.elemental_affinity ?? elemental_affinity.value;
     magic_style.value = hydrateStore.magic_style ?? magic_style.value;
+    spellPathsKnown.value = hydrateStore.spellPathsKnown ?? spellPathsKnown.value;
     element_name.value = hydrateStore.element_name ?? element_name.value;
     mam.value = hydrateStore.mam ?? mam.value;
     elemental_enhancement_1.value = hydrateStore.elemental_enhancement_1 ?? elemental_enhancement_1.value;
@@ -3534,6 +3545,9 @@ export const useSheetStore = defineStore('sheet',() => {
     spell_dc,
     sections,
     max_spell_tier,
+    availableSpellPaths,
+    spellPathsKnown,
+    maxSpellPaths,
     addRow,
     removeRow,
     removeTrait: (traitId) => removeTrait(traits, traitId),

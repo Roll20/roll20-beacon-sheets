@@ -367,7 +367,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md spells section with Spell Paths Known documentation"
     ],
     "context": "Per the compendium, each Magic Style (Enchanter, Shaper, Occultist, Cleric) has access to 7 of the 11 spell paths, and characters choose 2 paths at level 1, gaining +1 at levels 4 and 8 (max 4). The spell paths are: Beam, Explosion, Ward, Curing, Restoration, Augmentation, Summoning, Chronomancy, Divination, Psionics, Necromancy. The current sheet has a spells repeating section for individual spells but no way to record WHICH paths the character has chosen. This is needed for reference and validation during play.",
-    "passes": false
+    "passes": true
   },
   {
     "id": 21,

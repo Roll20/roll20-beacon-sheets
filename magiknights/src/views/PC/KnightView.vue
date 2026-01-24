@@ -419,6 +419,16 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   <!-- Traditional Spell Paths (shown for all other magic styles) -->
   <NotchContainer v-else class="spell-container" width="thick" notchType="curve">
     <h3>Spell Paths</h3>
+    <div class="spell-paths-known">
+      <label class="paths-known-label">Paths Known <span class="paths-count" :class="{ 'over-max': sheet.spellPathsKnown.length > sheet.maxSpellPaths }">{{ sheet.spellPathsKnown.length }}/{{ sheet.maxSpellPaths }}</span></label>
+      <div class="paths-checkboxes">
+        <label v-for="path in sheet.availableSpellPaths" :key="path" class="path-option">
+          <input type="checkbox" :value="path" v-model="sheet.spellPathsKnown" />
+          <span>{{ path }}</span>
+        </label>
+      </div>
+      <div v-if="sheet.spellPathsKnown.length > sheet.maxSpellPaths" class="paths-warning">Over max! {{ sheet.maxSpellPaths }} paths allowed at level {{ sheet.level }}</div>
+    </div>
     <div class="spell-path-layout">
       <div class="spell-tier-headers">
         <h4>I</h4>
@@ -582,6 +592,48 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   .spell-path-container{
     display: grid;
     gap: var(--half-gap);
+  }
+  .spell-paths-known {
+    margin-bottom: var(--half-gap);
+    padding: var(--half-gap);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    .paths-known-label {
+      font-weight: bold;
+      font-size: 0.9em;
+      display: flex;
+      align-items: center;
+      gap: var(--half-gap);
+      margin-bottom: var(--tiny-gap);
+    }
+    .paths-count {
+      font-size: 0.85em;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: rgba(100, 200, 100, 0.15);
+      &.over-max {
+        background: rgba(200, 50, 50, 0.15);
+        color: var(--error, #c33);
+      }
+    }
+    .paths-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--tiny-gap) var(--half-gap);
+    }
+    .path-option {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.85em;
+      cursor: pointer;
+      input[type="checkbox"] { margin: 0; }
+    }
+    .paths-warning {
+      margin-top: var(--tiny-gap);
+      font-size: 0.8em;
+      color: var(--error, #c33);
+    }
   }
   .spell-path-layout{
     display: grid;

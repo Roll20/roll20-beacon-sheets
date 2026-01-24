@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 19/33
-- **Current Task:** Task 20 (Spell Paths Known)
+- **Tasks Completed:** 20/33
+- **Current Task:** Task 21 (Branching Element)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -402,6 +402,26 @@
 - `src/stores/sheetStore.js`
 - `src/components/SkillSection.vue`
 - `src/components/Skill.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 20: Implement Spell Paths Known selection and tracking
+
+**Changes Made:**
+- Added `availableSpellPaths` constant with all 11 spell paths: Beam, Explosion, Ward, Curing, Restoration, Augmentation, Summoning, Chronomancy, Divination, Psionics, Necromancy
+- Added `spellPathsKnown` ref (array of strings, default []) to track selected paths
+- Added `maxSpellPaths` computed: returns 2 if level < 4, 3 if level < 8, 4 if level >= 8
+- Added `spellPathsKnown` to dehydrate/hydrate cycle for persistence
+- Added Spell Paths Known UI in KnightView.vue above the spell tier headers: checkboxes for all 11 paths, count indicator (e.g., "2/2 Paths"), warning when over max
+- Added CSS styling for the paths-known section (bordered container, flex-wrap checkboxes, count badge, warning text)
+- Added store exports: availableSpellPaths, spellPathsKnown, maxSpellPaths
+- Updated ARCHITECTURAL_ANALYSIS.md Magic System section with Spell Paths Known documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/KnightView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`
