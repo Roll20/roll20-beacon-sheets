@@ -52,6 +52,15 @@ const sheet = useSheetStore();
       </select>
       <p v-if="sheet.clubPositionData[sheet.clubPosition]?.bonus" class="club-position-bonus">{{ sheet.clubPositionData[sheet.clubPosition].bonus }}</p>
     </div>
+    <div v-if="sheet.statIncreasesAvailable > 0" class="stat-increases-section">
+      <label class="tally-label">Stat Increases</label>
+      <span class="stat-increases-count" :class="{ 'needs-attention': sheet.statIncreasesMissing > 0 }">
+        {{ sheet.statIncreasesApplied }}/{{ sheet.statIncreasesAvailable }} applied
+      </span>
+      <span v-if="sheet.statIncreasesMissing > 0" class="stat-increases-reminder">
+        {{ sheet.statIncreasesMissing }} increase(s) available at levels {{ sheet.statIncreaseLevels.filter(l => l <= sheet.level).join(', ') }}
+      </span>
+    </div>
   </div>
 </template>
 <style lang="scss">
@@ -114,6 +123,26 @@ const sheet = useSheetStore();
   .tally-max {
     font-size: 0.85em;
     opacity: 0.7;
+  }
+}
+.stat-increases-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--half-gap);
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  .stat-increases-count {
+    font-weight: bold;
+    font-size: 0.9em;
+    &.needs-attention { color: #e90; }
+  }
+  .stat-increases-reminder {
+    font-size: 0.75em;
+    font-style: italic;
+    opacity: 0.8;
+    text-align: center;
   }
 }
 .club-position-section {

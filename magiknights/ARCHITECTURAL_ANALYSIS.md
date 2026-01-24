@@ -455,6 +455,18 @@ detentionTickets: ref(0)  // Outstanding detention obligations
 - Each ticket = 1 Free Time spent. Skipping = +1 Trauma/day
 - UI: Counter in StudentView.vue with warning display when tickets > 0
 
+**Statistic Increase Tracking:**
+```javascript
+statIncreases: ref([])              // Log of applied increases
+statIncreaseLevels = [3, 6, 9, 12, 15]  // Levels granting +2/+1+1 stat boosts
+statIncreasesApplied: computed(...)      // statIncreases.length
+statIncreasesAvailable: computed(...)    // Count of levels <= current level
+statIncreasesMissing: computed(...)      // available - applied (positive = needs attention)
+```
+- UI: "Stat Increases: X/Y applied" indicator in BasicView.vue when increases are available
+- Shows reminder with missing increase levels when statIncreasesMissing > 0
+- Non-enforcing: players manually apply increases to ability scores
+
 **Club System:**
 ```javascript
 clubTallies: ref(0)            // 0-8 counter, resets at Resounding Growth

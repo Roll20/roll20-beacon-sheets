@@ -263,6 +263,13 @@ export const useSheetStore = defineStore('sheet',() => {
       mod: charismaMod
     }
   };
+  // Statistic Increase tracking - +2 to one stat or +1 to two at levels 3, 6, 9, 12, 15
+  const statIncreases = ref([]);
+  const statIncreaseLevels = [3, 6, 9, 12, 15];
+  const statIncreasesApplied = computed(() => statIncreases.value.length);
+  const statIncreasesAvailable = computed(() => statIncreaseLevels.filter(l => l <= level.value).length);
+  const statIncreasesMissing = computed(() => statIncreasesAvailable.value - statIncreasesApplied.value);
+
   const levelSpellDict = [,1,1,2,2,3,3,3,4,4,4,5,5,5,6,6]
   const max_spell_tier = computed(() => levelSpellDict[level]);
 
@@ -1958,6 +1965,7 @@ export const useSheetStore = defineStore('sheet',() => {
       skills: dehydrateSkills(skills),
       masteredSkill: masteredSkill.value,
       abilityScores: dehydrateAbilityScores(abilityScores),
+      statIncreases: [...statIncreases.value],
       hp: dehydrateHp(hp),
       hp_max: hp_max.value,
       mp: dehydrateMp(mp),
@@ -2149,6 +2157,7 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateSkills(skills, hydrateStore.skills);
     masteredSkill.value = hydrateStore.masteredSkill ?? masteredSkill.value;
     hydrateAbilityScores(abilityScores, hydrateStore.abilityScores);
+    statIncreases.value = hydrateStore.statIncreases ?? statIncreases.value;
     hydrateHp(hp, hydrateStore.hp);
     hydrateMp(mp, hydrateStore.mp);
     hydrateShp(shp, hydrateStore.shp);
@@ -3542,6 +3551,11 @@ export const useSheetStore = defineStore('sheet',() => {
     crystal,
 
     abilityScores,
+    statIncreases,
+    statIncreaseLevels,
+    statIncreasesApplied,
+    statIncreasesAvailable,
+    statIncreasesMissing,
     skills,
     masteredSkill,
 

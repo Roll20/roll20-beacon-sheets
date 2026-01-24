@@ -578,7 +578,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md progression section with Statistic Increase documentation"
     ],
     "context": "Per the compendium: 'Statistic Increase (3rd, 6th, 9th, 12th, 15th): +2 to one Statistic OR +1 to two different Statistics.' At 5 different levels, characters get permanent ability score increases. While the scores themselves are tracked, there is no log or reminder of which increases have been applied. This helps players ensure they haven't missed or double-applied an increase during level-up. The tracking is a reference/reminder, not a hard enforcement (since the actual scores are manually editable).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 32,

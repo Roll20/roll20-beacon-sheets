@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 30/33
-- **Current Task:** Task 31 (Statistic Increase tracking)
+- **Tasks Completed:** 31/33
+- **Current Task:** Task 32 (Fortune Pool)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -620,6 +620,26 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/components/SocialSection.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 31: Implement Statistic Increase tracking for level-up choices
+
+**Changes Made:**
+- Added `statIncreases` ref (array, default []) for logging applied stat boosts
+- Added `statIncreaseLevels` constant [3, 6, 9, 12, 15]
+- Added `statIncreasesApplied`, `statIncreasesAvailable`, `statIncreasesMissing` computeds
+- Added statIncreases to dehydrate/hydrate cycle
+- Added "Stat Increases: X/Y applied" indicator in BasicView.vue with missing reminder
+- Added CSS styling for stat-increases-section
+- Added store exports for all new members
+- Updated ARCHITECTURAL_ANALYSIS.md with Statistic Increase documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/BasicView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`
