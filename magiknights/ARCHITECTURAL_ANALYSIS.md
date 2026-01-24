@@ -584,6 +584,19 @@ relicCount: computed(() => sections.relics.rows.length)
 - Warning displayed when over capacity
 - Relics are stored in `sections.relics` repeating section with name + description fields
 
+### Fortune Pool
+
+```javascript
+fortunePool: ref(0)              // Current Fortune points available
+fortunePoolEnabled: ref(false)   // Whether character has Fortune Box crystal
+fortunePoolMax: computed(...)    // Proficiency bonus when enabled (level-based: 1-4=2, 5-8=3, 9-12=4, 13-16=5, 17+=6)
+```
+- Conditional resource from the Fortune Box enchanted crystal
+- Pool size equals proficiency bonus (2-6), replenishes on Refreshing Sleep
+- Spend 1 Fortune to add 1d6 to a non-combat Skill Check
+- UI shows enable checkbox; when enabled, displays current/max counter and usage description
+- Only visible in BasicView when `fortunePoolEnabled` is true
+
 ### Equipment System
 
 **Soul Armament Progression:** Auto-calculated bonuses based on Reputation Level.

@@ -596,7 +596,7 @@ Tasks to remove incorrect/unnecessary features and implement missing ones. Each 
       "Update ARCHITECTURAL_ANALYSIS.md resources section with Fortune Pool documentation"
     ],
     "context": "Per the compendium: 'Enchanted Crystal: Fortune Box - Gain a Pool of Fortune equal to your Proficiency Bonus. Replenishes on Refreshing Sleep Effect. During non-Combat Encounter: Spend 1 Fortune to add 1d6 to a Skill Check.' This is a conditional resource that only exists if the character has the Fortune Box enchanted crystal. It functions like Unity Points - a consumable pool that replenishes at rest. The pool size scales with proficiency bonus (2-6).",
-    "passes": false
+    "passes": true
   },
   {
     "id": 33,

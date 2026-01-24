@@ -61,6 +61,19 @@ const sheet = useSheetStore();
         {{ sheet.statIncreasesMissing }} increase(s) available at levels {{ sheet.statIncreaseLevels.filter(l => l <= sheet.level).join(', ') }}
       </span>
     </div>
+    <div class="fortune-pool-section">
+      <label class="fortune-pool-toggle">
+        <input type="checkbox" v-model="sheet.fortunePoolEnabled">
+        <span class="tally-label">Fortune Pool</span>
+      </label>
+      <template v-if="sheet.fortunePoolEnabled">
+        <div class="fortune-pool-counter">
+          <input type="number" class="tally-input" min="0" :max="sheet.fortunePoolMax" v-model.number="sheet.fortunePool">
+          <span class="tally-max">/ {{ sheet.fortunePoolMax }} Fortune</span>
+        </div>
+        <p class="fortune-pool-desc">Spend 1: +1d6 to non-combat Skill Check</p>
+      </template>
+    </div>
   </div>
 </template>
 <style lang="scss">
@@ -155,6 +168,32 @@ const sheet = useSheetStore();
     margin: 4px 0 0;
     opacity: 0.8;
     font-style: italic;
+  }
+}
+.fortune-pool-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--half-gap) var(--gap);
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  .fortune-pool-toggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .fortune-pool-counter {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .fortune-pool-desc {
+    font-size: 0.75em;
+    opacity: 0.8;
+    font-style: italic;
+    margin: 0;
   }
 }
 

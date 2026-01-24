@@ -625,6 +625,21 @@ export const useSheetStore = defineStore('sheet',() => {
   // Check if Unity Points are available (Rep II+ required)
   const unityAvailable = computed(() => reputation.value >= 2);
 
+  // Fortune Pool: Gained from Fortune Box enchanted crystal
+  // Pool size = proficiency bonus (level-based: 1-4=2, 5-8=3, 9-12=4, 13-16=5, 17+=6)
+  // Spend 1 Fortune to add 1d6 to a non-combat Skill Check. Replenishes on Refreshing Sleep.
+  const fortunePool = ref(0);
+  const fortunePoolEnabled = ref(false);
+  const fortunePoolMax = computed(() => {
+    if (!fortunePoolEnabled.value) return 0;
+    const lvl = level.value;
+    if (lvl >= 17) return 6;
+    if (lvl >= 13) return 5;
+    if (lvl >= 9) return 4;
+    if (lvl >= 5) return 3;
+    return 2;
+  });
+
   // Herald Bond Level system (I-V, stored as 1-5)
   // Per compendium: Herald bond affects spell tier access (Bond IV+ = Tier VI access)
   const herald = {
@@ -1940,6 +1955,8 @@ export const useSheetStore = defineStore('sheet',() => {
       wellFed: wellFed.value,
       gloom_gems: gloom.value,
       unity_points: unity.value,
+      fortunePool: fortunePool.value,
+      fortunePoolEnabled: fortunePoolEnabled.value,
       active_formation: activeFormation.value,
       formations_collapsed: formationsCollapsed.value,
       combo_participants: comboParticipants.value,
@@ -2095,6 +2112,8 @@ export const useSheetStore = defineStore('sheet',() => {
     wellFed.value = hydrateStore.wellFed ?? wellFed.value;
     gloom.value = hydrateStore.gloom_gems ?? gloom.value;
     unity.value = hydrateStore.unity_points ?? unity.value;
+    fortunePool.value = hydrateStore.fortunePool ?? fortunePool.value;
+    fortunePoolEnabled.value = hydrateStore.fortunePoolEnabled ?? fortunePoolEnabled.value;
     activeFormation.value = hydrateStore.active_formation ?? activeFormation.value;
     formationsCollapsed.value = hydrateStore.formations_collapsed ?? formationsCollapsed.value;
     comboParticipants.value = hydrateStore.combo_participants ?? comboParticipants.value;
@@ -3619,6 +3638,9 @@ export const useSheetStore = defineStore('sheet',() => {
     unity_points:unity,
     unity_max: unityMax,
     unity_available: unityAvailable,
+    fortunePool,
+    fortunePoolEnabled,
+    fortunePoolMax,
     herald,
     tierVIUnlocked,
 

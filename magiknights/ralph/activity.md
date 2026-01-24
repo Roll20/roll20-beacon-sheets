@@ -1,8 +1,8 @@
 # Activity Log
 
 ## Status
-- **Tasks Completed:** 31/33
-- **Current Task:** Task 32 (Fortune Pool)
+- **Tasks Completed:** 32/33
+- **Current Task:** Task 33 (Final Verification)
 - **Last Updated:** 2026-01-23
 
 ---
@@ -620,6 +620,26 @@
 **Files Modified:**
 - `src/stores/sheetStore.js`
 - `src/components/SocialSection.vue`
+- `ARCHITECTURAL_ANALYSIS.md`
+- `ralph/plan.md`
+- `ralph/activity.md`
+
+### 2026-01-23 - Task 32: Implement Fortune Pool resource counter
+
+**Changes Made:**
+- Added `fortunePool` ref (number, default 0) for current Fortune points
+- Added `fortunePoolEnabled` ref (boolean, default false) for Fortune Box crystal ownership
+- Added `fortunePoolMax` computed: proficiency bonus when enabled (level-based: 1-4=2, 5-8=3, 9-12=4, 13-16=5, 17+=6)
+- Added fortunePool and fortunePoolEnabled to dehydrate/hydrate cycle
+- Added Fortune Pool UI in BasicView.vue: enable checkbox, current/max counter, usage description
+- Added CSS styling for fortune-pool-section
+- Added store exports for fortunePool, fortunePoolEnabled, fortunePoolMax
+- Updated ARCHITECTURAL_ANALYSIS.md with Fortune Pool documentation
+- Build verified successfully
+
+**Files Modified:**
+- `src/stores/sheetStore.js`
+- `src/views/PC/BasicView.vue`
 - `ARCHITECTURAL_ANALYSIS.md`
 - `ralph/plan.md`
 - `ralph/activity.md`
