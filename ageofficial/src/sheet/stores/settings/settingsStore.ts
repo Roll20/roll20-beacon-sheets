@@ -33,6 +33,10 @@ export type SettingsHydrate = {
     showCybernetics:boolean;
     useFortune?: boolean;
     userPowerFatigue?: boolean;
+    optionalMovements?: boolean;
+    incomeMode: string;
+    showAfterMastery?: boolean;
+    theme?: string;
   };
 };
 
@@ -67,6 +71,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const showCybernetics = ref(false);
   const useFortune = ref(false);
   const userPowerFatigue = ref(false);
+  const optionalMovements = ref(false);
+  const incomeMode = ref('');
+  const showAfterMastery = ref(false);
+  const theme = ref('basic');
 
   const dehydrate = () => {
     return {
@@ -101,6 +109,10 @@ export const useSettingsStore = defineStore('settings', () => {
         showCybernetics: showCybernetics.value,
         useFortune: useFortune.value,
         userPowerFatigue: userPowerFatigue.value,   
+        optionalMovements: optionalMovements.value,
+        incomeMode: incomeMode.value,
+        showAfterMastery: showAfterMastery.value,
+        theme: theme.value,
       },
     };
   };
@@ -135,7 +147,11 @@ export const useSettingsStore = defineStore('settings', () => {
     showAlienation.value = hydrateStore.settings.showAlienation ?? showAlienation.value
     showCybernetics.value = hydrateStore.settings.showCybernetics ?? showCybernetics.value
     useFortune.value = hydrateStore.settings.useFortune ?? useFortune.value,
-    userPowerFatigue.value = hydrateStore.settings.userPowerFatigue ?? userPowerFatigue.value
+    userPowerFatigue.value = hydrateStore.settings.userPowerFatigue ?? userPowerFatigue.value,
+    optionalMovements.value = hydrateStore.settings.optionalMovements ?? optionalMovements.value,
+    incomeMode.value = hydrateStore.settings.incomeMode || incomeMode.value;
+    showAfterMastery.value = hydrateStore.settings.showAfterMastery ?? showAfterMastery.value;
+    theme.value = hydrateStore.settings.theme || theme.value;
   };
 
   return {
@@ -169,6 +185,10 @@ export const useSettingsStore = defineStore('settings', () => {
     showCybernetics,
     useFortune,
     userPowerFatigue,
+    optionalMovements,
+    showAfterMastery,
+    theme,
+    incomeMode,
     dehydrate,
     hydrate,
   };

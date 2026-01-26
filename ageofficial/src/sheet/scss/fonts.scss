@@ -108,3 +108,23 @@
     font-weight:500;
     src:local('UglyQua'),url(https://fonts.cdnfonts.com/s/450/UglyQua-Italic.woff) format('woff')
 }
+
+@font-face {
+    font-family: 'Proxima Nova Condensed';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Proxima Nova Condensed'), url('https://fonts.cdnfonts.com/s/31315/Mark Simonson  Proxima Nova Condensed Regular Italic TheFontsMaster.com.woff') format('woff');
+}
+@font-face {
+    font-family: 'Spectrashell';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Spectrashell'), url('https://fonts.cdnfonts.com/s/18161/spectrashell.woff') format('woff');
+}
+
+@font-face{
+    font-family:'Venus Rising';
+    font-style:normal;
+    font-weight:400;
+    src:local('Venus Rising'),url('https://fonts.cdnfonts.com/s/6237/venus rising.woff') format('woff')
+}

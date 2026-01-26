@@ -16,7 +16,7 @@
 @use 'product/fage.scss';
 @use 'product/mage.scss';
 @use 'product/bluerose.scss';
-
+@use 'product/expanse.scss';
 @use 'fonts';
 // TODO IN FUTURE?
 // @use 'product/threefold.scss';
@@ -150,7 +150,6 @@ body {
         flex-direction: column;
         justify-content: space-between;
         & .age-character-bio-container {
-          height: 90px;
           & .age-character-bio-value {
             font-size: clamp(14px, 1.15rem, 1rem);
             font-weight: bold;
@@ -310,6 +309,7 @@ body {
           }
           & .age-combat-icon {
             grid-area: icon;
+            position: relative;
           }
           & .age-combat-name {
             grid-area: name;
@@ -336,7 +336,7 @@ body {
         & .age-orb-container {
           display: grid;
           align-items: center;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: repeat(3,1fr);
           height: 100%;
           & .age-orb{
             background-color:rgba(0,0,0,0.2);
@@ -348,7 +348,10 @@ body {
           }
           & .age-orb-highlight {
           }
-        }    
+        } 
+        & .age-adv-orb-container {
+          grid-template-columns: repeat(5, 1fr);
+        }   
         & .age-biography-section {
           padding:5px;
           display: flex;
@@ -542,6 +545,24 @@ body {
         & .age-movement { 
           grid-template-columns: repeat(3, minmax(75px, 1fr));
         }
+        & .age-custom-movement {
+          padding: 0 10px;
+          & .age-custom-movement-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px;
+            &__inputs {
+              display: flex;
+              gap: 8px;
+            }
+            &__delete {
+              opacity: .25;
+            }
+            &__delete:hover {
+              opacity: 1;
+            }
+          }
+        }
         & .age-actions-mage {
           display: grid;    
           grid-template-columns: repeat(2, minmax(75px, 1fr));
@@ -617,7 +638,7 @@ body {
           padding: 5px;
           position: relative;
           grid-gap: 15px;
-          height:50px;
+          height:60px;
           margin-bottom: 10px;
           width: min-content;
           min-width: 100%;
@@ -627,6 +648,31 @@ body {
             border-radius: 0.5rem;
             padding-left: 50px;
             margin-left: 10px;
+            &-gold {
+              background-image: url(src/assets/currency/gold.png);
+            }
+            &-silver {
+              background-image: url(src/assets/currency/silver.png);
+            }
+            &-copper {
+              background-image: url(src/assets/currency/copper.png);
+            }
+            &-gold,&-copper,&-silver {
+              height: 75px;
+              width: 50px;
+              background-size: cover;
+              background-repeat: no-repeat;
+              position: absolute;
+              left: -10px;
+              top: -24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 22px;
+              font-weight: 600;
+              font-family: 'Ringbearer', sans-serif;
+              color: rgba(0, 0, 0, 0.7);
+            }
           }
           & .currency {
             overflow: hidden;
@@ -804,9 +850,6 @@ body {
     & .modal-footer-actions {
       display: flex;
       gap: 40px;
-      & button {
-        height: 45px;
-      }
     }
     & .age-input-group {
       position: relative;

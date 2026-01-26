@@ -29,18 +29,42 @@
              
               <div class="row">
                 
-                <div class="mb-3 col"  v-if="attack.weaponType === 'Ranged' || attack.weaponType === 'Melee'">
+                <div class="mb-3 col" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'" >
                     <span class="age-input-label" id="basic-addon1">Weapon Group</span>
-                        <select
-                         class="age-atk-select form-select"
-                            data-testid="test-attack-weaponGroup-input"
-                            :id="`weaponGroup-${attack._id}`"
-                            v-model="attack.weaponGroup"
-                            @change="setWeaponGroupAbility"
-                        >
-                            <option v-for="wg in weaponGroups" :key="wg" :value="wg">{{ wg }}</option>
-                        </select>
-                </div>
+                      <select
+                        class="age-atk-select form-select"
+                          data-testid="test-attack-weaponGroup-input"
+                          v-model="attack.weaponGroup"  
+                          @change="setWeaponGroupAbility">
+                          <option v-for="wg in weaponGroups" :key="wg" :value="wg">{{ wg }}</option>
+                      </select>
+                  </div>
+                  <div class="mb-3 col" v-else>
+                    <span class="age-input-label" id="basic-addon1">Weapon Ability</span>
+                      <select
+                        class="age-atk-select form-select"
+                          data-testid="test-attack-weaponGroup-input"
+                          v-model="attack.weaponGroupAbility">
+                          <option value="Accuracy">Accuracy</option>
+                          <option value="Communication">Communication</option>
+                          <option value="Constitution">Constitution</option>
+                          <option value="Dexterity">Dexterity</option>
+                          <option value="Fighting">Fighting</option>
+                          <option value="Intelligence">Intelligence</option>
+                          <option value="Perception">Perception</option>
+                          <option value="Strength">Strength</option>
+                          <option value="Willpower">Willpower</option>
+                      </select>
+                  </div>
+                  <div class="mb-3 col" v-if="settings.gameSystem !== 'fage2e' && settings.gameSystem !== 'blue rose'" >
+                    <span class="age-input-label" id="basic-addon1">Weapon Focus</span>
+                      <select
+                        class="age-atk-select form-select"
+                          data-testid="test-attack-weaponGroup-input"
+                          v-model="attack.weaponGroup">
+                          <option v-for="wg in weaponGroups" :key="wg" :value="wg">{{ wg }}</option>
+                      </select>
+                  </div>
                 <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Damage</span>
                     <input type="text" class="form-control" aria-label="Character Name" :id="`damage-${attack._id}`"
@@ -128,7 +152,7 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import { fage2eWG, mageWG } from './weaponGroups';
+import { expanseWG, fage2eWG, mageWG } from './weaponGroups';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
 import { at } from 'lodash';
 
@@ -142,6 +166,9 @@ switch(settings.gameSystem){
   case 'mage':
     weaponGroups.value = mageWG;
   break;
+  case 'expanse':
+      weaponGroups.value = expanseWG;
+    break;
   default:
     weaponGroups.value = fage2eWG;
   break;

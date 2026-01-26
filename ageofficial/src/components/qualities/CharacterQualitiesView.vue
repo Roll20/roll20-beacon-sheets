@@ -66,10 +66,12 @@
               </div>
             </div>
           </div>
-          <div class="age-orb-container" v-if="feature.type !== 'Ability Focus' && feature.type !== 'Favored Stunt' && feature.type !== 'Ancestry' && feature.type !== 'Class' && feature.type !== 'Special Feature'">
-            <div class="age-orb" :class="{ 'age-orb-highlight': isNovice || isExpert || isMaster}" v-tippy="{ content: noviceTip }"></div>
-            <div class="age-orb" :class="{ 'age-orb-highlight': isExpert || isMaster}" v-tippy="{ content: expertTip }"></div>
-            <div class="age-orb" :class="{ 'age-orb-highlight': isMaster}" v-tippy="{ content: masterTip }"></div>
+          <div class="age-orb-container" :class="{ 'age-adv-orb-container': settings.showAfterMastery }" v-if="feature.type !== 'Ability Focus' && feature.type !== 'Favored Stunt' && feature.type !== 'Ancestry' && feature.type !== 'Class' && feature.type !== 'Special Feature'">
+            <div class="age-orb" :class="{ 'age-orb-highlight': isNovice || isExpert || isMaster || isGrandmaster || isApex}" v-tippy="{ content: noviceTip }"></div>
+            <div class="age-orb" :class="{ 'age-orb-highlight': isExpert || isMaster || isGrandmaster || isApex}" v-tippy="{ content: expertTip }"></div>
+            <div class="age-orb" :class="{ 'age-orb-highlight': isMaster || isGrandmaster || isApex}" v-tippy="{ content: masterTip }"></div>
+            <div class="age-orb" :class="{ 'age-orb-highlight': isGrandmaster || isApex}" v-tippy="{ content: grandmasterTip }" v-if="settings.showAfterMastery"></div>
+            <div class="age-orb" :class="{ 'age-orb-highlight': isApex}" v-tippy="{ content: apexTip }" v-if="settings.showAfterMastery"></div>
           </div>    
       </div>  
       <div class="age-weapon-btn-container">          
@@ -174,6 +176,7 @@ import QualitiesModal from './QualitiesModal.vue';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useAttackStore } from '@/sheet/stores/attack/attackStore';
+import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 const { abilityScores, rollAbilityCheck } = useAbilityScoreStore();
 const showModal = ref(false)
 const open = ref(false)
@@ -186,6 +189,7 @@ const props = defineProps({
 });
 const expanded = ref(false);
 const char = useCharacterStore();
+const settings = useSettingsStore();
 // Ability Focus
 function focusBonus(obj){
   if (obj.doubleFocus) {
@@ -201,7 +205,7 @@ const isNovice = computed(() => {
   return props.feature.qualityLevel === 'novice';
 });
 const noviceTip = () => {
-  if(isNovice.value || isExpert.value || isMaster.value){
+  if(isNovice.value || isExpert.value || isMaster.value || isGrandmaster.value || isApex.value){
     return `<p>Novice</p><p>`+props.feature.qualityNovice+`</p>`
   } else {
     return `Novice level not accquired`
@@ -211,7 +215,7 @@ const isExpert = computed(() => {
   return props.feature.qualityLevel === 'expert';
 });
 const expertTip = () => {
-  if(isExpert.value || isMaster.value){
+  if(isExpert.value || isMaster.value || isGrandmaster.value || isApex.value){
     return `<p>Expert</p><p>`+props.feature.qualityExpert+`</p>`
   } else {
     return `Expert level not accquired`
@@ -221,10 +225,30 @@ const isMaster = computed(() => {
   return props.feature.qualityLevel === 'master';
 });
 const masterTip = () => {
-  if(isMaster.value){
+  if(isMaster.value || isGrandmaster.value || isApex.value){
     return `<p>Master</p><p>`+props.feature.qualityMaster+`</p>`
   } else {
     return `Master level not accquired`
+  }
+}
+const isGrandmaster = computed(() => {
+  return props.feature.qualityLevel === 'grandmaster';
+});
+const grandmasterTip = () => {
+  if(isMaster.value || isGrandmaster.value || isApex.value){
+    return `<p>Grandmaster</p><p>`+props.feature.qualityGrandmaster+`</p>`
+  } else {
+    return `Grandmaster level not accquired`
+  }
+}
+const isApex = computed(() => {
+  return props.feature.qualityLevel === 'master';
+});
+const apexTip = () => {
+  if(isMaster.value || isGrandmaster.value || isApex.value){
+    return `<p>Apex</p><p>`+props.feature.qualityApex+`</p>`
+  } else {
+    return `Apex level not accquired`
   }
 }
 const toggleExpand = () => {

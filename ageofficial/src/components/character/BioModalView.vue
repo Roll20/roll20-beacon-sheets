@@ -33,7 +33,7 @@
           </select>
           </div>          
           </div>
-        <div class="input-group mb-3" v-if="bio.type === 'Character' && settings.gameSystem !== 'mage'" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3" v-if="bio.type === 'Character' && (settings.gameSystem !== 'mage' && settings.gameSystem !== 'expanse')" style="flex-direction: column;padding: 0 2px;">
           <span id="basic-addon1" class="age-input-label">Class</span>
           <div>
             <select  id="bio.profession" v-model="bio.profession" class="age-atk-select form-select" @change="classChange">
@@ -41,11 +41,20 @@
           </select>
           </div>          
         </div>
-        <div class="input-group mb-3" v-if="settings.gameSystem !== 'mage'" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3" style="flex-direction: column;padding: 0 2px;" v-if="settings.gameSystem !== 'expanse'">
           <span id="basic-addon1" class="age-input-label">Ancestry</span>
           <div>
             <input type="text" class="form-control" aria-label="Ancestry" v-model="bio.ancestry"  aria-describedby="basic-addon1">
           </div>
+        </div>
+        <div class="input-group mb-3" v-if="settings.gameSystem === 'expanse'" style="flex-direction: column;padding: 0 2px;">
+          <span id="basic-addon1" class="age-input-label">Origin</span>
+          <div>
+            <select  id="bio.profession" v-model="char.originFaction" class="age-atk-select form-select" @change="classChange">
+              <option value="">None</option>
+              <option v-for="expanseOrigin in expanseFactions" :key="expanseOrigin" :value="expanseOrigin.value">{{expanseOrigin.label}}</option>
+          </select>
+          </div>          
         </div>
         <div class="row" style="margin:0">
           <div class="mb-3 col" v-if="bio.type === 'Character'" style="flex-direction: column;padding: 0 2px;">
@@ -61,7 +70,7 @@
             </div>
           </div>
         </div>
-        <div class="row" style="margin:0" v-if="settings.gameSystem === 'mage'">
+        <div class="row" style="margin:0" v-if="settings.gameSystem === 'mage' || settings.gameSystem === 'expanse'">
           <div class="mb-3 col" v-if="bio.type === 'Character'" style="flex-direction: column;padding: 0 2px;">
             <span id="basic-addon1" class="age-input-label">Drive</span>
             <div>
@@ -84,10 +93,8 @@
         <div class="input-group mb-3" v-if="bio.type === 'AniMon'" style="flex-direction: column;padding: 0 2px;">
           <span id="basic-addon1" class="age-input-label">Threat Level</span>
           <div>
-            <select  id="bio.profession" v-model="bio.threat" class="age-atk-select form-select" @change="classChange">
-            <option value="Minor">Minor</option>
-            <option value="Moderate">Moderate</option>
-            <option value="Major">Major</option>
+            <select  id="bio.profession" v-model="bio.threat" class="age-atk-select form-select">
+              <option v-for="threat in threatLevels" :key="threat" :value="threat">{{ threat }}</option>
           </select>
           </div>
           
@@ -157,6 +164,14 @@ switch(settings.gameSystem){
     classes.value = blueroseClasses;
   break;
 }
+const threatLevels = ref(['Zero','Minor','Moderate','Major','Dire','Legendary']);
+const expanseFactions = ref([
+  {label: 'Earther', value:'earth'},
+  {label: 'Belter', value:'belters'},
+  {label: 'Martian', value:'mars'},
+  {label: 'Transport Union', value:'transportUnion'},
+  // {label: 'Outer', value:'outers'}
+]);
 const charLevel = ref(1)
 charLevel.value = char.level;
 const attack = useAttackStore();

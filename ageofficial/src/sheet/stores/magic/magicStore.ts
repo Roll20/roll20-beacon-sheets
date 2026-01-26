@@ -147,6 +147,14 @@ export const useSpellStore = defineStore('spells', () => {
       components
     });
   }
+  const printSpellDetails = async (spell: any, arcanaLabel: string) => {
+      await sendToChat({
+        title: spell.name,
+        subtitle: spell.arcanaType,
+        traits: [ arcanaLabel + ' Type: ' + spell.arcanaType],
+        description: spell.description,
+      });
+    }
   const setCurrentSpell = (_id: string) => {
     const spell = spells.value.find((item) => item._id === _id);
     if (!spell) return;
@@ -185,6 +193,7 @@ export const useSpellStore = defineStore('spells', () => {
     removeSpell,
     printSpell,
     printSpellDamage,
+    printSpellDetails,
     setCurrentSpell,
 
     dehydrate,

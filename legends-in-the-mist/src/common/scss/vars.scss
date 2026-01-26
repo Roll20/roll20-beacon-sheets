@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Labrada:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://db.onlinewebfonts.com/c/88b9b5e933e8eeb46e1e66c7b725a805?family=CCTreasureTrove+Regular');
+
+$sheet-primary-color: black;
+$sheet-secondary-color: #452b52;
+
+$color-1: #B27C4E;
+$color-2: #f9eddd;
+$color-3: #8b5f3e;
+$color-4: #e5d0b8;
+$color-5: #70957c;
+$color-6: #f9f5ec;
+$color-7: #97795f;
+$color-8: #63503f;
+$color-9: #e3d4c7;//#c0a48a;
+$color-10: #36804c;
+$color-11: #ac0000;
+
+html * {
+  --sheet-font-color: #{$sheet-primary-color};
+  --sheet-contrast-font-color: white;
+  // --font-title: 'CCTreasureTrove Regular', 'Times New Roman', serif;
+  --font-size-large: 14px;
+  --font-size-medium: 11px;
+  --font-size-small: 8px;
+  --font-size-xlarge: 18px;
+  --font-family-title: 'Cormorant Garamond', 'Times New Roman', serif;
+  --color-card-title: rgba(255,255,255,0.75);
+  --color-herocard-background: #{$color-2};
+  --color-herocard-border: #{$color-3};
+  --color-herocard-line: #{$color-4};
+  --color-herocard-title: var(--color-card-title);//#{$color-2};
+  --color-herocard-title-box: #{$color-1};
+  --color-themecard-background: #{$color-6};
+  --color-themecard-border: #{$color-8};
+  --color-themecard-line: #{$color-9};
+  --color-themecard-title: var(--color-card-title);
+  --color-themecard-title-box: #{$color-7};
+  --color-trackingchip-background: #{$color-5};
+  --color-positive: #{$color-10};
+  --color-negative: #{$color-11};
+}

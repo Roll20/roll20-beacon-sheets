@@ -1,0 +1,308 @@
+<template>
+  <div class="herocard card card--double-sided" :data-flipped="flipped">
+    <div class="card__container">
+      <div class="card__side card__side--front">
+        <div class="card__header" @click="flipped = !flipped">
+          <h2 class="title" v-if="theme.isFellowship">
+            Fellowship<br/>Theme Card
+            <SvgIcon class="decorator" icon="Campfire" />
+          </h2>
+          <h2 class="title" v-else>Theme Card</h2>
+        </div>
+        <div class="card__body" :class="{ 'card__body--fellowship': theme.isFellowship }">
+          <div class="card__section theme-meta" v-if="!theme.isFellowship">
+            <div class="theme-meta__mights break-padding">
+              <div class="theme-might image-toggle" v-for="might in spine.themeMights" :key="might">
+                <input type="radio" :name="`theme-might-${theme._id}`" :value="might" v-model="selectedMight"/>
+                <SvgIcon :icon="might" />
+              </div>
+            </div>
+            <div class="theme-meta__book">
+              <span class="title">Type</span>
+              <SelectInput v-model="theme.themebook" :showDefaultOption="true" defaultOptionLabel="Choose..." :options="spine.themes[theme.might].types.map(t => ({ value: t, label: t }))" />
+            </div>
+          </div>
+          <div class="card__section theme-powers">
+            <div class="list taglist">
+              <div class="theme-tag" v-for="power in powers" :key="power._id">
+                <div class="power-toggle image-toggle">
+                  <input type="checkbox" v-model="power.checked" :disabled="power.name.trim() === '' || power.scratched">
+                  <SvgIcon icon="Power"/>
+                </div>
+                <TextInput v-model="power.name" @clear="clearTheme(power)" :class="{ 'line-through': power.scratched }" />
+                <div class="scratched-toggle image-toggle">
+                  <input type="checkbox" v-model="power.scratched" :disabled="power.name.trim() === ''" @click="scratchPower(power)">
+                  <SvgIcon icon="Scratched"/>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card__section theme-weaknesses">
+            <div class="list">
+              <div class="theme-tag" v-for="weakness in weaknesses" :key="weakness._id">
+                <div class="weakness-toggle image-toggle">
+                  <input type="checkbox" v-model="weakness.checked" :disabled="weakness.name.trim() === ''">
+                  <SvgIcon icon="Weakness"/>
+                </div>
+                <TextInput v-model="weakness.name" @clear="clearTheme(weakness)"/>
+              </div>
+            </div>
+          </div>
+          <div class="card__section theme-quest">
+            <h3 class="title break-padding">Quest</h3>
+             <textarea v-model="theme.quest.description" class="smart-textarea"></textarea>
+             <div class="quest-progress">
+                <div class="quest-progress-item" v-for="progress in ['Abandon', 'Improve', 'Milestone']" :key="progress">
+                  <RangeBar v-model="theme.quest[progress.toLowerCase() as QuestImprovement]" :max="3" />
+                  <span class="title">{{ progress }}</span>
+                </div>
+             </div>
+          </div>
+        </div>
+        <div class="card__footer">
+          <LegendsInTheMist />
+        </div>
+      </div>
+      <div class="card__side card__side--back">
+        <div class="card__header" @click="flipped = !flipped">
+          <h2 class="title" v-if="theme.isFellowship">
+            Fellowship<br/>Theme Card
+            <SvgIcon class="decorator" icon="Campfire" />
+          </h2>
+          <h2 class="title" v-else>Theme Card</h2>
+        </div>
+        <div class="card__body">
+          <div class="card__section theme-improvements">
+            <h3 class="title break-padding">Special Improvements</h3>
+            <div class="list">
+              <template  v-for="improvement in theme.specialImprovements" :key="improvement._id" >
+                <TextInput v-if="optionsForImprovement(improvement.name).length === 0 || (improvement.name && !improvements.find(imp => imp.value === improvement.name))" v-model="improvement.name" />
+                <SelectInput v-else v-model="improvement.name" :options="optionsForImprovement(improvement.name)" showClearWhen="hover"/>
+              </template>
+              <!-- <AutoCompleteInput v-for="improvement in theme.specialImprovements" :key="improvement._id" v-model="improvement.name" :options="optionsForImprovement(improvement.name)" /> -->
+            </div>
+          </div>
+        </div>
+        <div class="card__footer">
+          <SonsOfOak />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import TextInput from '../shared/TextInput.vue';
+import RangeBar from '../shared/RangeBar.vue';
+import SelectInput from '../shared/SelectInput.vue';
+import { spine } from '@/spine/spine';
+import { themesStore, type Theme, type ThemeMight, type QuestImprovement, type Tag } from '@/sheet/stores/themes/themesStore';
+import SvgIcon from '../shared/SvgIcon.vue';
+import LegendsInTheMist from '../logo/LegendsInTheMist.vue';
+import SonsOfOak from '../logo/SonsOfOak.vue';
+import AutoCompleteInput from '../shared/AutoCompleteInput.vue';
+
+const props = withDefaults(defineProps<{
+  theme: Theme;
+}>(), {
+});
+
+const themes = themesStore();
+const powers = computed(() => props.theme.tags.filter(tag => tag.type === 'Power'));
+const weaknesses = computed(() => props.theme.tags.filter(tag => tag.type === 'Weakness'));
+const improvements = computed(() => {
+  const source = props.theme.isFellowship ? 'Fellowship' : (props.theme.might as ThemeMight);
+  return [...spine.themes[source].improvements, ...spine.themes['Variable'].improvements]
+    .map(imp => ({ value: imp, label: imp }));
+});
+
+const selectedImprovementNames = computed(() =>
+  (props.theme.specialImprovements ?? [])
+    .map(i => (i.name ?? '').trim())
+    .filter(n => n !== '')
+);
+
+const optionsForImprovement = (currentValue: string) =>
+  improvements.value.filter(o => o.value === currentValue || !selectedImprovementNames.value.includes(o.value));
+
+const flipped = ref(false);
+
+const selectedMight = ref<ThemeMight>(props.theme.isFellowship ? 'Origin' : props.theme.might);
+
+const clearTheme = (tag:Tag) => {
+  tag.checked = false;
+  tag.scratched = false;
+};
+
+watch(selectedMight, (newMight) => {
+  if (!props.theme.isFellowship && newMight !== props.theme.might) {
+    themes.updateTheme({ _id: props.theme._id, might: newMight, themebook: '' });
+  }
+});
+
+const scratchPower = (power:Tag) => {
+  power.checked = !power.scratched;
+};
+</script>
+
+<style lang="scss" scoped>
+  .card {
+    width: 184px;
+    height: 460px;
+    --color-textinput-line: var(--color-themecard-line);
+    --color-section-title-background: var(--color-themecard-line);
+    --color-rangebar-border: var(--color-themecard-title-box);
+        --color-textarea: var(--color-section-title-background);
+    --color-textarea-hover: var(--color-themecard-title-box);
+    --color-logo: rgba(0, 0, 0, 0.5);
+    &__side {
+      background-color: var(--color-themecard-background);
+      border: 2px solid rgba(0,0,0,0);//var(--color-themecard-border);
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-rows: min-content 1fr min-content;
+    }
+    &__header {
+      background-color: var(--color-themecard-title-box);
+      color: var(--color-themecard-title);
+      padding: 5px 0;
+      .decorator {
+        fill: var(--color-themecard-title)!important;
+      }
+    }
+     &__footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--color-themecard-title-box);
+      height: 30px;
+    }
+    &__body {
+      padding: 0 5px 5px 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  .taglist {
+    margin-top: -4px;
+  }
+  .fellowship-table {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .quest-progress {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 10px;
+    .title {
+      font-size: var(--font-size-small);
+    }
+  }
+  .theme-meta {
+    &__mights {
+      background-color: var(--color-themecard-line);
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      padding: 3px 0;
+      input:checked + .svg-icon {
+        fill: var(--color-themecard-title-box);
+      }
+    }
+    .image-toggle {
+      width: 18px;
+      height: 18px;
+    }
+    .svg-icon {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+    &__book {
+      display: grid;
+      grid-template-columns: min-content 1fr;
+      align-items: baseline;
+      gap: 3px;
+    }
+  }
+  .theme-tag {
+    display: grid;
+    grid-template-columns: min-content 1fr min-content;
+    align-items: center;
+  }
+  .scratched-toggle {
+    height: 14px;
+    width: 14px;
+    .svg-icon {
+      width: 14px;
+      height: 14px;
+      fill: #928680;
+    }
+    &:has(input:checked) {
+      input[type="text"] {
+        text-decoration: line-through;
+      }
+      .svg-icon {
+        fill: black
+      }
+    }
+    &:has(input:disabled) {
+      opacity: 0.35;
+      input { cursor: not-allowed; }
+    }
+  }
+  .power-toggle {
+    height: 14px;
+    width: 14px;
+    background-color: #d7c8bd;
+    border-radius: 3px;
+    .svg-icon {
+      width: 8px;
+      height: 8px;
+      fill: var(--color-positive);
+      opacity: 0.65;
+    }
+    &:has(input:checked) {
+      background-color: var(--color-positive);
+      .svg-icon {
+        fill: white;
+        opacity: 1;
+      }
+    }
+    &:has(input:disabled) {
+      opacity: 0.35;
+      input { cursor: not-allowed; }
+    }
+  }
+  .weakness-toggle {
+    height: 14px;
+    width: 14px;
+    background-color: #d7c8bd;
+    border-radius: 3px;
+    .svg-icon {
+      width: 8px;
+      height: 8px;
+      fill: var(--color-negative);
+      opacity: 0.5;
+    }
+    &:has(input:checked) {
+      background-color: var(--color-negative);
+      .svg-icon {
+        fill: white;
+        opacity: 1;
+      }
+    }
+    &:has(input:disabled) {
+      opacity: 0.35;
+      input { cursor: not-allowed; }
+    }
+  }
+  .card__body--fellowship {
+    padding-top: 17px;
+  }
+</style>

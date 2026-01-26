@@ -8,7 +8,7 @@
             </div>
 
             <div class="modal-body">
-              <div v-if="mode === 'create' && !feature.type" style="display: grid;grid-template-columns: repeat(auto-fit, minmax(min(100%, 30%), 1fr));gap: 1rem;">
+              <div v-if="mode === 'create' && !feature.type" :style="`display: grid;grid-template-columns: repeat(${qualitiesLength}, minmax(min(100%, 30%), 1fr));gap: 1rem;`">
                 <button v-for="qty in qualityOptions" :key="qty" class="age-quality-select-btn" @click="feature.type = qty;if(qty === 'Favored Stunt') feature.spCost = 1">
                   <div class="age-quality-section age-quality-class-icon" v-if="qty === 'Class'"></div>
                   <div class="age-quality-section age-quality-ancestry-icon" v-if="qty === 'Ancestry'"></div>
@@ -59,6 +59,14 @@
                           v-for="option in arcanaFocuses"
                           :key="`Arcana-${option}`"
                           :value="`Arcana (${option})`">
+                          {{ option }}
+                        </option>
+                      </optgroup>
+                      <optgroup label="Psychic" v-if="feature.ability === 'Intelligence' && settings.gameSystem === 'mage'">
+                        <option
+                          v-for="option in psychicFocuses"
+                          :key="`Psychic-${option}`"
+                          :value="`Psychic (${option})`">
                           {{ option }}
                         </option>
                       </optgroup>
@@ -121,13 +129,11 @@
                 <div class="mb-3 col">
                   <span class="age-input-label" id="basic-addon1">Talent Level</span>
                   <select
-                    class="age-atk-select form-select"
+                    class="age-atk-select form-select capitalize"
                       data-testid="test-spell-weaponType-input"
                       v-model="feature.qualityLevel"
                   >
-                    <option value="novice">Novice</option>
-                    <option value="expert">Expert</option>
-                    <option value="master">Master</option>
+                    <option v-for="lvl in qualityLevels" :key="lvl" :value="lvl" class="capitalize">{{ lvl }}</option>
                   </select>
                 </div>
 
@@ -191,7 +197,7 @@
               
               <!-- Quality Levels -->
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'novice' || feature.qualityLevel === 'expert' || feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'novice' || feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                       <span class="age-input-label">Novice</span>
                       <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
                         modules: {
@@ -212,7 +218,7 @@
                 </div>
               </div>
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'expert' || feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Expert</span>
                     <QuillEditor ref="quillEditor2" contentType="html" toolbar="" :options="{
                       modules: {
@@ -233,7 +239,49 @@
                 </div>
               </div>
               <div class="row" style="margin:0">
-                <div class="mb-5 col" v-if="feature.qualityLevel === 'master'" >
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
+                    <span class="age-input-label">Master</span>
+                    <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
+                      modules: {
+                        keyboard: {
+                            bindings: {
+                                enter: {
+                                    key: 13, // 'Enter' key
+                                    handler: (range, context) => {
+                                    // Default behavior of Quill (inserts a single paragraph)
+                                    const quill = this.$refs.quillEditor3.quill;
+                                    quill.formatLine(range.index, 1, 'block', true);
+                                    },
+                                },
+                            },
+                        },
+                      },
+                      scrollingContainer: true}" v-model:content="feature.qualityMaster" />
+                </div>
+              </div>
+              <div class="row" style="margin:0">
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'gransmaster' || feature.qualityLevel === 'apex'" >
+                    <span class="age-input-label">Master</span>
+                    <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
+                      modules: {
+                        keyboard: {
+                            bindings: {
+                                enter: {
+                                    key: 13, // 'Enter' key
+                                    handler: (range, context) => {
+                                    // Default behavior of Quill (inserts a single paragraph)
+                                    const quill = this.$refs.quillEditor3.quill;
+                                    quill.formatLine(range.index, 1, 'block', true);
+                                    },
+                                },
+                            },
+                        },
+                      },
+                      scrollingContainer: true}" v-model:content="feature.qualityMaster" />
+                </div>
+              </div>
+              <div class="row" style="margin:0">
+                <div class="mb-5 col" v-if="feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Master</span>
                     <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
                       modules: {
@@ -254,7 +302,7 @@
                 </div>
               </div>
             </div>
-              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization' && feature.type !== 'Special Feature')">
+              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization')">
                <h3 style="display: flex;">
                   <span>Modifiers</span>                  
                   <button class="link-btn" @click="addModifier" 
@@ -264,51 +312,9 @@
                 </button>
 
                 </h3>
-                <div v-for="(mod,index) in mods.parentItems(feature._id)" :key="index" style="display:flex;gap:10px;">
+                <div v-for="(mod) in mode === 'create' ? feature.modifiers : mods.parentItems(feature._id)" :key="mod" style="display:flex;gap:10px; margin-bottom: 10px;">
                   <BaseModView :mod="mod" :modOptions="modOptions" />
-                </div>
-                <div v-for="(mod,index) in feature.modifiers" :key="mod" style="display:flex;gap:10px;">
-                  <div>
-                    <select
-                      class="age-atk-select form-select"
-                        data-testid="test-spell-weaponType-input"
-                        :id="`weaponType-${feature._id}`"
-                        v-model="mod.option"
-                    >
-                      <option v-for="op in modOptions" :key="op" :value="op">{{ op }}</option>
-                    </select>
-                  </div>
-                  <!-- <div v-if="mod.option === 'Damage'">
-                    <label class="container">Permanent
-                      <input type="radio" id="one" value="permanent" v-model="mod.conditional" />
-                      <span class="checkmark"></span>
-                    </label>
-                    <label class="container">Optional
-                      <input type="radio" id="one" value="optional" v-model="mod.conditional" />
-                      <span class="checkmark"></span>
-                    </label>
-                  </div> -->
-                  <div v-if="mod.option === 'Ability Reroll'">
-                    <AbilityModView :mod="mod" />
-                  </div>
-                  <div v-else-if="mod.option === 'Spell'">
-                    <SpellModView :mod="mod" />
-                  </div>
-                  <div v-else-if="mod.option === 'Custom Attack'">
-                    <CustomAttackModView :mod="mod" />
-                  </div>
-                  <div v-else>
-                    <input type="number"  class="form-control" placeholder="0"  v-model="mod.variable" v-if="mod.option && mod.option !== 'Damage'" />
-                  </div>
-                  <div>
-                    <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.roll" v-if="mod.option === 'Damage'" />
-                  </div>
-                  
-                  <button class="link-btn" @click="removeModifier(index)" 
-                  style="background: none; font-weight: bold;border:none;" v-tippy="{ content: 'Remove Modifier' }">
-                  <font-awesome-icon :icon="['fa', 'minus']" />
-                </button>
-                </div>
+                </div>                
               </div>
             </div>
         <div class="modal-footer-actions" v-if="mode === 'create'">
@@ -316,7 +322,7 @@
                 <div >
                   <button v-if="mode === 'create' && feature.type"
                 class="confirm-btn"
-                @click="useItemStore().addItem(feature);$emit('close')"
+                @click="createQuality();$emit('close')"
               >Create</button>      
                 </div>
           </slot>
@@ -343,17 +349,16 @@
 <script setup>
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-// import { mageFocuses, fage2eFocuses, blueroseFocuses,fage1eFocuses, cthulhuFocuses } from '@/components/modifiers/qualities';
 import { computed, ref } from 'vue';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { v4 as uuidv4 } from 'uuid';
 import SpellModView from '@/components/modifiers/SpellModView.vue';
 import AbilityModView from '@/components/modifiers/AbilityModView.vue';
-import { bluerose, cthulhu, fage1e, fage2e, mage } from '../modifiers/focuses';
+import { bluerose, cthulhu, expanse, fage1e, fage2e, mage } from '../modifiers/focuses';
 import CustomAttackModView from '../modifiers/CustomAttackModView.vue';
 import {useModifiersStore} from '@/sheet/stores/modifiers/modifiersStore'
 import BaseModView from '@/components/modifiers/BaseModView.vue';
-import { brArcana, fageArcana, magePowers } from '../magic/magicTypes';
+import { brArcana, fageArcana, magePowers, magePsychicPowers } from '../magic/magicTypes';
 // const qualityOptions = ['Ability Focus', 'Ancestry', 'Class', 'Favored Stunt', 'Specialization', 'Talent' ];
 const props = defineProps({
   show: Boolean,
@@ -363,21 +368,12 @@ const props = defineProps({
 });
 const char = useCharacterStore();
 const mods = useModifiersStore();
+const settings = useSettingsStore()
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower'];
-
-// const filteredFocuses = ref({
-//   Accuracy: ['Arcane Blast', 'Black Powder', 'Bows', 'Brawling', 'Dueling', 'Grenades', 'Light Blades', 'Slings', 'Staves'],
-//   Communication: ['Animal Handling', 'Bargaining', 'Deception','Disguise', 'Etiquette', 'Gambling', 'Investigation', 'Leadership','Performing', 'Persuasion', 'Seduction'],
-//   Constitution: ['Rowing', 'Running', 'Stamina', 'Swimming','Tolerance'],
-//   Dexterity: ['Acrobatics', 'Calligraphy', 'Crafting', 'Initiative', 'Legerdemain', 'Lock Picking', 'Riding', 'Sailing', 'Stealth', 'Traps'],
-//   Fighting: ['Axes', 'Bludgeons', 'Heavy Blades', 'Lances','Polearms', 'Spears'],
-//   Intelligence: ['Arcana', 'Arcane Lore', 'Brewing', 'Cartography','Cryptography', 'Cultural Lore', 'Engineering', 'Evaluation','Healing', 'Heraldry', 'Historical Lore', 'Military Lore', 'Musical Lore', 'Natural Lore', 'Navigation', 'Religious Lore', 'Research,Thieves’ Lore', 'Writing'],
-//   Perception: ['Empathy', 'Hearing', 'Searching', 'Seeing', 'Smelling','Tasting', 'Touching', 'Tracking'],
-//   Strength: ['Climbing', 'Driving', 'Intimidation', 'Jumping','Might', 'Smithing'],
-//   Willpower: ['Courage', 'Faith', 'Morale', 'Self-Discipline']
-// })
+// mods.modifiers = [];
 const filteredFocuses = ref(fage2e)
 const arcanaFocuses = ref([]);
+const psychicFocuses = ref([]);
 switch(useSettingsStore().gameSystem){
   case 'fage2e':
     filteredFocuses.value = fage2e;
@@ -386,6 +382,7 @@ switch(useSettingsStore().gameSystem){
   case 'mage':
     filteredFocuses.value = mage;
     arcanaFocuses.value = magePowers;
+    psychicFocuses.value = magePsychicPowers;
   break;
   case 'fage1e':
     filteredFocuses.value = fage1e;
@@ -397,6 +394,8 @@ switch(useSettingsStore().gameSystem){
   case 'cthulhu':
     filteredFocuses.value = cthulhu;
   break;
+  case 'expanse':
+    filteredFocuses.value = expanse;
 }
 const setFocus = (selectedOption) => {
   const [group, option] = selected.value.split('(');
@@ -406,72 +405,41 @@ const setFocus = (selectedOption) => {
     props.feature.name = group === 'custom' ? 'custom' : group;
   }
 }
-const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : props.feature.name || '');
+const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : psychicFocuses.value.includes(props.feature.name) ? `Psychic (${props.feature.name})` : props.feature.name || '');
 
-const modOptions = ref(['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 
-// 'Health Points', 'Magic Points',
- 'Speed', 'Spell', 
-//  'Stunt Die'
-])
-// let filteredFocuses = []
-// let focuses = [];
-// function filteredItems() {
-//       return focuses[props.feature.ability] || [];
-//     }
-// function setAbilityFocuses(ability) {
-//   switch(props.feature.ability){
-//     case 'Accuracy':
-//     focuses = ['Arcane Blast', 'Black Powder', 'Bows', 'Brawling', 'Dueling', 'Grenades', 'Light Blades', 'Slings', 'Staves']
-//     break;
-//     case 'Willpower':
-//       // debugger
-//       setTimeout(()=>{
-//     focuses = ['Courage', 'Faith', 'Morale', 'Self-Discipline']
-//   },50)
-//     break;
-//   }
+const modOptions = computed(() => {
+  if(useSettingsStore().showArcana){
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Spell'];
+  } else {
+    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Toughness'];
+  }
+})
 
-  
-// }
-// const setWeaponGroupAbility = () => {
-//   // debugger
-//   switch(props.spell.weaponGroup){
-//     // ACCURACY
-//     case('black powder'):
-//     case('bows'):
-//     case('brawling'):
-//     case('dueling'):
-//     case('light blades'):
-//     case('slings'):
-//     case('staves'):
-//       props.spell.weaponGroupAbility = 'Accuracy';
-//     break;
-//     // FIGHTING
-//     case('axes'):
-//     case('bludgeons'):
-//     case('heavy blades'):
-//     case('lances'):
-//     case('polearms'):
-//     case('spears'):
-//       props.spell.weaponGroupAbility = 'Fighting';
-//     break;
-//     default:
-//       props.spell.weaponGroupAbility = ''
-//     break;
-//   }
-// }
+const qualityLevels = computed(() => {
+  if(useSettingsStore().showAfterMastery){
+    return ['novice','expert','master','grandmaster','apex'];
+  } else {
+    return ['novice','expert','master'];
+  }
+})
+
+const qualitiesLength = computed(() => {
+  return props.qualityOptions.length % 2 === 0 ? 2 : 'auto-fit';
+})
+
+const createQuality = () => {
+  useItemStore().addItem(props.feature);
+}
 const addModifier = () => {
-  mods.addModifier(props.feature)
-  // if(props.feature._id){
-  //   useItemStore().addModifier(props.feature)
-  // } else {
-  //   Object.assign(props.feature, {
-  //     modifiers:[{
-  //       _id:uuidv4(),
-  //       option:''
-  //     }]
-  //   })
-  // }
+  if(props.feature._id){
+    mods.addModifier(props.feature)
+  } else {
+    Object.assign(props.feature, {
+      modifiers:[{
+        _id:uuidv4()
+      }]
+    })
+  }
 }
 const removeModifier = (index) => {
   if(props.feature._id){

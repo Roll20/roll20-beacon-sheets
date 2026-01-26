@@ -10,6 +10,8 @@ import getRollResult from '@/utility/getRollResult';
 import { useBioStore } from '../bio/bioStore';
 import { useSettingsStore } from '../settings/settingsStore';
 import { useMetaStore } from '../meta/metaStore';
+import { arrayToObject, objectToArray } from '@/utility/objectify';
+import { v4 as uuidv4 } from 'uuid';
 
 export type CharacterHydrate = {
   character: {
@@ -34,6 +36,8 @@ export type CharacterHydrate = {
     fatigue?: number;
     toughnessPrimary?: string | null;
     powerFatigue?: number;
+    customMovements?: any[];
+    originFaction?: string;
   };
 };
 
@@ -91,6 +95,8 @@ export const useCharacterStore = defineStore('character', () => {
   const toughnessPrimary = ref('');
   const toughnessLevelMod = ref(0);
   const defenseLevelMod = ref(0);
+  const customMovements = ref<{ _id: string; name: string; speed: number }[]>([]);
+  const originFaction = ref('');
   const gameModeBonus = () => {
     if(settings.gameSystem !== 'mage') return;
     switch (useSettingsStore().campaignMode) {  
@@ -177,6 +183,13 @@ export const useCharacterStore = defineStore('character', () => {
     powerFatigue.value = 0;
   }  
 
+  const addMovement = () => {
+    customMovements.value.push({ _id:uuidv4(), name: '', speed: 0 });
+  }
+  const deleteMovement = (index:number) => {
+    customMovements.value.splice(index, 1);
+  }
+
   const dehydrate = () => {
     return {
       character: {
@@ -197,6 +210,9 @@ export const useCharacterStore = defineStore('character', () => {
         fatigue: fatigue.value,
         toughnessPrimary: toughnessPrimary.value,
         powerFatigue: powerFatigue.value,
+        // ensure we pass an object (empty object if no movements)
+        customMovements: arrayToObject(customMovements.value ?? []),
+        originFaction: originFaction.value,
         // We don't need to save the computed ones on Firebase as long as we have everything needed to calculate them.
       },
     };
@@ -221,6 +237,19 @@ export const useCharacterStore = defineStore('character', () => {
     fatigue.value = hydrateStore.character.fatigue ?? fatigue.value;
     toughnessPrimary.value = hydrateStore.character.toughnessPrimary ?? toughnessPrimary.value;
     powerFatigue.value = hydrateStore.character.powerFatigue ?? powerFatigue.value;
+    originFaction.value = hydrateStore.character.originFaction ?? originFaction.value;
+
+    // Safely convert stored object -> array. If nothing stored, set empty array.
+    const stored = hydrateStore.character.customMovements;
+    const arr = stored ? objectToArray(stored) : [];
+    // make sure each entry has an _id and sane defaults
+    customMovements.value = Array.isArray(arr)
+      ? arr.map((m: any) => ({
+          _id: m._id ?? uuidv4(),
+          name: m.name ?? '',
+          speed: typeof m.speed === 'number' ? m.speed : Number(m.speed) || 0,
+        }))
+      : [];
   };
 
   // Posts a message to chat with the "chat" template.
@@ -320,13 +349,17 @@ export const useCharacterStore = defineStore('character', () => {
     fortuneWounded,
     powerFatigue,
     resetPowerFatigue,
+    customMovements,
+    originFaction,
     dehydrate,
     hydrate,
     toughnessPrimary,
     toughnessLevelMod,
     defenseLevelMod,
     gameModeBonus,
-    rollPowerFatigueTest
+    rollPowerFatigueTest,
+    addMovement,
+    deleteMovement
   };
 });
 

@@ -1,0 +1,217 @@
+@use '../../common/scss/vars.scss';
+
+rolltemplate.sheet-roll__card {
+  display: block;
+  max-width: 100%;
+  background-image: url('https://i.postimg.cc/Lsq5CdvF/ATR-Background.jpg');
+  background-size: auto 600px;
+  color: black;
+  border: 1px solid var(--sheet-roll-border-color);
+  font-family: var(--font-family-primary);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: -35px;
+    background-image: url(https://i.postimg.cc/hPwRYwHV/top-mask.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 300%;
+    height: 100%;
+    opacity: 0.5;
+    z-index: 1;
+    pointer-events: none;
+  }
+  &:after {
+    $ratio: 1.073333333;
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 0;
+    background-image: url('https://i.postimg.cc/k4nhhFs0/blood-splash.png');
+    background-size: cover;
+    width: 200px;
+    height: 200px * $ratio;
+    opacity: 0.4;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .header {
+    background: var(--sheet-roll-primary-bg);
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    border-bottom: 1px solid var(--sheet-roll-border-color);
+
+    &__character-name {
+      font-size: 0.8rem;
+      font-weight: bold;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+    &__title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    &__subtitle {
+      font-size: var(--size-font-small);
+      margin-top: 0.25rem;
+    }
+  }
+
+  .sheet-roll__roll-content {
+    padding: 0.75rem;
+  }
+
+  .sheet-roll__properties {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: start;
+    border-top: 1px solid var(--sheet-roll-border-color);
+    &:not(:has(.sheet-roll__property)) {
+      display: none;
+    }
+  }
+  
+  .sheet-roll__description {
+    padding: 0.75rem;
+    margin: 0 0.75rem 0.75rem;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 0.25rem;
+    border-top: 1px solid var(--sheet-roll-border-color);
+    font-size: var(--size-font-small);
+    line-height: inherit;
+    position: relative;
+    z-index: 4;
+    &:empty {
+      display: none;
+    }
+  }
+  
+  .roll__total {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+
+    &--crit-success {
+      color: green;
+    }
+    &--crit-fail {
+      color: red;
+    }
+  }
+
+  .show-more {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-top: 20px;
+    &__button {
+      cursor: pointer;
+      list-style-type: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      &::before {
+        content: '';
+        height: 1px;
+        background: rgba(0, 0, 0, 0.35);
+        width: calc(100% - 10px);
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        z-index: 1;
+      }
+      &:after {
+        content: "▼";
+        font-size: 8px;
+        padding: 1px 1px;
+        color: var(--color-box-detail);
+        background: var(--color-box);
+        border-radius: 10px;
+        z-index: 2;
+        position: relative;
+        width: 30px;
+        text-align: center;
+        line-height: normal;
+      }
+    }
+    &__content {
+      width: 100%;
+      padding: 10px 0;
+    }
+    &[open] {
+      flex-direction: column-reverse;
+      border-top: 1px solid rgba(0, 0, 0, 0.35);
+      .show-more__button {
+        &:after {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  .roll__components {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    font-size: 0.9rem;
+    .roll__d20-results {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+    font-weight: bold;
+    border: 1px solid var(--sheet-roll-border-color);
+    background-color: #f9f9f9;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+  }
+
+  .roll__d20-result {
+    font-size: 1.1rem;
+    padding: 0 0.25rem;
+  }
+
+  .roll__d20-result--kept {
+    color: var(--sheet-roll-primary-bg);
+    border: 1px solid var(--sheet-roll-primary-bg);
+    border-radius: 3px;
+  }
+
+  .roll__d20-result--discarded {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  }
+
+  .damage-group {
+    &__subtotal {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+    }
+  
+    &__total {
+      font-weight: bold;
+    }
+  }
+
+  
+}

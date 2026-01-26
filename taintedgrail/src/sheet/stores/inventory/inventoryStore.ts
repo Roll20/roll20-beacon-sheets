@@ -2,10 +2,10 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import { arrayToObject, objectToArray } from '@/utility/objectify';
-import sendToChat from '@/utility/sendToChat';
 import { v4 as uuidv4 } from 'uuid';
 import { useWaysStore } from '../ways/waysStore';
 import sendUserError from '@/utility/sendUserError';
+import { spellDisciplineToFriendlyName } from '@/utility/formattedNames';
 
 /**
  * All of these category types (should) correspond with the Roll20 TG compendium categories,
@@ -15,6 +15,7 @@ import sendUserError from '@/utility/sendUserError';
 export enum CategoryType {
   WEAPON = 'Weapons',
   ARMOR = 'Armors',
+  SHIELDS = 'Shields',
   SPELL = 'Spells',
   // All the below ones are "show in chat" items and only need a name and description.
   EQUIPMENT = 'Equipment',
@@ -26,6 +27,8 @@ export enum CategoryType {
   AWAKENING = 'Awakenings',
   RISE = 'Rises',
   ASCENSION = 'Ascensions',
+  TRAIT = 'Traits',
+  SPECIAL_ABILITY = 'Special Abilities',
 }
 
 export type Item = {
@@ -45,9 +48,7 @@ export type Weapon = Item & {
 };
 
 export type Armor = Item & {
-  standardProtection: number;
-  offensiveProtection: number;
-  defensiveProtection: number;
+  protection: number;
 };
 
 export type Spell = Item & {
@@ -62,6 +63,7 @@ export type InventoryHydrate = {
   inventory: {
     weapons: Record<string, Weapon>;
     armors: Record<string, Armor>;
+    shields: Record<string, Armor>;
     spells: Record<string, Spell>;
     equipment: Record<string, Item>;
     torments: Record<string, Item>;
@@ -73,12 +75,17 @@ export type InventoryHydrate = {
     rises: Record<string, Item>;
     ascensions: Record<string, Item>;
     riches: number;
+
+    // NPC Only
+    traits: Record<string, Item>;
+    specialAbilities: Record<string, Item>;
   };
 };
 
 export const useInventoryStore = defineStore('inventory', () => {
   const weapons: Ref<Array<Weapon>> = ref([]);
   const armors: Ref<Array<Armor>> = ref([]);
+  const shields: Ref<Array<Armor>> = ref([]);
   const spells: Ref<Array<Spell>> = ref([]);
   const equipment: Ref<Array<Item>> = ref([]);
   const torments: Ref<Array<Item>> = ref([]);
@@ -91,10 +98,14 @@ export const useInventoryStore = defineStore('inventory', () => {
   const ascensions: Ref<Array<Item>> = ref([]);
   const riches: Ref<number> = ref(0);
 
+  const traits: Ref<Array<Item>> = ref([]);
+  const specialAbilities: Ref<Array<Item>> = ref([]);
+
   // Mapper to not need giant switch/if statement blocks.
   const categoryArrayMap = {
     [CategoryType.WEAPON]: weapons,
     [CategoryType.ARMOR]: armors,
+    [CategoryType.SHIELDS]: shields,
     [CategoryType.SPELL]: spells,
     [CategoryType.EQUIPMENT]: equipment,
     [CategoryType.TORMENT]: torments,
@@ -105,6 +116,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     [CategoryType.AWAKENING]: awakenings,
     [CategoryType.RISE]: rises,
     [CategoryType.ASCENSION]: ascensions,
+    [CategoryType.TRAIT]: traits,
+    [CategoryType.SPECIAL_ABILITY]: specialAbilities,
   } as const;
 
   const createGenericItem = (item: any, categoryName: CategoryType): AnyItem => ({
@@ -128,9 +141,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   const enrichArmor = (baseItem: AnyItem, item: any): Armor =>
     ({
       ...baseItem,
-      standardProtection: item.properties['data-StandardProtection'],
-      offensiveProtection: item.properties['data-OffensiveProtection'],
-      defensiveProtection: item.properties['data-DefensiveProtection'],
+      protection: item.properties['data-Protection'],
     } as Armor);
 
   const enrichSpell = (baseItem: AnyItem, item: any): Spell =>
@@ -140,6 +151,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       mpCost: parseInt(item.properties['data-MpCost']) || 0,
       castTime: item.properties['Casting Time'] || '',
     } as Spell);
+
   const addItem = async (item: any, categoryName: CategoryType) => {
     const { getDisciplineByName } = useWaysStore();
 
@@ -155,8 +167,13 @@ export const useInventoryStore = defineStore('inventory', () => {
     let canAdd = true;
     // Check if the player has the discipline if it's required.
     if (categoryName === CategoryType.WEAPON || categoryName === CategoryType.SPELL) {
-      const discipline = item.properties['data-Discipline'];
+      let discipline = item.properties['data-Discipline'];
       if (discipline && discipline !== '') {
+        if (categoryName === CategoryType.SPELL) {
+          // For spells we need to convert to friendly name.
+          discipline = spellDisciplineToFriendlyName(discipline);
+        }
+
         const disciplineObject = getDisciplineByName(discipline);
         canAdd = disciplineObject !== undefined;
         if (!canAdd) {
@@ -192,6 +209,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       case CategoryType.WEAPON:
         enrichedItem = enrichWeapon(baseItem, item);
         break;
+      case CategoryType.SHIELDS:
       case CategoryType.ARMOR:
         enrichedItem = enrichArmor(baseItem, item);
         break;
@@ -224,6 +242,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       inventory: {
         weapons: arrayToObject(weapons.value),
         armors: arrayToObject(armors.value),
+        shields: arrayToObject(shields.value),
         spells: arrayToObject(spells.value),
         equipment: arrayToObject(equipment.value),
         torments: arrayToObject(torments.value),
@@ -235,6 +254,8 @@ export const useInventoryStore = defineStore('inventory', () => {
         rises: arrayToObject(rises.value),
         ascensions: arrayToObject(ascensions.value),
         riches: riches.value,
+        traits: arrayToObject(traits.value),
+        specialAbilities: arrayToObject(specialAbilities.value),
       },
     };
   };
@@ -243,6 +264,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   const hydrate = (hydrateStore: InventoryHydrate) => {
     weapons.value = objectToArray(hydrateStore.inventory.weapons) || weapons.value;
     armors.value = objectToArray(hydrateStore.inventory.armors) || armors.value;
+    shields.value = objectToArray(hydrateStore.inventory.shields) || shields.value;
     spells.value = objectToArray(hydrateStore.inventory.spells) || spells.value;
     equipment.value = objectToArray(hydrateStore.inventory.equipment) || equipment.value;
     torments.value = objectToArray(hydrateStore.inventory.torments) || torments.value;
@@ -254,11 +276,14 @@ export const useInventoryStore = defineStore('inventory', () => {
     rises.value = objectToArray(hydrateStore.inventory.rises) || rises.value;
     ascensions.value = objectToArray(hydrateStore.inventory.ascensions) || ascensions.value;
     riches.value = hydrateStore.inventory.riches || riches.value;
+    traits.value = objectToArray(hydrateStore.inventory.traits) || traits.value;
+    specialAbilities.value = objectToArray(hydrateStore.inventory.specialAbilities) || specialAbilities.value;
   };
 
   return {
     weapons,
     armors,
+    shields,
     spells,
     equipment,
     torments,
@@ -270,7 +295,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     rises,
     ascensions,
     riches,
-
+    traits,
+    specialAbilities,
     addItem,
     removeItem,
     dehydrate,

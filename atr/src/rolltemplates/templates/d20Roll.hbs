@@ -1,0 +1,23 @@
+{{#> card sourceType=sourceType title=title subtitle=subtitle properties=properties description=description damageRollAction=damageRollAction characterName=characterName}}
+  {{> rollTotal total=total resultType=resultType}}
+  <details class="show-more">
+    <summary class="show-more__button"></summary>
+    <div class="show-more__content">
+      <div class="roll__components">
+        <div class="roll__d20-results">
+          {{#if isRestricted}}
+            <span class="roll__d20-label">d10s:</span>
+          {{else}}
+            <span class="roll__d20-label">d20s:</span>
+          {{/if}}
+          {{#each d20s}}
+            <span class="roll__d20-result {{#if this.kept}}roll__d20-result--kept{{else}}roll__d20-result--discarded{{/if}}">
+              {{this.value}}
+            </span>
+          {{/each}}
+        </div>
+        {{> rollComponents components=components }}
+      </div>
+    </div>
+  </details>
+{{/card}}

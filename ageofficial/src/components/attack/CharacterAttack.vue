@@ -5,8 +5,8 @@
           <div class="age-combat-section age-combat-axes-icon" v-if="attack.weaponGroup === 'Axes'"></div>
           <div class="age-combat-section age-combat-blackPowder-icon" v-if="attack.weaponGroup === 'Black Powder'"></div>
           <div class="age-combat-section age-combat-bludgeons-icon" v-if="attack.weaponGroup === 'Bludgeons'"></div>
-          <div class="age-combat-section age-combat-bows-icon" v-if="attack.weaponGroup === 'Bows'"></div>
-          <div class="age-combat-section age-combat-brawling-icon" v-if="attack.weaponGroup === 'Brawling'"></div>
+          <div class="age-combat-section age-combat-bows-icon" v-if="attack.weaponGroup === 'Bows' || (attack.option === 'Custom Attack' && attack.weaponType === 'Ranged')"></div>
+          <div class="age-combat-section age-combat-brawling-icon" v-if="settings.gameSystem !== 'expanse' && attack.weaponGroup === 'Brawling' || (attack.option === 'Custom Attack' && attack.weaponType === 'Melee')"></div>
           <div class="age-combat-section age-combat-dueling-icon" v-if="attack.weaponGroup === 'Dueling'"></div>
           <div class="age-combat-section age-combat-heavyBlades-icon" v-if="attack.weaponGroup === 'Heavy Blades'"></div>
           <div class="age-combat-section age-combat-lances-icon" v-if="attack.weaponGroup === 'Lances'"></div>
@@ -16,12 +16,15 @@
           <div class="age-combat-section age-combat-spears-icon" v-if="attack.weaponGroup === 'Spears'"></div>
           <div class="age-combat-section age-combat-staves-icon" v-if="attack.weaponGroup === 'Staves'"></div>
           <div class="age-combat-section age-combat-magic-icon" v-if="attack.weaponType === 'Spell Ranged'"></div>
+          <div class="age-combat-section age-combat-magic-melee-icon" v-if="attack.weaponType === 'Spell Melee'"></div>
           <div class="age-combat-section age-combat-pistols-icon" v-if="attack.weaponGroup === 'Pistols'"></div>
           <div class="age-combat-section age-combat-longarms-icon" v-if="attack.weaponGroup === 'Long Arms'"></div>
           <div class="age-combat-section age-combat-shotguns-icon" v-if="attack.weaponGroup === 'Shotguns'"></div>
           <div class="age-combat-section age-combat-assaultrifles-icon" v-if="attack.weaponGroup === 'Assault Rifles'"></div>
           <div class="age-combat-section age-combat-smgs-icon" v-if="attack.weaponGroup === 'SMGs'"></div>
           <div class="age-combat-section age-combat-grenades-icon" v-if="attack.weaponGroup === 'Grenades'"></div>
+          <div class="age-combat-section age-item-weapon-icon" v-if="settings.gameSystem === 'expanse' && attack.weaponType === 'Melee'"></div>
+          <div class="age-combat-section age-item-weapon-ranged-icon" v-if="settings.gameSystem === 'expanse' && attack.weaponType === 'Ranged'"></div>
 
           </div>        
           <div class="age-combat-section age-combat-natural-icon" v-if="attack.weaponType === 'Natural'"></div>
@@ -34,7 +37,7 @@
         </div>
         
         <div class="age-weapon-range-reload age-combat-range">
-          <div v-if="attack.weaponType === 'Ranged'">
+          <div v-if="attack.weaponType === 'Ranged' || attack.weaponType === 'Spell Ranged'">
             {{ attack.shortRange }} ~ {{ attack.longRange }} yds
           </div>
           <div class="age-weapon-reload" v-if="attack.reload">
@@ -137,7 +140,22 @@ const settings = useSettingsStore();
 const damageMods = damageMod; 
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
-const trained = computed(() => (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2 : 0);
+const trained = computed(() => { 
+  if(props.attack.option === 'Custom Attack'){
+    return 0;
+  }
+  // console.log(
+  //   (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? 
+  //   char.weaponGroups.includes(props.attack.weaponGroup) ? 
+  //   0 : 5 : 1)
+  if(settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'){
+    return char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : -2;
+  } else {
+    return 0
+  }
+  // return (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : props.attack.weaponType === 'Natural' ? 0: -2 : 0
+});
+
 const attackHit = computed(() => attackToHit(props.attack).value);
 const modsBonus = computed(() => {
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';
@@ -149,10 +167,14 @@ const modsBonus = computed(() => {
     });
   const baseModifier = Number(mod)  || 0; // Calculate mod / 2 only once
   const abilityBonus = ref(0);
-  if (char.weaponGroups.includes(props.attack.weaponGroup)) {
-    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) ;
-  } else if(props.attack.weaponType === 'Spell Ranged'){
-    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility]?.base) ; 
+  if(settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'){
+    if (char.weaponGroups.includes(props.attack.weaponGroup)) {
+      abilityBonus.value = Math.floor(Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) / 2) ;
+    } else if(props.attack.weaponType === 'Spell Ranged'){
+      abilityBonus.value = Math.floor(Number(ability.abilityScores[props.attack.weaponGroupAbility]?.base) / 2) ; 
+    }
+  } else {
+    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) ;    
   }
   const totalModifiers = modifiersStore.reduce((total, item) => {
     const value = item.bonus || item.penalty || 0; // Use bonus or penalty, default to 0 if neither
@@ -165,7 +187,6 @@ const modsBonus = computed(() => {
   }
   return `${base}${sign}${Math.abs(modifier)}`;
 });
-
 const filteredDamageMods = computed(()=>{
   return damageMods.value.filter(mod => {
     // Filter out stunts with type 'Spell' if the attack is 'melee' or 'ranged'
@@ -186,10 +207,11 @@ let toAttackRoll = 0
 
 const setAttackRoll = () => {
   if(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]){
-    toAttackRoll = Number(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility].base) + trained.value;
+    const attackAbility = props.attack.option === 'Custom Attack' && props.attack.weaponType === 'Spell Ranged' ? 'Accuracy' : props.attack.weaponGroupAbility;
+    toAttackRoll = Number(useAbilityScoreStore().abilityScores[attackAbility].base) + trained.value;
   }
 }
-setAttackRoll()
+setAttackRoll();
 
 const focus = useAbilityFocusesStore();
 let sfb = {}
@@ -225,8 +247,12 @@ const handleDelete = () => {
 };
 const handlePrint = () => {
   const attackStore = useAttackStore();
-  attackStore.printAttack(props.attack,toAttackRoll,attackFocus(props.attack));
+  setAttackRoll()
+  const theAttack = props.attack;
+  theAttack.weaponGroupAbility = props.attack.option === 'Custom Attack' && props.attack.weaponType === 'Spell Ranged' ? 'Accuracy' : props.attack.weaponGroupAbility;
+  attackStore.printAttack(theAttack,toAttackRoll,attackFocus(props.attack));
 };
+
 const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   const attackStore = useAttackStore();
   const attackDamage = Object.assign({}, props.attack);
@@ -240,14 +266,13 @@ const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   if(attackDamage.spCost){
     char.stunts = char.stunts - attackDamage.spCost;
   }
-  console.log(attackDamage)
   attackStore.printAttackDamage(attackDamage); 
 }
+
 const selectedAttack = () => {
   const attackStore = useAttackStore();
   attackStore.setCurrentAttack(props.attack._id);
 };
-
 
 function mergeDice(rolls) {
   // Create an object to track the number of each type of dice

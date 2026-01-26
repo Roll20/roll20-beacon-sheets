@@ -50,6 +50,9 @@ body.bluerose {
             & .age-orb-highlight {
                 background-color: $ageBlueRoseColor;
             }
+            & .age-currency-container__coin {
+                background-color: $ageBlueRoseColor;
+            }
         }
         & .age-character-bio-value {
             color: $ageBlueRoseColor;

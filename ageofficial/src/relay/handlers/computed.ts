@@ -75,8 +75,10 @@ export const setLife = (
 export const getHealthPoints = ({ character }: { character: Character }) => {
   if (!character.attributes?.character) return {};
   const current = (character.attributes.character as CharacterHydrate).character.health;
+  const max = (character.attributes.character as CharacterHydrate).character.healthMax;
   return {
     current,
+    max
   };
 }
 export const setHealth = (
@@ -111,8 +113,10 @@ export const setHealth = (
 export const getMagicPoints = ({ character }: { character: Character }) => {
   if (!character.attributes?.character) return {};
   const current = (character.attributes.character as CharacterHydrate).character.magic;
+  const max = (character.attributes.character as CharacterHydrate).character.magicMax;
   return {
     current,
+    max
   };
 }
 export const setMagic = (

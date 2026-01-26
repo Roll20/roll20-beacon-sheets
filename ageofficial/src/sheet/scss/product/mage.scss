@@ -140,6 +140,9 @@ body.modernAge {
         & .age-orb-highlight {
             background-color: $ageMAGEColor;
         }
+        & .age-currency-container__coin {
+                background-color: $ageMAGEColor;
+            }
     }  
     & .sidebar {
         & .age-sidebar-list {

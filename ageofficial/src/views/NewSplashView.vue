@@ -11,6 +11,9 @@
             <button class="age-ruleset-btn" aria-label="Blue Rose AGE Ruleset" @click="selectSystem('blue rose');$emit('close')">
                 <img src="/src/assets/logos/bluerose.png" alt="Blue Rose AGE" role="presentation">
             </button>
+            <button class="age-ruleset-btn" aria-label="Expanse AGE Ruleset" @click="selectSystem('expanse');$emit('close')">
+                <img src="/src/assets/logos/expansewhite.png" alt="Expanse AGE" role="presentation">
+            </button>
         </div>
         <h6>*This can be changed later in your sheet settings</h6>  
     </div>
@@ -23,6 +26,9 @@ const settings = useSettingsStore();
 
 const selectSystem = (system) => {
     settings.gameSystem = system;
+    if(system === 'expanse'){
+        settings.useFortune = true;
+    }
 }
 </script>
 <style scoped lang="scss">
@@ -77,7 +83,7 @@ const selectSystem = (system) => {
 }
 @media (min-width:601px){
     .age-splash-rulesets {
-        grid-template-columns: repeat(3,1fr);
+        grid-template-columns: repeat(2,1fr);
         padding:10px 25px;
 
     }

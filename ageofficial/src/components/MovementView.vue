@@ -1,73 +1,94 @@
 <template>
-    <div class="section-card" style="display: block; position: relative;">    
-      <div class="config-container">
-    <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
-      <font-awesome-icon :icon="['fa', 'circle-info']" />
-    </button>
+  <div class="section-card" style="display: block; position: relative;">    
+    <div class="config-container">
+      <button class="link-btn age-icon-btn" @click="char.addMovement()" v-tippy="{ content: 'Add Movement Type' }" v-if="settings.optionalMovements">
+        <font-awesome-icon :icon="['fa', 'circle-plus']" />
+      </button>
+      <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
+        <font-awesome-icon :icon="['fa', 'circle-info']" />
+      </button>
     </div>    
-        <h1 class="age-section-header">
-            Movement
-        </h1>
-        
-        <div class="age-actions age-movement" >
-        <div class="age-container-content" v-tippy="{ content: char.powerFatigue > 1 ? 'Power Fatigue: Moves at Half Speed' : null}">      
-          <div class="age-container-heading">
-            Speed
-          </div>
-            <span class="age-num-value">{{ characterSpeed }}</span>
-            <!-- Additional corner elements -->
-            <div class="age-container-content-corner-top-right"></div>
-            <div class="age-container-content-corner-bottom-left"></div>
+    <h1 class="age-section-header">
+        Movement
+    </h1>        
+    <div class="age-actions age-movement" >
+    <div class="age-container-content" v-tippy="{ content: char.powerFatigue > 1 ? 'Power Fatigue: Moves at Half Speed' : null}">      
+      <div class="age-container-heading">
+        Speed
+      </div>
+        <span class="age-num-value">{{ characterSpeed }}</span>
+        <!-- Additional corner elements -->
+        <div class="age-container-content-corner-top-right"></div>
+        <div class="age-container-content-corner-bottom-left"></div>
+    </div>
+    <div class="age-container-content" :class="{ 'age-power-fatigue': char.powerFatigue > 0 && settings.gameSystem === 'mage'}"  v-tippy="{ content: char.powerFatigue > 0 ? 'Power Fatigue: Cannot Run or Charge' : null}">      
+      <div class="age-container-heading">
+        Charge
+      </div>
+        <span class="age-num-value">{{ Math.ceil((char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0))/2)  }}</span>
+        <!-- Additional corner elements -->
+        <div class="age-container-content-corner-top-right"></div>
+        <div class="age-container-content-corner-bottom-left"></div>
+    </div>  
+    <div class="age-container-content" :class="{ 'age-power-fatigue': char.powerFatigue > 0 && settings.gameSystem === 'mage'}" v-tippy="{ content: char.powerFatigue > 0 ? 'Power Fatigue: Cannot Run or Charge' : null}">      
+      <div class="age-container-heading">
+        Run
+      </div>
+        <span class="age-num-value">{{ (char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0)) * 2  }}</span>
+        <!-- Additional corner elements -->
+        <div class="age-container-content-corner-top-right"></div>
+        <div class="age-container-content-corner-bottom-left"></div>
+    </div>   
+    
+      <div class="age-actions-mage" v-if="settings.peril || settings.daring">
+        <div class="age-container-content" v-if="settings.peril">      
+        <div class="age-container-heading">
+          Peril
         </div>
-        <div class="age-container-content" :class="{ 'age-power-fatigue': char.powerFatigue > 0 && settings.gameSystem === 'mage'}"  v-tippy="{ content: char.powerFatigue > 0 ? 'Power Fatigue: Cannot Run or Charge' : null}">      
-          <div class="age-container-heading">
-            Charge
+        <!-- <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + (guard ? guardValue : 0) + (inventory.equippedShield?.defenseMod ? inventory.equippedShield?.defenseMod : 0) + Number(defenseMods) }} -->
+          <span class="age-num-value">
+            <input  class="age-input" style="margin-left: 18px;width: 50px;" type="number" v-model="char.peril" min="0" />
+          </span>
+        <!-- Additional corner elements -->
+        <div class="age-container-content-corner-top-right"></div>
+        <div class="age-container-content-corner-bottom-left"></div>
+      </div>  
+      <div class="age-container-content" v-if="settings.daring">      
+      <div class="age-container-heading">
+        Daring
+      </div>
+        <!-- <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + (guard ? guardValue : 0) + (inventory.equippedShield?.defenseMod ? inventory.equippedShield?.defenseMod : 0) + Number(defenseMods) }} -->
+          <span class="age-num-value">
+            <input  class="age-input" style="margin-left: 18px;width: 50px;" type="number" v-model="char.daring" min="0" />
+          </span>
+        <!-- Additional corner elements -->
+        <div class="age-container-content-corner-top-right"></div>
+        <div class="age-container-content-corner-bottom-left"></div>
+      </div>  
+      </div>
+      
+    </div>  
+    <div class="age-custom-movement" v-if="settings.optionalMovements && char.customMovements && char.customMovements.length > 0">
+      <div class="age-container-content" >   
+        <div class="age-custom-movement-entry" v-for="(move, index) in char.customMovements" :key="index">
+          <div class="age-custom-movement-entry__inputs">
+
+              <input  style="width: 50px;" type="number" v-model="move.speed" min="0" />
+  
+            <input   style="width: 80%;" type="text" v-model="move.name" placeholder="Movement Type" />
           </div>
-            <span class="age-num-value">{{ Math.ceil((char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0))/2)  }}</span>
-            <!-- Additional corner elements -->
-            <div class="age-container-content-corner-top-right"></div>
-            <div class="age-container-content-corner-bottom-left"></div>
-        </div>  
-        <div class="age-container-content" :class="{ 'age-power-fatigue': char.powerFatigue > 0 && settings.gameSystem === 'mage'}" v-tippy="{ content: char.powerFatigue > 0 ? 'Power Fatigue: Cannot Run or Charge' : null}">      
-          <div class="age-container-heading">
-            Run
-          </div>
-            <span class="age-num-value">{{ (char.speed + speedMods + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0)) * 2  }}</span>
-            <!-- Additional corner elements -->
-            <div class="age-container-content-corner-top-right"></div>
-            <div class="age-container-content-corner-bottom-left"></div>
-        </div>   
-        
-          <div class="age-actions-mage" v-if="settings.peril || settings.daring">
-            <div class="age-container-content" v-if="settings.peril">      
-            <div class="age-container-heading">
-              Peril
-            </div>
-            <!-- <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + (guard ? guardValue : 0) + (inventory.equippedShield?.defenseMod ? inventory.equippedShield?.defenseMod : 0) + Number(defenseMods) }} -->
-              <span class="age-num-value">
-                <input  class="age-input" style="margin-left: 18px;width: 50px;" type="number" v-model="char.peril" min="0" />
-              </span>
-            <!-- Additional corner elements -->
-            <div class="age-container-content-corner-top-right"></div>
-            <div class="age-container-content-corner-bottom-left"></div>
-          </div>  
-          <div class="age-container-content" v-if="settings.daring">      
-          <div class="age-container-heading">
-            Daring
-          </div>
-            <!-- <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + (guard ? guardValue : 0) + (inventory.equippedShield?.defenseMod ? inventory.equippedShield?.defenseMod : 0) + Number(defenseMods) }} -->
-              <span class="age-num-value">
-                <input  class="age-input" style="margin-left: 18px;width: 50px;" type="number" v-model="char.daring" min="0" />
-              </span>
-            <!-- Additional corner elements -->
-            <div class="age-container-content-corner-top-right"></div>
-            <div class="age-container-content-corner-bottom-left"></div>
-          </div>  
-          </div>
+          <button class="age-custom-movement-entry__delete delete-icon-btn delete" title="Delete" @click="char.deleteMovement(index)" v-tippy="{ 'content': 'Delete Movement Type' }">
+            <font-awesome-icon :icon="['fa', 'trash-alt']" />
+          </button>
+        </div>
           
-        </div>
-        
-                </div>
+           <!-- Additional corner elements --> 
+          <div class="age-container-content-corner-top-right"></div>
+          <div class="age-container-content-corner-bottom-left"></div>
+      
+      </div> 
+    </div>      
+  </div>
 
 
                 <Teleport to="body">
@@ -182,7 +203,6 @@ const speedModifiers = computed(() => {
     return 0
   }
 });
-
 const characterSpeed = computed(() => {
   const baseSpeed = char.speed + speedModifiers.value + Number(ability.DexterityBase) + (inventory.equippedArmor?.armorPenalty ? inventory.equippedArmor?.armorPenalty : 0);
   return Math.ceil((baseSpeed) / (char.powerFatigue > 1 && settings.gameSystem === 'mage' ? 2 : 1));
