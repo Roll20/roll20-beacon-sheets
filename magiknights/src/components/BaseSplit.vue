@@ -33,7 +33,7 @@ const attributes = [
 </script>
 
 <template>
-  <SplitMods :attributes="attributes" @clicked="processRoll">
+  <SplitMods :attributes="attributes">
     <template v-slot:content>
       <CloverDisplay class="gloom-gems">
         <template v-slot:header>

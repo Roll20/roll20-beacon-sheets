@@ -131,7 +131,6 @@ const doUpdate = (dispatch, update, logMode = false) => {
       ...update
     }
   }
-  console.log(`dispatching character =>`,character);
   character.character.attributes.updateId = sheetId.value
   dispatch.updateCharacter(character)
 }
@@ -160,9 +159,7 @@ We use a watcher of beaconPulse value to trigger a re-render of the sheet when t
 This is just one way to trigger a re-render, you can implement your own logic to trigger a re-render.
 */
 export const createRelay = async ({ devMode = false, primaryStore = 'app', logMode = false }) => {
-  console.log('devMode',devMode);
   const dispatch = await (devMode ? devRelay() : initRelay(relayConfig));
-  console.log('dispatch',dispatch);
   const relayPinia = (context) => {
     if (context.store.$id !== primaryStore) return
     const store = context.store
@@ -181,7 +178,6 @@ export const createRelay = async ({ devMode = false, primaryStore = 'app', logMo
     store.$subscribe(() => {
       if (blockUpdate.value === true) return
       const update = store.dehydrateStore()
-      console.log(`dehydrating update =>`,update);
       debounceUpdate(dispatch, update, logMode)
     })
 
@@ -196,7 +192,6 @@ export const createRelay = async ({ devMode = false, primaryStore = 'app', logMo
         blockUpdate.value = false
         return
       }
-      debugger;
       store.hydrateStore(attributes, profile)
       await nextTick()
       if (logMode) console.log('🔓🟢 unlocking changes')

@@ -2153,8 +2153,13 @@ export const useSheetStore = defineStore('sheet',() => {
     const hydrateEclipseBlipsArray = (targetArray, sourceArray) => {
       if (typeof sourceArray === 'string' && sourceArray.startsWith('$__$')) {
         // Extract the content inside the square brackets and parse it as an array
-        const parsedArray = JSON.parse(sourceArray.match(/\[(.*?)\]/)[0]);
-        targetArray.splice(0, targetArray.length, ...parsedArray);
+        const match = sourceArray.match(/\[(.*?)\]/);
+        if (match) {
+          const parsedArray = JSON.parse(match[0]);
+          targetArray.splice(0, targetArray.length, ...parsedArray);
+        } else {
+          console.warn('hydrateEclipseBlipsArray: String had $__$ prefix but no brackets:', sourceArray);
+        }
       } else if (Array.isArray(sourceArray)) {
         // If it's already an array, hydrate directly
         targetArray.splice(0, targetArray.length, ...sourceArray);
@@ -2333,12 +2338,35 @@ export const useSheetStore = defineStore('sheet',() => {
       }));
     }
     if (hydrateStore.npc_primary_attack) {
-      npc_primary_attack.value = { ...npc_primary_attack.value, ...hydrateStore.npc_primary_attack };
+      const incoming = hydrateStore.npc_primary_attack;
+      npc_primary_attack.value = {
+        ...npc_primary_attack.value,
+        ...incoming,
+        // Ensure nested arrays stay as arrays (Firebase may store them as objects)
+        attackDC: Array.isArray(incoming.attackDC) ? incoming.attackDC :
+          (incoming.attackDC ? Object.values(incoming.attackDC) : npc_primary_attack.value.attackDC),
+        hordeDamage: Array.isArray(incoming.hordeDamage) ? incoming.hordeDamage :
+          (incoming.hordeDamage ? Object.values(incoming.hordeDamage) : npc_primary_attack.value.hordeDamage)
+      };
     }
     if (hydrateStore.npc_secondary_attack) {
-      npc_secondary_attack.value = { ...npc_secondary_attack.value, ...hydrateStore.npc_secondary_attack };
+      const incoming = hydrateStore.npc_secondary_attack;
+      npc_secondary_attack.value = {
+        ...npc_secondary_attack.value,
+        ...incoming,
+        // Ensure nested arrays stay as arrays (Firebase may store them as objects)
+        attackDC: Array.isArray(incoming.attackDC) ? incoming.attackDC :
+          (incoming.attackDC ? Object.values(incoming.attackDC) : npc_secondary_attack.value.attackDC),
+        hordeDamage: Array.isArray(incoming.hordeDamage) ? incoming.hordeDamage :
+          (incoming.hordeDamage ? Object.values(incoming.hordeDamage) : npc_secondary_attack.value.hordeDamage)
+      };
     }
-    npc_traits.value = hydrateStore.npc_traits ?? npc_traits.value;
+    // npc_traits: Firebase may store arrays as objects with numeric keys
+    if (hydrateStore.npc_traits !== undefined) {
+      npc_traits.value = Array.isArray(hydrateStore.npc_traits)
+        ? hydrateStore.npc_traits
+        : (hydrateStore.npc_traits ? Object.values(hydrateStore.npc_traits) : []);
+    }
     npc_notes.value = hydrateStore.npc_notes ?? npc_notes.value;
 
     Object.entries(sections).forEach(([name,obj]) => {
