@@ -1,8 +1,8 @@
 <script setup>
 import { useSheetStore } from '@/stores/sheetStore';
+import { computed } from 'vue';
 
 const sheet = useSheetStore();
-const {skills} = sheet
 const {
   skillName,
   isMastered
@@ -12,7 +12,6 @@ const {
 });
 
 const skillRef = skillName.replace(/\s+/g,'_');
-const skillObj = skills[skillRef];
 const abilityAbbreviations = {
   strength: 'str',
   dexterity: 'dex',
@@ -22,10 +21,19 @@ const abilityAbbreviations = {
   charisma: 'cha'
 }
 
+// Access skill data through store to maintain reactivity
+const skillObj = computed(() => sheet.skills[skillRef]);
+
+// Computed with getter/setter for proficiency to ensure proper reactivity
+const proficiencyModel = computed({
+  get: () => sheet.skills[skillRef].proficiency,
+  set: (val) => { sheet.skills[skillRef].proficiency = val; }
+});
+
 // Function to handle clearing input and resetting to default value
 const resetToDefault = () => {
-  if (skillObj.overrideValue === '' || skillObj.overrideValue === null) {
-    skillObj.overrideValue = '';
+  if (sheet.skills[skillRef].overrideValue === '' || sheet.skills[skillRef].overrideValue === null) {
+    sheet.skills[skillRef].overrideValue = '';
   }
 };
 
@@ -43,7 +51,7 @@ const resetToDefault = () => {
       :placeholder="skillObj.value"
       @blur="resetToDefault"
     />
-    <input type="checkbox" :name="`${skillRef}_proficiency`" value="1" v-model="skillObj.proficiency" :class="{ 'mastery-diamond': isMastered }">
+    <input type="checkbox" :name="`${skillRef}_proficiency`" v-model="proficiencyModel" :class="{ 'mastery-diamond': isMastered }">
     <button @click="sheet.rollSkill(skillRef)" class="skill-name">{{ skillName }}</button>
   </div>
 </template>
