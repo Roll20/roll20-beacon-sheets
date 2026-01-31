@@ -56,7 +56,7 @@ const clearAllConditions = () => {
 </script>
 
 <template>
-  <NotchContainer width="thick" :notch="20" class="condition-container">
+  <NotchContainer width="thick" notchType="curve" class="condition-container">
     <div class="condition-header" @click="isExpanded = !isExpanded">
       <h3>
         <span class="material-symbols-outlined expand-icon">{{ isExpanded ? 'expand_less' : 'expand_more' }}</span>

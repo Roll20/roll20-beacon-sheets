@@ -398,37 +398,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
   </Collapsible>
 </NotchContainer>
 
-<NotchContainer class="level-abilities-container basic-item" width="thick" notchType="curve">
-  <h4>Level Abilities</h4>
-  <Collapsible class="basic-item" :default="sheet.levelAbilitiesCollapsed" @collapse="sheet.levelAbilitiesCollapsed = !sheet.levelAbilitiesCollapsed">
-    <template v-slot:expanded>
-      <div class="level-abilities-list">
-        <div
-          v-for="(ability, key) in sheet.levelAbilityData"
-          :key="key"
-          class="level-ability-item"
-          :class="{ unlocked: sheet.levelAbilities[key], locked: !sheet.levelAbilities[key] }"
-          :title="ability.description"
-        >
-          <span class="ability-level-badge">{{ ability.level }}</span>
-          <span class="ability-name">{{ ability.name }}</span>
-          <label v-if="key === 'energySurge' && sheet.levelAbilities[key]" class="ability-toggle">
-            <input type="checkbox" v-model="sheet.energySurgeUsed" />
-            <span>Used</span>
-          </label>
-          <label v-if="key === 'flight' && sheet.levelAbilities[key]" class="ability-toggle">
-            <input type="checkbox" v-model="sheet.isFlying" />
-            <span>Active</span>
-          </label>
-        </div>
-      </div>
-    </template>
-    <template v-slot:collapsed>
-      <span class="level-abilities-summary">Level Abilities ({{ Object.values(sheet.levelAbilities).filter(v => v).length }}/{{ Object.keys(sheet.levelAbilityData).length }} unlocked)</span>
-    </template>
-  </Collapsible>
-</NotchContainer>
-
   <div class="elemental-magic-group grid-span-all">
     <h3 class="group-header">Elemental &amp; Magic</h3>
     <div class="elemental-magic-grid">
@@ -1271,74 +1240,5 @@ html.dark {
     }
   }
 }
-
-.level-abilities-container {
-  .level-abilities-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .level-abilities-summary {
-    font-size: 0.85em;
-    font-weight: 600;
-    color: var(--color);
-    opacity: 0.8;
-  }
-
-  .level-ability-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-size: 0.85em;
-    cursor: default;
-
-    &.locked {
-      opacity: 0.3;
-      font-size: 0.8em;
-    }
-
-    &.unlocked {
-      opacity: 1;
-    }
-  }
-
-  .ability-level-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: rgba(100, 100, 200, 0.3);
-    font-size: 0.7em;
-    font-weight: bold;
-    flex-shrink: 0;
-  }
-
-  .ability-name {
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .unlocked .ability-level-badge {
-    background: rgba(100, 200, 100, 0.4);
-  }
-
-  .ability-toggle {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    font-size: 0.85em;
-    cursor: pointer;
-    flex-shrink: 0;
-    input[type="checkbox"] { margin: 0; }
-  }
-}
-
-
 
 </style>

@@ -6,7 +6,6 @@ import BaseSplit from '@/components/BaseSplit.vue';
 import KnightNav from '@/components/KnightNav.vue';
 import SkillSection from '@/components/SkillSection.vue';
 import RollModeToggle from '@/components/RollModeToggle.vue';
-import ConditionTracker from '@/components/ConditionTracker.vue';
 
 let permissions = useMetaStore().permissions;
 
@@ -23,7 +22,6 @@ let permissions = useMetaStore().permissions;
       <HPContainer />
       <SkillSection />
       <RollModeToggle />
-      <ConditionTracker />
     </div>
     <div class="specific-view column">
       <RouterView />
