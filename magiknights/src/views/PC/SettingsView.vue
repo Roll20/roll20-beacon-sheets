@@ -61,7 +61,7 @@ const importSheetData = async (event) => {
     </NotchContainer>
 
     <h3>Tallies & Resources</h3>
-    <div class="tallies-and-pools">
+    <NotchContainer class="tallies-and-pools" notchType="wedge">
       <div class="tallies-section">
         <div class="tally-group">
           <label class="tally-label">Budget Tallies</label>
@@ -115,10 +115,10 @@ const importSheetData = async (event) => {
           <p class="fortune-pool-desc">Spend 1: +1d6 to non-combat Skill Check</p>
         </template>
       </div>
-    </div>
+    </NotchContainer>
 
     <h3>Detention Tickets</h3>
-    <div class="detention-section">
+    <NotchContainer class="detention-section" notchType="wedge">
       <div v-if="sheet.detentionTickets > 0" class="detention-tickets-display">
         <span class="detention-label">Detention Tickets: {{ sheet.detentionTickets }}</span>
         <span class="detention-note">Each = 1 Free Time. Skipping = +1 Trauma/day</span>
@@ -127,7 +127,7 @@ const importSheetData = async (event) => {
         <label>Detention Tickets</label>
         <input type="number" min="0" class="underline detention-input" v-model.number="sheet.detentionTickets">
       </div>
-    </div>
+    </NotchContainer>
 
     <h3>Sleep &amp; Daily Limits</h3>
     <NotchContainer class="sleep-daily-container" notchType="wedge">
@@ -325,6 +325,7 @@ const importSheetData = async (event) => {
   .tallies-and-pools {
     display: grid;
     gap: var(--gap);
+    padding: var(--half-gap);
   }
 
   .tallies-section {
@@ -332,8 +333,6 @@ const importSheetData = async (event) => {
     gap: var(--gap);
     align-items: center;
     padding: var(--half-gap) var(--gap);
-    border: 1px solid var(--borderColor);
-    border-radius: 4px;
     flex-wrap: wrap;
 
     .tally-group {
@@ -370,8 +369,6 @@ const importSheetData = async (event) => {
     align-items: center;
     gap: 2px;
     padding: var(--half-gap);
-    border: 1px solid var(--borderColor);
-    border-radius: 4px;
     .stat-increases-count {
       font-weight: bold;
       font-size: 0.9em;
@@ -387,8 +384,6 @@ const importSheetData = async (event) => {
 
   .club-position-section {
     padding: var(--half-gap) var(--gap);
-    border: 1px solid var(--borderColor);
-    border-radius: 4px;
     select { width: 100%; margin-top: 4px; }
     .club-position-bonus {
       font-size: 0.8em;
@@ -401,6 +396,7 @@ const importSheetData = async (event) => {
   .detention-section {
     display: grid;
     gap: var(--half-gap);
+    padding: var(--half-gap);
   }
 
   .detention-counter {
@@ -423,6 +419,8 @@ const importSheetData = async (event) => {
   }
 
   .sleep-daily-container {
+    padding: var(--half-gap);
+
     .sleep-effect-section {
       margin-bottom: 8px;
     }
@@ -512,6 +510,8 @@ const importSheetData = async (event) => {
   }
 
   .summon-container {
+    padding: var(--half-gap);
+
     .summon-header-row {
       display: flex;
       align-items: center;
@@ -549,8 +549,6 @@ const importSheetData = async (event) => {
     align-items: center;
     gap: 4px;
     padding: var(--half-gap) var(--gap);
-    border: 1px solid var(--borderColor);
-    border-radius: 4px;
     .fortune-pool-toggle {
       display: flex;
       align-items: center;
