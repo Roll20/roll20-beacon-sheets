@@ -74,10 +74,13 @@ const relayConfig = {
         }
 
         // Post transformation message to chat
-        const formName = newTransformed ? 'Magi-Knight' : 'Student';
+        const characterName = character.name || attrs.player || 'Unknown';
+        const message = newTransformed
+          ? `${characterName} transforms into Magi-Knight form!`
+          : `${characterName} returns to their student form.`;
         dispatch.post({
           characterId: character.id,
-          content: `transforms into ${formName} form!`,
+          content: message,
           options: { whisper: false },
         });
       },

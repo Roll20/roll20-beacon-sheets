@@ -25,7 +25,9 @@ const handleTransform = async () => {
   if (dispatch) {
     dispatch.post({
       characterId: initValues.character.id,
-      content: `transforms into ${formName} form!`,
+      content: isTransformed
+          ? `${meta.name || sheet.player || 'Unknown'} transforms into Magi-Knight form!`
+          : `${meta.name || sheet.player || 'Unknown'} returns to their student form.`,
       options: { whisper: false },
     });
   }
