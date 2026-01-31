@@ -136,12 +136,11 @@ const availableResistProficiency = computed(() => {
   return element ? element.resistProficiency : [];
 });
 
-// Watch for changes in elemental affinity and reset enhancements, resist proficiency, and branching element
+// Watch for changes in elemental affinity and reset enhancements and resist proficiency
 watch(() => sheet.elemental_affinity, (newAffinity) => {
     sheet.elemental_enhancement_1 = '';
     sheet.elemental_enhancement_2 = '';
     sheet.roll_resist_proficiency = '';
-    sheet.branchingElement = '';
 });
 
 </script>
@@ -249,6 +248,45 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
             </RepeatingItem>
           </RepeatingSection>
         </NotchContainer>
+
+        <NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
+          <h4>Combat Forms</h4>
+          <Collapsible class="basic-item" :default="sheet.combatFormsCollapsed" @collapse="sheet.combatFormsCollapsed = !sheet.combatFormsCollapsed">
+            <template v-slot:collapsed>
+              <div class="combat-form-summary">
+                <span v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="form-badge active-badge">Active</span>
+                <span v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="form-badge form-name-badge">{{ sheet.combatFormData[sheet.activeCombatForm].name.split(' - ')[1] }}</span>
+                <span v-if="sheet.activeCombatForm && sheet.combatFormMastery[sheet.activeCombatForm]" class="form-badge mastery-badge">Mastered</span>
+                <span v-if="!sheet.activeCombatForm" class="form-badge inactive-badge">No Active Form</span>
+              </div>
+            </template>
+            <template v-slot:expanded>
+              <div v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="active-form-banner">
+                <div class="banner-header">
+                  <strong>{{ sheet.combatFormData[sheet.activeCombatForm].name }}</strong>
+                  <button class="form-deactivate-btn" @click="sheet.activeCombatForm = ''" title="Deactivate form">&times;</button>
+                </div>
+                <p class="banner-description">{{ sheet.combatFormData[sheet.activeCombatForm].description }}</p>
+                <p v-if="sheet.combatFormMastery[sheet.activeCombatForm]" class="banner-mastery">Mastery: {{ sheet.combatFormData[sheet.activeCombatForm].mastery }}</p>
+              </div>
+              <div class="combat-form-list">
+                <div v-for="(form, key) in sheet.combatFormData" :key="key" class="form-row" :class="{ active: sheet.activeCombatForm === key }">
+                  <button
+                    class="form-activate-btn"
+                    :class="{ active: sheet.activeCombatForm === key }"
+                    @click="sheet.activeCombatForm = sheet.activeCombatForm === key ? '' : key"
+                    :title="form.name"
+                  >{{ key.replace('form', '') }}</button>
+                  <span class="form-short-name">{{ form.name.split(' - ')[1] }}</span>
+                  <label class="form-mastery-toggle" :title="'Mastery: ' + form.mastery">
+                    <input type="checkbox" v-model="sheet.combatFormMastery[key]">
+                    <span class="star-icon material-symbols-outlined" :class="{ mastered: sheet.combatFormMastery[key] }">star</span>
+                  </label>
+                </div>
+              </div>
+            </template>
+          </Collapsible>
+        </NotchContainer>
       </div>
 
       <div class="soul-armament-right">
@@ -355,48 +393,39 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
           </Collapsible>
         </NotchContainer>
 
+        <NotchContainer class="magic-settings-container basic-item" width="thick" notchType="curve">
+          <h4>Magic Settings</h4>
+          <div class="flex-box half-gap grow-label">
+            <label>Roll to Resist</label>
+            <select class="underline" v-model="sheet.roll_resist_proficiency">
+              <option selected value="">Select Proficiency</option>
+              <option v-for="proficiency in availableResistProficiency" :value="proficiency" :key="proficiency">{{ proficiency }}</option>
+            </select>
+          </div>
+          <div class="flex-box half-gap grow-label">
+            <label>Magic Style</label>
+            <select class="underline" v-model="sheet.magic_style">
+              <option value="">Select Style</option>
+              <option value="Ethereal">Ethereal</option>
+              <option value="Memento">Memento</option>
+              <option value="Shaper">Shaper</option>
+              <option value="Soul">Soul</option>
+              <option value="Verse">Verse</option>
+              <option value="Release">Release</option>
+            </select>
+          </div>
+          <div class="flex-box half-gap grow-label">
+            <label>Magic Ability</label>
+            <select class="underline" v-model="sheet.mam">
+              <option selected value="">Select Ability</option>
+              <option v-for="(o,ability) in sheet.abilityScores" :key="ability.name" :value="ability">{{ capitalize(ability) }}</option>
+            </select>
+          </div>
+        </NotchContainer>
+
       </div>
     </div>
   </div>
-
-<NotchContainer class="combat-form-container basic-item" width="thick" notchType="curve">
-  <h4>Combat Forms</h4>
-  <Collapsible class="basic-item" :default="sheet.combatFormsCollapsed" @collapse="sheet.combatFormsCollapsed = !sheet.combatFormsCollapsed">
-    <template v-slot:collapsed>
-      <div class="combat-form-summary">
-        <span v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="form-badge active-badge">Active</span>
-        <span v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="form-badge form-name-badge">{{ sheet.combatFormData[sheet.activeCombatForm].name.split(' - ')[1] }}</span>
-        <span v-if="sheet.activeCombatForm && sheet.combatFormMastery[sheet.activeCombatForm]" class="form-badge mastery-badge">Mastered</span>
-        <span v-if="!sheet.activeCombatForm" class="form-badge inactive-badge">No Active Form</span>
-      </div>
-    </template>
-    <template v-slot:expanded>
-      <div v-if="sheet.activeCombatForm && sheet.combatFormData[sheet.activeCombatForm]" class="active-form-banner">
-        <div class="banner-header">
-          <strong>{{ sheet.combatFormData[sheet.activeCombatForm].name }}</strong>
-          <button class="form-deactivate-btn" @click="sheet.activeCombatForm = ''" title="Deactivate form">&times;</button>
-        </div>
-        <p class="banner-description">{{ sheet.combatFormData[sheet.activeCombatForm].description }}</p>
-        <p v-if="sheet.combatFormMastery[sheet.activeCombatForm]" class="banner-mastery">Mastery: {{ sheet.combatFormData[sheet.activeCombatForm].mastery }}</p>
-      </div>
-      <div class="combat-form-list">
-        <div v-for="(form, key) in sheet.combatFormData" :key="key" class="form-row" :class="{ active: sheet.activeCombatForm === key }">
-          <button
-            class="form-activate-btn"
-            :class="{ active: sheet.activeCombatForm === key }"
-            @click="sheet.activeCombatForm = sheet.activeCombatForm === key ? '' : key"
-            :title="form.name"
-          >{{ key.replace('form', '') }}</button>
-          <span class="form-short-name">{{ form.name.split(' - ')[1] }}</span>
-          <label class="form-mastery-toggle" :title="'Mastery: ' + form.mastery">
-            <input type="checkbox" v-model="sheet.combatFormMastery[key]">
-            <span class="star-icon material-symbols-outlined" :class="{ mastered: sheet.combatFormMastery[key] }">star</span>
-          </label>
-        </div>
-      </div>
-    </template>
-  </Collapsible>
-</NotchContainer>
 
   <div class="elemental-magic-group grid-span-all">
     <h3 class="group-header">Elemental &amp; Magic</h3>
@@ -422,17 +451,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
               <span class="elemental_label">Element Name</span>
             </template>
           </LabelStacked>
-          <LabelStacked v-if="sheet.availableBranches.length > 0">
-            <template v-slot:number>
-              <select class="underline" v-model="sheet.branchingElement">
-                <option value="">Select Branch</option>
-                <option v-for="branch in sheet.availableBranches" :key="branch" :value="branch">{{ branch }}</option>
-              </select>
-            </template>
-            <template v-slot:label>
-              <span class="elemental_label">Branching Element</span>
-            </template>
-          </LabelStacked>
         </div>
         <NotchContainer class="elemental_enhancements" notch="5">
           <select v-model="sheet.elemental_enhancement_1">
@@ -446,45 +464,6 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
             <option v-for="enhancement in availableEnhancements" :key="enhancement.description" :value="enhancement.attribute">{{ enhancement.description }}</option>
           </select>
         </NotchContainer>
-      </div>
-
-      <div class="elemental-magic-right">
-        <span class="elemental_label">Roll to Resist Proficiency</span>
-        <NotchContainer class="elemental_enhancements" notch="5">
-          <select v-model="sheet.roll_resist_proficiency">
-            <option selected value="">Select Roll to Resist Proficiency</option>
-            <option v-for="proficiency in availableResistProficiency" :value="proficiency" :key="proficiency">{{ proficiency }}</option>
-          </select>
-        </NotchContainer>
-        <div class="flex-box half-gap flex-wrap grow-label">
-          <LabelStacked>
-            <template v-slot:number>
-              <select class="underline element-name-underline" v-model="sheet.magic_style">
-                <option value="">Select Magic Style</option>
-                <option value="Ethereal">Ethereal</option>
-                <option value="Memento">Memento</option>
-                <option value="Shaper">Shaper</option>
-                <option value="Soul">Soul</option>
-                <option value="Verse">Verse</option>
-                <option value="Release">Release</option>
-              </select>
-            </template>
-            <template v-slot:label>
-              <span class="elemental_label">Magic Style</span>
-            </template>
-          </LabelStacked>
-          <LabelStacked>
-            <template v-slot:number>
-              <select class="underline" v-model="sheet.mam">
-                <option selected value="">Select Ability</option>
-                <option v-for="(o,ability) in sheet.abilityScores" :key="ability.name" :value="ability">{{ capitalize(ability) }}</option>
-              </select>
-            </template>
-            <template v-slot:label>
-              <span class="elemental_label">Magic Ability Modifier</span>
-            </template>
-          </LabelStacked>
-        </div>
       </div>
     </div>
   </div>
@@ -758,12 +737,11 @@ watch(() => sheet.elemental_affinity, (newAffinity) => {
 
   .elemental-magic-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: var(--gap, 8px);
   }
 
-  .elemental-magic-left,
-  .elemental-magic-right {
+  .elemental-magic-left {
     display: grid;
     gap: var(--half-gap, 4px);
     align-content: start;
