@@ -144,9 +144,9 @@ export const useSheetStore = defineStore('sheet',() => {
     }
     switch (mode) {
       case 'advantage':
-        return { formula: '2d20kh1', display: '2d20kh' };
+        return { formula: '2d20kh1', display: 'Advantage', isAdvantage: true };
       case 'disadvantage':
-        return { formula: '2d20kl1', display: '2d20kl' };
+        return { formula: '2d20kl1', display: 'Disadvantage', isDisadvantage: true };
       default:
         return { formula: '1d20', display: '1d20' };
     }
@@ -2426,7 +2426,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     const enduranceInfo = getEnduranceDieInfo(name);
     const components = [
-      {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+      {label: dice.display, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
       {label:'Mod', value:abilityScores[name].mod.value,alwaysShowInBreakdown: true},
       {label: 'Roll to Resist',value: rollToResist,alwaysShowInBreakdown: true}
     ];
@@ -2473,7 +2473,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     if (skillOverrideValue !== '' && skillOverrideValue !== undefined){
       const components = [
-        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
         {label:'Skill Value Override', value:Number(skillOverrideValue) || 0,alwaysShowInBreakdown: true}
       ];
       if (masteryBonus > 0) {
@@ -2491,7 +2491,7 @@ export const useSheetStore = defineStore('sheet',() => {
       rollToChat({rollObj});
     }else{
       const components = [
-        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
         {label:'Mod', value:abilityScores[abilityName].mod.value,alwaysShowInBreakdown: true}
       ];
       if(skills[name].proficiency.value){
@@ -2524,7 +2524,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     const attackPromise = getRollResults(
       [
-        {label:`Attack Roll: ${dice.display}`, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label:`Attack Roll: ${dice.display}`, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
         {label:'Mod', value:abMod,alwaysShowInBreakdown: true},
         //{label:'Prof',value: proficiency.value,alwaysShowInBreakdown: true}
       ]
@@ -2602,7 +2602,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     const attackPromise = getRollResults(
       [
-        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
         {label:'MAM', value:abMod,alwaysShowInBreakdown: true},
         {label:'Prof',value: Number(proficiency.value),alwaysShowInBreakdown: true}
       ]
@@ -2674,7 +2674,7 @@ export const useSheetStore = defineStore('sheet',() => {
       subtitle: rollModeLabel || undefined,
       characterName: metaStore.name,
       components: [
-        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
         {label:'Initiative', value:Number(initiative.value),alwaysShowInBreakdown: true},
       ]
     };
@@ -2689,7 +2689,7 @@ export const useSheetStore = defineStore('sheet',() => {
       : '';
 
     const components = [
-      {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+      {label: dice.display, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
       {label:'Attack', value:Number(knight_attack.value),alwaysShowInBreakdown: true}
     ];
 
@@ -2733,7 +2733,7 @@ export const useSheetStore = defineStore('sheet',() => {
       subtitle: `Student Persona${rollModeLabel}`,
       characterName: metaStore.name,
       components: [
-        {label: dice.display, formula: dice.formula, alwaysShowInBreakdown: true},
+        {label: dice.display, formula: dice.formula, isAdvantage: dice.isAdvantage, isDisadvantage: dice.isDisadvantage, alwaysShowInBreakdown: true},
         {label:'Value', value:Number(student_attack.value),alwaysShowInBreakdown: true},
       ]
     };

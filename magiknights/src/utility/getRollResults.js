@@ -34,6 +34,23 @@ export default async (
 
       // Store each roll result for the breakdown
       component.results = result.results; // Save the full results object to access rolls later
+
+      // For advantage/disadvantage rolls, extract individual d20 values
+      if (component.results?.rolls?.[0]?.results?.length === 2) {
+        const dice = component.results.rolls[0].results;
+        // Handle both formats: objects with .result property or direct numbers
+        const d1 = typeof dice[0] === 'object' ? dice[0].result : dice[0];
+        const d2 = typeof dice[1] === 'object' ? dice[1].result : dice[1];
+        const kept = component.value; // The result after kh1/kl1
+
+        component.advantageRoll = {
+          die1: d1,
+          die2: d2,
+          kept: kept,
+          isAdvantage: component.isAdvantage || false,
+          isDisadvantage: component.isDisadvantage || false
+        };
+      }
   }
 
   // Process the roll formula for each component

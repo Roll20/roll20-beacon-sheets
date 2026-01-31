@@ -6,20 +6,29 @@
           {{#unless @first}}
             +
           {{/unless}}
-          {{#if this.label}}
+          {{#if this.advantageRoll}}
             <span class='component__label'>
-              {{this.label}}
+              {{#if this.advantageRoll.isAdvantage}}Advantage{{else}}Disadvantage{{/if}}
+            </span>
+            <span class='component__value'>
+              ({{this.advantageRoll.die1}}, {{this.advantageRoll.die2}})
             </span>
           {{else}}
-            {{#if this.sides}}
+            {{#if this.label}}
               <span class='component__label'>
-                {{this.count}}d{{this.sides}}
+                {{this.label}}
               </span>
+            {{else}}
+              {{#if this.sides}}
+                <span class='component__label'>
+                  {{this.count}}d{{this.sides}}
+                </span>
+              {{/if}}
             {{/if}}
+            <span class='component__value'>
+              ({{this.value}})
+            </span>
           {{/if}}
-          <span class='component__value'>
-            ({{this.value}})
-          </span>
         </div>
       </div>
     {{/if}}
