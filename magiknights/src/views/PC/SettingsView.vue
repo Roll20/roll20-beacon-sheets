@@ -1,9 +1,48 @@
 <script setup>
-import { useSheetStore } from '@/stores';
+import { useSheetStore, useAppStore, useMetaStore } from '@/stores';
 import NotchContainer from '@/components/NotchContainer.vue';
 import Collapsible from '@/components/Collapsible.vue';
 
 const sheet = useSheetStore();
+const appStore = useAppStore();
+const meta = useMetaStore();
+
+const exportSheetData = () => {
+  const data = appStore.dehydrateStore();
+  const jsonString = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const characterName = meta.name || 'character';
+  const safeName = characterName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  a.download = `${safeName}-export.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+const importSheetData = async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (!data.attributes?.sheet) {
+      throw new Error('Invalid file format: missing sheet data');
+    }
+
+    const { name, bio, gmNotes, avatar, attributes } = data;
+    appStore.hydrateStore(attributes, { name, bio, gmNotes, avatar });
+
+    alert('Character data imported successfully!');
+  } catch (error) {
+    alert(`Import failed: ${error.message}`);
+  }
+
+  event.target.value = ''; // Reset for re-import
+};
 </script>
 
 <template>
@@ -198,6 +237,25 @@ const sheet = useSheetStore();
         >
       </NotchContainer>
     </div>
+
+    <h3>Data Management</h3>
+    <NotchContainer class="data-management-section" notchType="wedge">
+      <div class="data-management-grid">
+        <div class="data-action">
+          <h4>Export Character</h4>
+          <p>Download all character data as JSON.</p>
+          <button class="mode-switch-btn" @click="exportSheetData">Export JSON</button>
+        </div>
+        <div class="data-action">
+          <h4>Import Character</h4>
+          <p>Replace character data from a JSON file.</p>
+          <label class="mode-switch-btn import-btn">
+            Import JSON
+            <input type="file" accept=".json" @change="importSheetData" hidden>
+          </label>
+        </div>
+      </div>
+    </NotchContainer>
   </div>
 </template>
 
@@ -510,6 +568,38 @@ const sheet = useSheetStore();
       font-style: italic;
       margin: 0;
     }
+  }
+
+  .data-management-section {
+    padding: var(--half-gap);
+  }
+
+  .data-management-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap);
+  }
+
+  .data-action {
+    display: flex;
+    flex-direction: column;
+    gap: var(--half-gap);
+
+    h4 {
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.85em;
+      color: #666;
+    }
+  }
+
+  .import-btn {
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
   }
 }
 </style>
