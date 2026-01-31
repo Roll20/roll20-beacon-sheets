@@ -10,15 +10,16 @@ export const onInit = ({ character, settings, compendiumDropData }, dispatch) =>
   colorHandler(settings)
 
   // Register the Transform action to the token action bar
-  dispatch.addActionsToHost({
-    locations: ['tokenActionBar'],
-    name: 'Transform',
-    sheetAction: {
-      characterId: character.id,
-      action: 'transform',
-      args: [],
-    },
-  });
+  // TODO: addActionsToHost was removed in SDK v0.1.15+, find replacement API
+  // dispatch.addActionsToHost({
+  //   locations: ['tokenActionBar'],
+  //   name: 'Transform',
+  //   sheetAction: {
+  //     characterId: character.id,
+  //     action: 'transform',
+  //     args: [],
+  //   },
+  // });
 
   console.log('onInit -> Magi-Knights Sheet Relay')
 };

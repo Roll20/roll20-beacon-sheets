@@ -1,7 +1,7 @@
 import './assets/main.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import { createRelay } from './relay';
+import { createRelay, resetRelayState } from './relay';
 
 import App from './App.vue';
 import router from './router';
@@ -27,10 +27,12 @@ and you can find that example being used in App.vue by sending a trait to the ch
 const env = import.meta.env.MODE || '';
 const isDevEnvironment = ['development', 'test'].includes(env);
 
+
 // This sets up the pinia data store
 const pinia = createPinia();
 // This initializes the vue app
 const app = createApp(App);
+
 // This creates the beacon relay, that manages saving and reading changes from firebase for you!
 const { relayPinia, relayVue } = await createRelay({
   devMode: isDevEnvironment
@@ -43,3 +45,8 @@ pinia.use(relayPinia);
 
 // Mounts the vue app to this div in the DOM
 app.mount('#app');
+
+// Cleanup when page/iframe unloads
+window.addEventListener('beforeunload', () => {
+  resetRelayState()
+})

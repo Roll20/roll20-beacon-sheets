@@ -14,26 +14,28 @@ const meta = useMetaStore();
 // The sheet store is where you want to be to customize what data / fields are on your sheet.
 const sheet = useSheetStore();
 const colorTheme = initValues.settings.colorTheme;
+
+// Debug: Export dehydrated store as JSON for comparison
+const exportSheetData = () => {
+  const data = appStore.dehydrateStore();
+  const jsonString = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sheet-export-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 </script>
 <template>
   <div class="sheet-container">
-    <!-- <header>
-      <nav class="sheet-nav">
-        <ul>
-          <li>
-            <RouterLink to="/sheet">Base Stats</RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/student">Student</RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/knight">Magi-Knight</RouterLink>
-          </li>
-        </ul>
-      </nav>
-    </header> -->
-    <PCView v-if="sheet.sheet_mode === 'pc'" />
-    <NPCView v-if="sheet.sheet_mode === 'npc'" />
+    <button class="debug-export-btn" @click="exportSheetData">
+      Export JSON
+    </button>
+    <PCView v-if="sheet.sheet_mode !== 'npc'" />
+    <NPCView v-else />
   </div>
 </template>
 
@@ -61,5 +63,22 @@ const colorTheme = initValues.settings.colorTheme;
 }
 body{
   padding-block: var(--half-gap);
+}
+.debug-export-btn {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 9999;
+  padding: 6px 12px;
+  background: #ff6b35;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+}
+.debug-export-btn:hover {
+  background: #e55a2b;
 }
 </style>

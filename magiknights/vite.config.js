@@ -48,6 +48,9 @@ export default defineConfig(({ mode }) => ({
     }
   },
   server: {
-    cors: false
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Private-Network': 'true',
+    }
   }
 }))

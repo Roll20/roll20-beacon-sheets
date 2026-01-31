@@ -1899,11 +1899,9 @@ export const useSheetStore = defineStore('sheet',() => {
     soulWeapon.range.value = hydrateData.range ?? soulWeapon.range.value;
     soulWeapon.damage.value = hydrateData.damage ?? soulWeapon.damage.value;
     soulWeapon.damageType.value = hydrateData.damageType ?? soulWeapon.damageType.value;
-    // Handle qualities - merge with defaults if it's an object, ignore if it's a string (old format)
+    // Handle qualities - replace with stored data if it's an object, ignore if it's a string (old format)
     if (hydrateData.qualities && typeof hydrateData.qualities === 'object') {
-      Object.keys(soulWeapon.qualities.value).forEach(key => {
-        soulWeapon.qualities.value[key] = hydrateData.qualities[key] ?? soulWeapon.qualities.value[key];
-      });
+      soulWeapon.qualities.value = { ...hydrateData.qualities };
     }
     soulWeapon.collapsed.value = hydrateData.collapsed ?? soulWeapon.collapsed.value;
   }
@@ -1948,11 +1946,9 @@ export const useSheetStore = defineStore('sheet',() => {
   function hydrateMagicalImplement(implement, hydrateData = {}) {
     implement.name.value = hydrateData.name ?? implement.name.value;
     implement.description.value = hydrateData.description ?? implement.description.value;
-    // Handle qualities - merge with defaults if it's an object
+    // Handle qualities - replace with stored data if it's an object
     if (hydrateData.qualities && typeof hydrateData.qualities === 'object') {
-      Object.keys(implement.qualities.value).forEach(key => {
-        implement.qualities.value[key] = hydrateData.qualities[key] ?? implement.qualities.value[key];
-      });
+      implement.qualities.value = { ...hydrateData.qualities };
     }
     implement.collapsed.value = hydrateData.collapsed ?? implement.collapsed.value;
   }
@@ -1971,6 +1967,30 @@ export const useSheetStore = defineStore('sheet',() => {
     herald.bondLevel.value = hydrateData.bondLevel ?? herald.bondLevel.value;
     herald.notes.value = hydrateData.notes ?? herald.notes.value;
   }
+
+  // Utility function to safely hydrate arrays that may come as $__$ prefixed strings
+  // (Firebase/Beacon SDK may serialize arrays with this prefix)
+  const safeHydrateArray = (incoming, defaultValue = []) => {
+    // Handle $__$ prefixed strings (Firebase/Beacon SDK serialization)
+    if (typeof incoming === 'string' && incoming.startsWith('$__$')) {
+      try {
+        return JSON.parse(incoming.slice(4)); // Remove prefix, parse JSON
+      } catch (e) {
+        console.warn('safeHydrateArray: Failed to parse $__$ string:', e);
+        return defaultValue;
+      }
+    }
+    // Already an array - return copy
+    if (Array.isArray(incoming)) {
+      return [...incoming];
+    }
+    // Firebase may store arrays as objects with numeric keys
+    if (incoming && typeof incoming === 'object') {
+      return Object.values(incoming);
+    }
+    // Fallback
+    return defaultValue;
+  };
 
   function dehydrateSquire(squire) {
     return {
@@ -1991,8 +2011,12 @@ export const useSheetStore = defineStore('sheet',() => {
   function hydrateSquire(squire, hydrateData = {}) {
     squire.name.value = hydrateData.name ?? squire.name.value;
     squire.level.value = hydrateData.level ?? squire.level.value;
-    if (hydrateData.healthBlips) squire.healthBlips.value = [...hydrateData.healthBlips];
-    if (hydrateData.manaBlips) squire.manaBlips.value = [...hydrateData.manaBlips];
+    if (hydrateData.healthBlips !== undefined) {
+      squire.healthBlips.value = safeHydrateArray(hydrateData.healthBlips, squire.healthBlips.value);
+    }
+    if (hydrateData.manaBlips !== undefined) {
+      squire.manaBlips.value = safeHydrateArray(hydrateData.manaBlips, squire.manaBlips.value);
+    }
     squire.studentArmor.value = hydrateData.studentArmor ?? squire.studentArmor.value;
     squire.knightArmor.value = hydrateData.knightArmor ?? squire.knightArmor.value;
     squire.spellPath1.value = hydrateData.spellPath1 ?? squire.spellPath1.value;
@@ -2049,7 +2073,7 @@ export const useSheetStore = defineStore('sheet',() => {
       elemental_affinity: elemental_affinity.value,
       branchingElement: branchingElement.value,
       magic_style: magic_style.value,
-      release_magic_deck: releaseMagicDeck.value,
+      release_magic_deck: releaseMagicDeck.value.map(card => ({ ...card })),
       release_magic_collapsed: releaseMagicCollapsed.value,
       signature_card_1: signatureCard1.value,
       signature_card_2: signatureCard2.value,
@@ -2149,28 +2173,16 @@ export const useSheetStore = defineStore('sheet',() => {
     return obj;
   }
 
-    // Utility function to handle parsing and hydrating blip arrays
-    const hydrateEclipseBlipsArray = (targetArray, sourceArray) => {
-      if (typeof sourceArray === 'string' && sourceArray.startsWith('$__$')) {
-        // Extract the content inside the square brackets and parse it as an array
-        const match = sourceArray.match(/\[(.*?)\]/);
-        if (match) {
-          const parsedArray = JSON.parse(match[0]);
-          targetArray.splice(0, targetArray.length, ...parsedArray);
-        } else {
-          console.warn('hydrateEclipseBlipsArray: String had $__$ prefix but no brackets:', sourceArray);
-        }
-      } else if (Array.isArray(sourceArray)) {
-        // If it's already an array, hydrate directly
-        targetArray.splice(0, targetArray.length, ...sourceArray);
-      } else {
-        console.warn('Source array is neither an array nor a valid string');
-      }
-    };
+  // Utility function to handle parsing and hydrating blip arrays (mutates targetArray in place)
+  const hydrateEclipseBlipsArray = (targetArray, sourceArray) => {
+    const result = safeHydrateArray(sourceArray, [...targetArray]);
+    targetArray.splice(0, targetArray.length, ...result);
+  };
 
   // Handles updating these values in the store.
   const hydrate = (hydrateStore) => {
-    sheet_mode.value = hydrateStore.sheet_mode ?? sheet_mode.value;
+    // Default to 'pc' if sheet_mode is falsy (null, undefined, empty string)
+    sheet_mode.value = hydrateStore.sheet_mode || 'pc';
     isTransformed.value = hydrateStore.isTransformed ?? isTransformed.value;
     studentTokenImage.value = hydrateStore.studentTokenImage ?? studentTokenImage.value;
     knightTokenImage.value = hydrateStore.knightTokenImage ?? knightTokenImage.value;
@@ -2197,11 +2209,13 @@ export const useSheetStore = defineStore('sheet',() => {
     isFlying.value = hydrateStore.isFlying ?? isFlying.value;
     soulSacrificeCount.value = hydrateStore.soulSacrificeCount ?? soulSacrificeCount.value;
     rollMode.value = hydrateStore.rollMode ?? rollMode.value;
-    // Hydrate conditions
+    // Hydrate conditions - replace entire object to avoid accumulation
     if (hydrateStore.conditions) {
-      Object.keys(conditions.value).forEach(key => {
-        conditions.value[key] = hydrateStore.conditions[key] ?? conditions.value[key];
-      });
+      const defaultConditions = Object.keys(conditions.value).reduce((acc, key) => {
+        acc[key] = hydrateStore.conditions[key] ?? false;
+        return acc;
+      }, {});
+      conditions.value = defaultConditions;
     }
     // exceededMortalLimits is now computed based on reputation >= 4
     rested.value = hydrateStore.rested ?? rested.value;
@@ -2220,7 +2234,7 @@ export const useSheetStore = defineStore('sheet',() => {
 
     // Hydrate Release Magic state
     if (hydrateStore.release_magic_deck && Array.isArray(hydrateStore.release_magic_deck)) {
-      releaseMagicDeck.value = hydrateStore.release_magic_deck;
+      releaseMagicDeck.value = hydrateStore.release_magic_deck.map(card => ({ ...card }));
     }
     releaseMagicCollapsed.value = hydrateStore.release_magic_collapsed ?? releaseMagicCollapsed.value;
     signatureCard1.value = hydrateStore.signature_card_1 ?? signatureCard1.value;
@@ -2261,10 +2275,11 @@ export const useSheetStore = defineStore('sheet',() => {
     roll_resist_proficiency.value = hydrateStore.roll_resist_proficiency ?? roll_resist_proficiency.value;
     if (hydrateStore.resistModifiers) {
       for (const type of ['physical', 'magic', 'horror', 'purity']) {
-        if (hydrateStore.resistModifiers[type]) {
-          resistModifiers.value[type].advantage = hydrateStore.resistModifiers[type].advantage ?? false;
-          resistModifiers.value[type].disadvantage = hydrateStore.resistModifiers[type].disadvantage ?? false;
-        }
+        const stored = hydrateStore.resistModifiers[type] || {};
+        resistModifiers.value[type] = {
+          advantage: stored.advantage ?? false,
+          disadvantage: stored.disadvantage ?? false
+        };
       }
     }
 
@@ -2274,7 +2289,9 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateSkills(skills, hydrateStore.skills);
     masteredSkill.value = hydrateStore.masteredSkill ?? masteredSkill.value;
     hydrateAbilityScores(abilityScores, hydrateStore.abilityScores);
-    statIncreases.value = hydrateStore.statIncreases ?? statIncreases.value;
+    if (hydrateStore.statIncreases !== undefined) {
+      statIncreases.value = safeHydrateArray(hydrateStore.statIncreases, []);
+    }
     hydrateHp(hp, hydrateStore.hp);
     hydrateMp(mp, hydrateStore.mp);
     hydrateShp(shp, hydrateStore.shp);
@@ -2283,10 +2300,9 @@ export const useSheetStore = defineStore('sheet',() => {
     hydrateFate(fate, hydrateStore.fate);
     hydrateArmorWeave(armor_weave, hydrateStore.armor_weave);
     activeCombatForm.value = hydrateStore.activeCombatForm ?? activeCombatForm.value;
+    // Replace entire object to avoid accumulation
     if (hydrateStore.combatFormMastery) {
-      Object.keys(combatFormMastery.value).forEach(key => {
-        combatFormMastery.value[key] = hydrateStore.combatFormMastery[key] ?? combatFormMastery.value[key];
-      });
+      combatFormMastery.value = { ...hydrateStore.combatFormMastery };
     }
     veilPiercingUsed.value = hydrateStore.veilPiercingUsed ?? veilPiercingUsed.value;
     manaConduitUsed.value = hydrateStore.manaConduitUsed ?? manaConduitUsed.value;
@@ -2297,8 +2313,9 @@ export const useSheetStore = defineStore('sheet',() => {
     if (hydrateStore.visor) {
       visor.value.type = hydrateStore.visor.type ?? visor.value.type;
     }
+    // Replace entire object to avoid accumulation from Object.assign
     if (hydrateStore.elementalSummon) {
-      Object.assign(elementalSummon.value, hydrateStore.elementalSummon);
+      elementalSummon.value = { ...hydrateStore.elementalSummon };
     }
     hydrateHerald(herald, hydrateStore.herald);
     if (hydrateStore.squire) hydrateSquire(squire, hydrateStore.squire);
@@ -2326,46 +2343,40 @@ export const useSheetStore = defineStore('sheet',() => {
     npc_inert_spectral_energy.value = hydrateStore.npc_inert_spectral_energy ?? npc_inert_spectral_energy.value;
     npc_whisper_rolls.value = hydrateStore.npc_whisper_rolls ?? npc_whisper_rolls.value;
     if (hydrateStore.npc_hp) {
-      npc_hp.value = { ...npc_hp.value, ...hydrateStore.npc_hp };
+      npc_hp.value = { ...hydrateStore.npc_hp };
     }
     if (hydrateStore.npc_horde_hp) {
-      const hordeArr = Array.isArray(hydrateStore.npc_horde_hp)
-        ? hydrateStore.npc_horde_hp
-        : Object.values(hydrateStore.npc_horde_hp);
-      npc_horde_hp.value = hordeArr.map((unit, i) => ({
-        ...npc_horde_hp.value[i],
-        ...unit
+      const hordeArr = safeHydrateArray(hydrateStore.npc_horde_hp, npc_horde_hp.value);
+      // Replace entirely - don't merge with old values to prevent data accumulation
+      npc_horde_hp.value = hordeArr.map(unit => ({
+        current: unit.current ?? 12,
+        max: unit.max ?? 12,
+        defeated: unit.defeated ?? false
       }));
     }
     if (hydrateStore.npc_primary_attack) {
       const incoming = hydrateStore.npc_primary_attack;
+      // Replace entirely - don't merge with old values to prevent data accumulation
       npc_primary_attack.value = {
-        ...npc_primary_attack.value,
         ...incoming,
-        // Ensure nested arrays stay as arrays (Firebase may store them as objects)
-        attackDC: Array.isArray(incoming.attackDC) ? incoming.attackDC :
-          (incoming.attackDC ? Object.values(incoming.attackDC) : npc_primary_attack.value.attackDC),
-        hordeDamage: Array.isArray(incoming.hordeDamage) ? incoming.hordeDamage :
-          (incoming.hordeDamage ? Object.values(incoming.hordeDamage) : npc_primary_attack.value.hordeDamage)
+        // Ensure nested arrays stay as arrays (handles $__$ prefix and Firebase objects)
+        attackDC: safeHydrateArray(incoming.attackDC, npc_primary_attack.value.attackDC),
+        hordeDamage: safeHydrateArray(incoming.hordeDamage, npc_primary_attack.value.hordeDamage)
       };
     }
     if (hydrateStore.npc_secondary_attack) {
       const incoming = hydrateStore.npc_secondary_attack;
+      // Replace entirely - don't merge with old values to prevent data accumulation
       npc_secondary_attack.value = {
-        ...npc_secondary_attack.value,
         ...incoming,
-        // Ensure nested arrays stay as arrays (Firebase may store them as objects)
-        attackDC: Array.isArray(incoming.attackDC) ? incoming.attackDC :
-          (incoming.attackDC ? Object.values(incoming.attackDC) : npc_secondary_attack.value.attackDC),
-        hordeDamage: Array.isArray(incoming.hordeDamage) ? incoming.hordeDamage :
-          (incoming.hordeDamage ? Object.values(incoming.hordeDamage) : npc_secondary_attack.value.hordeDamage)
+        // Ensure nested arrays stay as arrays (handles $__$ prefix and Firebase objects)
+        attackDC: safeHydrateArray(incoming.attackDC, npc_secondary_attack.value.attackDC),
+        hordeDamage: safeHydrateArray(incoming.hordeDamage, npc_secondary_attack.value.hordeDamage)
       };
     }
-    // npc_traits: Firebase may store arrays as objects with numeric keys
+    // npc_traits: handles $__$ prefix, objects with numeric keys, and regular arrays
     if (hydrateStore.npc_traits !== undefined) {
-      npc_traits.value = Array.isArray(hydrateStore.npc_traits)
-        ? hydrateStore.npc_traits
-        : (hydrateStore.npc_traits ? Object.values(hydrateStore.npc_traits) : []);
+      npc_traits.value = safeHydrateArray(hydrateStore.npc_traits, []);
     }
     npc_notes.value = hydrateStore.npc_notes ?? npc_notes.value;
 
