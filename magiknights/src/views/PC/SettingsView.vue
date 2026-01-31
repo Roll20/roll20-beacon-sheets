@@ -60,32 +60,8 @@ const importSheetData = async (event) => {
       </div>
     </NotchContainer>
 
-    <h3>Tallies & Resources</h3>
+    <h3>Club & Fortune</h3>
     <NotchContainer class="tallies-and-pools" notchType="wedge">
-      <div class="tallies-section">
-        <div class="tally-group">
-          <label class="tally-label">Budget Tallies</label>
-          <input type="number" class="tally-input" min="0" v-model.number="sheet.budgetTallies">
-        </div>
-        <div class="tally-group">
-          <label class="tally-label">Training Tallies</label>
-          <div class="tally-counter">
-            <input type="number" class="tally-input" min="0" :max="sheet.trainingTalliesMax" v-model.number="sheet.trainingTallies">
-            <span class="tally-max">/ {{ sheet.trainingTalliesMax }}</span>
-          </div>
-        </div>
-        <div class="tally-group">
-          <label class="tally-label">Club Tallies</label>
-          <div class="tally-counter">
-            <input type="number" class="tally-input" min="0" :max="sheet.clubTalliesMax" v-model.number="sheet.clubTallies">
-            <span class="tally-max">/ {{ sheet.clubTalliesMax }}</span>
-          </div>
-        </div>
-        <div class="tally-group">
-          <label class="tally-label">Resounding Growths</label>
-          <input type="number" class="tally-input" min="0" v-model.number="sheet.resoundingGrowths">
-        </div>
-      </div>
       <div class="club-position-section">
         <label class="tally-label">Club Position</label>
         <select class="underline" v-model="sheet.clubPosition">
@@ -103,17 +79,11 @@ const importSheetData = async (event) => {
         </span>
       </div>
       <div class="fortune-pool-section">
-        <label class="fortune-pool-toggle">
-          <input type="checkbox" v-model="sheet.fortunePoolEnabled">
-          <span class="tally-label">Fortune Pool</span>
-        </label>
-        <template v-if="sheet.fortunePoolEnabled">
-          <div class="fortune-pool-counter">
-            <input type="number" class="tally-input" min="0" :max="sheet.fortunePoolMax" v-model.number="sheet.fortunePool">
-            <span class="tally-max">/ {{ sheet.fortunePoolMax }} Fortune</span>
-          </div>
-          <p class="fortune-pool-desc">Spend 1: +1d6 to non-combat Skill Check</p>
-        </template>
+        <span class="tally-label" title="Fortune Pool: Spend 1: +1d6 to non-combat Skill Check">Fortune Pool</span>
+        <div class="fortune-pool-counter">
+          <input type="number" class="tally-input" min="0" :max="sheet.fortunePoolMax" v-model.number="sheet.fortunePool">
+          <span class="tally-max">/ {{ sheet.fortunePoolMax }}</span>
+        </div>
       </div>
     </NotchContainer>
 
@@ -324,46 +294,32 @@ const importSheetData = async (event) => {
 
   .tallies-and-pools {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: var(--gap);
     padding: var(--half-gap);
+    align-items: start;
   }
 
-  .tallies-section {
-    display: flex;
-    gap: var(--gap);
-    align-items: center;
-    padding: var(--half-gap) var(--gap);
-    flex-wrap: wrap;
+  .tally-label {
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
 
-    .tally-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-    .tally-label {
-      font-size: 0.7em;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
-    .tally-input {
-      width: 4ch;
-      text-align: center;
-      padding: 2px 4px;
-    }
-    .tally-counter {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
-    .tally-max {
-      font-size: 0.85em;
-      opacity: 0.7;
-    }
+  .tally-input {
+    width: 4ch;
+    text-align: center;
+    padding: 2px 4px;
+  }
+
+  .tally-max {
+    font-size: 0.85em;
+    opacity: 0.7;
   }
 
   .stat-increases-section {
+    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -383,7 +339,6 @@ const importSheetData = async (event) => {
   }
 
   .club-position-section {
-    padding: var(--half-gap) var(--gap);
     select { width: 100%; margin-top: 4px; }
     .club-position-bonus {
       font-size: 0.8em;
@@ -546,25 +501,11 @@ const importSheetData = async (event) => {
   .fortune-pool-section {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 4px;
-    padding: var(--half-gap) var(--gap);
-    .fortune-pool-toggle {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-    }
     .fortune-pool-counter {
       display: flex;
       align-items: center;
       gap: 4px;
-    }
-    .fortune-pool-desc {
-      font-size: 0.75em;
-      opacity: 0.8;
-      font-style: italic;
-      margin: 0;
     }
   }
 
