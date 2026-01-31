@@ -7,12 +7,9 @@ const sheet = useSheetStore();
 
 <template>
   <NotchContainer class="squire-container" width="thick" notchType="curve">
-    <h4 @click="sheet.squire.collapsed = !sheet.squire.collapsed" class="squire-header">
-      Magi-Squire
-      <span class="collapse-indicator">{{ sheet.squire.collapsed ? '▶' : '▼' }}</span>
-    </h4>
+    <h4 class="squire-header">Magi-Squire</h4>
 
-    <div v-if="!sheet.squire.collapsed" class="squire-content">
+    <div class="squire-content">
       <div class="squire-row">
         <label for="squire-name">Name</label>
         <input class="underline" type="text" v-model="sheet.squire.name" id="squire-name" placeholder="Squire's name">
@@ -76,27 +73,15 @@ const sheet = useSheetStore();
         <textarea class="underline" v-model="sheet.squire.notes" id="squire-notes" placeholder="Notes about your Squire..." rows="2"></textarea>
       </div>
     </div>
-
-    <div v-else class="squire-collapsed-summary">
-      <span v-if="sheet.squire.name">{{ sheet.squire.name }}</span>
-      <span v-else class="placeholder">No squire</span>
-      <span v-if="sheet.squire.name" class="squire-dmg-badge">{{ sheet.squireDamage }}</span>
-    </div>
   </NotchContainer>
 </template>
 
 <style lang="scss">
 .squire-container {
   .squire-header {
-    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 6px;
-    user-select: none;
-    .collapse-indicator {
-      font-size: 0.7em;
-      opacity: 0.6;
-    }
   }
 
   .squire-content {
@@ -186,24 +171,5 @@ const sheet = useSheetStore();
     }
   }
 
-  .squire-collapsed-summary {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9em;
-    padding: 2px 0;
-    .placeholder {
-      opacity: 0.5;
-      font-style: italic;
-    }
-  }
-
-  .squire-dmg-badge {
-    font-size: 0.75em;
-    background: rgba(100, 150, 200, 0.2);
-    padding: 1px 6px;
-    border-radius: 3px;
-    font-weight: bold;
-  }
 }
 </style>
