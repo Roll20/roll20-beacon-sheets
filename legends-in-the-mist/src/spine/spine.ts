@@ -71,5 +71,13 @@ export const spine = {
     'The Bearer',
     'The Common Hero',
     'Virtuoso'
+  ],
+  fulfillments: [
+    "Arrive at Journey's End (Retirement)",
+    "Be Reforged (Rebuild Hero)",
+    "Gain a Quintessence",
+    "Shake the Foundations of Magic (New Magic)",
+    "Speak Words Eternal (Enchantment)",
+    "Unearth Lost Truths (Discovery)"
   ]
 } as const;

@@ -16,7 +16,11 @@ $color-9: #e3d4c7;//#c0a48a;
 $color-10: #36804c;
 $color-11: #ac0000;
 
-html * {
+$color-origin: #4d8061;
+$color-adventure: #7d3c3c;
+$color-greatness: #5b5b91;
+
+html {
   --sheet-font-color: #{$sheet-primary-color};
   --sheet-contrast-font-color: white;
   // --font-title: 'CCTreasureTrove Regular', 'Times New Roman', serif;
@@ -39,4 +43,10 @@ html * {
   --color-trackingchip-background: #{$color-5};
   --color-positive: #{$color-10};
   --color-negative: #{$color-11};
+  --card-height: 570px;
+  --toggle-size: 16px;
+
+  --color-origin: #{$color-origin};
+  --color-adventure: #{$color-adventure};
+  --color-greatness: #{$color-greatness};
 }

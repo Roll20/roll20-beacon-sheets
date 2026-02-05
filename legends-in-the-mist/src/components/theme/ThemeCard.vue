@@ -1,5 +1,5 @@
 <template>
-  <div class="herocard card card--double-sided" :data-flipped="flipped">
+  <div :class="['themecard', 'card', 'card--double-sided', `themecard--${selectedMight.toLowerCase()}`]" :data-flipped="flipped">
     <div class="card__container">
       <div class="card__side card__side--front">
         <div class="card__header" @click="flipped = !flipped">
@@ -19,7 +19,7 @@
             </div>
             <div class="theme-meta__book">
               <span class="title">Type</span>
-              <SelectInput v-model="theme.themebook" :showDefaultOption="true" defaultOptionLabel="Choose..." :options="spine.themes[theme.might].types.map(t => ({ value: t, label: t }))" />
+              <SelectInput v-model="theme.themebook" :showDefaultOption="true" defaultOptionLabel="Choose..." :options="types" />
             </div>
           </div>
           <div class="card__section theme-powers">
@@ -135,6 +135,11 @@ const clearTheme = (tag:Tag) => {
   tag.scratched = false;
 };
 
+const types = computed(() => {
+  const list = [...spine.themes[selectedMight.value].types, ...spine.themes['Variable'].types];
+  return list.map(t => ({ value: t, label: t }));
+});
+
 watch(selectedMight, (newMight) => {
   if (!props.theme.isFellowship && newMight !== props.theme.might) {
     themes.updateTheme({ _id: props.theme._id, might: newMight, themebook: '' });
@@ -142,18 +147,30 @@ watch(selectedMight, (newMight) => {
 });
 
 const scratchPower = (power:Tag) => {
-  power.checked = !power.scratched;
+  //power.checked = !power.scratched;
 };
 </script>
 
 <style lang="scss" scoped>
+  .themecard--origin {
+    --color-themecard-title-box: var(--color-origin);
+    --color-themecard-line: #e1e6e3;
+  }
+  .themecard--adventure {
+    --color-themecard-title-box: var(--color-adventure);
+    --color-themecard-line: #e8dbdb;
+  }
+  .themecard--greatness {
+    --color-themecard-title-box: var(--color-greatness);
+    --color-themecard-line: #e6e6ea;
+  }
   .card {
     width: 184px;
-    height: 460px;
+    height: var(--card-height);
     --color-textinput-line: var(--color-themecard-line);
     --color-section-title-background: var(--color-themecard-line);
     --color-rangebar-border: var(--color-themecard-title-box);
-        --color-textarea: var(--color-section-title-background);
+    --color-textarea: var(--color-section-title-background);
     --color-textarea-hover: var(--color-themecard-title-box);
     --color-logo: rgba(0, 0, 0, 0.5);
     &__side {
@@ -236,11 +253,11 @@ const scratchPower = (power:Tag) => {
     align-items: center;
   }
   .scratched-toggle {
-    height: 14px;
-    width: 14px;
+    height: var(--toggle-size);
+    width: var(--toggle-size);
     .svg-icon {
-      width: 14px;
-      height: 14px;
+      width: var(--toggle-size);
+      height: var(--toggle-size);
       fill: #928680;
     }
     &:has(input:checked) {
@@ -257,8 +274,8 @@ const scratchPower = (power:Tag) => {
     }
   }
   .power-toggle {
-    height: 14px;
-    width: 14px;
+    height: var(--toggle-size);
+    width: var(--toggle-size);
     background-color: #d7c8bd;
     border-radius: 3px;
     .svg-icon {
@@ -280,8 +297,8 @@ const scratchPower = (power:Tag) => {
     }
   }
   .weakness-toggle {
-    height: 14px;
-    width: 14px;
+    height: var(--toggle-size);
+    width: var(--toggle-size);
     background-color: #d7c8bd;
     border-radius: 3px;
     .svg-icon {
@@ -304,5 +321,20 @@ const scratchPower = (power:Tag) => {
   }
   .card__body--fellowship {
     padding-top: 17px;
+  }
+  .theme-powers {
+    .taglist {
+      :deep(.theme-tag:first-child) {
+        input {
+          font-size: var(--font-size-large);
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  .quest-progress-item {
+    .title {
+      font-size: 10px;
+    }
   }
 </style>

@@ -64,6 +64,9 @@ const addTracker = async () => {
 
 <style lang="scss">
 @use '../common/scss/vars.scss' as vars;
+.view--character {
+  padding-bottom: 60px;
+}
 .sheet {
   padding: 20px;
   display: flex;
@@ -78,7 +81,7 @@ const addTracker = async () => {
     filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.35));
     .card-slot {
       position: relative;
-      height: 460px;
+      height: var(--card-height);
       width: 100%;
       .card {
         position: absolute;

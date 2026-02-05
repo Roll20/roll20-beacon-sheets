@@ -1,5 +1,5 @@
 <template>
-  <div class="trackingchip chip">
+  <div :class="['trackingchip', 'chip', isTag ? 'chip--tag' : 'chip--status']">
     <div class="chip__title">
       <div class="chip__mode">
         <div class="chip__indicator" :class="{'chip__indicator--bonus': tracker.mode === 'bonus', 'chip__indicator--penalty': tracker.mode === 'penalty'}">
@@ -52,6 +52,10 @@ const deleteChip = (): void => {
   console.log(1);
   trackers.deleteTracker(props.tracker._id);
 };
+
+const isTag = computed(() => {
+  return Object.values(props.tracker.stages).filter(value => value).length === 0;
+});
 </script>
 
 <style lang="scss" scoped>
@@ -109,8 +113,8 @@ const deleteChip = (): void => {
     position: relative;
   }
   &__mode {
-    width: 14px;
-    height: 14px;
+    width: var(--toggle-size);
+    height: var(--toggle-size);
     display: grid;
     grid-template-areas: "stack";
     border-radius: 3px;
@@ -121,8 +125,8 @@ const deleteChip = (): void => {
     z-index: 9999;
     cursor: pointer;
     > select, > div {
-      width: 14px;
-      height: 14px;
+      width: var(--toggle-size);
+      height: var(--toggle-size);
       grid-area: stack;
       place-self: center;
     }
@@ -170,5 +174,10 @@ const deleteChip = (): void => {
       fill: var(--color-negative);
     }
   }
+}
+.chip--tag {
+  --color-trackingchip-background: #CFB97D;
+  --color-textinput-line: #a8a18b;
+  border-color: #b5b0a4;
 }
 </style>
