@@ -4,7 +4,7 @@
   <div class="body">
     {{> rollTotal total=(sumComponents ../components multiplier) resultType=(getRollResultType ../components multiplier)}}
 
-    <details>
+    <details class="minified">
       <summary class="summary">
         <div class="summary__button">
           <span>▼</span>
@@ -13,5 +13,8 @@
       </summary>
       {{> rollComponents components=components }}
     </details>
+    <div class="exploded">
+      {{> rollComponents components=components }}
+    </div>
   </div>
 {{/ wrapper }}

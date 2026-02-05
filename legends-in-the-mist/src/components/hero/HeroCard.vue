@@ -41,6 +41,10 @@
               <SelectInput v-for="quintessence in hero.quintessences" :key="quintessence._id" v-model="quintessence.name" :options="filteredOptionsFor(quintessence.name)" showClearWhen="hover"/>
             </div>
           </div>
+          <div class="card__section notes">
+            <h3 class="title break-padding">Notes</h3>
+            <textarea v-model="hero.notes" class="smart-textarea"></textarea>
+          </div>
         </div>
         <div class="card__footer">
           <LegendsInTheMist />
@@ -56,13 +60,33 @@
               Backpack
               <SvgIcon class="decorator" icon="Backpack" />
             </h3>
-            <div class="list itemlist">
-              <TextInput v-for="item in hero.backpack" :key="item._id" v-model="item.name" />
+            <div class="list taglist">
+              <div class="theme-tag" v-for="item in hero.backpack" :key="item._id">
+                <div class="power-toggle image-toggle">
+                  <input type="checkbox" v-model="item.checked" :disabled="item.name.trim() === '' || item.scratched">
+                  <SvgIcon icon="Power"/>
+                </div>
+                <TextInput v-model="item.name" @clear="clearTheme(item)" :class="{ 'line-through': item.scratched }" />
+                <div class="scratched-toggle image-toggle">
+                  <input type="checkbox" v-model="item.scratched" :disabled="item.name.trim() === ''" @click="scratchPower(item)">
+                  <SvgIcon icon="Scratched"/>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="card__section notes">
-            <h3 class="title break-padding">Notes</h3>
-            <textarea v-model="hero.notes" class="smart-textarea"></textarea>
+          <div class="card__section fulfillments">
+            <h3 class="title break-padding">Moments of Fulfillment</h3>
+            <div class="list fulfillment-list">
+              <div class="fulfillment" v-for="fulfillment in hero.fulfillments" :key="fulfillment._id">
+                <label>
+                  <div class="fulfillment-toggle image-toggle">
+                    <input type="checkbox" v-model="fulfillment.marked" />
+                    <SvgIcon icon="Check"/>
+                  </div>
+                  <span :class="{ 'line-through': fulfillment.marked }">{{ fulfillment.description }}</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card__footer">
@@ -84,6 +108,7 @@ import { spine } from '@/spine/spine';
 import SonsOfOak from '../logo/SonsOfOak.vue';
 import LegendsInTheMist from '../logo/LegendsInTheMist.vue';
 import SvgIcon from '../shared/SvgIcon.vue';
+import { type Tag } from '@/sheet/stores/themes/themesStore';
 
 const meta = metaStore();
 const hero = heroStore();
@@ -126,12 +151,20 @@ const baseOptions = spine.quintessences.map(q => ({ value: q, label: q }));
 const filteredOptionsFor = (currentValue: string) =>
   baseOptions.filter(o => o.value === currentValue || !selectedNames.value.includes(o.value));
 
+const clearTheme = (tag:Tag) => {
+  tag.checked = false;
+  tag.scratched = false;
+};
+
+const scratchPower = (power:Tag) => {
+  //power.checked = !power.scratched;
+};
 </script>
 
 <style lang="scss" scoped>
   .card {
     width: 184px;
-    height: 460px;
+    height: var(--card-height);
     --color-textinput-line: var(--color-herocard-line);
     --color-section-title-background: var(--color-herocard-line);
     --color-rangebar-border: var(--color-herocard-title-box);
@@ -174,6 +207,80 @@ const filteredOptionsFor = (currentValue: string) =>
   }
   .itemlist {
     gap: 6px;
+  }
+  .theme-tag {
+    display: grid;
+    grid-template-columns: min-content 1fr min-content;
+    align-items: center;
+  }
+  .scratched-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    .svg-icon {
+      width: var(--toggle-size);
+      height: var(--toggle-size);
+      fill: #928680;
+    }
+    &:has(input:checked) {
+      input[type="text"] {
+        text-decoration: line-through;
+      }
+      .svg-icon {
+        fill: black
+      }
+    }
+    &:has(input:disabled) {
+      opacity: 0.35;
+      input { cursor: not-allowed; }
+    }
+  }
+  .power-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    background-color: #d7c8bd;
+    border-radius: 3px;
+    .svg-icon {
+      width: 8px;
+      height: 8px;
+      fill: var(--color-positive);
+      opacity: 0.65;
+    }
+    &:has(input:checked) {
+      background-color: var(--color-positive);
+      .svg-icon {
+        fill: white;
+        opacity: 1;
+      }
+    }
+    &:has(input:disabled) {
+      opacity: 0.35;
+      input { cursor: not-allowed; }
+    }
+  }
+  .fulfillment-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    background-color: #d7c8bd;
+    border-radius: 3px;
+    .svg-icon {
+      width: 8px;
+      height: 8px;
+      fill: transparent;
+      opacity: 0.65;
+    }
+    &:has(input:checked) {
+      background-color: var(--color-herocard-title-box);
+      .svg-icon {
+        fill: white;
+        opacity: 1;
+        width: 10px;
+        height: 10px;
+      }
+    }
+    &:has(input:disabled) {
+      opacity: 0.35;
+      input { cursor: not-allowed; }
+    }
   }
   .fellowship-table-header {
     display: grid;
@@ -219,6 +326,23 @@ const filteredOptionsFor = (currentValue: string) =>
     }
   }
   .smart-textarea {
-    height: 95px; 
+    height: 82px; 
+  }
+  .fulfillment-list {
+    gap: 12px;
+  }
+  .fulfillment label {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    align-items: start;
+    gap: 5px;
+    text-align: left;
+    input {
+      margin: 0;
+    }
+    span {
+      font-size: var(--font-size-medium);
+      font-family: Arial, Helvetica, sans-serif;
+    }
   }
 </style>

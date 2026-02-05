@@ -8,6 +8,6 @@
 .logo {
   height: 9px;
   width: auto;
-  fill: var(--color-logo);
+  fill: var(--color-themecard-title);
 }
 </style>

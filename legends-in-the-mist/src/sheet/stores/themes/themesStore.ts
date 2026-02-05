@@ -112,14 +112,14 @@ export const themesStore = defineStore('themes', () => {
     ...override,
   });
   const getEmptyTheme = (isFellowship: boolean = false): Theme => {
-    const powerLines = isFellowship ? 8 : 7;
+    const powerLines = isFellowship ? 11 : 10;
     const newTheme: Theme = {
       _id: uuidv4(),
       name: '',
       isFellowship: true,
       tags: [
         ...Array.from({ length: powerLines }, () => getEmptyTag()),
-        ...Array.from({ length: 2 }, () => getEmptyTag({ type: 'Weakness' })),
+        ...Array.from({ length: 4 }, () => getEmptyTag({ type: 'Weakness' })),
       ],
       quest: {
         description: '',
@@ -127,7 +127,7 @@ export const themesStore = defineStore('themes', () => {
         improve: 0,
         milestone: 0,
       },
-      specialImprovements: Array.from({ length: isFellowship ? 15 : 16 }, () => getEmptySpecialImprovement()),
+      specialImprovements: Array.from({ length: isFellowship ? 19 : 20 }, () => getEmptySpecialImprovement()),
     }
     return isFellowship ?
       newTheme

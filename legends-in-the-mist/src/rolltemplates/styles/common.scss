@@ -138,4 +138,16 @@ rolltemplate.sheet {
       }
     }
   }
+  .exploded {
+    display: none;
+  }
+  &:has(.result-text--success),
+  &:has(.result-text--partial-success) {
+    .minified {
+      display: none;
+    }
+    .exploded {
+      display: block;
+    }
+  }
 }

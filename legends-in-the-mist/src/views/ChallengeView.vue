@@ -95,7 +95,7 @@
                   <input type="text" v-model="feature.name" placeholder="Name">
                   <button type="button" @click="challenge.deleteSpecialFeature(feature._id)" class="action-button action-button--delete"><SvgIcon icon="Delete" /></button>
                 </div>
-                <textarea v-model="feature.description" placeholder="Description"></textarea>
+                <textarea v-model="feature.description" placeholder="Progress Special Feature"></textarea>
               </div>
               <div class="newfeature">
                 <div class="actionable-row">
@@ -178,7 +178,8 @@
                 <span class="limit__name">{{ limit.name }}</span>
                 <div class="limit__shield">
                   <SvgIcon icon="Shield" class="limit__arrow"/>
-                  <span class="limit__value">{{ limit.value }}</span>
+                  <span class="limit__value" v-if="!limit.value">-</span>
+                  <span class="limit__value" v-else>{{ limit.value }}</span>
                 </div>
               </div>
               <SvgIcon icon="Arrow" v-if="limit.description" />
@@ -240,6 +241,18 @@
           </div>
         </div>
       </div>
+      <div class="sheet__trackers">
+        <TrackingChip 
+          v-for="tracker in trackers.trackers" 
+          :key="tracker._id" 
+          ref="trackerRefs"
+          :tracker="tracker" 
+        />
+        <button class="sheet__add-tracker" type="button" @click="addTracker">
+          <SvgIcon icon="Add" />
+          <span v-if="trackers.trackers.length === 0" class="title">Add Tracker</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -247,12 +260,14 @@
 <script setup lang="ts">
 import SvgIcon from '@/components/shared/SvgIcon.vue';
 import { challengeStore, type Threat } from '@/sheet/stores/challenge/challengeStore';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import { metaStore } from '@/sheet/stores/meta/metaStore';
-import { text } from 'stream/consumers';
+import { trackersStore } from '@/sheet/stores/trackers/trackersStore';
+import TrackingChip from '@/components/tracking/TrackingChip.vue';
 
 const meta = metaStore();
 const challenge = challengeStore();
+const trackers = trackersStore();
 
 const newThreat = ref<string>('');
 const newLimit = ref<{ name: string; value: number | null }>({ name: '', value: null });
@@ -310,6 +325,21 @@ const addThreat = () => {
   if (newThreat.value.trim() !== '') {
     challenge.updateThreat({ ...challenge.getEmptyThreat(), name: newThreat.value });
     newThreat.value = '';
+  }
+};
+
+const trackerRefs = ref<InstanceType<typeof TrackingChip>[]>([]);
+const addTracker = async () => {
+  trackers.updateTracker();
+  
+  await nextTick();
+  
+  const lastRef = trackerRefs.value[trackerRefs.value.length - 1];
+  if (lastRef?.$el) {
+    const input = lastRef.$el.querySelector('input[type="text"]');
+    if (input) {
+      input.focus();
+    }
   }
 };
 </script>
@@ -555,7 +585,7 @@ const addThreat = () => {
     .threat {
       border-bottom-style: solid;
       border-bottom-width: 1px;
-      border-image: linear-gradient(90deg, var(--challenge-color-3) 0%, var(--challenge-color-4) 75%) 1;
+      border-image: linear-gradient(90deg, rgba(255,0,0,0) 0%, rgba(255,0,0,1) 50%, rgba(255,0,0,0) 100%);
       padding-bottom: 10px;
       margin-bottom: 10px;
       &__description {
@@ -752,6 +782,18 @@ const addThreat = () => {
         font-weight: bold;
         text-transform: uppercase;
         margin-right: 2px;
+      }
+    }
+  }
+  .sheet__trackers {
+    margin-top: 20px;
+    grid-column: 1 / -1;
+    .chip {
+      box-shadow: none!important;
+    }
+    .sheet__add-tracker {
+      &:hover {
+        box-shadow: none!important;
       }
     }
   }
