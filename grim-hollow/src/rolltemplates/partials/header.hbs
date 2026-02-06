@@ -1,0 +1,11 @@
+<div class="header">
+  {{#if characterName}}
+    <div class="header__character-name">{{characterName}}</div>
+  {{/if}}
+  <div class="header__sub-group">
+    <div class="header__title">{{title}}</div>
+    {{#if subtitle}}
+      <div class="header__subtitle">{{ capitalize subtitle}}</div>
+    {{/if}}
+  </div>
+</div>

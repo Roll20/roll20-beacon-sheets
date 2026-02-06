@@ -1,0 +1,27 @@
+<div class='roll__components'>
+  {{#each components}}
+    {{#if (or (not (isEqual this.value 0)) this.alwaysShowInBreakdown)}}
+      <div class='roll__component component'>
+        <div class='component__description'>
+          {{#unless @first}}
+            +
+          {{/unless}}
+          {{#if this.label}}
+            <span class='component__label'>
+              {{this.label}}
+            </span>
+          {{else}}
+            {{#if this.sides}}
+              <span class='component__label'>
+                {{this.count}}d{{this.sides}}
+              </span>
+            {{/if}}
+          {{/if}}
+          <span class='component__value'>
+            ({{this.value}})
+          </span>
+        </div>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>
