@@ -36,7 +36,7 @@
       "file": "locations.json"
     },
     "Classes": {
-      "pageCount": 29,
+      "pageCount": 30,
       "file": "classes.json"
     },
     "Lists": {
@@ -44,5 +44,5 @@
       "file": "lists.json"
     }
   },
-  "totalPages": 342
+  "totalPages": 343
 }

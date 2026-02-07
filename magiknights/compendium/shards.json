@@ -5,121 +5,141 @@
         "name": "Shard of Mending [Lesser]",
         "description": "Heal 1d12 + Level HP",
         "rarity": 1,
-        "cost": "4"
+        "cost": "4",
+        "action": "Free"
       },
       "Shard of Clarity [Lesser]": {
         "name": "Shard of Clarity [Lesser]",
         "description": "Restore 1d10 + Level MP",
         "rarity": 2,
-        "cost": "8"
+        "cost": "8",
+        "action": "Bonus"
       },
       "Shard of Confidence": {
         "name": "Shard of Confidence",
         "description": "+1d12 to next Skill Check",
         "rarity": 2,
-        "cost": "8"
+        "cost": "8",
+        "action": "Free"
       },
       "Shard of Mending [Potent]": {
         "name": "Shard of Mending [Potent]",
         "description": "Heal 3d12 + Level HP",
         "rarity": 3,
-        "cost": "12"
+        "cost": "12",
+        "action": "Free"
       },
       "Shard of Mercurial Alacrity": {
         "name": "Shard of Mercurial Alacrity",
         "description": "+1 Bonus Action (max 3/turn) until end of next turn. Then +1 Exhaustion",
         "rarity": 3,
-        "cost": "12"
+        "cost": "12",
+        "action": "Free"
       },
       "Shard of Purification [Lesser]": {
         "name": "Shard of Purification [Lesser]",
         "description": "Remove Berserk/Bleeding/Burning/Disoriented, OR +5 to next Condition removal roll",
         "rarity": 3,
-        "cost": "12"
+        "cost": "12",
+        "action": "Bonus"
       },
       "Shard of Rejuvenation": {
         "name": "Shard of Rejuvenation",
         "description": "Ignore Stress/Exhaustion effects until end of next turn. -1 Stress, -1 Exhaustion",
         "rarity": 3,
-        "cost": "12"
+        "cost": "12",
+        "action": "Bonus"
       },
       "Shard of Unstoppable Might": {
         "name": "Shard of Unstoppable Might",
         "description": "+2 + Rep Level (min 1) to Physical damage until end of next turn. Then +1 Exhaustion",
         "rarity": 4,
-        "cost": "16"
+        "cost": "16",
+        "action": "Bonus"
       },
       "Shard of Mending [Greater]": {
         "name": "Shard of Mending [Greater]",
         "description": "Heal 5d12 + Level HP",
         "rarity": 5,
-        "cost": "25"
+        "cost": "25",
+        "action": "Free"
       },
       "Shard of Purification [Potent]": {
         "name": "Shard of Purification [Potent]",
         "description": "Remove Drained/Distressed/Silenced/Soul-Siphoned (I-II), OR Advantage on next Condition removal roll",
         "rarity": 5,
-        "cost": "25"
+        "cost": "25",
+        "action": "Bonus"
       },
       "Shard of Tenacity": {
         "name": "Shard of Tenacity",
         "description": "Gain Physical Resistance until end of next turn (applied before damage)",
         "rarity": 5,
-        "cost": "25"
+        "cost": "25",
+        "action": "Immediate"
       },
       "Shard of Clarity [Potent]": {
         "name": "Shard of Clarity [Potent]",
         "description": "Restore 3d10 + Level MP",
         "rarity": 6,
-        "cost": "30"
+        "cost": "30",
+        "action": "Bonus"
       },
       "Shard of Magical Force": {
         "name": "Shard of Magical Force",
         "description": "Advantage on next Attack. +Rep Level (min 1) to Attack and Damage",
         "rarity": 6,
-        "cost": "30"
+        "cost": "30",
+        "action": "Bonus"
       },
       "Shard of Purification [Greater]": {
         "name": "Shard of Purification [Greater]",
         "description": "Remove Depleted/Horrified/Paralyzed/Soul-Siphoned (III)/Soul-Tainted. Also activate Purification [Lesser]",
         "rarity": 7,
-        "cost": "35"
+        "cost": "35",
+        "action": "Bonus"
       },
       "Shard of Solidarity": {
         "name": "Shard of Solidarity",
         "description": "Gain 1 Unity Point (up to max) OR 1 Inspiration Point",
         "rarity": 7,
-        "cost": "35"
+        "cost": "35",
+        "action": "Bonus"
       },
       "Shard of Fate": {
         "name": "Shard of Fate",
         "description": "Roll 2d20, keep highest. Use instead of Attack/Check/Resist roll (before rolling). Or expend as Inspiration. Unexpended die at Sleep Phase = Inspiration",
         "rarity": 8,
-        "cost": "40"
+        "cost": "40",
+        "action": "Bonus"
       },
       "Shard of Fortune": {
         "name": "Shard of Fortune",
         "description": "When squadron member rolls 1, change result to 15",
         "rarity": 8,
-        "cost": "40"
+        "cost": "40",
+        "action": "Immediate"
       },
       "Shard of Clarity [Greater]": {
         "name": "Shard of Clarity [Greater]",
         "description": "Restore 6d10 + Level MP",
         "rarity": 9,
-        "cost": "45"
+        "cost": "45",
+        "action": "Bonus"
       },
       "Shard of Nepenthe": {
         "name": "Shard of Nepenthe",
         "description": "Remove 2 Trauma, heal 3d12 HP, restore 5d10 MP, -2 Exhaustion, -4 Stress, gain Inspiration",
         "rarity": 9,
-        "cost": "N/A"
+        "cost": "N/A",
+        "action": "Bonus"
       },
       "Shard of the Magi-Knight": {
         "name": "Shard of the Magi-Knight",
         "description": "Full restore HP/MP, remove all Stress/Exhaustion, +2 Unity (up to max), +1 Inspiration, Purge all Conditions, heal 6 Crystalline Fractures",
         "rarity": 10,
-        "cost": "N/A"
+        "cost": "N/A",
+        "action": "Bonus"
       }
     }
   }

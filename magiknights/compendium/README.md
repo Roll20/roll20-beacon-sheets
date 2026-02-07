@@ -7,19 +7,20 @@ This directory contains the Magi-Knights Awakening System Reference Document (SR
 - **magi-knights-compendium.json** - Main compendium file with all content
 - **manifest.json** - Manifest listing all categories and page counts
 - **Category-specific JSON files:**
-  - `rules.json` - Core rules, conditions, glossary (140 pages)
-  - `spells.json` - Spell paths and magic (16 pages)
-  - `techniques.json` - Battle techniques and tactics (43 pages)
+  - `rules.json` - Core rules, conditions, glossary (141 pages)
+  - `spells.json` - Spell paths and magic (18 pages)
+  - `techniques.json` - Battle techniques and tactics (44 pages)
   - `equipment.json` - Weapons, armor, and gear (26 pages)
-  - `relics.json` - Magical relics (2 pages)
+  - `shards.json` - Shards of Power consumables (20 pages)
+  - `relics.json` - Magical relics (10 pages)
   - `monsters.json` - Outsiders and cultists (43 pages)
   - `locations.json` - Lapis City locations (5 pages)
-  - `classes.json` - Combat forms and character options (29 pages)
+  - `classes.json` - Combat forms and character options (30 pages)
   - `lists.json` - Formations and combinations (5 pages)
 
 ## Total Content
 
-- **Total Pages:** 310
+- **Total Pages:** 343
 - **Source Files:** 24 markdown files from `/src`
 
 ## File Structure
@@ -56,15 +57,15 @@ The JSON structure can be adapted for other virtual tabletop platforms with appr
 
 ## Content Categories
 
-### Rules (140 pages)
+### Rules (141 pages)
 Core game mechanics, conditions, social systems, glossary terms, and reference tables.
 
-### Spells (16 pages)
+### Spells (18 pages)
 - Spell paths: Beam, Explosion, Curing, Restoration, Amplify, Manipulate, Barrier, Transformation
 - Advanced paths: Divination, Summoning, Chronomancy, Release Magic
 - Spell modification rules
 
-### Techniques (43 pages)
+### Techniques (44 pages)
 Battle techniques available at different levels, combat tactics, and special abilities.
 
 ### Equipment (26 pages)
@@ -74,7 +75,7 @@ Battle techniques available at different levels, combat tactics, and special abi
 - Shards of Power
 - Soul Armor Weaves
 
-### Relics (2 pages)
+### Relics (10 pages)
 Powerful magical objects with unique properties.
 
 ### Monsters (43 pages)
@@ -85,7 +86,7 @@ Powerful magical objects with unique properties.
 ### Locations (5 pages)
 Lapis City locations, NPCs, and setting information.
 
-### Classes (29 pages)
+### Classes (30 pages)
 - Combat Forms (I-X)
 - Character creation options
 - Herald information
@@ -136,4 +137,4 @@ This will:
 
 **Version:** 1.0.0
 **Generated:** 2026-01-17
-**Total Pages:** 310
+**Total Pages:** 343
