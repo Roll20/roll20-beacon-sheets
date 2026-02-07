@@ -63,16 +63,27 @@ export const onDropMonster = async ({
   const collectedEffects: any[] = Array.isArray(effects) ? effects : [];
 
   //Features
-  if(result.data.features) {
+  if (result.data.features) {
     result.data.features.forEach((feature) => {
       //Effects
-      if(feature['data-effects']) {
+      if (feature['data-effects']) {
         const uuid = uuidv4();
         feature.effectId = uuid;
-        feature['data-effects']._id = uuid;
-        
-        collectedEffects.push(feature['data-effects']);
-        
+        const effectData = feature['data-effects'];
+        effectData._id = uuid;
+
+        ['effects', 'actions', 'resources', 'spellSources', 'spells', 'pickers'].forEach((key) => {
+          // @ts-ignore
+          if (effectData[key] && Array.isArray(effectData[key])) {
+            // @ts-ignore
+            effectData[key].forEach((item: any) => {
+              if (!item._id) item._id = uuidv4();
+            });
+          }
+        });
+
+        collectedEffects.push(effectData);
+
         delete feature['data-effects'];
       }
 

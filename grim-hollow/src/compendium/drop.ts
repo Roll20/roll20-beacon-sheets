@@ -211,6 +211,13 @@ export const drag = async (
 
       if (page.properties.hasOwnProperty('data-payload')) {
         payload = JSON.parse(page.properties['data-payload']);
+        if (
+          category === 'Monsters' &&
+          (!payload.token || payload.token.length === 0) &&
+          page.properties.Token
+        ) {
+          payload.token = page.properties.Token;
+        }
       } else if (transformers[category]) {
         const transformer = transformers[category];
         const rawPayload = { name: page.name, book: page.book, properties: page.properties };
