@@ -20,6 +20,7 @@ import { getDice } from './expressions/getDice';
 import { isArray } from './expressions/isArray';
 import { capitalize } from './expressions/capitalize';
 import { getRollResultType } from './expressions/getRollResultType';
+import { getRollPower } from './expressions/getRollPower';
 
 handlebars.registerPartial('header', header);
 handlebars.registerPartial('wrapper', wrapper);
@@ -33,6 +34,7 @@ handlebars.registerHelper('isEqual', isEqual);
 handlebars.registerHelper('isArray', isArray);
 handlebars.registerHelper('capitalize', capitalize);
 handlebars.registerHelper('getRollResultType', getRollResultType);
+handlebars.registerHelper('getRollPower', getRollPower);
 
 handlebars.registerHelper('not', (v) => !v);
 handlebars.registerHelper('or', (a, b) => a || b);

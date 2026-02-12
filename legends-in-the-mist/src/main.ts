@@ -9,6 +9,7 @@ import FloatingVue from 'floating-vue'
 
 import 'floating-vue/dist/style.css'
 import './sheet/scss/index.scss';
+import 'overlayscrollbars/overlayscrollbars.css';
 
 import { createRelay } from './relay/relay';
 

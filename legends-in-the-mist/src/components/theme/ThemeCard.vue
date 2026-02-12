@@ -23,19 +23,24 @@
             </div>
           </div>
           <div class="card__section theme-powers">
-            <div class="list taglist">
-              <div class="theme-tag" v-for="power in powers" :key="power._id">
-                <div class="power-toggle image-toggle">
-                  <input type="checkbox" v-model="power.checked" :disabled="power.name.trim() === '' || power.scratched">
-                  <SvgIcon icon="Power"/>
-                </div>
-                <TextInput v-model="power.name" @clear="clearTheme(power)" :class="{ 'line-through': power.scratched }" />
-                <div class="scratched-toggle image-toggle">
-                  <input type="checkbox" v-model="power.scratched" :disabled="power.name.trim() === ''" @click="scratchPower(power)">
-                  <SvgIcon icon="Scratched"/>
+            <component :is="showScrollbar ? OverlayScrollbarsComponent : 'div'" 
+              :defer="showScrollbar ? true : undefined"
+              :options="showScrollbar ? { scrollbars: { autoHide: 'move' } } : undefined"
+              :class="showScrollbar ? 'scroll-area' : ''">
+              <div class="list taglist">
+                <div class="theme-tag" v-for="power in visiblePowers" :key="power._id">
+                  <div class="power-toggle image-toggle">
+                    <input type="checkbox" v-model="power.checked" :disabled="power.name.trim() === '' || power.scratched">
+                    <SvgIcon icon="Power"/>
+                  </div>
+                  <TextInput v-model="power.name" @clear="clearTheme(power)" :class="{ 'line-through': power.scratched }" />
+                  <div class="scratched-toggle image-toggle">
+                    <input type="checkbox" v-model="power.scratched" :disabled="power.name.trim() === ''" @click="scratchPower(power)">
+                    <SvgIcon icon="Scratched"/>
+                  </div>
                 </div>
               </div>
-            </div>
+            </component>
           </div>
           <div class="card__section theme-weaknesses">
             <div class="list">
@@ -50,7 +55,7 @@
           </div>
           <div class="card__section theme-quest">
             <h3 class="title break-padding">Quest</h3>
-             <textarea v-model="theme.quest.description" class="smart-textarea"></textarea>
+             <textarea v-model="theme.quest.description" class="smart-textarea notes"></textarea>
              <div class="quest-progress">
                 <div class="quest-progress-item" v-for="progress in ['Abandon', 'Improve', 'Milestone']" :key="progress">
                   <RangeBar v-model="theme.quest[progress.toLowerCase() as QuestImprovement]" :max="3" />
@@ -71,14 +76,26 @@
           </h2>
           <h2 class="title" v-else>Theme Card</h2>
         </div>
-        <div class="card__body">
+        <div class="card__body" :class="{ 'card__body--fellowship': theme.isFellowship }">
           <div class="card__section theme-improvements">
             <h3 class="title break-padding">Special Improvements</h3>
-            <div class="list">
+            <div class="list improvement-list">
               <template  v-for="improvement in theme.specialImprovements" :key="improvement._id" >
+                <div class="improvement-item">
+                  <div class="improvement__title">
+                    <div class="improvement-toggle image-toggle">
+                      <input type="checkbox" v-model="improvement.checked" />
+                      <SvgIcon icon="Check"/>
+                    </div>
+                    <TextInput v-model="improvement.name" placeholder="Improvement"/>
+                  </div>
+                  <textarea v-if="improvement.checked" v-model="improvement.description" class="smart-textarea improvement" placeholder="Description"></textarea>
+                </div>
+              </template>
+              <!-- <template  v-for="improvement in theme.specialImprovements" :key="improvement._id" >
                 <TextInput v-if="optionsForImprovement(improvement.name).length === 0 || (improvement.name && !improvements.find(imp => imp.value === improvement.name))" v-model="improvement.name" />
                 <SelectInput v-else v-model="improvement.name" :options="optionsForImprovement(improvement.name)" showClearWhen="hover"/>
-              </template>
+              </template> -->
               <!-- <AutoCompleteInput v-for="improvement in theme.specialImprovements" :key="improvement._id" v-model="improvement.name" :options="optionsForImprovement(improvement.name)" /> -->
             </div>
           </div>
@@ -102,6 +119,7 @@ import SvgIcon from '../shared/SvgIcon.vue';
 import LegendsInTheMist from '../logo/LegendsInTheMist.vue';
 import SonsOfOak from '../logo/SonsOfOak.vue';
 import AutoCompleteInput from '../shared/AutoCompleteInput.vue';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
 
 const props = withDefaults(defineProps<{
   theme: Theme;
@@ -149,6 +167,20 @@ watch(selectedMight, (newMight) => {
 const scratchPower = (power:Tag) => {
   //power.checked = !power.scratched;
 };
+
+const visiblePowers = computed(() => {
+  if (props.theme.isFellowship) {
+    return powers.value;
+  }
+  return powers.value.filter((p, index) => {
+    if (index < 10) return true;
+    else { return powers.value[index-1].name.trim() !== '' || p.name.trim() !== '' }
+  });
+});
+
+const showScrollbar = computed(() => {
+  return (!props.theme.isFellowship && visiblePowers.value.length > 10);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -319,15 +351,31 @@ const scratchPower = (power:Tag) => {
       input { cursor: not-allowed; }
     }
   }
+  .improvement-list {
+    gap: 12px;
+  }
+  .smart-textarea.improvement {
+    min-height: auto;
+    height: 46px;
+  }
   .card__body--fellowship {
     padding-top: 17px;
+    .smart-textarea.improvement {
+      min-height: auto;
+      height: 43px;
+    }
+  }
+  .card__side--back {
+    .card__body--fellowship {
+      padding-top: 0;
+    }
   }
   .theme-powers {
     .taglist {
       :deep(.theme-tag:first-child) {
         input {
-          font-size: var(--font-size-large);
-          font-weight: bold;
+          font-size: var(--font-size-xlarge);
+          //font-weight: bold;
         }
       }
     }
@@ -335,6 +383,69 @@ const scratchPower = (power:Tag) => {
   .quest-progress-item {
     .title {
       font-size: 10px;
+    }
+  }
+  .theme-powers {
+    min-height: 229px;
+  }
+  .card__body--fellowship {
+    .theme-powers {
+      min-height: 252px;
+    }
+  }
+  .scroll-area {
+    height: 229px;
+    width: calc(100% + 7px);
+    padding-right: 7px;
+    box-sizing: border-box;
+  }
+  .notes {
+    min-height: auto;
+    height: 48px;
+  }
+  .improvement-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    background-color: #d7c8bd;
+    border-radius: 3px;
+    .svg-icon {
+      width: 8px;
+      height: 8px;
+      fill: transparent;
+      opacity: 0.65;
+    }
+    &:has(input:checked) {
+      background-color: var(--color-themecard-title-box);
+      .svg-icon {
+        fill: white;
+        opacity: 1;
+        width: 10px;
+        height: 10px;
+      }
+    }
+    &:has(input:disabled) {
+      opacity: 0.35;
+      input { cursor: not-allowed; }
+    }
+  }
+  .improvement__title {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    gap: 5px;
+    text-align: left;
+  }
+  .improvement-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+</style>
+<style>
+  .os-scrollbar.os-scrollbar-vertical {
+    .os-scrollbar-track {
+      .os-scrollbar-handle {
+        width: 3px;
+      }
     }
   }
 </style>

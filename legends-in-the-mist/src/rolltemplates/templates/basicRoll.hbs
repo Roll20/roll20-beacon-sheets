@@ -2,7 +2,7 @@
   {{#> header characterName=characterName title=title subtitle=subtitle}}
   {{/ header}}
   <div class="body">
-    {{> rollTotal total=(sumComponents ../components multiplier) resultType=(getRollResultType ../components multiplier)}}
+    {{> rollTotal total=(sumComponents ../components multiplier) resultType=(getRollResultType ../components multiplier) power=(getRollPower ../components multiplier) }}
 
     <details class="minified">
       <summary class="summary">

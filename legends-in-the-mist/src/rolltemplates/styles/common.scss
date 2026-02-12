@@ -70,6 +70,19 @@ rolltemplate.sheet {
         font-size: 24px;
         line-height: 24px;
       }
+      .power {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        &__label {
+          margin-right: 5px;
+          font-family: var(--font-family-title);
+        }
+        &__value {
+          font-size: 18px;
+          margin-top: -2px;
+        }
+      }
     }
     &__components {
       display: flex;
@@ -140,6 +153,7 @@ rolltemplate.sheet {
   }
   .exploded {
     display: none;
+    margin-top: 10px;
   }
   &:has(.result-text--success),
   &:has(.result-text--partial-success) {
