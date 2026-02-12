@@ -12,7 +12,7 @@
           <option value="penalty">Penalty</option>
         </select>
       </div>
-      <TextInput v-model="tracker.name" class="chip__label text-input--centered" @clear="deleteChip" placeholder="Status"/>
+      <TextInput v-model="tracker.name" class="chip__label text-input--centered" @clear="deleteChip" placeholder="Tag or Status"/>
     </div>
     <div class="chip__stages">
       <div v-for="stage in [1, 2, 3, 4, 5, 6]" :key="stage" class="chip__stage">

@@ -140,6 +140,7 @@ const addTracker = async () => {
     width: 100%;
     display: flex;
     justify-content: center;
+    z-index: 9999;
   }
 }
 @media (min-width: 1150px) {

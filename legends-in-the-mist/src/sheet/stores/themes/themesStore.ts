@@ -36,31 +36,37 @@ type OriginImprovement = {
   _id: string;
   name: typeof spine.themes['Origin']['improvements'][number] | '';
   description?: string;
+  checked: boolean;
 }
 type AdventureImprovement = {
   _id: string;
   name: typeof spine.themes['Adventure']['improvements'][number] | '';
   description?: string;
+  checked: boolean;
 }
 type GreatnessImprovement = {
   _id: string;
   name: typeof spine.themes['Greatness']['improvements'][number] | '';
   description?: string;
+  checked: boolean;
 }
 type VariableImprovement = {
   _id: string;
   name: typeof spine.themes['Variable']['improvements'][number] | '';
   description?: string;
+  checked: boolean;
 }
 type FellowshipImprovement = {
   _id: string;
   name: typeof spine.themes['Fellowship']['improvements'][number] | '';
   description?: string;
+  checked: boolean;
 }
 type GenericImprovement = {
   _id: string;
   name: string;
   description?: string;
+  checked: boolean;
 }
 type SpecialImprovement = GenericImprovement | OriginImprovement | AdventureImprovement | GreatnessImprovement | VariableImprovement | FellowshipImprovement;
 
@@ -101,6 +107,7 @@ export const themesStore = defineStore('themes', () => {
   const getEmptySpecialImprovement = (override: Partial<GenericImprovement> = {}): GenericImprovement => ({
     _id: uuidv4(),
     name: '',
+    checked: false,
     ...override,
   });
   const getEmptyTag = (override: Partial<Tag> = {}): Tag => ({
@@ -112,7 +119,7 @@ export const themesStore = defineStore('themes', () => {
     ...override,
   });
   const getEmptyTheme = (isFellowship: boolean = false): Theme => {
-    const powerLines = isFellowship ? 11 : 10;
+    const powerLines = isFellowship ? 11 : 20;
     const newTheme: Theme = {
       _id: uuidv4(),
       name: '',
@@ -127,7 +134,7 @@ export const themesStore = defineStore('themes', () => {
         improve: 0,
         milestone: 0,
       },
-      specialImprovements: Array.from({ length: isFellowship ? 19 : 20 }, () => getEmptySpecialImprovement()),
+      specialImprovements: Array.from({ length: isFellowship ? 6 : 6 }, () => getEmptySpecialImprovement()),
     }
     return isFellowship ?
       newTheme

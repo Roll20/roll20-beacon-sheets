@@ -22,7 +22,7 @@ type TagOrStatus = {
   value?: number;
 }
 
-type Mighty = {
+type Might = {
   _id: string;
   type: 'Origin' | 'Adventure' | 'Greatness';
   description: string;
@@ -50,7 +50,7 @@ type ChallengeStoreHydratate = {
   meta: Meta;
   limits: Record<string, Limit>;
   tagsAndStatuses: Record<string, TagOrStatus>;
-  mighties: Record<string, Mighty>;
+  mighties: Record<string, Might>;
   specialFeatures: Record<string, SpecialFeature>;
   threats: Record<string, Omit<Threat, 'consequences'> & {consequences: Record<string, Consequence>}>;
 }
@@ -75,7 +75,7 @@ export const challengeStore = defineStore('challenge', () => {
       name: '',
     };
   };
-  const getEmptyMighty = (): Mighty => {
+  const getEmptyMight = (): Might => {
     return {
       _id: uuidv4(),
       type: 'Origin',
@@ -110,8 +110,8 @@ export const challengeStore = defineStore('challenge', () => {
   const deleteTagOrStatus = (tagOrStatusId: string) => {
     tagsAndStatuses.value = tagsAndStatuses.value.filter(t => t._id !== tagOrStatusId);
   };
-  const deleteMighty = (mightyId: string) => {
-    mighties.value = mighties.value.filter(t => t._id !== mightyId);
+  const deleteMight = (mightId: string) => {
+    mighties.value = mighties.value.filter(t => t._id !== mightId);
   }
   const deleteSpecialFeature = (specialFeatureId: string) => {
     specialFeatures.value = specialFeatures.value.filter(t => t._id !== specialFeatureId);
@@ -150,15 +150,15 @@ export const challengeStore = defineStore('challenge', () => {
     }
   };
 
-  const updateMighty = (override: Partial<Mighty>) => {
+  const updateMight = (override: Partial<Might>) => {
     const existing = mighties.value.find(t => t._id === override._id);
     if (existing) {
       Object.assign(existing, override);
     } else {
       mighties.value.push({
-        ...getEmptyMighty(),
+        ...getEmptyMight(),
         ...override,
-      } as Mighty);
+      } as Might);
     }
   };
 
@@ -219,7 +219,7 @@ export const challengeStore = defineStore('challenge', () => {
   const meta = ref<Meta>(getEmptyMeta());
   const limits = ref<Limit[]>([]);
   const tagsAndStatuses = ref<TagOrStatus[]>([]);
-  const mighties = ref<Mighty[]>([]);
+  const mighties = ref<Might[]>([]);
   const specialFeatures = ref<SpecialFeature[]>([]);
   const threats = ref<Threat[]>([]);
 
@@ -233,14 +233,14 @@ export const challengeStore = defineStore('challenge', () => {
 
     deleteLimit,
     deleteTagOrStatus,
-    deleteMighty,
+    deleteMight,
     deleteSpecialFeature,
     deleteConsequence,
     deleteThreat,
 
     updateLimit,
     updateTagOrStatus,
-    updateMighty,
+    updateMight,
     updateSpecialFeature,
     updateThreat,
     

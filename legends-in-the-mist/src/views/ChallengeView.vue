@@ -26,7 +26,7 @@
                   <input type="number" v-model="limit.value" placeholder="Value">
                   <button type="button" @click="challenge.deleteLimit(limit._id)" class="action-button action-button--delete"><SvgIcon icon="Delete" /></button>
                 </div>
-                <textarea v-model="limit.description" placeholder="Description"></textarea>
+                <textarea v-model="limit.description" placeholder="Progress Special Feature"></textarea>
               </div>
               <div class="newlimit">
                 <div class="limit__meta">
@@ -53,37 +53,37 @@
           </div>
         </div>
         <div class="challenge__mighties">
-          <span class="title title--dashed-center">Mighties</span>
+          <span class="title title--dashed-center">Might</span>
           <div class="list">
-              <div class="mighty deleteable" v-for="mighty in challenge.mighties" :key="mighty._id">
-                <div class="mighty__type">
-                  <div :class="`display display--${mighty.type.toLowerCase()}`">
-                    <SvgIcon :icon="mighty.type" />
+              <div class="might deleteable" v-for="might in challenge.mighties" :key="might._id">
+                <div class="might__type">
+                  <div :class="`display display--${might.type.toLowerCase()}`">
+                    <SvgIcon :icon="might.type" />
                     <span>▼</span>
                   </div>
-                  <select v-model="mighty.type">
+                  <select v-model="might.type">
                     <option value="Origin">Origin</option>
                     <option value="Adventure">Adventure</option>
                     <option value="Greatness">Greatness</option>
                   </select>
                 </div>
-                <input type="text" v-model="mighty.description" placeholder="Description">
-                <button type="button" @click="challenge.deleteMighty(mighty._id)" class="action-button action-button--delete"><SvgIcon icon="Delete" /></button>
+                <input type="text" v-model="might.description" placeholder="Description">
+                <button type="button" @click="challenge.deleteMight(might._id)" class="action-button action-button--delete"><SvgIcon icon="Delete" /></button>
               </div>
-              <div class="newmighty">
-                <div class="mighty__type">
-                  <div :class="`display display--${newMighty.type.toLowerCase()}`">
-                    <SvgIcon :icon="newMighty.type" />
+              <div class="newmight">
+                <div class="might__type">
+                  <div :class="`display display--${newMight.type.toLowerCase()}`">
+                    <SvgIcon :icon="newMight.type" />
                     <span>▼</span>
                   </div>
-                  <select v-model="newMighty.type">
+                  <select v-model="newMight.type">
                     <option value="Origin">Origin</option>
                     <option value="Adventure">Adventure</option>
                     <option value="Greatness">Greatness</option>
                   </select>
                 </div>
-                <input type="text" v-model="newMighty.description" placeholder="New Mighty">
-                <button @click="addMighty" class="action-button action-button--add"><SvgIcon icon="Add" /></button>
+                <input type="text" v-model="newMight.description" placeholder="New Might">
+                <button @click="addMight" class="action-button action-button--add"><SvgIcon icon="Add" /></button>
               </div>
           </div>
         </div>
@@ -195,11 +195,11 @@
               <span>{{ tagOrStatus.name }}</span>
               <span class="tag-or-status__value" v-if="tagOrStatus.value">-{{ tagOrStatus.value }}</span>
             </div>
-            <div class="mighty" v-for="mighty in challenge.mighties" :key="mighty._id">
-              <div :class="`display display--${mighty.type.toLowerCase()}`">
-                <SvgIcon :icon="mighty.type" />
+            <div class="might" v-for="might in challenge.mighties" :key="might._id">
+              <div :class="`display display--${might.type.toLowerCase()}`">
+                <SvgIcon :icon="might.type" />
               </div>
-              <span class="mighty__description">{{ mighty.description }}</span>
+              <span class="might__description">{{ might.description }}</span>
             </div>
           </div>
         </div>
@@ -272,7 +272,7 @@ const trackers = trackersStore();
 const newThreat = ref<string>('');
 const newLimit = ref<{ name: string; value: number | null }>({ name: '', value: null });
 const newTagOrStatus = ref<{ name: string; value: number | null }>({ name: '', value: null });
-const newMighty = ref<{ type: 'Origin' | 'Adventure' | 'Greatness'; description: string }>({ type: 'Origin', description: '' });
+const newMight = ref<{ type: 'Origin' | 'Adventure' | 'Greatness'; description: string }>({ type: 'Origin', description: '' });
 const newSpecialFeature = ref<{ name: string; description: string }>({ name: '', description: '' });
 
 const newConsequence = ref<string>('');
@@ -305,11 +305,11 @@ const addTagOrStatus = () => {
   }
 };
 
-const addMighty = () => {
-  if (newMighty.value.description.trim() !== '') {
-    challenge.updateMighty({ type: newMighty.value.type, description: newMighty.value.description });
-    newMighty.value.description = '';
-    newMighty.value.type = 'Origin';
+const addMight = () => {
+  if (newMight.value.description.trim() !== '') {
+    challenge.updateMight({ type: newMight.value.type, description: newMight.value.description });
+    newMight.value.description = '';
+    newMight.value.type = 'Origin';
   }
 };
 
@@ -508,7 +508,7 @@ const addTracker = async () => {
     margin-bottom: 10px;
   }
 
-  .mighty__type {
+  .might__type {
     width: 100%;
     display: grid;
     grid-template-areas: "stack";
@@ -528,6 +528,7 @@ const addTracker = async () => {
       height: 23px;
       border: 1px solid #ccc;
       box-sizing: border-box;
+      min-height: 100%;
       .svg-icon {
         justify-self: center;
         width: 15px;
@@ -626,7 +627,7 @@ const addTracker = async () => {
       gap: 5px;
       align-items: center;
     }
-    .mighty, .newmighty {
+    .might, .newmight {
       display: grid;
       grid-template-columns: 40px 1fr min-content;
       gap: 5px;
@@ -748,7 +749,7 @@ const addTracker = async () => {
         height: 14px;
       }
     }
-    .mighty {
+    .might {
       display: grid;
       grid-template-columns: 20px 1fr;
       gap: 2px;

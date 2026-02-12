@@ -31,7 +31,7 @@ const themes = themesStore();
 const trackers = trackersStore();
 const hero = heroStore();
 
-const getTrackerValue = (tracker:Tracker) => {
+const getTrackerValue = (tracker:Tracker, type: 'tag' | 'status') => {
   const multiplier = tracker.mode === 'bonus' ? 1 : tracker.mode === 'penalty' ? -1 : 0;
   if (multiplier === 0) return 0;
   for (let i = 6; i >= 1; i--) {
@@ -40,7 +40,7 @@ const getTrackerValue = (tracker:Tracker) => {
       return i * multiplier;
     }
   }
-  return multiplier;
+  return type === 'tag' ? multiplier : 0;
 };
 
 const customBonus = ref(0);
@@ -54,17 +54,22 @@ const power = computed(() => {
     ...hero.backpack.filter(t => t.checked).map(t => { return { name: t.name, value: t.type === 'Power' ? 1 : -1 };}),
     ...hero.backpack.filter(t => t.checked && t.scratched).map(t => { return { name: `Scratched ${t.name}`, value: 2 };})
   ];
-  const allTrackerBonus = trackers.trackers.filter(tracker => getTrackerValue(tracker) !== 0).map(tracker => {
-    return { name: tracker.name, value: getTrackerValue(tracker) };
+  const statuses = trackers.trackers.filter(tracker => tracker.mode && Object.values(tracker.stages).filter(value => value).length > 0);
+  const tags = trackers.trackers.filter(tracker => tracker.mode && Object.values(tracker.stages).filter(value => value).length === 0);
+  const allStatusesBonus = statuses.filter(tracker => getTrackerValue(tracker, 'status') !== 0).map(tracker => {
+    return { name: tracker.name, value: getTrackerValue(tracker, 'status') };
   });
-  const trackerBonus = (() => {
-    const positives = allTrackerBonus.filter(b => b.value > 0);
-    const negatives = allTrackerBonus.filter(b => b.value < 0);
+  const tagsBonus = tags.filter(tracker => getTrackerValue(tracker, 'tag') !== 0).map(tracker => {
+    return { name: tracker.name, value: getTrackerValue(tracker, 'tag') };
+  });
+  const statusesBonus = (() => {
+    const positives = allStatusesBonus.filter(b => b.value > 0);
+    const negatives = allStatusesBonus.filter(b => b.value < 0);
     const maxPositive = positives.reduce((best, curr) => (curr.value > best.value ? curr : best), positives[0]);
     const minNegative = negatives.reduce((best, curr) => (curr.value < best.value ? curr : best), negatives[0]);
     return [maxPositive, minNegative].filter(Boolean);
   })();
-  return [...themeBonus, ...backpackBonus, ...trackerBonus].map(b => {
+  return [...themeBonus, ...backpackBonus, ...statusesBonus, ...tagsBonus].map(b => {
     return { name: `${b.name} (${b.value > 0 ? '+' : ''}${b.value})`, value: b.value };
   });
 });
