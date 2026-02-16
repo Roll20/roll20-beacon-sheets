@@ -1,5 +1,4 @@
-import { tr } from 'zod/v4/locales';
-import { transformDnDFeature, transformDnDFeatureSet } from './transformFeature';
+import { mergeRecordsIntoFeatures } from './transformFeature';
 import { deepTransformFormulas } from './utils';
 import { createEffectFragment } from './transformEffects';
 
@@ -325,23 +324,20 @@ export const transformDnDClass = (
       }
     });
 
-    for (const record of otherRecords) {
-      const feature = transformDnDFeature(record);
-      if (feature) {
-        const hasDescription = feature.description && feature.description.trim() !== '';
-        const hasEffects = !!feature['data-effects'];
-        const hasSpells = !!feature['data-spells'];
+    const mergedFeatures = mergeRecordsIntoFeatures(dataRecords, otherRecords);
+    for (const { feature, level } of mergedFeatures) {
+      const hasDescription = feature.description && feature.description.trim() !== '';
+      const hasEffects = !!feature['data-effects'];
+      const hasSpells = !!feature['data-spells'];
 
-        if (hasDescription || hasEffects || hasSpells) {
-          feature.group = 'class-features';
-          const level = parseInt(record.level, 10);
-          if (!isNaN(level) && level > 0) {
-            const levelKey = `level-${level}`;
-            if (!featuresByLevel[levelKey]) {
-              featuresByLevel[levelKey] = [];
-            }
-            featuresByLevel[levelKey].push(feature);
+      if (hasDescription || hasEffects || hasSpells) {
+        feature.group = 'class-features';
+        if (level > 0) {
+          const levelKey = `level-${level}`;
+          if (!featuresByLevel[levelKey]) {
+            featuresByLevel[levelKey] = [];
           }
+          featuresByLevel[levelKey].push(feature);
         }
       }
     }

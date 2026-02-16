@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { transformDnDFeature, transformDnDFeatureSet } from '../transformFeature';
+import { transformDnDFeature, transformDnDFeatureSet, mergeRecordsIntoFeatures } from '../transformFeature';
 
 describe('dnd-transformers/transformFeature', () => {
   beforeEach(() => {
@@ -63,7 +63,7 @@ describe('dnd-transformers/transformFeature', () => {
         actionType: 'Action',
         description: 'Hit hard'
       });
-      const record = { name: 'Attack Feature', payload };
+      const record = { name: 'Attack Action', payload };
       
       const result = transformDnDFeature(record);
 
@@ -84,7 +84,7 @@ describe('dnd-transformers/transformFeature', () => {
         recovery: 'Short Rest',
         recoveryRate: 'Full'
       });
-      const record = { name: 'Ki Feature', payload };
+      const record = { name: 'Ki Pool', payload };
       
       const result = transformDnDFeature(record);
 
@@ -253,6 +253,268 @@ describe('dnd-transformers/transformFeature', () => {
         { name: 'Fireball', spellSourceId: '$source:0' },
       ]);
       expect(result['data-effects']?.spells ?? []).toEqual([]);
+    });
+  });
+
+  describe('mergeRecordsIntoFeatures', () => {
+    it('merges child Action records into their parent Features record', () => {
+      const records = [
+        {
+          name: 'Martial Arts',
+          level: '1',
+          payload: JSON.stringify({ type: 'Features', description: 'Martial arts mastery.' }),
+        },
+        {
+          name: 'Martial Arts Attack',
+          level: '1',
+          parent: 'Martial Arts',
+          payload: JSON.stringify({
+            type: 'Action',
+            name: 'Martial Arts Strike',
+            actionType: 'Action',
+            description: 'Make a strike.',
+          }),
+        },
+      ];
+
+      const result = mergeRecordsIntoFeatures(records, records);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].feature.label).toBe('Martial Arts');
+      expect(result[0].feature.description).toBe('Martial arts mastery.');
+      expect(result[0].feature['data-effects']).toBeDefined();
+      expect(result[0].feature['data-effects'].actions).toHaveLength(1);
+      expect(result[0].feature['data-effects'].actions[0].name).toBe('Martial Arts Strike');
+      expect(result[0].level).toBe(1);
+    });
+
+    it('merges deeply nested children into the root ancestor', () => {
+      const records = [
+        {
+          name: 'Martial Arts',
+          level: '1',
+          payload: JSON.stringify({ type: 'Features', description: 'Main feature.' }),
+        },
+        {
+          name: 'Martial Arts Condition',
+          level: '1',
+          parent: 'Martial Arts',
+          payload: JSON.stringify({ type: 'Effect', name: 'Martial Arts' }),
+        },
+        {
+          name: 'Martial Arts Attack',
+          level: '1',
+          parent: 'Martial Arts Condition',
+          payload: JSON.stringify({
+            type: 'Attack',
+            name: 'MA Attack',
+            attack: { type: 'Melee', abilityBonus: 'Dexterity' },
+            actionType: 'Action',
+          }),
+        },
+      ];
+
+      const result = mergeRecordsIntoFeatures(records, records);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].feature.label).toBe('Martial Arts');
+      expect(result[0].feature['data-effects'].actions).toHaveLength(1);
+      expect(result[0].feature['data-effects'].actions[0].name).toBe('MA Attack');
+    });
+
+    it('keeps child Features records as separate features', () => {
+      const records = [
+        {
+          name: "Monk's Focus",
+          level: '2',
+          payload: JSON.stringify({ type: 'Features', description: 'Focus points.' }),
+        },
+        {
+          name: 'Focus Points',
+          level: '2',
+          parent: "Monk's Focus",
+          payload: JSON.stringify({
+            type: 'Resource',
+            name: 'Focus Points',
+            maxValueFormula: { flatValue: 2 },
+            recoveryRate: { 'Short Rest': { type: 'Full' }, 'Long Rest': { type: 'Full' } },
+          }),
+        },
+        {
+          name: 'Flurry of Blows',
+          level: '2',
+          parent: "Monk's Focus",
+          payload: JSON.stringify({ type: 'Features', description: 'Flurry of blows.' }),
+        },
+        {
+          name: 'Flurry of Blows Action',
+          level: '2',
+          parent: 'Flurry of Blows',
+          payload: JSON.stringify({
+            type: 'Action',
+            name: 'Flurry of Blows',
+            actionType: 'Bonus Action',
+            description: 'Make two unarmed strikes.',
+          }),
+        },
+      ];
+
+      const result = mergeRecordsIntoFeatures(records, records);
+
+      // Should produce Monk's Focus (with Resource) and Flurry of Blows (with Action)
+      expect(result).toHaveLength(2);
+
+      const focusFeature = result.find((r) => r.feature.label === "Monk's Focus");
+      expect(focusFeature).toBeDefined();
+      expect(focusFeature!.feature.description).toBe('Focus points.');
+      expect(focusFeature!.feature['data-effects'].resources).toHaveLength(1);
+      expect(focusFeature!.feature['data-effects'].resources[0].name).toBe('Focus Points');
+
+      const flurryFeature = result.find((r) => r.feature.label === 'Flurry of Blows');
+      expect(flurryFeature).toBeDefined();
+      expect(flurryFeature!.feature.description).toBe('Flurry of blows.');
+      expect(flurryFeature!.feature['data-effects'].actions).toHaveLength(1);
+      expect(flurryFeature!.feature['data-effects'].actions[0].name).toBe('Flurry of Blows');
+    });
+
+    it('treats records with no Features ancestor as standalones', () => {
+      const records = [
+        {
+          name: 'Random Action',
+          level: '5',
+          payload: JSON.stringify({
+            type: 'Action',
+            name: 'Do Something',
+            actionType: 'Action',
+            description: 'A standalone action.',
+          }),
+        },
+      ];
+
+      const result = mergeRecordsIntoFeatures(records, records);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].feature.label).toBe('Random Action');
+      expect(result[0].feature['data-effects'].actions).toHaveLength(1);
+    });
+
+    it('excludes records not in the process set while still resolving parent chains', () => {
+      const allRecords = [
+        {
+          name: 'Class Details',
+          level: '1',
+          payload: JSON.stringify({ type: 'Class Details', subclassLevel: 3 }),
+        },
+        {
+          name: 'Save Prof',
+          level: '1',
+          parent: 'Class Details',
+          payload: JSON.stringify({ type: 'Proficiency', category: 'Saving Throw', proficiency: 'Strength' }),
+        },
+        {
+          name: 'Ki Feature',
+          level: '2',
+          payload: JSON.stringify({ type: 'Features', description: 'Ki points.' }),
+        },
+        {
+          name: 'Ki Resource',
+          level: '2',
+          parent: 'Ki Feature',
+          payload: JSON.stringify({
+            type: 'Resource',
+            name: 'Ki',
+            maxValueFormula: { flatValue: 5 },
+            recoveryRate: { 'Short Rest': { type: 'Full' } },
+          }),
+        },
+      ];
+
+      const recordsToProcess = allRecords.filter(
+        (r) => r.name === 'Ki Feature' || r.name === 'Ki Resource',
+      );
+
+      const result = mergeRecordsIntoFeatures(allRecords, recordsToProcess);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].feature.label).toBe('Ki');
+      expect(result[0].feature['data-effects'].resources).toHaveLength(1);
+    });
+
+    it('merges proficiency effects from children into subclass feature', () => {
+      const records = [
+        {
+          name: 'Implements of Mercy',
+          level: '3',
+          payload: JSON.stringify({
+            type: 'Features',
+            description: 'You gain proficiencies.',
+          }),
+        },
+        {
+          name: 'Insight Prof',
+          level: '3',
+          parent: 'Implements of Mercy',
+          payload: JSON.stringify({
+            type: 'Proficiency',
+            category: 'Skill',
+            proficiency: 'Insight',
+            proficiencyLevel: 'Proficient',
+          }),
+        },
+        {
+          name: 'Medicine Prof',
+          level: '3',
+          parent: 'Implements of Mercy',
+          payload: JSON.stringify({
+            type: 'Proficiency',
+            category: 'Skill',
+            proficiency: 'Medicine',
+            proficiencyLevel: 'Proficient',
+          }),
+        },
+      ];
+
+      const result = mergeRecordsIntoFeatures(records, records);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].feature.label).toBe('Implements of Mercy');
+      expect(result[0].feature['data-effects'].effects).toHaveLength(2);
+    });
+
+    it('does not create data-effects when no children have effect data', () => {
+      const records = [
+        {
+          name: 'Simple Feature',
+          level: '1',
+          payload: JSON.stringify({ type: 'Features', description: 'Just a description.' }),
+        },
+      ];
+
+      const result = mergeRecordsIntoFeatures(records, records);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].feature['data-effects']).toBeUndefined();
+    });
+
+    it('handles circular parent references without infinite loop', () => {
+      const records = [
+        {
+          name: 'A',
+          level: '1',
+          parent: 'B',
+          payload: JSON.stringify({ type: 'Action', name: 'A', actionType: 'Action', description: '' }),
+        },
+        {
+          name: 'B',
+          level: '1',
+          parent: 'A',
+          payload: JSON.stringify({ type: 'Action', name: 'B', actionType: 'Action', description: '' }),
+        },
+      ];
+
+      // both become orphans since no root found
+      const result = mergeRecordsIntoFeatures(records, records);
+      expect(result).toHaveLength(2);
     });
   });
 });

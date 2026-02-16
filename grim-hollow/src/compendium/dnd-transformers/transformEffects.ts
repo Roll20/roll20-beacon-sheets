@@ -201,14 +201,22 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
           }
         }
 
+        let maxFormula: string | undefined = payload.maxValueFormula?.customFormula;
+
+        if (!maxFormula && payload.maxValueFormula?.classLevel) {
+          const cl = payload.maxValueFormula.classLevel;
+          const multiplier = cl.multiplier || 1;
+          maxFormula = multiplier === 1 ? '$ownerlevel' : `${multiplier} * $ownerlevel`;
+        }
+
         fragment.resources = [
           {
             name: payload.name,
             count:
-              Number(payload.maxValueFormula?.customFormula) ||
+              Number(maxFormula) ||
               Number(payload.maxValueFormula?.flatValue || 0),
             max:
-              payload.maxValueFormula?.customFormula ||
+              maxFormula ||
               String(payload.maxValueFormula?.flatValue || 0),
             refreshOnLongRest,
             refreshOnLongRestAmount,

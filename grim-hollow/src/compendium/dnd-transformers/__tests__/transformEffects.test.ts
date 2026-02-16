@@ -247,6 +247,44 @@ describe('dnd-transformers/transformEffects', () => {
       expect(result?.resources![0].max).toBe('1');
     });
 
+    it('transforms "Resource" type with maxValueFormula', () => {
+      const record = {
+        name: 'Lay On Hands',
+        payload: JSON.stringify({
+          type: 'Resource',
+          name: 'Lay On Hands',
+          value: 'full',
+          maxValueFormula: {
+            classLevel: { add: true, multiplier: 5, className: 'Paladin' },
+            round: 'Down',
+          },
+          recovery: 'Long Rest',
+          recoveryRate: 'Full',
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.resources![0].max).toBe('5 * $ownerlevel');
+      expect(result?.resources![0].count).toBe(0);
+      expect(result?.resources![0].refreshOnLongRest).toBe('all');
+    });
+
+    it('transforms "Resource" type with classLevel multiplier of 1', () => {
+      const record = {
+        name: 'Simple Pool',
+        payload: JSON.stringify({
+          type: 'Resource',
+          name: 'Pool',
+          maxValueFormula: {
+            classLevel: { add: true, multiplier: 1, className: 'Fighter' },
+          },
+          recovery: 'Long Rest',
+          recoveryRate: 'Full',
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.resources![0].max).toBe('$ownerlevel');
+    });
+
     it('transforms "Ability Score" type', () => {
       const record = {
         name: 'ASI',
