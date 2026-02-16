@@ -260,9 +260,9 @@ loadPickers(() => {
         console.warn(`Default value "${picker.default}" not found for picker in category "${picker.category}".`);
         picker.featureId = undefined;
       }
-      loaded.value = true;
     }
   });
+  loaded.value = true;
 });
 
 const setCompendiumPicker = async (
