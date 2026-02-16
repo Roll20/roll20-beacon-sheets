@@ -233,7 +233,7 @@ const loadPickers = async (callback: () => void) => {
       categoryName: category,
       expansionId: page.book.itemId,
       id: page.id,
-    }));
+    })).sort((a: any, b: any) => a.pageName.localeCompare(b.pageName));
   }
   if(callback) callback();
 };
