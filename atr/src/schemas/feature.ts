@@ -6,6 +6,7 @@ export const FeatureCompendiumSchema = z.object({
   label: z.string(),
   group: z.enum([
     'class-features',
+    'core-personality-traits',
     'ancestry-features',
     'feats',
     'others',

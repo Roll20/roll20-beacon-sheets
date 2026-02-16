@@ -68,7 +68,7 @@ export const onDropSpell = async ({
               console.warn(
                 `Could not find compendium spell: "${spellStub.name}". Skipping hydration.`,
               );
-              return null; 
+              return spellStub; 
             }
   
             const page = response.data.ruleSystem.category.pages[0];

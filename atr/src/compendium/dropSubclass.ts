@@ -58,6 +58,6 @@ export const onDropSubclass = async ({
   }
 
   compatibleClass.compendiumData.subclass = features ? JSON.stringify(features) : null;
-  progressionStore.addFeaturesToClass(compatibleClass._id, 1, compatibleClass.level, false, true);
-
+  await progressionStore.addFeaturesToClass(compatibleClass._id, 1, compatibleClass.level, false, true);
+  progressionStore.removeClassFeatures(compatibleClass._id, false, true, 20);
 };

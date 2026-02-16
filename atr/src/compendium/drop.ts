@@ -18,7 +18,7 @@ import { SpellSchema } from "@/schemas/spell";
 
 type Feature = z.infer<typeof FeatureSchema>;
 
-export type compendiumCategory = "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Races" | "Subraces" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories"| "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" |"Brews" | "Magic Weapons" | "Magic Armor"| "Wondrous Items" | "Mutations";
+export type compendiumCategory = "Core Personality Traits" | "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Ancestries" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories"| "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" |"Brews" | "Magic Weapons" | "Magic Armor"| "Wondrous Items" | "Mutations" | "Progeny - Sin Nature" | "Descended - Angelic Banner Origin" | "NPC Classes";
 
 export type CompendiumPage = {
   id: string;
@@ -86,13 +86,13 @@ export type DropContext = {
 
 export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void> = {
   "Spells": onDropSpell,
+  "Core Personality Traits": onDropFeature,
   "Survival Gear": onDropEquipment,
   "Features": onDropFeature,
   "Feats": onDropFeature,
   "Classes": onDropClass,
   "Subclasses": onDropSubclass,
-  "Races": onDropRace,
-  "Subraces": onDropSubrace,
+  "Ancestries": onDropRace,
   "Backgrounds": onDropBackground,
   "Artistry Maneuvers": onDropFeature,
   "Fighting Styles": onDropFeature,
@@ -122,7 +122,10 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   "Magic Armor": onDropEquipment,
   "Wondrous Items": onDropEquipment,
   "Mutations": onDropFeature,
-  "Melee and Missile Weapons": onDropEquipment
+  "Melee and Missile Weapons": onDropEquipment,
+  "Progeny - Sin Nature": onDropSubrace,
+  "Descended - Angelic Banner Origin": onDropSubrace,
+  "NPC Classes": onDropClass,
 
 };
 

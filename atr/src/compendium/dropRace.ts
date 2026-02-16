@@ -88,5 +88,8 @@ export const onDropRace = async ({
 
   const level = progressionStore.getLevel || 1;
 
-  progressionStore.addFeaturesToAncestry(1, level, true);
+  await progressionStore.addFeaturesToAncestry(1, level, true);
+
+  const characterLevel = progressionStore.getLevel || 0;
+  progressionStore.removeAncestryExpiredFeatures(characterLevel);
 };

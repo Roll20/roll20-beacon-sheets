@@ -88,5 +88,6 @@ export const SpellCompendiumSchema = z.object({
 
 export const SpellSchema = SpellCompendiumSchema.extend({
   _id: z.string().optional(),
+  innateUsage: z.string().optional(),
   spellSourceId: z.string().optional(),
 });

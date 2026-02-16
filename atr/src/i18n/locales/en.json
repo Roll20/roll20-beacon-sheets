@@ -573,6 +573,7 @@
     "feature-groups": {
       "ancestry-features": "Ancestry Features",
       "class-features": "Class Features",
+      "core-personality-traits": "Core Personality Traits",
       "feats": "Feats",
       "others": "Others"
     },

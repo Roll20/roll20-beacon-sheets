@@ -87,11 +87,11 @@ const props = defineProps<{
 }>();
 
 const isClassLocked = computed(() => {
-  return props.classData.compendiumData.class ? true : false;
+  return props.classData?.compendiumData?.class ? true : false;
 });
 
 const isSubclassLocked = computed(() => {
-  return props.classData.compendiumData.subclass || (props.classData.subclassUnlockLevel > 0 && props.classData.level < props.classData.subclassUnlockLevel) ? true : false;
+  return props.classData?.compendiumData?.subclass || (props.classData.subclassUnlockLevel > 0 && props.classData.level < props.classData.subclassUnlockLevel) ? true : false;
 });
 
 const subclassPlaceholder = computed(() => {

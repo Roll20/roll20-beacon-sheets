@@ -166,7 +166,7 @@ const save = async () => {
   // Handle class level changes
   await Promise.all(localClasses.value.map(async cls => {
     const previous = progression.classes.find(c => c._id === cls._id);
-    if(previous && previous.level !== cls.level && cls.compendiumData.class) {
+    if(previous && previous.level !== cls.level && cls?.compendiumData?.class) {
       const previousLevel = previous.level;
       const currentLevel = cls.level;
       try {
@@ -193,7 +193,7 @@ const save = async () => {
             ...cls.featureIds.filter(f => f.expirantionLevel && f.expirantionLevel < cls.level+1),
           ];
           cls.featureIds = cls.featureIds.filter(f => !f.expirantionLevel || f.expirantionLevel >= cls.level+1);
-          if (cls.level < cls.subclassUnlockLevel) {
+          if (cls.level >= cls.subclassUnlockLevel) {
             featuresToRemove.value = [
               ...featuresToRemove.value,
               ...cls.subclassFeatureIds.filter(f => f.expirantionLevel && f.expirantionLevel < cls.level+1),
@@ -238,19 +238,19 @@ const save = async () => {
   const previousLevel = progression.getLevel;
   const newLevel = localClasses.value.reduce((sum, cls) => sum + cls.level, 0);
   if(previousLevel < newLevel) { //Level up
-    useProgressionStore().removeAncestryExpiredFeatures(newLevel);
-    useProgressionStore().addFeaturesToAncestry(
+    await useProgressionStore().addFeaturesToAncestry(
       previousLevel + 1,
       newLevel,
       true,
       true
     );
+    useProgressionStore().removeAncestryExpiredFeatures(newLevel);
 
-    useProgressionStore().removeBackgroundExpiredFeatures(newLevel);
-    useProgressionStore().addFeaturesToBackground(
+    await useProgressionStore().addFeaturesToBackground(
       previousLevel + 1,
       newLevel
     );
+    useProgressionStore().removeBackgroundExpiredFeatures(newLevel);
   } else if(previousLevel > newLevel) { //Level down
     const previousLevels = Array.from({ length: previousLevel - newLevel }, (_, i) => previousLevel - i);
     useProgressionStore().removeAncestryFeatures(newLevel);

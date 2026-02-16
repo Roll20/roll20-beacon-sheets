@@ -34,4 +34,7 @@ export const onDropSubrace = async ({
   const level = progressionStore.getLevel || 1;
 
   progressionStore.addFeaturesToAncestry(1, level, false, true);
+
+  const characterLevel = progressionStore.getLevel || 0;
+  progressionStore.removeAncestryExpiredFeatures(characterLevel);
 };
