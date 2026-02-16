@@ -1,5 +1,5 @@
 {
-  "name": "@r20sd/legends-in-the-mist",
+  "name": "@r20sd/legend-in-the-mist",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -25,6 +25,7 @@
     "handlebars": "^4.7.7",
     "jsonpath": "^1.1.1",
     "lodash": "^4.17.21",
+    "overlayscrollbars-vue": "^0.5.9",
     "pinia": "^2.0.32",
     "uuid": "^9.0.1",
     "vite-svg-loader": "^4.0.0",
