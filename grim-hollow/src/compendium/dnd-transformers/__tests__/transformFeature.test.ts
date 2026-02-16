@@ -96,6 +96,39 @@ describe('dnd-transformers/transformFeature', () => {
         refreshOnShortRest: 'all'
       });
     });
+
+    it('places Spell Attach spells in data-spells instead of data-effects', () => {
+      const payload = JSON.stringify({
+        type: 'Spell Attach',
+        spells: ['Speak with Animals'],
+      });
+      const record = { name: 'Druidic Spells', description: 'You can cast this spell.', payload };
+      
+      const result = transformDnDFeature(record);
+
+      expect(result?.['data-spells']).toEqual([
+        { name: 'Speak with Animals', spellSourceId: '$source:0' },
+      ]);
+      expect(result?.['data-effects']).toBeUndefined();
+    });
+
+    it('includes spellSources in data-effects when present', () => {
+      const payload = JSON.stringify({
+        type: 'Spellcasting',
+        name: 'Innate Spellcasting',
+        ability: 'Charisma',
+      });
+      const record = { name: 'Innate Casting', payload };
+
+      const result = transformDnDFeature(record);
+
+      expect(result?.['data-effects']?.spellSources).toBeDefined();
+      expect(result?.['data-effects']?.spellSources[0]).toMatchObject({
+        name: 'Innate Spellcasting',
+        type: 'ability',
+        ability: 'charisma',
+      });
+    });
   });
 
   describe('transformDnDFeatureSet', () => {
@@ -200,6 +233,26 @@ describe('dnd-transformers/transformFeature', () => {
 
       expect(result.description).toBe('Just text');
       expect(result['data-effects']).toBeUndefined();
+    });
+
+    it('places Spell Attach spells in data-spells for hydration', () => {
+      const rawPayload = { name: 'Feat with Spells', properties: { Category: 'Feats' } };
+      const dataRecords = [
+        { payload: JSON.stringify({ type: 'Features', description: 'Grants a spell.' }) },
+        {
+          name: 'SpellRec',
+          description: 'Cast this spell.',
+          payload: JSON.stringify({ type: 'Spell Attach', spells: ['Fireball'] }),
+        },
+      ];
+      const properties = { 'data-datarecords': JSON.stringify(dataRecords) };
+
+      const result = transformDnDFeatureSet(rawPayload, mockBook, properties);
+
+      expect(result['data-spells']).toEqual([
+        { name: 'Fireball', spellSourceId: '$source:0' },
+      ]);
+      expect(result['data-effects']?.spells ?? []).toEqual([]);
     });
   });
 });

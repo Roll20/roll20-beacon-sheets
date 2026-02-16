@@ -5,6 +5,9 @@
       <StyledBox mode="gothic">
         <div class="section__header">
           <h3>{{ $t('titles.spellcasting') }}</h3>
+          <button :class="{ 'prepare-spells': true, 'prepare-spells--active': isPreparing }" @click="isPreparing = !isPreparing;">
+            <SvgIcon icon="star" />
+          </button>
           <SidebarLink
             componentName="SpellSidebar"
             :options="{ title: t('actions.add-spell'), hasSave: true }"
@@ -42,7 +45,13 @@
               :slotsTotal="0"
               :slotsUsed="0"
             />
-            <SpellItem v-for="spell in getSpellsByLevel(level)"  :spell="spell" :key="spell._id" />
+            <div class="list spell-list">
+              <SpellItem v-if="!isPreparing" v-for="spell in getSpellsByLevel(level)"  :spell="spell" :key="spell._id" :class="{ 'disabled': !spell.prepared }"/>
+              <div v-else class="prepare-spells__item" v-for="spell in getSpellsByLevel(level)"  :spell="spell" :key="`prepare-${spell._id}`">
+                <ToggleSwitch v-model="spell.prepared!" class="toggle-switch--x-small" :disabled="false"/>
+                {{ spell.name }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -59,9 +68,11 @@ import SidebarLink from '@/components/shared/SidebarLink.vue';
 import SpellItem from '@/components/spells/SpellItem.vue';
 import SpellSourceDetails from '@/components/spells/SpellSourceDetails.vue';
 import SpellHeader from '@/components/spells/SpellHeader.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { jsonClone } from '@/utility/jsonTools';
 import StyledBox from '@/components/shared/StyledBox.vue';
+import SvgIcon from '@/components/shared/SvgIcon.vue';
+import ToggleSwitch from '@/components/shared/ToggleSwitch.vue';
 
 const { t } = useI18n();
 const spells = useSpellsStore();
@@ -107,6 +118,8 @@ function divideIntoThreeParts<T>(array: T[]): T[][] {
 
 const spellLevels = divideIntoThreeParts(config.spellLevels.slice());
 
+const isPreparing = ref(false);
+
 useSheetStore();
 </script>
 
@@ -122,5 +135,41 @@ useSheetStore();
       gap: var(--size-gap-large);
     }
   }
+}
+.prepare-spells {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  top: 50%;
+  right: 5.5rem;
+  transform: translateY(-50%);
+  :deep(.svg-icon) {
+    width: 100%;
+    height: 100%;
+    svg {
+      fill: var(--color-secondary);
+    }
+  }
+  &--active, &:hover   {
+    :deep(.svg-icon) {
+      svg {
+        fill: var(--color-highlight);
+      }
+    }
+  }
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+.spell-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-gap-small);
+}
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style>

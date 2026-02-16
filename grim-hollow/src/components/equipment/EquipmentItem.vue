@@ -16,17 +16,32 @@
             :title="$t('titles.equipped')"
             @click.stop
           />
-          <SidebarLink
-            componentName="EquipmentSidebar"
-            :props="{ equipment: equipment }"
-            :options="{
-              title: t('actions.edit-equipment'),
-              hasSave: true,
-              hasDelete: true,
-            }"
-            :label="`${equipment.name} (${equipment.quantity})`"
-            class="equipment-item__name"
-          />
+          <div class="name-and-quantity">
+            <SidebarLink
+              componentName="EquipmentSidebar"
+              :props="{ equipment: equipment }"
+              :options="{
+                title: t('actions.edit-equipment'),
+                hasSave: true,
+                hasDelete: true,
+              }"
+              :label="`${equipment.name}`"
+              class="equipment-item__name"
+            />
+            <VMenu>
+              <button v-if="equipment.quantity">({{ equipment.quantity }})</button>
+              <button v-else="equipment.quantity">(1)</button>
+              <template #popper>
+                <div class="quantity-editor">
+                  <CurrentMaxNumber
+                    :count="equipment.quantity ?? 1"
+                    :min="1"
+                    @update="(value) => store.update({ _id: equipment._id, quantity: value })"
+                  />
+                </div>
+              </template>
+            </VMenu>
+          </div>
           <span class="equipment-item__weight">
             {{ (equipment.weight * equipment.quantity).toFixed(1) }} {{ $t('titles.unit-lbs') }}
           </span>
@@ -69,6 +84,7 @@ import { useI18n } from 'vue-i18n';
 import SidebarLink from '../shared/SidebarLink.vue';
 import { parseSimpleMarkdown } from '@/utility/markdownParser';
 import { useEffectsStore } from '@/sheet/stores/modifiers/modifiersStore';
+import CurrentMaxNumber from '../shared/CurrentMaxNumber.vue';
 
 const { t } = useI18n();
 
@@ -102,7 +118,7 @@ const equipmentTags = computed<Tag[]>(() => {
   &__summary-grid {
     display: grid;
     grid-template-columns: min-content 1fr max-content;
-    gap: var(--size-gap-medium);
+    gap: var(--size-gap-small);
     align-items: center;
     width: 100%;
   }
@@ -124,6 +140,11 @@ const equipmentTags = computed<Tag[]>(() => {
     white-space: pre-wrap;
     color: var(--color-secondary);
     font-size: var(--size-font-small);
+  }
+  .name-and-quantity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 }
 </style>

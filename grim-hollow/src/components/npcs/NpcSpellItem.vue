@@ -160,7 +160,10 @@
       :placeholder="t('titles.description')"
       rows="3"
     ></textarea>
-    <textarea v-model="effectsJson" :placeholder="t('titles.effects')" rows="4"></textarea>
+    <label class="npc-spell-item__effects-label">
+      {{ t('titles.effects') }}
+      <textarea v-model="effectsJson" :placeholder="t('titles.effects')" rows="4"></textarea>
+    </label>
     <textarea
       v-model="spell.description.upcast"
       :placeholder="t('titles.at-higher-levels')"
@@ -320,10 +323,25 @@ const rollArgs = computed((): D20RollArgs => {
  * - set: Parses the JSON string and updates the effect in the localNpc's effects array.
  * It creates the effect object on-demand when editing if it doesn't already exist.
  */
+const getDefaultEffectJson = () => {
+  return JSON.stringify(
+    stripIds({
+      label: props.spell.name,
+      description: '',
+      enabled: false,
+      toggleable: false,
+      removable: false,
+      effects: [],
+    }),
+    null,
+    2,
+  );
+};
+
 const effectsJson = computed({
   get() {
     const effect = props.localNpc.effects.find((e) => e._id === props.spell.effectId);
-    if (!effect) return '{}';
+    if (!effect) return getDefaultEffectJson();
     const cleanEffect = stripIds(JSON.parse(JSON.stringify(effect)));
     return JSON.stringify(cleanEffect, null, 2);
   },
@@ -495,5 +513,13 @@ const isInnate = computed(() => {
   cursor: pointer;
   color: var(--color-primary);
   font-size: 10px;
+}
+.npc-spell-item__effects-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  font-weight: bold;
+  font-size: 0.85rem;
 }
 </style>

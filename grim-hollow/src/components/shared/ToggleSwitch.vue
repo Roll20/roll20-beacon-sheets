@@ -102,6 +102,11 @@ const onToggle = (event: Event) => {
   }
   &--small {
     --width: 30px;
+    --margin: 2px;
+  }
+  &--x-small {
+    --width: 20px;
+    --margin: 0px;
   }
 }
 </style>

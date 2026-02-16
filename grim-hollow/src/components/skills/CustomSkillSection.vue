@@ -26,6 +26,7 @@
         :modifiedLevel="proficiencies.getModifiedProficiencyLevel(tool)"
         :proficiencyModifier="proficiencies.getProficiencyModifier(tool)"
         :group="tool.group"
+        :toolKey="tool.toolKey"
         @update:level="(val) => proficiencies.updateRanked(tool._id, { level: val as ProficiencyLevelBase })"
         @update:ability="(val) => proficiencies.updateRanked(tool._id, { ability: val })"
       />
@@ -48,8 +49,7 @@ const { t } = useI18n();
 
 const proficiencies = useProficienciesStore();
 const tools = computed(() =>
-  proficiencies.ranked
-    .filter((proficiency) => proficiency.group === 'tools')
+  proficiencies.combinedTools
     .slice().sort((a, b) => a.label.localeCompare(b.label)),
 );
 </script>

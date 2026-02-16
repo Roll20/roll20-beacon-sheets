@@ -1,10 +1,14 @@
 <template>
   <div class="view-container">
     <form ref="form" @submit.prevent="save">
-      <label class="effects-editor">
-        {{ $t('titles.effects') }}
-        <textarea v-model="effects" />
-      </label>
+      <details>
+        <summary>
+          <label class="effects-editor">
+            {{ $t('titles.effects') }}
+          </label>
+        </summary>
+        <textarea v-model="effects" rows="5" />
+      </details>
     </form>
     <!-- <div class="effects-group__effects">
       <div v-for="ef in effect.effects" :key="ef._id" class="effects-single">

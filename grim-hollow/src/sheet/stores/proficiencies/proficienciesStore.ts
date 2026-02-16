@@ -10,6 +10,7 @@ import { arrayToObject, objectToArray } from '@/utility/objectify';
 import { getEntryByLabel, getEntryById } from '@/utility/getEntryBy';
 import { useProgressionStore } from '../progression/progressionStore';
 import { effectKeys } from '@/effects.config';
+import { EffectsCalculator, type EffectToolProficiency } from '@/utility/effectsCalculator';
 import { useI18n } from 'vue-i18n';
 
 export const proficiencyLevelsValues = [0, 0.5, 1, 2];
@@ -47,6 +48,12 @@ export type RankedProficiency = {
   group: RankedProficiencyGroup;
 };
 
+export type RankedProficiencyWithEffect = RankedProficiency & {
+  isFromEffect?: boolean;
+  sourceEffectLabel?: string;
+  toolKey?: string;
+};
+
 export type UnrankedProficiency = {
   _id: string;
   label: string;
@@ -77,7 +84,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
 
   const ranked: Ref<RankedProficiency[]> = ref([
     getEmptyProficiency('initiative', 'dexterity', 'abilities'),
-    getEmptyProficiency('death-saving', 'constitution', 'abilities'),
+    getEmptyProficiency('death-saving', 'none' as AbilityKey, 'abilities'),
     ...config.abilities.map((ability) =>
       getEmptyProficiency(`${ability}-check`, ability, 'abilities'),
     ),
@@ -106,6 +113,59 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
   const initiative = computed(() => ranked.value[0]);
   const deathSaving = computed(() => ranked.value[1]);
 
+  const toolProficienciesFromEffects = computed(() => {
+    const effectsStore = useEffectsStore();
+    return EffectsCalculator.collectToolProficienciesFromEffects(
+      effectsStore.effects,
+      effectsStore.isEffectSingleActive,
+    );
+  });
+
+  const getToolLabel = (toolKey: string): string => {
+    const knownTools = Object.keys(config.autocomplete.toolProficiencies);
+    if (knownTools.includes(toolKey)) {
+      return t(`titles.proficiency-type.tool-proficiencies.${toolKey}`);
+    }
+    return toolKey
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const combinedTools = computed((): RankedProficiencyWithEffect[] => {
+    const userTools = ranked.value.filter((p) => p.group === 'tools');
+    const effectTools = toolProficienciesFromEffects.value;
+    const combined: RankedProficiencyWithEffect[] = userTools.map((tool) => {
+      const matchingEffectTool = effectTools.find(
+        (et) => getToolLabel(et.toolKey).toLowerCase() === tool.label.toLowerCase(),
+      );
+      return { ...tool, toolKey: matchingEffectTool?.toolKey };
+    });
+
+    for (const effectTool of effectTools) {
+      const toolLabel = getToolLabel(effectTool.toolKey);
+      const existingByLabel = combined.find(
+        (t) => t.label.toLowerCase() === toolLabel.toLowerCase(),
+      );
+      if (!existingByLabel) {
+        const knownToolProficiencies = config.autocomplete.toolProficiencies as Record<string, { ability: string }>;
+        const defaultAbility = knownToolProficiencies[effectTool.toolKey]?.ability ?? 'strength';
+        combined.push({
+          _id: `effect-tool-${effectTool.toolKey}`,
+          label: toolLabel,
+          ability: defaultAbility as AbilityKey,
+          level: -1,
+          group: 'tools',
+          isFromEffect: true,
+          sourceEffectLabel: effectTool.sourceEffectLabel,
+          toolKey: effectTool.toolKey,
+        });
+      }
+    }
+
+    return combined;
+  });
+
   const getProficiencyByLabel = (label: string): RankedProficiency | undefined => {
     return getEntryByLabel(label, ranked.value) as RankedProficiency | undefined;
   };
@@ -115,10 +175,33 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     return (entry?.[0] ?? 'untrained') as ProficiencyLevelKey;
   };
 
-  const getModifiedProficiencyLevel = (proficiency: RankedProficiency): ModifiedProficiency => {
-    const keysToQuery: (string | undefined)[] = [
-      effectKeys[`${proficiency.label}-proficiency` as keyof typeof effectKeys],
-    ];
+  const resolveToolKey = (proficiency: RankedProficiency | RankedProficiencyWithEffect): string | undefined => {
+    const toolKey = (proficiency as RankedProficiencyWithEffect).toolKey;
+    if (toolKey) return toolKey;
+
+    const labelLower = proficiency.label.toLowerCase();
+    for (const configTool of Object.keys(config.autocomplete.toolProficiencies)) {
+      if (getToolLabel(configTool).toLowerCase() === labelLower) {
+        return configTool;
+      }
+    }
+    return undefined;
+  };
+
+  const getToolProficiencyEffectKey = (proficiency: RankedProficiency | RankedProficiencyWithEffect): string | undefined => {
+    const toolKey = resolveToolKey(proficiency);
+    return toolKey ? `${toolKey}-proficiency` : undefined;
+  };
+
+  const getModifiedProficiencyLevel = (proficiency: RankedProficiency | RankedProficiencyWithEffect): ModifiedProficiency => {
+    let perToolKey: string | undefined;
+    if (proficiency.group === 'tools') {
+      perToolKey = getToolProficiencyEffectKey(proficiency);
+    } else {
+      perToolKey = effectKeys[`${proficiency.label}-proficiency` as keyof typeof effectKeys];
+    }
+
+    const keysToQuery: (string | undefined)[] = [perToolKey];
 
     if (proficiency.group === 'savings') {
       keysToQuery.push(effectKeys['saving-proficiency']);
@@ -137,14 +220,10 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     getEntryByLabel(proficiency.ability, useAbilitiesStore().abilities) as AbilityData | undefined;
   const getProficiencyModifier = (proficiency: RankedProficiency): ModifiedValue => {
     const ability = getProficiencyAbility(proficiency);
-    if (!ability) {
-      return computed(() => ({
-        final: 0,
-        modifiers: [],
-      }));
-    }
 
-    const rawAbilityBonus = useAbilitiesStore().getAbilityModifier(ability).value.final;
+    const rawAbilityBonus = ability && proficiency.label !== 'death-saving'
+      ? useAbilitiesStore().getAbilityModifier(ability).value.final
+      : 0;
 
     const proficiencyBonus = Math.floor(
       getModifiedProficiencyLevel(proficiency).value.final *
@@ -161,13 +240,17 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
       keysToQuery.push(effectKeys.skill);
       keysToQuery.push(effectKeys.check);
     } else if (proficiency.group === 'tools') {
+      const toolKey = resolveToolKey(proficiency);
+      if (toolKey) {
+        keysToQuery.push(effectKeys[`${toolKey}` as keyof typeof effectKeys]);
+      }
       keysToQuery.push(effectKeys.tools);
+      keysToQuery.push(effectKeys.check);
     } else if (proficiency.label === 'initiative') {
       keysToQuery.push(effectKeys.check);
       keysToQuery.push(effectKeys['dexterity-check']);
     } else if (proficiency.label === 'death-saving') {
       keysToQuery.push(effectKeys.saving);
-      keysToQuery.push(effectKeys['constitution-saving']);
     }
 
     return useEffectsStore().getModifiedValue(baseValue, keysToQuery);
@@ -214,6 +297,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     unranked,
     initiative,
     deathSaving,
+    combinedTools,
 
     getPassiveProficiency,
     getProficiencyLevelKey,
@@ -221,6 +305,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     getProficiencyAbility,
     getProficiencyModifier,
     getProficiencyByLabel,
+    getToolLabel,
 
     updateRanked,
     updateUnranked,

@@ -20,7 +20,10 @@
         v-for="hitDie in hitDice"
         :hitDie="hitDie"
         :key="hitDie"
-        class="resource-item--centered"
+        :class="{
+          'resource-item--centered': true,
+          'hidden': progressionStore.getHitDice[hitDie] === 0,
+        }"
       />
     </div>
   </div>
@@ -49,6 +52,9 @@ const hitDice: ComputedRef<HitDieSize[]> = computed(() =>
   .list {
     grid-template-columns: 1fr 1fr;
     gap: var(--size-gap-medium)!important;
+  }
+  .hidden {
+    display: none;
   }
 }
 </style>

@@ -63,15 +63,15 @@ export const onDropMonster = async ({
   const collectedEffects: any[] = Array.isArray(effects) ? effects : [];
 
   //Features
-  if (result.data.features) {
+    if(result.data.features) {
     result.data.features.forEach((feature) => {
       //Effects
-      if (feature['data-effects']) {
+      if(feature['data-effects']) {
         const uuid = uuidv4();
         feature.effectId = uuid;
         const effectData = feature['data-effects'];
         effectData._id = uuid;
-
+        
         ['effects', 'actions', 'resources', 'spellSources', 'spells', 'pickers'].forEach((key) => {
           // @ts-ignore
           if (effectData[key] && Array.isArray(effectData[key])) {
@@ -81,9 +81,9 @@ export const onDropMonster = async ({
             });
           }
         });
-
+        
         collectedEffects.push(effectData);
-
+        
         delete feature['data-effects'];
       }
 

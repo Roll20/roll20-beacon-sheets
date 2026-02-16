@@ -22,10 +22,6 @@
           >
             <SvgIcon icon="chat" />
           </button>
-          <span class="action-item__damage" v-if="damage.value.final.length > 0">
-            <DicePool :pool="damage" :rollArgs="damageRollArgs" />
-          </span>
-          <span class="action-item__damage" v-else>-</span>
           <span class="action-item__attack-bonus" v-if="action.isAttack">
             <RollModifier
               :finalBonus="attackBonus.value.final"
@@ -40,6 +36,10 @@
             >
               DC {{ actionDC.value.final }}
             </button>
+          </span>
+          <span class="action-item__damage" v-else>-</span>
+          <span class="action-item__damage" v-if="damage.value.final.length > 0">
+            <DicePool :pool="damage" :rollArgs="damageRollArgs" />
           </span>
           <span class="action-item__damage" v-else>-</span>
         </div>
@@ -241,7 +241,7 @@ const rollArgs = computed((): D20RollArgs => {
     font-weight: bold;
   }
   .cols {
-    grid-template-columns: 1fr min-content 80px 30px;
+    grid-template-columns: 1fr min-content 30px 80px;
     gap: 5px 10px;
     .sidebar-link {
       justify-self: left;

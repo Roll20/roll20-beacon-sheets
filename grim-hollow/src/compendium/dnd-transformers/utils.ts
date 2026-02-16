@@ -28,6 +28,8 @@ const transformFormulaSyntax = (formula: string): string => {
     if (abilityMap[key]) {
       return `@{${abilityMap[key]}}`;
     }
+
+    key = key.replace(/_/g, '-');
     
     return `@{${key}}`;
   });

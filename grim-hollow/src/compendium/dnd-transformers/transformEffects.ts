@@ -21,6 +21,24 @@ const proficiencyLevelMap: Record<string, number> = {
   Expertise: 2, 
 };
 
+/**
+ * Builds an effect entry that is formula-aware.
+ */
+const buildFormulaEffect = (
+  attribute: string,
+  baseOperation: string,
+  valueFormula: { flatValue?: number; customFormula?: string } | undefined,
+): Record<string, any> => {
+  const hasFormula = !!valueFormula?.customFormula;
+  return {
+    attribute,
+    operation: hasFormula ? `${baseOperation}-formula` : baseOperation,
+    ...(hasFormula
+      ? { formula: valueFormula!.customFormula }
+      : { value: valueFormula?.flatValue || 0 }),
+  };
+};
+
 // This defines the fragment that a datarecord can be broken down into.
 export interface EffectFragment {
   description?: string;
@@ -306,29 +324,22 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
       case 'Speed': {
         const operationMap: Record<string, string> = {
           'Set Base': 'set-base',
+          'Set Value': 'set-base',
           Modify: 'add',
         };
-        const operation = operationMap[payload.calculation] || 'set-base'; // Default to set-base
-
+        const baseOperation = operationMap[payload.calculation] || 'set-base';
         fragment.effects = [
-          {
-            attribute: `${payload.speed.toLowerCase()}-speed`,
-            operation: operation,
-            value: payload.valueFormula.flatValue || payload.valueFormula.customFormula || 0,
-          },
+          buildFormulaEffect(`${payload.speed.toLowerCase()}-speed`, baseOperation, payload.valueFormula),
         ];
         break;
       }
 
-      case 'Sense':
+      case 'Sense': {
         fragment.effects = [
-          {
-            attribute: `sense-${payload.name.toLowerCase()}`,
-            operation: 'set-base',
-            value: payload.valueFormula.flatValue,
-          },
+          buildFormulaEffect(`sense-${payload.name.toLowerCase()}`, 'set-base', payload.valueFormula),
         ];
         break;
+      }
 
       case 'Language':
         fragment.effects = [
@@ -361,6 +372,20 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
             type: 'ability',
             ability: payload.ability.toLowerCase(),
           },
+        ];
+        break;
+      }
+
+      case 'Armor Class': {
+        const operationMap: Record<string, string> = {
+          'Set Base': 'set-base',
+          Modify: 'add',
+          Override: 'set-base-final',
+        };
+        const calculation = payload.calculation || 'Modify';
+        const baseOperation = operationMap[calculation] || 'add';
+        fragment.effects = [
+          buildFormulaEffect('armor-class', baseOperation, payload.valueFormula),
         ];
         break;
       }

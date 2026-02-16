@@ -1,5 +1,8 @@
 <template>
-  <div class="feature-item">
+  <div :class="{ 'feature-item': true, 'feature-item--loading': !loaded && compendiumPickers.length > 0 }">
+    <div v-if="!loaded && compendiumPickers.length > 0" class="loader">
+      <span class="loader__spinner"></span>
+    </div>
     <details class="accordion">
       <summary class="accordion__summary">
         <SidebarLink
@@ -33,13 +36,16 @@
                 @focus="cachePreviousPicker(index, picker.featureId)"
                 @change="setCompendiumPicker(feature, picker, index, $event)"
               >
-                <option :value="undefined">Choose...</option>
+                <option v-if="!picker.featureId" :value="undefined">Choose...</option>
                 <option
                   v-for="option in pickerData[picker.category]"
                   :key="`${feature._id}__${index}__${option.id}`"
                   :value="`${feature._id}__${index}__${option.id}`"
+                  :data-featureid="feature._id"
+                  :data-index="index"
                 >
-                  {{ option.pageName }}
+                <!-- {{ `${feature._id}__${index}__${option.id}` }}   -->
+                {{ picker.defaultId && picker.defaultId === `${feature._id}__${index}__${option.id}` ? `${option.pageName} (default)`: option.pageName }}
                 </option>
               </select>
               <!-- <p>{{ getDescriptionById(picker.featureId, picker.category) }}</p> -->
@@ -85,6 +91,7 @@ import { CompendiumResults, createPageRequest } from '@/compendium/drop';
 import { dispatchRef } from '@/relay/relay';
 import { drag } from '@/compendium/drop';
 import { id } from 'zod/v4/locales';
+import { e, pi } from 'mathjs';
 
 const { appContext } = getCurrentInstance()!;
 
@@ -182,54 +189,81 @@ const compareValues = (
   }
 };
 
-const loadPickers = async () => {
+const loadPickers = async (callback: () => void) => {
+  loaded.value = false;
   for (const picker of compendiumPickers.value) {
     const category = picker.category;
     const request = createPageRequest(category);
     
     const response:CompendiumResults = await dispatchRef.value.compendiumRequest({ query: request });
-      if (response.errors)
-        throw new Error("Expected a compendium request, but instead got an error.");
-      if (!response?.data?.ruleSystem?.category?.pages)
-        throw new Error("Could not find a page, you probably need to relog.");
+    if (response.errors)
+      throw new Error("Expected a compendium request, but instead got an error.");
+    if (!response?.data?.ruleSystem?.category?.pages)
+      throw new Error("Could not find a page, you probably need to relog.");
 
-      const data = response.data.ruleSystem.category.pages;
-      pickerData.value[category] = data.filter(page => {
-        if(picker.filter) {
-          try {
-            const filters = picker.filter;
+    const data = response.data.ruleSystem.category.pages;
+    pickerData.value[category] = data.filter(page => {
+      if(picker.filter) {
+        try {
+          const filters = picker.filter;
 
-            for (const [propKey, condition] of Object.entries(filters)) {
-              const pageValue = page.properties[propKey];
+          for (const [propKey, condition] of Object.entries(filters)) {
+            const pageValue = page.properties[propKey];
 
-              if (!condition || typeof condition !== 'object') continue;
+            if (!condition || typeof condition !== 'object') continue;
 
-              const { op, value } = condition as { op: any; value: any };
+            const { op, value } = condition as { op: any; value: any };
 
-              if (pageValue === undefined && op !== 'neq') return false;
+            if (pageValue === undefined && op !== 'neq') return false;
 
-              if (!compareValues(pageValue, op, value)) {
-                return false;
-              }
+            if (!compareValues(pageValue, op, value)) {
+              return false;
             }
-          } catch (e) {
-            console.error('Filter error', e);
-            return true;
           }
+        } catch (e) {
+          console.error('Filter error', e);
           return true;
         }
         return true;
-      })
-      .map((page: any) => ({
-        pageName: page.name,
-        categoryName: category,
-        expansionId: page.book.itemId,
-        id: page.id,
-      }));
+      }
+      return true;
+    })
+    .map((page: any) => ({
+      pageName: page.name,
+      categoryName: category,
+      expansionId: page.book.itemId,
+      id: page.id,
+    }));
   }
+  if(callback) callback();
 };
 
-loadPickers();
+loadPickers(() => {
+  compendiumPickers.value.forEach(async (picker, index) => {
+    if (pickerData.value[picker.category] && !picker.featureId && picker.default) {
+      let option;
+      if(picker.default.expansionId) { 
+        // If expansionId is provided, match on both pageName and expansionId to ensure uniqueness
+        option = pickerData.value[picker.category].find((page:any) => 
+        picker.default && page.pageName === picker.default.pageName
+        && page.expansionId == picker.default.expansionId);
+      } else { 
+        // Gets first matching pageName, which could lead to issues if there are multiple pages with the same name across
+        // different expansions, but at least it will find something if the default is specified without an expansionId
+        option = pickerData.value[picker.category].find((page:any) => picker.default && page.pageName === picker.default.pageName);
+      }
+      if(option) {
+        picker.featureId = `${props.feature._id}__${index}__${option.id}`;
+        picker.defaultId = picker.featureId;
+        await setCompendiumPicker(props.feature, picker, index, new Event('change') as Event);
+      } else {
+        console.warn(`Default value "${picker.default}" not found for picker in category "${picker.category}".`);
+        picker.featureId = undefined;
+      }
+      loaded.value = true;
+    }
+  });
+});
 
 const setCompendiumPicker = async (
   parent: Feature,
@@ -301,5 +335,57 @@ const handleCompendiumClick = (event: MouseEvent) => {
 }
 .source {
   color: var(--color-secondary);
+}
+.loader {
+  position: absolute;
+  display: grid;
+  align-items: center;
+  justify-items: start;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: all;
+  z-index: 9999;
+  &__spinner {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    background: linear-gradient(0deg, rgba(255, 61, 0, 0.2) 33%, #ff3d00 100%);
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    mix-blend-mode: screen;
+    &:after {
+      content: '';  
+      box-sizing: border-box;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #0e0404;
+    }
+  }
+}
+@keyframes rotation {
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(360deg)}
+}
+.feature-item--loading {
+  position: relative;
+  .accordion {
+    pointer-events: none;
+    opacity: 0.35;
+    padding-left: 10px;
+    &__summary {
+      &:before {
+        content: '';
+      }
+    }
+  }
 }
 </style>

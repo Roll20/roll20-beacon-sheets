@@ -10,6 +10,7 @@ import { useI18n } from 'vue-i18n';
 import { performD20Roll } from '@/utility/roll';
 import type { D20RollArgs, LabeledBonus } from '@/utility/roll';
 import { useRollDialogStore } from '@/sheet/stores/dialogs/rollDialogStore';
+import { useCombatStore } from '@/sheet/stores/combat/combatStore';
 const { t } = useI18n();
 const props = defineProps<{
   finalBonus: number;
@@ -28,9 +29,10 @@ const bonusClass = computed(() => {
 });
 
 const rollDialogStore = useRollDialogStore();
+const combat = useCombatStore();
 
 const handleClick = async (event: MouseEvent) => {
-  if (event.altKey) {
+  if (combat.shouldDisplayRollDialog(event)) {
     event.preventDefault();
     event.stopPropagation();
     rollDialogStore.open('d20', props.rollArgs);

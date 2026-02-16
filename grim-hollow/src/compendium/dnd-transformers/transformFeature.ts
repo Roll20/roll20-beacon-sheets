@@ -18,7 +18,12 @@ export const transformDnDFeature = (datarecord: any) => {
     description: fragment.description || '',
   };
 
-  if (fragment.effects || fragment.actions || fragment.resources || fragment.spells || fragment.pickers) {
+  // Spells go to data-spells so they can be hydrated from the compendium during drop
+  if (fragment.spells && fragment.spells.length > 0) {
+    baseFeature['data-spells'] = fragment.spells;
+  }
+
+  if (fragment.effects || fragment.actions || fragment.resources || fragment.pickers || fragment.spellSources) {
     baseFeature['data-effects'] = {
       label: datarecord.name,
       enabled: true,
@@ -27,8 +32,9 @@ export const transformDnDFeature = (datarecord: any) => {
       effects: fragment.effects || [],
       actions: fragment.actions || [],
       resources: fragment.resources || [],
-      spells: fragment.spells || [],
+      spells: [],
       pickers: fragment.pickers || [],
+      ...(fragment.spellSources ? { spellSources: fragment.spellSources } : {}),
     };
   }
 
@@ -48,8 +54,8 @@ export const transformDnDFeatureSet = (rawPayload: any, book: any, properties: a
       'data-effects': {
         label: `${rawPayload.name} Effects`,
         enabled: true,
-        toggleable: true,
-        removable: true,
+        toggleable: false,
+        removable: false,
         effects: [] as any[],
         actions: [] as any[],
         resources: [] as any[],
@@ -59,6 +65,7 @@ export const transformDnDFeatureSet = (rawPayload: any, book: any, properties: a
     };
 
     const descriptionParts: string[] = [];
+    const allSpells: any[] = [];
 
     for (const record of dataRecords) {
       const fragment = createEffectFragment(record);
@@ -74,9 +81,17 @@ export const transformDnDFeatureSet = (rawPayload: any, book: any, properties: a
         if (fragment.effects) effectsObj.effects?.push(...fragment.effects);
         if (fragment.actions) effectsObj.actions?.push(...fragment.actions);
         if (fragment.resources) effectsObj.resources?.push(...fragment.resources);
-        if (fragment.spells) effectsObj.spells?.push(...fragment.spells);
+        if (fragment.spells) allSpells.push(...fragment.spells);
         if (fragment.pickers) effectsObj.pickers?.push(...fragment.pickers);
+        if (fragment.spellSources) {
+          if (!effectsObj.spellSources) effectsObj.spellSources = [];
+          effectsObj.spellSources.push(...fragment.spellSources);
+        }
       }
+    }
+
+    if (allSpells.length > 0) {
+      combinedFeat['data-spells'] = allSpells;
     }
 
     if (descriptionParts.length > 0) {
@@ -88,8 +103,8 @@ export const transformDnDFeatureSet = (rawPayload: any, book: any, properties: a
       (effectsObj.effects?.length ?? 0) === 0 &&
       (effectsObj.actions?.length ?? 0) === 0 &&
       (effectsObj.resources?.length ?? 0) === 0 &&
-      (effectsObj.spells?.length ?? 0) === 0 &&
-      (effectsObj.pickers?.length ?? 0) === 0
+      (effectsObj.pickers?.length ?? 0) === 0 &&
+      (!effectsObj.spellSources || effectsObj.spellSources.length === 0)
     ) {
       delete combinedFeat['data-effects'];
     }

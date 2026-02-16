@@ -22,7 +22,7 @@ import {
 import { reactive, ref, watch, nextTick, type Ref, type App, shallowRef } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { useActionsStore } from '@/sheet/stores/actions/actionsStore';
-import { getAbilityModifier, getAbilityScore, getInitiative, getLevel, getProficiencyBonus, getSkillModifier, getSkillProficiency } from './handlers/computed';
+import { getAbilityModifier, getAbilityScore, getArmorClass, getHitPoints, getInitiative, getLevel, getProficiencyBonus, getSkillModifier, getSkillProficiency, getTempHitPoints, setHitPoints, setTempHitPoints } from './handlers/computed';
 
 /* 
 This is the configuration for the relay. It defines the handlers and actions that the sheet will use.
@@ -105,6 +105,9 @@ const relayConfig = {
    pb: { tokenBarValue: false, get: getProficiencyBonus },
    level: { tokenBarValue: false, get: getLevel },
    initiative: { tokenBarValue: false, get: getInitiative },
+   "Hit Points": { tokenBarValue: true, get: getHitPoints, set: setHitPoints },
+   "Temporary Hit Points": { tokenBarValue: true, get: getTempHitPoints, set: setTempHitPoints },
+   "Armor Class": { tokenBarValue: true, get: getArmorClass },
    ...computedAbilities,
    ...computedAbilitiesModifiers,
    ...computedRankedSkills,
