@@ -11,6 +11,7 @@ import { createDiceExpression } from '@/utility/simplifyDiceExpression';
 import { useI18n } from 'vue-i18n';
 import { type DamageRollArgs, performDamageRoll } from '@/utility/roll';
 import { useRollDialogStore } from '@/sheet/stores/dialogs/rollDialogStore';
+import { useCombatStore } from '@/sheet/stores/combat/combatStore';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -22,9 +23,10 @@ const simplifiedExpression = computed(() => {
 });
 
 const rollDialogStore = useRollDialogStore();
+const combat = useCombatStore();
 
 const handleClick = (event: MouseEvent) => {
-  if (event.altKey) {
+  if (combat.shouldDisplayRollDialog(event)) {
     event.preventDefault();
     event.stopPropagation();
     rollDialogStore.open('damage', props.rollArgs);

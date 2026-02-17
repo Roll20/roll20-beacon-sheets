@@ -52,7 +52,7 @@ describe('progressionStore', () => {
   });
 
   describe('Class Management and HP Logic', () => {
-    it('getHitDice in manual mode returns only non-zero dice counts', () => {
+    it('getHitDice in manual mode returns all dice sizes including zeros', () => {
       const store = useProgressionStore();
       store.hitDice.mode = 'manual';
       store.hitDice.total = { 
@@ -65,8 +65,7 @@ describe('progressionStore', () => {
       
       const result = store.getHitDice;
       
-      expect(result).toEqual({ '1d8': 5, '1d10': 2 });
-      expect(Object.keys(result)).not.toContain('1d6');
+      expect(result).toEqual({ '1d4': 0, '1d6': 0, '1d8': 5, '1d10': 2, '1d12': 0 });
     });
 
     it('getClassesSummary truncates long class/subclass strings with ellipsis', () => {

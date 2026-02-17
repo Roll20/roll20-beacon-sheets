@@ -93,7 +93,7 @@ export const SpellCompendiumSchema = z.object({
   'data-tags': z.array(z.string()).optional(),
   'data-compatibility': z.array(SpellCompatibilitySchema).optional(),
   required: z.array(RequirementSchema).optional(),
-  
+  prepared: z.boolean().optional(),
 });
 
 export const SpellSchema = SpellCompendiumSchema.extend({

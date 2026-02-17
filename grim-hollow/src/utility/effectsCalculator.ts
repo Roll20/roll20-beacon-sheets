@@ -53,7 +53,6 @@ export const checkRequirements = (
   context: RequirementContext,
 ): boolean => {
   if (!requirements || requirements.length === 0) return true;
-  console.log('Checking requirements:', requirements, 'with context:', context);
   return requirements.every((req) => {
     if (req === 'equipped') return context.isEquipped ?? true;
     if (req === 'attuned') return context.isAttuned ?? true;
@@ -124,7 +123,7 @@ function getPicker<T extends string | string[]>(value: T, pickers?: Picker[]): T
   let broken = false;
 
   const processedValues = values.map((val) => {
-    if (!val.includes('$picker:')) return val;
+    if (typeof val !== 'string' || !val.includes('$picker:')) return val;
 
     return val.replace(regex, (match, indexString) => {
       const index = parseInt(indexString, 10);
@@ -280,8 +279,7 @@ function calculateModifiedTags(
   isActiveCheck: (effect: Effect, singleEffect: SingleEffect) => boolean,
 ): { text: string; isDefault: boolean; isFromEffect: boolean; sourceLabel: string }[] {
   const validEffects = getValidEffects(allEffects, attribute, isActiveCheck).filter(
-    (eff) =>
-      eff.operation === 'push' && (typeof eff.value === 'string' || Array.isArray(eff.value)),
+    (eff) => eff.operation === 'push',
   );
 
   const pushedTags: {
@@ -291,7 +289,20 @@ function calculateModifiedTags(
     sourceLabel: string;
   }[] = [];
   for (const effect of validEffects) {
-    const tagList = Array.isArray(effect.value) ? effect.value : [effect.value];
+    let resolvedValue: string | string[] | number = effect.value;
+
+    if (effect.formula && typeof effect.formula === 'string' && effect.formula.includes('$picker:')) {
+      const resolved = getPicker(effect.formula, effect.pickers);
+      if (resolved) resolvedValue = resolved;
+    } else if (typeof resolvedValue === 'string' && resolvedValue.includes('$picker:')) {
+      resolvedValue = getPicker(resolvedValue, effect.pickers);
+    } else if (Array.isArray(resolvedValue)) {
+      resolvedValue = getPicker(resolvedValue, effect.pickers);
+    }
+
+    if (!resolvedValue || (typeof resolvedValue !== 'string' && !Array.isArray(resolvedValue))) continue;
+
+    const tagList = Array.isArray(resolvedValue) ? resolvedValue : [resolvedValue];
 
     const isDefenseAttribute =
       effect.attribute === 'damage-resistances' ||
@@ -526,6 +537,77 @@ function calculateActionDie(validEffects: ExtendedSingleEffect[]): number {
   return 0;
 }
 
+export type EffectToolProficiency = {
+  toolKey: string;
+  label: string;
+  sourceEffectId: string;
+  sourceEffectLabel: string;
+};
+
+const effectSuffixes = [
+  '-action-die-min',
+  '-roll-modifier',
+  '-action-die',
+  '-modifier',
+  '-proficiency',
+] as const;
+
+const knownToolKeys = new Set(Object.keys(config.autocomplete.toolProficiencies));
+
+function extractToolKey(attribute: string): string | null {
+  for (const suffix of effectSuffixes) {
+    if (attribute.endsWith(suffix)) {
+      const baseKey = attribute.slice(0, -suffix.length);
+      if (knownToolKeys.has(baseKey)) return baseKey;
+      return null;
+    }
+  }
+  return null;
+}
+
+function toLabel(toolKey: string): string {
+  const knownTools = Object.keys(config.autocomplete.toolProficiencies);
+  if (knownTools.includes(toolKey)) {
+    return toolKey;
+  }
+  return toolKey
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function collectToolProficienciesFromEffects(
+  allEffects: Effect[],
+  isActiveCheck: (effect: Effect, singleEffect: SingleEffect) => boolean,
+): EffectToolProficiency[] {
+  const toolMap = new Map<string, EffectToolProficiency>();
+
+  allEffects.forEach((effect) => {
+    (effect.effects || []).forEach((single) => {
+      if (!isActiveCheck(effect, single)) return;
+
+      let attribute = single.attribute;
+      if (effect.pickers) {
+        attribute = getPicker(attribute, effect.pickers);
+      }
+
+      const toolKey = extractToolKey(attribute);
+      if (!toolKey) return;
+
+      if (!toolMap.has(toolKey)) {
+        toolMap.set(toolKey, {
+          toolKey,
+          label: toLabel(toolKey),
+          sourceEffectId: effect._id,
+          sourceEffectLabel: effect.label,
+        });
+      }
+    });
+  });
+
+  return Array.from(toolMap.values());
+}
+
 export const EffectsCalculator = {
   getValidEffects,
   calculateModifiedValue,
@@ -534,6 +616,7 @@ export const EffectsCalculator = {
   calculateActionDie,
   calculateModifiedTags,
   collectFromEffects,
+  collectToolProficienciesFromEffects,
   checkRequirements,
   isNpcEffectActive,
   getPicker,

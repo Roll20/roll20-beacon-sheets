@@ -247,6 +247,44 @@ describe('dnd-transformers/transformEffects', () => {
       expect(result?.resources![0].max).toBe('1');
     });
 
+    it('transforms "Resource" type with maxValueFormula', () => {
+      const record = {
+        name: 'Lay On Hands',
+        payload: JSON.stringify({
+          type: 'Resource',
+          name: 'Lay On Hands',
+          value: 'full',
+          maxValueFormula: {
+            classLevel: { add: true, multiplier: 5, className: 'Paladin' },
+            round: 'Down',
+          },
+          recovery: 'Long Rest',
+          recoveryRate: 'Full',
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.resources![0].max).toBe('5 * $ownerlevel');
+      expect(result?.resources![0].count).toBe(0);
+      expect(result?.resources![0].refreshOnLongRest).toBe('all');
+    });
+
+    it('transforms "Resource" type with classLevel multiplier of 1', () => {
+      const record = {
+        name: 'Simple Pool',
+        payload: JSON.stringify({
+          type: 'Resource',
+          name: 'Pool',
+          maxValueFormula: {
+            classLevel: { add: true, multiplier: 1, className: 'Fighter' },
+          },
+          recovery: 'Long Rest',
+          recoveryRate: 'Full',
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.resources![0].max).toBe('$ownerlevel');
+    });
+
     it('transforms "Ability Score" type', () => {
       const record = {
         name: 'ASI',
@@ -525,6 +563,79 @@ describe('dnd-transformers/transformEffects', () => {
       };
       const result = createEffectFragment(record);
       expect(result?.spellSources![0].name).toBe('Cleric Spellcasting');
+    });
+
+    it('transforms "Armor Class" with customFormula (Barbarian Unarmored Defense)', () => {
+      const record = {
+        name: 'Barbarian Unarmored Defense AC',
+        payload: JSON.stringify({
+          type: 'Armor Class',
+          calculation: 'Modify',
+          source: 'Other',
+          valueFormula: { customFormula: '@{constitution_mod}' },
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.effects![0]).toEqual({
+        attribute: 'armor-class',
+        operation: 'add-formula',
+        formula: '@{constitution-modifier}',
+      });
+    });
+
+    it('transforms "Armor Class" with flatValue', () => {
+      const record = {
+        name: 'AC Bonus',
+        payload: JSON.stringify({
+          type: 'Armor Class',
+          calculation: 'Modify',
+          valueFormula: { flatValue: 2 },
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.effects![0]).toEqual({
+        attribute: 'armor-class',
+        operation: 'add',
+        value: 2,
+      });
+    });
+
+    it('transforms "Armor Class" Set Base with flatValue', () => {
+      const record = {
+        name: 'Natural Armor',
+        payload: JSON.stringify({
+          type: 'Armor Class',
+          calculation: 'Set Base',
+          valueFormula: { flatValue: 13 },
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.effects![0]).toEqual({
+        attribute: 'armor-class',
+        operation: 'set-base',
+        value: 13,
+      });
+    });
+
+    it('transforms "Armor Class" Override with flatValue', () => {
+      const record = {
+        name: 'AC Override',
+        payload: JSON.stringify({
+          type: 'Armor Class',
+          calculation: 'Override',
+          valueFormula: { flatValue: 18 },
+        }),
+      };
+      const result = createEffectFragment(record);
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.effects![0]).toEqual({
+        attribute: 'armor-class',
+        operation: 'set-base-final',
+        value: 18,
+      });
     });
   });
 });

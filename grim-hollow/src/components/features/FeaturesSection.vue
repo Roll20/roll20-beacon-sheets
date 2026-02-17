@@ -3,6 +3,15 @@
     <StyledBox mode="gothic">
       <div class="section__header">
         <h3>{{ $t('titles.features') }}</h3>
+        <ListFilter ref="filterRef" :list="orderedFeatures" :filterOptions="[
+          { label: $t('titles.feature-groups.class-features'), value: 'class-features', property: 'group' },
+          { label: $t('titles.feature-groups.ancestry-features'), value: 'ancestry-features', property: 'group' },
+          { label: $t('titles.feature-groups.feats'), value: 'feats', property: 'group' },
+          { label: $t('titles.feature-groups.background-features'), value: 'background-features', property: 'group' },
+          { label: $t('titles.feature-groups.others'), value: 'others', property: 'group' },
+          { label: $t('titles.feature-groups.traits'), value: 'traits', property: 'group' },
+          { label: $t('titles.feature-groups.transformation-features'), value: 'transformation-features', property: 'group' }
+        ]" class="filter" />
         <SidebarLink
           componentName="FeatureSidebar"
           :props="{ feature: null }"
@@ -18,7 +27,7 @@
     </StyledBox>
     <div class="list">
       <FeatureItem
-        v-for="orderedFeature in orderedFeatures"
+        v-for="orderedFeature in filteredList"
         :key="orderedFeature._id"
         :feature="orderedFeature"
       />
@@ -32,8 +41,9 @@ import { Feature, type FeatureGroup } from '@/sheet/stores/features/faturesStore
 import { useFeaturesStore } from '@/sheet/stores/features/faturesStore';
 import { useI18n } from 'vue-i18n';
 import SidebarLink from '../shared/SidebarLink.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import StyledBox from '../shared/StyledBox.vue';
+import ListFilter from '../shared/ListFilter.vue';
 
 const features = useFeaturesStore();
 const { t } = useI18n();
@@ -65,6 +75,14 @@ const orderedFeatures = computed(() => {
     ...groups['background-features'],
     ...groups['others'],
   ];
+});
+
+const filterRef = ref();
+const filteredList = computed(() => {
+  if(filterRef.value) {
+    return filterRef.value.filteredList;
+  }
+  return orderedFeatures.value;
 });
 </script>
 

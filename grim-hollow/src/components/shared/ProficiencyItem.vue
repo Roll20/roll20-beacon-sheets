@@ -7,7 +7,7 @@
         :options="{
           title: t('actions.edit-skill'),
           hasSave: true,
-          hasDelete: props.group === 'tools'
+          hasDelete: props.group === 'tools',
         }"
         :label="linkLabel"
         class="proficiency-item__label"
@@ -67,6 +67,7 @@ const props = defineProps<{
   level: ProficiencyLevelBase;
   modifiedLevel: ModifiedProficiency;
   group: RankedProficiencyGroup;
+  toolKey?: string;
 }>();
 
 defineEmits<{
@@ -77,14 +78,14 @@ defineEmits<{
 const proficiencies = useProficienciesStore();
 
 const proficiencyModifier = computed(() => {
-
   return proficiencies.getProficiencyModifier({
     _id: props._id,
     label: props.label,
     ability: props.ability,
     level: props.level,
     group: props.group,
- });
+    toolKey: props.toolKey,
+  });
 });
 
 const abilityKeys = computed(() => useAbilitiesStore().abilities.map((ability) => ability.label));
@@ -111,6 +112,7 @@ const sidebarProps = computed(() => ({
     ability: props.ability,
     level: props.level,
     group: props.group,
+    toolKey: props.toolKey,
   },
 }));
 
@@ -153,9 +155,15 @@ const rollArgs = computed(() => {
     rollBonusKeys.push(effectKeys['saving-roll']);
     actionDieKeys.push(effectKeys['saving-action-die']);
   } else if (proficiency.group === 'default-skills' || proficiency.group === 'tools') {
+    if (proficiency.group === 'tools' && props.toolKey) {
+      rollBonusKeys.push(effectKeys[`${props.toolKey}-roll` as keyof typeof effectKeys]);
+      actionDieKeys.push(effectKeys[`${props.toolKey}-action-die` as keyof typeof effectKeys]);
+    }
     rollBonusKeys.push(effectKeys[proficiency.group === 'tools' ? 'tools-roll' : 'skill-roll']);
     rollBonusKeys.push(effectKeys['check-roll']);
+    rollBonusKeys.push(effectKeys[`${proficiency.ability}-check`]);
     rollBonusKeys.push(effectKeys[`${proficiency.ability}-check-roll`]);
+
     actionDieKeys.push(
       effectKeys[proficiency.group === 'tools' ? 'tools-action-die' : 'skill-action-die'],
     );

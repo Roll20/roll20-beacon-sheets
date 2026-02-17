@@ -9,7 +9,7 @@ import { useEffectsStore } from '../modifiers/modifiersStore';
 
 export type FeatureGroup = 'class-features' | 'transformation-features' | 'ancestry-features' | 'feats' | 'traits'| 'others'| 'background-features';
 
-export type FilterOperator = 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'includes';
+export type FilterOperator = 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'includes' | 'in';
 
 export type FilterCondition = {
   op: FilterOperator;
@@ -22,6 +22,11 @@ export type CompendiumPicker = {
   filter?: Record<string, FilterCondition>;
   featureId?: string;
   featureLabel?: string;
+  default?: {
+    pageName: string;
+    expansionId?: string;
+  };
+  defaultId: string;
 }
 export type Feature = {
   _id: string;
@@ -90,6 +95,9 @@ export const useFeaturesStore = defineStore('features', () => {
     const indexToRemove = features.value.findIndex((feature) => feature._id === _id);
     if (indexToRemove >= 0) {
       const existing = features.value[indexToRemove];
+      // Remove from array FIRST to prevent infinite recursion from circular references
+      features.value.splice(indexToRemove, 1);
+      
       if (existing.effectId) useEffectsStore().remove(existing.effectId);
       if (existing.tagId) useTagsStore().remove(existing.tagId);
       if (existing.compendiumPickers && existing.compendiumPickers.length > 0) {
@@ -97,7 +105,6 @@ export const useFeaturesStore = defineStore('features', () => {
           if (picker.featureId) remove(picker.featureId);
         });
       }
-      features.value.splice(indexToRemove, 1);
     }
   };
 

@@ -1,4 +1,4 @@
-import { transformDnDFeature } from "./transformFeature";
+import { mergeRecordsIntoFeatures } from "./transformFeature";
 import { deepTransformFormulas } from "./utils"; 
 
 const casterProgressionMap: Record<string, string> = {
@@ -25,12 +25,12 @@ export const transformDnDSubclass = (rawPayload: any, book:any, properties: any)
     dataRecords = [];
   }
 
+  // Handle spellcasting records
   for (const record of dataRecords) {
     let payload;
     try {
       payload = JSON.parse(record.payload);
     } catch (e) {
-      console.warn(`Failed to parse payload for record: ${record.name}`);
       continue;
     }
 
@@ -47,16 +47,31 @@ export const transformDnDSubclass = (rawPayload: any, book:any, properties: any)
           isPrepared: false,
         };
       }
-      continue;
     }
+  }
 
-    const feature = transformDnDFeature(record);
-    
-    if (feature) {
+  // Filter out modifier records and spellcasting records
+  const modifierRecords = dataRecords.filter((rec: any) => rec.modify !== undefined);
+  const recordsToProcess = dataRecords.filter((rec: any) => {
+    if (modifierRecords.includes(rec)) return false;
+    try {
+      const payload = JSON.parse(rec.payload);
+      return payload.type !== 'Spellcasting';
+    } catch {
+      return true;
+    }
+  });
+
+  // Merge child records into their parent Features records
+  const mergedFeatures = mergeRecordsIntoFeatures(dataRecords, recordsToProcess);
+  for (const { feature, level } of mergedFeatures) {
+    const hasDescription = feature.description && feature.description.trim() !== '';
+    const hasEffects = !!feature['data-effects'];
+    const hasSpells = !!feature['data-spells'];
+
+    if (hasDescription || hasEffects || hasSpells) {
       feature.group = 'class-features';
-
-      const level = parseInt(record.level, 10);
-      if (!isNaN(level) && level > 0) {
+      if (level > 0) {
         const levelKey = `level-${level}`;
         if (!featuresByLevel[levelKey]) {
           featuresByLevel[levelKey] = [];

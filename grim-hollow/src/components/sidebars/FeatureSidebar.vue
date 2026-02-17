@@ -18,7 +18,7 @@
               {{ $t('titles.feature-groups.background-features') }}
             </option>
             <option value="others">{{ $t('titles.feature-groups.others') }}</option>
-            <option value="others">{{ $t('titles.feature-groups.traits') }}</option>
+            <option value="traits">{{ $t('titles.feature-groups.traits') }}</option>
             <option value="transformation-features">
               {{ $t('titles.feature-groups.transformation-features') }}
             </option>
@@ -33,10 +33,14 @@
           <textarea v-model="description" rows="4" />
         </label>
         <TagsInput :tagId="tagId" @update="updateTags" label="titles.tags" tagSource="feature" />
-        <label class="effects-editor">
-          {{ $t('titles.effects') }}
-          <textarea v-model="effects" />
-        </label>
+        <details>
+          <summary>
+            <label class="effects-editor">
+              {{ $t('titles.effects') }}
+            </label>
+          </summary>
+          <textarea v-model="effects" rows="5" />
+        </details>
       </div>
     </form>
   </div>

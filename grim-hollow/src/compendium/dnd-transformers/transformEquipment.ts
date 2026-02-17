@@ -63,7 +63,7 @@ export const transformDnDEquipment = (
     transformedPayload = {
       ...transformedPayload,
       name: itemPayload.name,
-      weight: itemPayload.weight || 0,
+      weight: parseFloat(itemPayload.weight) || 0,
       description: itemPayload.description || '',
       value: parseCost(itemPayload.cost),
       type: mapItemType(

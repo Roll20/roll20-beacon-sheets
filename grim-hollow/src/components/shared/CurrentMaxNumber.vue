@@ -1,5 +1,5 @@
 <template>
-  <div class="current-max-number">
+  <div :class="{ 'current-max-number': true, 'current-max-number--no-max': max === Infinity }">
     <button class="button-minus" @click="decrease">-</button>
 
     <div class="input-wrapper">
@@ -12,8 +12,8 @@
         @keyup.enter="onInput"
         ref="input"
       />
-      <span class="divider">/</span>
-      <span class="max">{{ max }}</span>
+      <span class="divider" v-if="max < Infinity">/</span>
+      <span class="max" v-if="max < Infinity">{{ max }}</span>
     </div>
 
     <button class="button-plus" @click="increase">+</button>
@@ -24,10 +24,26 @@
 import { ref, watch } from 'vue';
 
 
-const props = defineProps<{
-  count: number;
-  max: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    count: number;
+    max?: number;
+    min?: number;
+  }>(),
+  {
+    max: Infinity,
+    min: 0,
+  },
+);
+
+watch(
+  () => props.max,
+  (newMax, oldMax) => {
+    const change = newMax - oldMax;
+    const updatedValue = props.count + change;
+    emit('update', Math.min(newMax, Math.max(props.min, updatedValue)));
+  },
+);
 
 const localValue = ref(props.count);
 
@@ -70,7 +86,7 @@ const onInput = () => {
 };
 
 const decrease = () => {
-  emit('update', Math.max(0, Math.max(props.count - 1, 0)));
+  emit('update', Math.max(props.min, Math.max(props.count - 1, props.min)));
 };
 
 const increase = () => {
@@ -152,6 +168,15 @@ const increase = () => {
   .button-plus:hover {
     background-color: #000000;
     color: #db0000;
+  }
+
+  &--no-max {
+    .input-wrapper {
+      grid-template-columns: 1fr;
+      input {
+        text-align: center;
+      }
+    }
   }
 }
 </style>

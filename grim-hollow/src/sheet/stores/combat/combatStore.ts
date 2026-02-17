@@ -36,14 +36,13 @@ export type Life = {
 };
 
 export type CombatHydrate = {
-  combat: {
-    armorClass: ArmorClass;
-    speed: Record<SpeedKey, SpeedData>;
-    deathSaves: DeathSaves;
-    life: Life;
-    exhaustion: number;
-    inspiration: number;
-  };
+  armorClass: ArmorClass;
+  speed: Record<SpeedKey, SpeedData>;
+  deathSaves: DeathSaves;
+  life: Life;
+  exhaustion: number;
+  inspiration: number;
+  useRollDialog: boolean;
 };
 
 export const useCombatStore = defineStore('combat', () => {
@@ -92,6 +91,15 @@ export const useCombatStore = defineStore('combat', () => {
     hitPoints: 0,
     temporary: 0,
   });
+  
+  const useRollDialog = ref(true);
+
+  const shouldDisplayRollDialog = (event: MouseEvent): boolean => {
+    if (!useRollDialog.value && !event.altKey) return false;
+    else if(!useRollDialog.value && event.altKey) return true;
+    else if(useRollDialog.value && event.altKey) return false;
+    return true;
+  };
 
   const getArmorClass = (): ModifiedValue =>
     useEffectsStore().getModifiedValue(
@@ -165,31 +173,31 @@ export const useCombatStore = defineStore('combat', () => {
 
   const dehydrate = (): CombatHydrate => {
     return {
-      combat: {
-        armorClass: armorClass.value,
-        speed: speed.value,
-        deathSaves: deathSaves.value,
-        life: life.value,
-        exhaustion: exhaustion.value,
-        inspiration: inspiration.value,
-      },
+      armorClass: armorClass.value,
+      speed: speed.value,
+      deathSaves: deathSaves.value,
+      life: life.value,
+      exhaustion: exhaustion.value,
+      inspiration: inspiration.value,
+      useRollDialog: useRollDialog.value,
     };
   };
 
   const hydrate = (payload: CombatHydrate) => {
-    armorClass.value = payload.combat.armorClass || armorClass.value;
-    deathSaves.value = payload.combat.deathSaves || deathSaves.value;
-    if (payload.combat.speed) {
-      Object.keys(payload.combat.speed).forEach((key) => {
+    armorClass.value = payload.armorClass || armorClass.value;
+    deathSaves.value = payload.deathSaves || deathSaves.value;
+    if (payload.speed) {
+      Object.keys(payload.speed).forEach((key) => {
         const speedKey = key as SpeedKey;
         if (speed.value[speedKey]) {
-          speed.value[speedKey] = payload.combat.speed[speedKey];
+          speed.value[speedKey] = payload.speed[speedKey];
         }
       });
     }
-    life.value = payload.combat.life || life.value;
-    exhaustion.value = payload.combat.exhaustion || 0;
-    inspiration.value = payload.combat.inspiration || 0;
+    life.value = payload.life || life.value;
+    exhaustion.value = payload.exhaustion || 0;
+    inspiration.value = payload.inspiration || 0;
+    useRollDialog.value = payload.useRollDialog !== undefined ? payload.useRollDialog : useRollDialog.value;
   };
 
   return {
@@ -199,12 +207,14 @@ export const useCombatStore = defineStore('combat', () => {
     life,
     exhaustion,
     inspiration,
+    useRollDialog,
     getMaxSuccesses,
     getMaxFailures,
     getArmorClass,
     getTemporaryHitPoints,
     getHitPointsMax,
     getSpeed,
+    shouldDisplayRollDialog,
     dehydrate,
     hydrate,
   };

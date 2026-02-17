@@ -115,10 +115,14 @@
           <textarea v-model="upcastDescription" rows="2" />
         </label>
         <TagsInput :tagId="tagId" @update="updateTags" label="titles.tags" />
-        <label class="effects-editor">
-          {{ $t('titles.effects') }}
-          <textarea v-model="effects" />
-        </label>
+        <details>
+          <summary>
+            <label class="effects-editor">
+              {{ $t('titles.effects') }}
+            </label>
+          </summary>
+          <textarea v-model="effects" rows="5" />
+        </details>
       </div>
     </form>
   </div>

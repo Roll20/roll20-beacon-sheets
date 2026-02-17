@@ -164,8 +164,11 @@ export const useProgressionStore = defineStore('progression', () => {
 
   const getHitDice: ComputedRef<Partial<HitDiceCollection>> = computed(() => {
     if (hitDice.value.mode === 'manual') {
+      // return Object.fromEntries(
+      //   Object.entries(hitDice.value.total).filter(([_, value]) => value && value > 0),
+      // );
       return Object.fromEntries(
-        Object.entries(hitDice.value.total).filter(([_, value]) => value && value > 0),
+        Object.entries(hitDice.value.total),
       );
     } else {
       const allHitDice = classes.value.reduce((acc: Record<HitDieSize, number>, cls) => {
@@ -185,9 +188,10 @@ export const useProgressionStore = defineStore('progression', () => {
 
         const modified = effectsStore.getModifiedValue(baseTotal, effectKey).value.final;
 
-        if (modified > 0) {
-          finalHitDice[size] = modified;
-        }
+        // if (modified > 0) {
+        //   finalHitDice[size] = modified;
+        // }
+        finalHitDice[size] = modified;
       });
 
       return finalHitDice;

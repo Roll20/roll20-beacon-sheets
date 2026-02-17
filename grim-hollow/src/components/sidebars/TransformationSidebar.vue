@@ -9,7 +9,7 @@
         />
       </label>
       <label class="span-1">
-        {{ $t('titles.level') }}:
+        {{ $t('titles.stage') }}:
         <div class="columns columns-5">
           <select
             class="span-3"

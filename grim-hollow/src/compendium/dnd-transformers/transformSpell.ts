@@ -39,8 +39,15 @@ const translateComponents = (componentString?: string): string[] => {
   return components;
 };
 
+const translateAbility = (ability: string | undefined): string => {
+  if (!ability || ability === 'none') return 'none';
+  if (ability === 'auto') return 'spellcasting';
+  return ability;
+};
+
 /**
  * Extracts and formats the spell's damage information.
+ * Handles both Damage and Healing type records.
  */
 const translateDamage = (properties: any, records: any[], spellName: string): any[] | undefined => {
   const damageRecord = records.find((r) => r.payload.type === 'Damage');
@@ -54,9 +61,23 @@ const translateDamage = (properties: any, records: any[], spellName: string): an
       : 'untyped';
     return [
       {
-        ability: payload.ability || 'none',
+        ability: translateAbility(payload.ability),
         damage: `${payload.diceCount || 1}${payload.diceSize}`,
         type: damageType,
+      },
+    ];
+  }
+
+  const healingRecord = records.find((r) => r.payload.type === 'Healing');
+
+  if (healingRecord) {
+    const { payload } = healingRecord;
+    const healingType = payload.isTemp ? 'temporary-hit-points' : 'healing';
+    return [
+      {
+        ability: translateAbility(payload.ability),
+        damage: `${payload.diceCount || 1}${payload.diceSize}`,
+        type: healingType,
       },
     ];
   }
@@ -67,6 +88,16 @@ const translateDamage = (properties: any, records: any[], spellName: string): an
         ability: 'none',
         damage: properties.Damage,
         type: properties['Damage Type'].toLowerCase(),
+      },
+    ];
+  }
+
+  if (properties.Healing) {
+    return [
+      {
+        ability: properties['Add Casting Modifier'] === 'Yes' ? 'spellcasting' : 'none',
+        damage: properties.Healing,
+        type: 'healing',
       },
     ];
   }
@@ -313,6 +344,17 @@ export const transformDnDSpell = (rawPayload: any, book: any, properties: any): 
           damage: properties.Damage,
           type: properties['Damage Type'].toLowerCase(),
           critDamage: properties.Damage,
+        },
+      ];
+    } else if (properties.Healing) {
+      baseDamage = [
+        {
+          ability: (properties['Add Casting Modifier'] === 'Yes' ? 'spellcasting' : 'none') as
+            | AbilityKey
+            | 'none'
+            | 'spellcasting',
+          damage: properties.Healing,
+          type: 'healing',
         },
       ];
     }

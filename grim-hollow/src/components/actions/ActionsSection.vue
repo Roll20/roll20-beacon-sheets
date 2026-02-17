@@ -3,6 +3,12 @@
     <StyledBox mode="gothic">
       <div class="section__header">
         <h3>{{ $t('titles.actions') }}</h3>
+        <ListFilter ref="filterRef" :list="orderedActions" :filterOptions="[
+          { label: t('titles.action-groups.actions'), value: 'actions', property: 'group' },
+          { label: t('titles.action-groups.bonus-actions'), value: 'bonus-actions', property: 'group' },
+          { label: t('titles.action-groups.reactions'), value: 'reactions', property: 'group' },
+          { label: t('titles.action-groups.free-actions'), value: 'free-actions', property: 'group' },
+        ]" class="filter" />
         <SidebarLink
           componentName="ActionSidebar"
           :props="{ action: null }"
@@ -17,7 +23,7 @@
       </div>
     </StyledBox>
     <div class="list">
-      <ActionItem v-for="orderedAction in orderedActions" :key="orderedAction._id" :action="orderedAction" />
+      <ActionItem v-for="orderedAction in filteredList" :key="orderedAction._id" :action="orderedAction" />
     </div>
   </div>
 </template>
@@ -27,13 +33,24 @@ import ActionItem from './ActionItem.vue';
 import { useActionsStore } from '@/sheet/stores/actions/actionsStore';
 import { useI18n } from 'vue-i18n';
 import SidebarLink from '../shared/SidebarLink.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import StyledBox from '../shared/StyledBox.vue';
+import SvgIcon from '../shared/SvgIcon.vue';
+import ListFilter from '../shared/ListFilter.vue';
 
 const { t } = useI18n();
 const actions = useActionsStore();
 
 const orderedActions = computed(() => actions.actions.slice().sort((a, b) => a.name.localeCompare(b.name)));
+
+const filterRef = ref();
+
+const filteredList = computed(() => {
+  if(filterRef.value) {
+    return filterRef.value.filteredList;
+  }
+  return orderedActions.value;
+});
 </script>
 
 <style lang="scss" scoped>

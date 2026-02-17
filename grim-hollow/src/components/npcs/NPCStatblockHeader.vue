@@ -4,16 +4,20 @@
     v-if="!companionMode"
     class="npc-statblock__header"
     :class="{ 'npc-statblock__header--companion': companionMode }"
-  >
+  > 
+    <div v-if="meta.avatar && !editMode" class="npc-avatar">
+      <img :src="meta.avatar" alt="NPC Token">
+    </div>
+
     <h3 v-if="!editMode" class="npc-statblock__name">{{ npc.name }}</h3>
     <input v-else v-model="localNpc.name" class="npc-statblock__name-input" required />
 
     <!-- Container for header action buttons -->
     <div class="npc-statblock__header-controls">
       <!-- Collapse/Expand button -->
-      <button v-if="showCollapseControl" @click="$emit('update:isCollapsed', !isCollapsed)">
+      <!-- <button v-if="showCollapseControl" @click="$emit('update:isCollapsed', !isCollapsed)">
         {{ isCollapsed ? t('actions.expand') : t('actions.collapse') }}
-      </button>
+      </button> -->
       <!-- Delete button, visible only in edit mode for non-default NPCs -->
       <button
         v-if="editMode && !npc.isDefault && showCollapseControl"
@@ -50,9 +54,11 @@
 import { ref, type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Npc } from '@/sheet/stores/npc/npcStore';
+import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 
 const { t } = useI18n();
 const showFullPreview = ref(false);
+const meta = useMetaStore();
 
 defineProps({
   npc: { type: Object as PropType<Npc>, required: true },
@@ -168,5 +174,19 @@ defineEmits(['update:isCollapsed', 'delete', 'open-edit']);
       border-radius: 6px;
     }
   }
+}
+.npc-avatar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100px;
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+.npc-statblock__header:has(.npc-avatar) {
+  padding-right: 110px; /* Adjust based on avatar size + spacing */
+  position: relative;
 }
 </style>

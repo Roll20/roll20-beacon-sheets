@@ -37,8 +37,6 @@
         :skillsWithBonuses="skillsWithBonuses"
         :challengeRatings="challengeRatings"
         v-model:challengeRatingValue="challengeRatingValue"
-        v-model:newEffectJson="newEffectJson"
-        @addEffect="addEffect"
         @toggleEffect="handleToggleEffect"
         @removeEffect="handleRemoveEffect"
         @addFeature="addFeature"
@@ -64,13 +62,10 @@ import { config } from '@/config';
 import { evaluate } from 'mathjs';
 
 import {
-  type SingleEffect,
-  type Effect,
   type ModifiedValue,
 } from '@/sheet/stores/modifiers/modifiersStore';
 
 import { useI18n } from 'vue-i18n';
-import { v4 as uuidv4 } from 'uuid';
 import { effectKeys } from '@/effects.config';
 import type { D20RollArgs, LabeledBonus } from '@/utility/roll';
 import NpcStatblockHeader from './NPCStatblockHeader.vue';
@@ -99,7 +94,6 @@ defineEmits(['open-edit']);
 const store = useNpcStore();
 const { t } = useI18n();
 const localNpc = ref<Npc>(jsonClone(props.npc));
-const newEffectJson = ref('');
 const isCollapsed = ref(props.npc?.isCollapsed ?? true);
 const displayNpc = computed(() => (props.editMode ? localNpc.value : props.npc));
 
@@ -331,47 +325,6 @@ const activeEffects = computed(() => {
 });
 
 // --- Methods for Modifying Lists (Actions, Features, etc.) ---
-const addEffect = () => {
-  if (!localNpc.value) return;
-  try {
-    const parsedEffect: Partial<Effect> = JSON.parse(newEffectJson.value);
-    
-    if (!parsedEffect.label) throw new Error('Invalid structure: Label is required');
-
-    // Helper to make sure all nested items have IDs
-    const ensureIds = (items: any[]) => {
-      if (!Array.isArray(items)) return [];
-      return items.map(item => ({
-        ...item,
-        _id: item._id ?? uuidv4()
-      }));
-    };
-
-    const fullEffect: Effect = {
-      _id: parsedEffect._id ?? uuidv4(),
-      label: parsedEffect.label,
-      description: parsedEffect.description ?? '',
-      enabled: parsedEffect.enabled ?? false,
-      toggleable: parsedEffect.toggleable ?? true,
-      removable: parsedEffect.removable ?? true,
-      required: parsedEffect.required ?? [],
-      
-      effects: ensureIds(parsedEffect.effects ?? []),
-      actions: ensureIds(parsedEffect.actions ?? []),
-      resources: ensureIds(parsedEffect.resources ?? []),
-      spellSources: ensureIds(parsedEffect.spellSources ?? []),
-      spells: ensureIds(parsedEffect.spells ?? []),
-      pickers: ensureIds(parsedEffect.pickers ?? []),
-    };
-
-    localNpc.value.effects.push(fullEffect);
-    newEffectJson.value = '';
-  } catch (e) {
-    console.error(e);
-    alert(t('titles.invalid-json'));
-  }
-};
-
 const handleToggleEffect = (effectId: string) => {
   if (props.editMode) {
     const effect = localNpc.value?.effects.find((e) => e._id === effectId);

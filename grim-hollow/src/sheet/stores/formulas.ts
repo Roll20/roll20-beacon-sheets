@@ -189,7 +189,7 @@ const getAbilityScore = (ability: AbilityKey): number => {
 
 const getAbilityModifier = (ability: AbilityKey): number => {
   const score = getAbilityScore(ability);
-  const modifier = score === 0 ? 0 : Math.ceil((score - 10) / 2);
+  const modifier = score === 0 ? 0 : Math.floor((score - 10) / 2);
   return modifier;
 };
 
