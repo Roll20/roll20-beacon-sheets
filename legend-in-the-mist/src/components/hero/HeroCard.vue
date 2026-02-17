@@ -38,7 +38,7 @@
               <SvgIcon class="decorator" icon="Quintessences" />
             </h3>
             <div class="list">
-              <SelectInput v-for="quintessence in hero.quintessences" :key="quintessence._id" v-model="quintessence.name" :options="filteredOptionsFor(quintessence.name)" showClearWhen="hover"/>
+              <SelectInput v-for="quintessence in hero.quintessences" :key="quintessence._id" v-model="quintessence.name" :options="filteredOptionsFor(quintessence.name)" showClearWhen="hover" :allowCustom="true" />
             </div>
           </div>
           <div class="card__section notes">
