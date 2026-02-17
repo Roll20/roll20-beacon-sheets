@@ -47,9 +47,9 @@ jobs:
           echo "target_folder=$SHORTNAME" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
