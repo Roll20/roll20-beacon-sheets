@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import { arrayToObject, objectToArray } from '@/utility/objectify';
+import { arrayToIndexedObject, arrayToObject, indexedObjectToArray, objectToArray } from '@/utility/objectify';
 import z from 'zod/v4';
 import { useEffectsStore } from '../modifiers/modifiersStore';
-import { EffectsCalculator } from '@/utility/effectsCalculator';
+import { EffectsCalculator} from '@/utility/effectsCalculator';
 import { parseFormulaAndEvaluate } from '../formulas';
+import { RequirementSchema } from '../modifiers/requirement';
 export type RefreshType = 'none' | 'all' | 'fixed-value';
 export const ResourceSchema = z.object({
   _id: z.string(),
@@ -18,6 +19,7 @@ export const ResourceSchema = z.object({
   refreshOnShortRestAmount: z.string(),
   refreshOnLongRestAmount: z.string(),
   refreshOnDawnAmount: z.string(),
+  required: z.array(RequirementSchema).optional(),
 });
 
 export type Resource = z.infer<typeof ResourceSchema>;
@@ -104,14 +106,26 @@ export const useResourcesStore = defineStore('resources', () => {
     if (index >= 0) userResources.value.splice(index, 1);
   };
 
-  const dehydrate = (): ResourcesHydrate => ({
-    resources: {
-      resources: arrayToObject(userResources.value),
-    },
-  });
+  const dehydrate = (): ResourcesHydrate => {
+    const dehydratedResources = userResources.value.map((resource) => ({
+      ...resource,
+      required: resource.required ? arrayToIndexedObject(resource.required) : undefined,
+    }));
+
+    return {
+      resources: {
+        resources: arrayToObject(dehydratedResources),
+      },
+    };
+  };
 
   const hydrate = (hydrateStore: ResourcesHydrate) => {
-    userResources.value = objectToArray(hydrateStore.resources?.resources) ?? [];
+    userResources.value = hydrateStore.resources?.resources
+      ? objectToArray(hydrateStore.resources.resources).map((resource) => ({
+          ...resource,
+          required: resource.required ? indexedObjectToArray(resource.required as unknown as Record<string, string>) : undefined,
+        }))
+      : [];
   };
 
   return {

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { RequirementSchema } from './common/common';
 
 export const ResourceCompendiumSchema = z.object({
   name: z.string(),
@@ -10,6 +11,7 @@ export const ResourceCompendiumSchema = z.object({
   refreshOnShortRestAmount: z.string().optional(),
   refreshOnLongRestAmount: z.string().optional(),
   refreshOnDawnAmount: z.string().optional(),
+  required: z.array(RequirementSchema).optional(),
 });
 
 export const ResourceSchema = ResourceCompendiumSchema.extend({

@@ -16,7 +16,7 @@ import {
 import { getEntryById } from '@/utility/getEntryBy';
 import * as z from 'zod/v4';
 import { useEquipmentStore } from '../equipment/equipmentStore';
-import { EffectsCalculator } from '@/utility/effectsCalculator';
+import { EffectsCalculator, type RequirementContext } from '@/utility/effectsCalculator';
 import type { DiceComponent } from '@/rolltemplates/rolltemplates';
 import { ActionSchema, type Action } from '@/sheet/stores/actions/actionsStore';
 import { ResourceSchema, type Resource } from '@/sheet/stores/resources/resourcesStore';
@@ -28,19 +28,12 @@ import {
 } from '@/sheet/stores/spells/spellsStore';
 import { type EffectValue } from '@/effects.config';
 import { useTagsStore } from '../tags/tagsStore';
+import { RequirementSchema } from './requirement';
+import { useProgressionStore } from '../progression/progressionStore';
 export type ModifierBreakdown = {
   name: string;
   value: number;
 };
-
-export const RequirementSchema = z.union([
-  z.enum(['equipped', 'attuned']),
-  z.templateLiteral([
-    z.enum(['cl', 'ol']),
-    z.enum(['<', '<=', '=', '>', '>=']),
-    z.number().min(1).max(20),
-  ]),
-]);
 
 export const SingleEffectSchema = z.object({
   _id: z.string(),
@@ -233,49 +226,38 @@ export const useEffectsStore = defineStore('effects', () => {
   };
 
   const isEffectActive = (effect: Effect): boolean => {
-    if (!effect.enabled) {
-      return false;
-    }
-
-    if (!effect.required || effect.required.length === 0) {
-      return true;
-    }
+    if (!effect.enabled) return false;
 
     const equipmentStore = useEquipmentStore();
+    const progressionStore = useProgressionStore();
+
     const owner = equipmentStore.equipment.find((item) => item.effectId === effect._id);
 
-    if (!owner) {
-      return true;
-    }
+    const context: RequirementContext = {
+      pickers: effect.pickers,
+      isEquipped: owner ? owner.equipped : true,
+      isAttuned: owner ? owner.isAttuned : true,
+      level: progressionStore.getLevel,
+    };
 
-    const currentStates: string[] = [];
-    if (owner.equipped) currentStates.push('equipped');
-    if (owner.isAttuned) currentStates.push('attuned');
-
-    return effect.required.every((req) => currentStates.includes(req));
+    return EffectsCalculator.checkRequirements(effect.required, context);
   };
 
   const isEffectSingleActive = (effect: Effect, singleEffect: SingleEffect): boolean => {
-    if (!isEffectActive(effect)) {
-      return false;
-    }
-
-    if (!singleEffect.required || singleEffect.required.length === 0) {
-      return true;
-    }
+    if (!isEffectActive(effect)) return false;
 
     const equipmentStore = useEquipmentStore();
     const owner = equipmentStore.equipment.find((item) => item.effectId === effect._id);
+    const progressionStore = useProgressionStore();
 
-    if (!owner) {
-      return true;
-    }
+    const context: RequirementContext = {
+      pickers: effect.pickers,
+      isEquipped: owner ? owner.equipped : true,
+      isAttuned: owner ? owner.isAttuned : true,
+      level: progressionStore.getLevel,
+    };
 
-    const currentStates: string[] = [];
-    if (owner.equipped) currentStates.push('equipped');
-    if (owner.isAttuned) currentStates.push('attuned');
-
-    return singleEffect.required.every((req) => currentStates.includes(req));
+    return EffectsCalculator.checkRequirements(singleEffect.required, context);
   };
 
   const getModifiedRollBonuses = (attribute: string | string[]): ComputedRef<DiceComponent[]> => {
@@ -350,7 +332,7 @@ export const useEffectsStore = defineStore('effects', () => {
       const effectToRemove = effects.value[indexToRemove];
       const tagsStore = useTagsStore();
       if (effectToRemove.actions) {
-        effectToRemove.actions.forEach(action => {
+        effectToRemove.actions.forEach((action) => {
           if (action.tagId) {
             tagsStore.remove(action.tagId);
           }
@@ -358,7 +340,7 @@ export const useEffectsStore = defineStore('effects', () => {
       }
 
       if (effectToRemove.spells) {
-        effectToRemove.spells.forEach(spell => {
+        effectToRemove.spells.forEach((spell) => {
           if (spell.tagId) {
             tagsStore.remove(spell.tagId);
           }
@@ -391,13 +373,31 @@ export const useEffectsStore = defineStore('effects', () => {
                   effect.actions.map((action) => ({
                     ...action,
                     damage: action.damage ? arrayToIndexedObject(action.damage) : undefined,
+                    required: action.required ? arrayToIndexedObject(action.required) : undefined,
                   })),
                 )
               : undefined,
-          resources: effect.resources ? arrayToObject(effect.resources) : undefined,
+          resources:
+            effect.resources && effect.resources.length > 0
+              ? arrayToObject(
+                  effect.resources.map((resource) => ({
+                    ...resource,
+                    required: resource.required
+                      ? arrayToIndexedObject(resource.required)
+                      : undefined, 
+                  })),
+                )
+              : undefined,
           spellSources:
             effect.spellSources && effect.spellSources.length > 0
-              ? arrayToObject(effect.spellSources)
+              ? arrayToObject(
+                  effect.spellSources.map((source) => ({
+                    ...source,
+                    required: source.required
+                      ? arrayToIndexedObject(source.required)
+                      : undefined,
+                  })),
+                )
               : undefined,
           spells:
             effect.spells && effect.spells.length > 0
@@ -408,6 +408,7 @@ export const useEffectsStore = defineStore('effects', () => {
                       ? arrayToIndexedObject(spell.components)
                       : undefined,
                     damage: spell.damage ? arrayToIndexedObject(spell.damage) : undefined,
+                    required: spell.required ? arrayToIndexedObject(spell.required) : undefined,
                   })),
                 )
               : undefined,
@@ -436,21 +437,36 @@ export const useEffectsStore = defineStore('effects', () => {
             required: singleEffect.required
               ? indexedObjectToArray(singleEffect.required)
               : undefined,
-            value: typeof singleEffect.value === 'object' ? indexedObjectToArray(singleEffect.value) : singleEffect.value,
+            value:
+              typeof singleEffect.value === 'object'
+                ? indexedObjectToArray(singleEffect.value)
+                : singleEffect.value,
           })) || [],
         actions: effect.actions
           ? objectToArray(effect.actions).map((action) => ({
               ...action,
               damage: action.damage ? indexedObjectToArray(action.damage) : [],
+              required: action.required ? indexedObjectToArray(action.required) : undefined,
             }))
           : [],
-        resources: objectToArray(effect.resources) || [],
-        spellSources: objectToArray(effect.spellSources) || [],
+        resources: effect.resources
+          ? objectToArray(effect.resources).map((resource) => ({
+              ...resource,
+              required: resource.required ? indexedObjectToArray(resource.required) : undefined,
+            }))
+          : [],
+        spellSources: effect.spellSources
+          ? objectToArray(effect.spellSources).map((source) => ({
+              ...source,
+              required: source.required ? indexedObjectToArray(source.required) : undefined,
+            }))
+          : [],
         spells: effect.spells
           ? objectToArray(effect.spells).map((spell) => ({
               ...spell,
               components: spell.components ? indexedObjectToArray(spell.components) : [],
               damage: spell.damage ? indexedObjectToArray(spell.damage) : [],
+              required: spell.required ? indexedObjectToArray(spell.required) : undefined, 
             }))
           : [],
         pickers: effect.pickers || [],

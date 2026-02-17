@@ -42,7 +42,7 @@ export const getAbilityModifier = ({ character }: Context, ability: AbilityKey):
   const score = getAbilityScore({ character }, ability);
   const modifier = score === 0
     ? 0
-    : Math.ceil((score - 10) / 2);
+    : Math.floor((score - 10) / 2);
   return modifier;
 };
 

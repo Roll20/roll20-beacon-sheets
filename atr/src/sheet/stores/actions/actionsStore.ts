@@ -28,8 +28,9 @@ import { dispatchRef, initValues } from '@/relay/relay';
 import { createRollTemplate } from '@/rolltemplates/rolltemplates';
 import type { Dispatch } from '@roll20-official/beacon-sdk';
 import { DamageRollSchema, type DamageRoll, type DamageType } from './damage';
-import { EffectsCalculator } from '@/utility/effectsCalculator';
+import { EffectsCalculator} from '@/utility/effectsCalculator';
 import { evaluateDiceFormula, parseFormula, parseFormulaAndEvaluate } from '../formulas';
+import { RequirementSchema } from '../modifiers/requirement';
 
 export const ActionSchema = z.object({
   _id: z.string(),
@@ -57,6 +58,7 @@ export const ActionSchema = z.object({
   tagId: z.string(),
   description: z.string(),
   'data-tags': z.array(z.string()).optional(),
+  required: RequirementSchema.array().optional(),
 });
 
 export type Action = z.infer<typeof ActionSchema>;
@@ -173,34 +175,38 @@ export const useActionsStore = defineStore('actions', () => {
     }
   };
 
-  const getActionQueries = (action: Action, sufix: string = 'attack'): string[] => { 
-    let queries:string[] = [];
-    if(action.isAttack) {
+  const getActionQueries = (action: Action, sufix: string = 'attack'): string[] => {
+    let queries: string[] = [];
+    if (action.isAttack) {
       queries = [
         effectKeys[`${action.attackType}-attack`],
         effectKeys[`${action.sourceType}-attack`],
         effectKeys[`${action.attackType}-${action.sourceType}-attack`],
-      ]; 
+      ];
     }
     return queries;
   };
 
-  const getCriticalQueries = (action: Action, sufix: string = 'attack'): string[] => { 
-    let queries:string[] = [];
-    if(action.isAttack) {
+  const getCriticalQueries = (action: Action, sufix: string = 'attack'): string[] => {
+    let queries: string[] = [];
+    if (action.isAttack) {
       queries = [
         effectKeys['crit-range'],
         effectKeys[`${action.attackType}-crit-range`],
         effectKeys[`${action.sourceType}-crit-range`],
         effectKeys[`${action.attackType}-${action.sourceType}-crit-range`],
-      ]; 
+      ];
     }
     return queries;
   };
 
   const getDamageQueries = (action: Action): string[] => {
-    let queries:string[] = [];
-    const actionSourceType = action.isAttack ? action.sourceType : action.saving !== 'none' ? 'spell' : 'special';
+    let queries: string[] = [];
+    const actionSourceType = action.isAttack
+      ? action.sourceType
+      : action.saving !== 'none'
+      ? 'spell'
+      : 'special';
     if (actionSourceType === 'special') return queries;
     queries = [
       effectKeys[`${action.attackType}-damage`],
@@ -230,10 +236,7 @@ export const useActionsStore = defineStore('actions', () => {
     const baseBonus =
       abilityModifierValue + proficiencyModifier + parseFormulaAndEvaluate(action.attackBonus);
 
-    const keysToQuery = [
-      effectKeys.attack,
-      ...getActionQueries(action),
-    ];
+    const keysToQuery = [effectKeys.attack, ...getActionQueries(action)];
 
     return useEffectsStore().getModifiedValue(baseBonus, keysToQuery);
   };
@@ -269,10 +272,7 @@ export const useActionsStore = defineStore('actions', () => {
       if (abilityModifier) pool.value.push(abilityModifier.value.final);
     }
 
-    const keysToQuery = [
-      effectKeys.damage,
-      ...getDamageQueries(action),
-    ];
+    const keysToQuery = [effectKeys.damage, ...getDamageQueries(action)];
 
     return useEffectsStore().getModifiedDicePool(pool.value, keysToQuery);
   };
@@ -280,9 +280,7 @@ export const useActionsStore = defineStore('actions', () => {
   const getActionCritRange = (action: Action): ModifiedValue => {
     const baseValue = action.critRange;
 
-    const keysToQuery = [
-      ...getCriticalQueries(action)
-    ];
+    const keysToQuery = [...getCriticalQueries(action)];
 
     return useEffectsStore().getModifiedValue(baseValue, keysToQuery.filter(Boolean));
   };
@@ -292,7 +290,7 @@ export const useActionsStore = defineStore('actions', () => {
     if (!action) return;
 
     const saveDC = getActionDC(id).value.final;
-    const properties = getRollProperties(action,t, saveDC);
+    const properties = getRollProperties(action, t, saveDC);
 
     const rollTemplate = createRollTemplate({
       type: 'chat',
@@ -316,6 +314,7 @@ export const useActionsStore = defineStore('actions', () => {
     const dehydratedActions = userActions.value.map((action) => ({
       ...action,
       damage: arrayToIndexedObject(action.damage),
+      required: action.required ? arrayToIndexedObject(action.required) : undefined,
     }));
 
     return {
@@ -336,6 +335,9 @@ export const useActionsStore = defineStore('actions', () => {
       ? objectToArray(payload.actions.actions).map((action) => ({
           ...action,
           damage: indexedObjectToArray(action.damage as Record<string, DamageRoll>),
+          required: action.required
+            ? indexedObjectToArray(action.required as unknown as Record<string, string>)
+            : undefined,
         }))
       : actions.value;
     userActions.value = actionsHydration;
