@@ -22,13 +22,15 @@
               </span>
             </button>
             <button class="age-btn" @click="onRest('Light Rest')">
-              <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'hot-tub-person']" />
+              <font-awesome-icon v-if="settings.gameSystem !== 'expanse'" style="margin-right: 5px;" :icon="['fa', 'hot-tub-person']" />
+              <div class="age-expanse-lrest" v-else></div>
               <span>
                 Light Rest
               </span>                
             </button>
             <button class="age-btn" @click="onRest('Total Rest')">
-              <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'bed']" />
+              <font-awesome-icon v-if="settings.gameSystem !== 'expanse'" style="margin-right: 5px;" :icon="['fa', 'bed']" />
+              <div class="age-expanse-trest" v-else></div>
               <span>
                 Total Rest
               </span>                

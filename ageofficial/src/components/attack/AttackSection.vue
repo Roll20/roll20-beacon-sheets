@@ -33,14 +33,16 @@
       </div>             
     </div>
     <div class="age-combat-footer">
-      <button class="age-label-black" @click="showWeaponGroupModal = true">
-          <div class="age-label-side-heading-black">Weapon Groups</div>
-          <div class="age-combat-wg">
-            <div v-for="(wg, index) in char?.weaponGroups ? JSON.parse(char.weaponGroups).sort(): []" :key="wg" >
-            {{wg}}<span v-if="index != JSON.parse(char.weaponGroups).length - 1" style="margin-right: 5px;">, </span> 
-          </div>
-          </div>          
-      </button>
+      <div>
+        <button class="age-label-black" @click="showWeaponGroupModal = true" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'">
+            <div class="age-label-side-heading-black">Weapon Groups</div>
+            <div class="age-combat-wg">
+              <div v-for="(wg, index) in char?.weaponGroups ? JSON.parse(char.weaponGroups).sort(): []" :key="wg" >
+              {{wg}}<span v-if="index != JSON.parse(char.weaponGroups).length - 1" style="margin-right: 5px;">, </span> 
+            </div>
+            </div>          
+        </button>
+      </div>
       <div class="age-combat-unarmed">
         <span style="display: flex;" v-tippy="{ content: (showUnarmed ? 'Hide' : 'Show') + ' Unarmed Attack' }">
           <div class="age-combat-unarmed__toggle"></div>  

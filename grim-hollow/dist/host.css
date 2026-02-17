@@ -1,0 +1,356 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Germania+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Martel+Sans:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap");
+html {
+  --color-primary: #ffffff;
+  --color-secondary: rgba(255, 255, 255, 0.7);
+  --color-tertiary: rgba(255, 255, 255, 0.35);
+  --color-disabled: rgba(255, 255, 255, 0.1);
+  --color-highlight: #fc0902;
+  --color-highlight-detail: rgb(0, 0, 0);
+  --color-negative: rgb(179, 27, 27);
+  --color-negative-detail: rgb(0, 0, 0);
+  --color-positive: rgb(27, 179, 52);
+  --color-positive-detail: rgb(0, 0, 0);
+  --color-background: rgb(0, 0, 0);
+  --color-box:rgb(107, 49, 53);
+  --color-box-detail: white;
+  --color-ability-box: #6b3135;
+  --size-font-small: 0.8rem;
+  --size-font-medium: 1.0rem;
+  --size-font-large: 1.4rem;
+  --size-font-xlarge: 1.5rem;
+  --size-font-xxlarge: 1.8rem;
+  --size-font-xxxlarge: 2.5rem;
+  --size-gap-xsmall: 0.25rem;
+  --size-gap-small: 0.5rem;
+  --size-gap-medium: 1rem;
+  --size-gap-large: 2rem;
+  --size-border-radius-medium: 0.25rem;
+  --font-family-primary: Crimson Pro, serif;
+  --font-family-title: Germania One, serif, system-ui;
+  --weight-medium: 600;
+  --weight-bold: 700;
+  /* Propietary Vars */
+  --path-hexagon: polygon(calc(0% + 0.75rem) 0%, calc(100% - 0.75rem) 0%, 100% 50%, calc(100% - 0.75rem) 100%, calc(0% + 0.75rem) 100%, 0% 50%);
+  --path-gothic: polygon(0% calc(0% + 3px), calc(0% + 3px) calc(0% + 3px), calc(0% + 3px) 0%, calc(100% - 3px) 0%, calc(100% - 3px) calc(0% + 3px), 100% calc(0% + 3px), 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, calc(0% + 3px) 100%, calc(0% + 3px) calc(100% - 3px), 0% calc(100% - 3px));
+  --styledbox-border-width: 1px;
+  --styledbox-border-color: #743333;
+  --styledbox-background: #1f1e1e;
+  --styledbox-detail: white;
+}
+
+html .sheet--npc {
+  --color-primary: black;
+  --color-secondary: rgba(0, 0, 0, 0.7);
+  --color-tertiary: rgba(0, 0, 0, 0.35);
+  --color-disabled: rgba(0, 0, 0, 0.1);
+  --color-highlight: #fc0902;
+  --color-highlight-detail: rgb(0, 0, 0);
+  --color-negative: rgb(179, 27, 27);
+  --color-negative-detail: rgb(0, 0, 0);
+  --color-positive: rgb(27, 179, 52);
+  --color-positive-detail: rgb(0, 0, 0);
+  --color-background: rgb(0, 0, 0);
+  --color-box:rgb(107, 49, 53);
+  --color-box-detail: white;
+  --color-ability-box: #6b3135;
+  --size-font-small: 0.8rem;
+  --size-font-medium: 1.0rem;
+  --size-font-large: 1.4rem;
+  --size-font-xlarge: 1.5rem;
+  --size-font-xxlarge: 1.8rem;
+  --size-font-xxxlarge: 2.5rem;
+  --size-gap-xsmall: 0.25rem;
+  --size-gap-small: 0.5rem;
+  --size-gap-medium: 1rem;
+  --size-gap-large: 2rem;
+  --size-border-radius-medium: 0.25rem;
+  --font-family-primary: Crimson Pro, serif;
+  --font-family-title: Germania One, serif, system-ui;
+  --weight-medium: 600;
+  --weight-bold: 700;
+  /* Propietary Vars */
+  --path-hexagon: polygon(calc(0% + 0.75rem) 0%, calc(100% - 0.75rem) 0%, 100% 50%, calc(100% - 0.75rem) 100%, calc(0% + 0.75rem) 100%, 0% 50%);
+  --path-gothic: polygon(0% calc(0% + 3px), calc(0% + 3px) calc(0% + 3px), calc(0% + 3px) 0%, calc(100% - 3px) 0%, calc(100% - 3px) calc(0% + 3px), 100% calc(0% + 3px), 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, calc(0% + 3px) 100%, calc(0% + 3px) calc(100% - 3px), 0% calc(100% - 3px));
+  --styledbox-border-width: 1px;
+  --styledbox-border-color: #743333;
+  --styledbox-background: #1f1e1e;
+  --styledbox-detail: white;
+}
+
+html .sidebar {
+  --color-primary: #ffffff;
+  --color-secondary: rgba(255, 255, 255, 0.7);
+  --color-tertiary: rgba(255, 255, 255, 0.35);
+  --color-disabled: rgba(255, 255, 255, 0.1);
+  --color-highlight: #fc0902;
+  --color-highlight-detail: rgb(0, 0, 0);
+  --color-negative: rgb(179, 27, 27);
+  --color-negative-detail: rgb(0, 0, 0);
+  --color-positive: rgb(27, 179, 52);
+  --color-positive-detail: rgb(0, 0, 0);
+  --color-background: rgb(0, 0, 0);
+  --color-box:rgb(107, 49, 53);
+  --color-box-detail: white;
+  --color-ability-box: #6b3135;
+  --size-font-small: 0.8rem;
+  --size-font-medium: 1.0rem;
+  --size-font-large: 1.4rem;
+  --size-font-xlarge: 1.5rem;
+  --size-font-xxlarge: 1.8rem;
+  --size-font-xxxlarge: 2.5rem;
+  --size-gap-xsmall: 0.25rem;
+  --size-gap-small: 0.5rem;
+  --size-gap-medium: 1rem;
+  --size-gap-large: 2rem;
+  --size-border-radius-medium: 0.25rem;
+  --font-family-primary: Crimson Pro, serif;
+  --font-family-title: Germania One, serif, system-ui;
+  --weight-medium: 600;
+  --weight-bold: 700;
+  /* Propietary Vars */
+  --path-hexagon: polygon(calc(0% + 0.75rem) 0%, calc(100% - 0.75rem) 0%, 100% 50%, calc(100% - 0.75rem) 100%, calc(0% + 0.75rem) 100%, 0% 50%);
+  --path-gothic: polygon(0% calc(0% + 3px), calc(0% + 3px) calc(0% + 3px), calc(0% + 3px) 0%, calc(100% - 3px) 0%, calc(100% - 3px) calc(0% + 3px), 100% calc(0% + 3px), 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, calc(0% + 3px) 100%, calc(0% + 3px) calc(100% - 3px), 0% calc(100% - 3px));
+  --styledbox-border-width: 1px;
+  --styledbox-border-color: #743333;
+  --styledbox-background: #1f1e1e;
+  --styledbox-detail: white;
+}
+html .sidebar .vue-tags-input {
+  --color-primary: rgb(50, 50, 50);
+  --color-secondary: rgba(50, 50, 50, 0.70);
+  --color-tertiary: rgba(50, 50, 50, 0.35);
+  --color-disabled: rgba(50, 50, 50, 0.10)!important;
+}
+
+rolltemplate.sheet-roll__card {
+  display: block;
+  max-width: 100%;
+  background-image: url("https://i.postimg.cc/Lsq5CdvF/ATR-Background.jpg");
+  background-size: auto 600px;
+  color: black;
+  border: 1px solid var(--sheet-roll-border-color);
+  font-family: var(--font-family-primary) !important;
+  position: relative;
+  overflow: hidden;
+  clip-path: var(--path-gothic);
+  filter: invert(1);
+}
+rolltemplate.sheet-roll__card::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -35px;
+  background-image: url(https://i.postimg.cc/hPwRYwHV/top-mask.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 300%;
+  height: 100%;
+  opacity: 0.5;
+  z-index: 1;
+  pointer-events: none;
+}
+rolltemplate.sheet-roll__card:after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  background-image: url("https://i.postimg.cc/k4nhhFs0/blood-splash.png");
+  background-size: cover;
+  width: 200px;
+  height: 214.6666666px;
+  opacity: 0.4;
+  z-index: 1;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+rolltemplate.sheet-roll__card .header {
+  background: var(--sheet-roll-primary-bg);
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: 1px solid var(--sheet-roll-border-color);
+}
+rolltemplate.sheet-roll__card .header__character-name {
+  font-size: 0.8rem;
+  font-weight: bold;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+rolltemplate.sheet-roll__card .header__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+rolltemplate.sheet-roll__card .header__subtitle {
+  font-size: var(--size-font-small);
+  margin-top: 0.25rem;
+}
+rolltemplate.sheet-roll__card .sheet-roll__roll-content {
+  padding: 0.75rem;
+}
+rolltemplate.sheet-roll__card .sheet-roll__properties {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  justify-content: start;
+  border-top: 1px solid var(--sheet-roll-border-color);
+}
+rolltemplate.sheet-roll__card .sheet-roll__properties:not(:has(.sheet-roll__property)) {
+  display: none;
+}
+rolltemplate.sheet-roll__card .sheet-roll__description {
+  padding: 10px;
+  margin: 10px 0.75rem 10px 0.75rem;
+  background-color: #ebebeb;
+  border-radius: 0.25rem;
+  border-top: 1px solid var(--sheet-roll-border-color);
+  font-size: var(--size-font-small);
+  font-family: var(--font-family-primary) !important;
+  line-height: inherit;
+  position: relative;
+  max-width: 100%;
+  z-index: 4;
+}
+rolltemplate.sheet-roll__card .sheet-roll__description p {
+  font-family: var(--font-family-primary) !important;
+  margin: 0;
+  padding: 0;
+}
+rolltemplate.sheet-roll__card .sheet-roll__description p + p {
+  margin-top: 0.75em;
+}
+rolltemplate.sheet-roll__card .sheet-roll__description:empty {
+  display: none;
+}
+rolltemplate.sheet-roll__card .sheet-roll__description table {
+  width: 100%;
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+  border-collapse: collapse;
+  border: 1px solid var(--sheet-roll-border-color);
+}
+rolltemplate.sheet-roll__card .sheet-roll__description th, rolltemplate.sheet-roll__card .sheet-roll__description td {
+  padding: 0.5em 0.75em;
+  border: 1px solid var(--sheet-roll-border-color);
+  text-align: left;
+  vertical-align: top;
+}
+rolltemplate.sheet-roll__card .sheet-roll__description th {
+  background-color: rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  text-align: center;
+}
+rolltemplate.sheet-roll__card .sheet-roll__description tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+rolltemplate.sheet-roll__card .roll__total {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-family-title);
+}
+rolltemplate.sheet-roll__card .roll__total--crit-success {
+  color: green;
+}
+rolltemplate.sheet-roll__card .roll__total--crit-fail {
+  color: red;
+}
+rolltemplate.sheet-roll__card .show-more {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 20px;
+}
+rolltemplate.sheet-roll__card .show-more__button {
+  cursor: pointer;
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+}
+rolltemplate.sheet-roll__card .show-more__button::before {
+  content: "";
+  height: 1px;
+  background: #8f0000;
+  width: calc(100% - 10px);
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  z-index: -1;
+}
+rolltemplate.sheet-roll__card .show-more__button:after {
+  content: "▼";
+  font-size: 8px;
+  padding: 3px 15px 2px 15px;
+  color: red;
+  background: black;
+  border-radius: 10px;
+  border: 1px solid var(--color-ability-box);
+  line-height: normal;
+}
+rolltemplate.sheet-roll__card .show-more__content {
+  width: 100%;
+}
+rolltemplate.sheet-roll__card .show-more[open] {
+  flex-direction: column-reverse;
+}
+rolltemplate.sheet-roll__card .show-more[open] .show-more__button {
+  margin-top: 5px;
+}
+rolltemplate.sheet-roll__card .show-more[open] .show-more__button:after {
+  content: "▲";
+  padding: 2px 15px 3px 15px;
+}
+rolltemplate.sheet-roll__card .roll__components {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+rolltemplate.sheet-roll__card .roll__components .roll__d20-results {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+  font-weight: bold;
+  border: 1px solid var(--sheet-roll-border-color);
+  background-color: #f9f9f9;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+}
+rolltemplate.sheet-roll__card .roll__components .roll__d20-result {
+  font-size: 1.1rem;
+  padding: 0 0.25rem;
+}
+rolltemplate.sheet-roll__card .roll__components .roll__d20-result--kept {
+  color: var(--sheet-roll-primary-bg);
+  border: 1px solid var(--sheet-roll-primary-bg);
+  border-radius: 3px;
+}
+rolltemplate.sheet-roll__card .roll__components .roll__d20-result--discarded {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+rolltemplate.sheet-roll__card .damage-group__subtotal {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+rolltemplate.sheet-roll__card .damage-group__total {
+  font-weight: bold;
+}
+rolltemplate.sheet-roll__card:before, rolltemplate.sheet-roll__card:after, rolltemplate.sheet-roll__card .roll__total--crit-success, rolltemplate.sheet-roll__card .roll__total--crit-fail, rolltemplate.sheet-roll__card .show-more, rolltemplate.sheet-roll__card .roll__component {
+  filter: invert(1);
+}

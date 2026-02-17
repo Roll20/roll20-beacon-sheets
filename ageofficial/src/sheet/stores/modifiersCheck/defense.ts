@@ -65,6 +65,29 @@ export const defenseMod = computed(() => {
     return 0
   }
   };
+
+  export const toughnessMod = computed(() => {
+    const mods = useModifiersStore();
+    const ability = useAbilityScoreStore();
+    const totalMods = ref(0);
+    if(mods.modifiers.length === 0){
+      totalMods.value = Number(ability.ConstitutionBase);
+    } else {
+      totalMods.value = mods.modifiers.reduce((toughMod, mod) => {
+        toughMod = Number(ability.ConstitutionBase);
+        if (mod.option === 'Toughness') {
+          if(mod.modifiedValue === 'Modify'){
+            toughMod += Number(mod.variable);
+          } else {
+            toughMod = Number(mod.variable);
+          }
+        }
+      return toughMod
+    }, 0);
+    }
+    
+    return totalMods.value >= 0 ? totalMods.value : 0;
+  });
 // export const defenseMod = computed(() => {
 //     console.log(useInventoryStore().equippedShield?.defenseMod)
 //     // let armorRMod =0

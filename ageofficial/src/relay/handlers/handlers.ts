@@ -25,7 +25,7 @@ export const onSharedSettingsChange = () => {};
 export const onTranslationsRequest = () => ({});
 
 export const onDragOver = (e:any) => {
-  // console.log(e)
+  console.log(e);
 };
 export const onDropOver = async (e:any) => {
   const sampleData = {

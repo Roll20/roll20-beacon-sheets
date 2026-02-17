@@ -76,3 +76,14 @@ export const cthulhuWG = [
     'Thrown', 
     'Unarmed'
 ]
+
+export const expanseWG = [
+    'Brawling',
+    'Bows',
+    'Gunnery',
+    'Heavy Weapons',
+    'Light Weapons',
+    'Pistols',
+    'Rifles',
+    'Throwing',
+]

@@ -1,0 +1,257 @@
+@use '../../common/scss/vars.scss';
+
+rolltemplate.sheet-roll__card {
+  display: block;
+  max-width: 100%;
+  background-image: url('https://i.postimg.cc/Lsq5CdvF/ATR-Background.jpg');
+  background-size: auto 600px;
+  color: black;
+  border: 1px solid var(--sheet-roll-border-color);
+  font-family: var(--font-family-primary)!important;
+  position: relative;
+  overflow: hidden;
+  clip-path: var(--path-gothic);
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -35px;
+    background-image: url(https://i.postimg.cc/hPwRYwHV/top-mask.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 300%;
+    height: 100%;
+    opacity: 0.5;
+    z-index: 1;
+    pointer-events: none;
+  }
+  &:after {
+    $ratio: 1.073333333;
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 0;
+    background-image: url('https://i.postimg.cc/k4nhhFs0/blood-splash.png');
+    background-size: cover;
+    width: 200px;
+    height: 200px * $ratio;
+    opacity: 0.4;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .header {
+    background: var(--sheet-roll-primary-bg);
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    border-bottom: 1px solid var(--sheet-roll-border-color);
+
+    &__character-name {
+      font-size: 0.8rem;
+      font-weight: bold;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+    &__title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    &__subtitle {
+      font-size: var(--size-font-small);
+      margin-top: 0.25rem;
+    }
+  }
+
+  .sheet-roll__roll-content {
+    padding: 0.75rem;
+  }
+
+  .sheet-roll__properties {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: start;
+    border-top: 1px solid var(--sheet-roll-border-color);
+    &:not(:has(.sheet-roll__property)) {
+      display: none;
+    }
+  }
+
+  .sheet-roll__description {
+    padding: 10px;
+    margin: 10px 0.75rem 10px 0.75rem;
+    background-color: #ebebeb;
+    border-radius: 0.25rem;
+    border-top: 1px solid var(--sheet-roll-border-color);
+    font-size: var(--size-font-small);
+    font-family: var(--font-family-primary)!important;
+    line-height: inherit;
+    position: relative;
+    max-width: 100%;
+    z-index: 4;
+    p {
+      font-family: var(--font-family-primary)!important;
+      
+      margin: 0;
+      padding: 0;
+
+      & + p {
+        margin-top: 0.75em;
+      }
+    }
+    &:empty {
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 0.75em;
+      margin-bottom: 0.75em;
+      border-collapse: collapse; 
+      border: 1px solid var(--sheet-roll-border-color);
+    }
+
+    th, td {
+      padding: 0.5em 0.75em;
+      border: 1px solid var(--sheet-roll-border-color);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.1);
+      font-weight: bold;
+      text-align: center;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+  }
+
+  .roll__total {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-family-title);
+
+    &--crit-success {
+      color: green;
+    }
+    &--crit-fail {
+      color: red;
+    }
+  }
+
+  .show-more {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-top: 20px;
+    &__button {
+      cursor: pointer;
+      list-style-type: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      &::before {
+        content: '';
+        height: 1px;
+        background: #8f0000; //linear-gradient(90deg, rgba(255,0,0,0) 0%, red calc(50% - 17px), red calc(50% + 17px), rgba(255,0,0,0) 100%);
+        width: calc(100% - 10px);
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        z-index: -1;
+      }
+      &:after {
+        content: "▼";
+        font-size: 8px;
+        padding: 3px 15px 2px 15px;
+        color: red;
+        background: black;
+        border-radius: 10px;
+        border: 1px solid var(--color-ability-box);
+        line-height: normal;    
+      }
+    }
+    &__content {
+      width: 100%;
+    }
+    &[open] {
+      flex-direction: column-reverse;
+      .show-more__button {
+        margin-top: 5px;
+        &:after {
+          content: "▲";
+          padding: 2px 15px 3px 15px;
+          //transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  .roll__components {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    font-size: 0.9rem;
+    .roll__d20-results {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: center;
+      font-weight: bold;
+      border: 1px solid var(--sheet-roll-border-color);
+      background-color: #f9f9f9;
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+    }
+
+    .roll__d20-result {
+      font-size: 1.1rem;
+      padding: 0 0.25rem;
+    }
+
+    .roll__d20-result--kept {
+      color: var(--sheet-roll-primary-bg);
+      border: 1px solid var(--sheet-roll-primary-bg);
+      border-radius: 3px;
+    }
+
+    .roll__d20-result--discarded {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+  }
+
+  .damage-group {
+    &__subtotal {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    &__total {
+      font-weight: bold;
+    }
+  }
+
+  filter: invert(1);
+  &:before, &:after, .roll__total--crit-success, .roll__total--crit-fail, .show-more, .roll__component {
+    filter: invert(1);
+  }
+}

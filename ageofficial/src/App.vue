@@ -9,7 +9,7 @@
             <img v-if="settings.gameSystem === 'mage'" src="/src/assets/logos/modernage.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
             <img v-if="settings.gameSystem === 'blue rose'" src="/src/assets/logos/bluerose.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
             <img v-if="settings.gameSystem === 'threefold'" src="/src/assets/logos/threefold.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
-            <img v-if="settings.gameSystem === 'expanse'" src="/src/assets/logos/expansedark.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
+            <img v-if="settings.gameSystem === 'expanse'" src="/src/assets/logos/expansewhite.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
             <!-- <img v-if="settings.gameSystem === 'cthulhu'" src="/src/assets/logos/cthulhu.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE"> -->
             <div class="age-header-options">
               <div class="age-header-btn-container">
@@ -164,15 +164,17 @@ import SidebarSection from './components/SidebarSection.vue';
 import NewSplashView from './views/NewSplashView.vue';
 import { productLineStyle } from '@/utility/productLineStyle';
 import {legacyCurrency, loadLegacyAbilityScores,loadLegacyCharacterDetails,loadLegacyGroupings} from '@/utility/legacyAdapter';
+import { useCharacterStore } from './sheet/stores/character/characterStore';
 const showModal = ref(false)
 
 const store = useAgeSheetStore();
 const meta = useMetaStore();
 const settings = useSettingsStore();
+const char = useCharacterStore();
 const campaignId = store.meta.campaignId;
 const colorTheme = initValues.settings.colorTheme;
 const isGM = computed(() => meta.permissions.isGM);
-if(settings.gameSystem) productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.cthulhuMythos,technofantasy:settings.technofantasy,cyberpunk:settings.cyberpunk});
+if(settings.gameSystem) productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.theme === 'cthulhuMythos',technofantasy:settings.theme === 'technofantasy',cyberpunk:settings.theme === 'cyberpunk', originFaction:char.originFaction});
 
 function closeModal() {
   showModal.value = false;

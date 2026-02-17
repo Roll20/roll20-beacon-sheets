@@ -26,11 +26,11 @@
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
         </div>  
-        <div class="age-container-content" v-if="settings.gameSystem === 'mage'">      
+        <div class="age-container-content" v-if="settings.gameSystem === 'mage' || settings.gameSystem === 'expanse'">      
           <div class="age-container-heading">
             Toughness
           </div>
-            <span class="age-num-value">{{ toughness }}</span>
+            <span class="age-num-value">{{ toughnessMod }}</span>
             <!-- Additional corner elements -->
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
@@ -89,7 +89,7 @@ import { useBioStore } from '@/sheet/stores/bio/bioStore';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { armorRatingMod, armorRatingSet } from '@/sheet/stores/modifiersCheck/armorRating';
-import { defenseMod } from '@/sheet/stores/modifiersCheck/defense';
+import { defenseMod, toughnessMod } from '@/sheet/stores/modifiersCheck/defense';
 import { speedMod } from '@/sheet/stores/modifiersCheck/speed';
 import SidebarSection from '@/components/SidebarSection.vue';
 import { actionsList, defenseList } from '@/system/actions';
@@ -227,33 +227,4 @@ const filteredSections = computed(() => {
 const defense = computed(() => {
   return 10 + Number(ability.DexterityBase) + ((props.guard || props.guardOption === 'always') ? props.guardValue : 0) + Number(defenseMods.value) + char.defenseLevelMod;
 });
-const toughness = computed(() => {
-  return ability.ConstitutionBase >= 0 ? ability.ConstitutionBase + char.toughnessLevelMod : 0 + char.toughnessLevelMod;
-});
-// watch(
-//   () => settings.campaignMode,
-//   ([newLevel, newCampaignMode], [oldLevel, oldCampaignMode]) => {
-//     console.log(newLevel, oldLevel, char.toughnessPrimary);
-//     console.log(newLevel >= 4);
-//     if (char.toughnessPrimary) { console.log(true); }
-//     if ((newLevel >= 4 || newLevel !== oldLevel) && !char.toughnessPrimary) {
-//       // Run your level-up check logic here
-//       // For example:
-//       console.log(`Character leveled up from ${oldLevel} to ${newLevel}`);
-//       // You can call a function or trigger a modal, etc.
-//       if (settings.campaignMode === 'pulpy') {
-//         showSelectPulpyModal.value = true;
-//       }
-//     }
-//     if (newCampaignMode !== oldCampaignMode) {
-//       if (newLevel >= 4 && !char.toughnessPrimary) {
-//         if (settings.campaignMode === 'pulpy') {
-//           showSelectPulpyModal.value = true;
-//         }
-//       }
-//     }
-//     console.log(char.defenseLevelMod, char.toughnessLevelMod);
-//   }
-// );
-
 </script>
