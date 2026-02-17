@@ -77,16 +77,6 @@ jobs:
 
           gsutil -m rsync -r -d "$DETECTED_FOLDER/dist" "gs://$BUCKET_NAME/$TARGET_FOLDER/"
 
-      - name: Deployment summary
-        run: |
-          echo "### 🚀 Deployment Successful" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Project:** \`${{ steps.detect.outputs.detected_folder }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Deploy Name:** \`${{ steps.detect.outputs.target_folder }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Bucket:** \`gs://${{ secrets.GCS_BUCKET_NAME }}/${{ steps.detect.outputs.target_folder }}/\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-
       - name: Create issue on build/deploy failure
         if: failure()
         uses: actions/github-script@v7
@@ -110,20 +100,7 @@ jobs:
             **Branch:** ${{ github.ref_name }}
 
             ### Issue
-            The deployment process failed during build or deployment to Google Cloud Storage.
-
-            ### Possible Causes
-            - Build errors in the project
-            - Missing or invalid dependencies
-            - Google Cloud authentication issues
-            - Invalid bucket configuration
-            - Missing \`npm run build\` script
-
-            ### Next Steps
-            1. Check the [workflow logs](${workflowUrl}) for detailed error messages
-            2. Verify the project builds locally with \`npm install && npm run build\`
-            3. Ensure Google Cloud credentials are valid
-            4. Verify the GCS bucket exists and is accessible
+            The deployment process failed during build or deployment to Google Cloud Storage. Check the [workflow logs](${workflowUrl}) for detailed error messages
 
             ### Details
             - **Workflow Run:** [View Logs](${workflowUrl})
