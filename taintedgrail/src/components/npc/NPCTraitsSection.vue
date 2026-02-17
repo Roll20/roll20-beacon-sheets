@@ -1,6 +1,6 @@
 <template>
   <div class="section traits">
-	<h3>Traits and Abilities</h3>
+    <h3>Traits and Abilities</h3>
     <div class="section__body traits__body">
       <!-- Traits -->
       <div class="traits__group">
@@ -10,7 +10,7 @@
         <div class="traits__divider"></div>
         <div class="traits__content">
           <div class="traits__item" v-for="trait in inventory.traits" :key="trait._id">
-            <Item :item="trait" :canRoll="false" />
+            <ItemComponent :item="trait" :canRoll="false" />
           </div>
         </div>
       </div>
@@ -23,7 +23,7 @@
         <div class="traits__divider"></div>
         <div class="traits__content">
           <div class="traits__item" v-for="specialAbility in inventory.specialAbilities" :key="specialAbility._id">
-            <Item :item="specialAbility" :canRoll="false" />
+            <ItemComponent :item="specialAbility" :canRoll="false" />
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import Item from '@/components/parts/Item.vue';
+import ItemComponent from '@/components/parts/ItemComponent.vue';
 
 const inventory = useInventoryStore();
 </script>

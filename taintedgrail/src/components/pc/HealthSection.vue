@@ -16,20 +16,38 @@
                 :class="{ checked: characterStore.isHealthChecked(condition.startIndex + index - 1) }"
                 @click="characterStore.setHealth(condition.startIndex + index - 1)"
               ></div>
+              <span class="health-modifier">{{ condition.modifier }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Stamina and Survival -->
+      <!-- Max Survival -->
+      <div class="health__survival">
+        <div class="health__condition-header">Max Survival</div>
+        <div class="survival-row">
+          <div class="survival-circles">
+            <div
+              v-for="index in visibleMaxSurvival"
+              :key="`max-survival-${index}`"
+              class="survival-circle"
+              :title="`Survival: ${index}`"
+              :class="{ checked: characterStore.isSurvivalChecked(index) }"
+              @click="characterStore.setSurvival(index)"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stamina and Max Survival -->
       <div class="health__stats">
         <div class="stat-group">
           <div class="stat-label">Stamina:</div>
           <input type="number" v-model="characterStore.stamina" class="stat-input" min="0" />
         </div>
         <div class="stat-group">
-          <div class="stat-label">Survival:</div>
-          <input type="number" v-model="characterStore.survival" class="stat-input" min="0" />
+          <div class="stat-label">Max Survival:</div>
+          <input type="number" v-model="characterStore.maxSurvival" class="stat-input" min="0" :max="maxSurvivalCircleCount" />
         </div>
       </div>
 
@@ -39,9 +57,9 @@
         <div class="health__divider"></div>
         <div class="sanity-group">
           <div class="stat-label">Mental Resistance:</div>
-          <div class="mental-resistance-display">
+          <span class="mental-resistance-display">
             {{ characterStore.mentalResistance }}
-          </div>
+          </span>
         </div>
       </div>
     </div>
@@ -54,12 +72,17 @@ import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 const characterStore = useCharacterStore();
 
 const healthConditions = computed(() => [
-  { label: 'Good', startIndex: 1, count: 5 },
-  { label: 'Okay', startIndex: 6, count: 5 },
-  { label: 'Bad', startIndex: 11, count: 4 },
-  { label: 'Critical', startIndex: 15, count: 4 },
-  { label: 'Agony', startIndex: 19, count: 1 },
+  { label: 'Good', startIndex: 1, count: 5, modifier: 0 },
+  { label: 'Okay', startIndex: 6, count: 5, modifier: -1 },
+  { label: 'Bad', startIndex: 11, count: 4, modifier: -2 },
+  { label: 'Critical', startIndex: 15, count: 4, modifier: -3 },
+  { label: 'Agony', startIndex: 19, count: 1, modifier: -3 },
 ]);
+
+const maxSurvivalCircleCount = 10;
+const visibleMaxSurvival = computed(() => {
+  return Math.max(0, Math.min(maxSurvivalCircleCount, Math.floor(characterStore.maxSurvival || 0)));
+});
 </script>
 
 <style scoped lang="scss">
@@ -95,6 +118,8 @@ const healthConditions = computed(() => [
 
       .condition-circles {
         display: flex;
+        flex: 1;
+        align-items: center;
         gap: 0.5rem;
 
         .condition-circle {
@@ -115,6 +140,11 @@ const healthConditions = computed(() => [
             border-color: #666;
           }
         }
+
+        .health-modifier {
+          font-size: 0.8rem;
+          margin-left: auto;
+        }
       }
     }
   }
@@ -125,9 +155,44 @@ const healthConditions = computed(() => [
     margin: 0.2rem 0;
   }
 
+  &__survival {
+    margin-bottom: 1rem;
+
+    .survival-row {
+      border-top: 1px solid #7a7971;
+      border-bottom: 1px solid #7a7971;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .survival-circles {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .survival-circle {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #7a7971;
+      border-radius: 50%;
+      background-color: transparent;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      &.checked {
+        background-color: #666;
+        border-color: #666;
+      }
+    }
+  }
+
   &__stats {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 1rem;
     padding-right: 0.5rem;
 
@@ -136,6 +201,7 @@ const healthConditions = computed(() => [
       flex-direction: column;
       gap: 0.25rem;
       flex: 1;
+      min-width: 0;
 
       .stat-label {
         font-weight: 600;
@@ -144,6 +210,7 @@ const healthConditions = computed(() => [
 
       .stat-input {
         width: 100%;
+        box-sizing: border-box;
         font-weight: 500;
         padding: 0.25rem;
         background-color: rgba(0, 0, 0, 0.05);
@@ -164,9 +231,10 @@ const healthConditions = computed(() => [
   .sanity-group {
     margin-top: 0.75rem;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
     padding-right: 0.5rem;
-    gap: 0.25rem;
+    gap: 0.5rem;
 
     .stat-label {
       font-weight: 600;
@@ -174,11 +242,19 @@ const healthConditions = computed(() => [
     }
 
     .mental-resistance-display {
-      width: 100%;
-      padding: 0.25rem;
-      background-color: rgba(0, 0, 0, 0.05);
-      border: 1px solid #7a7971;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.25rem;
+      padding: 0.15rem 0.6rem;
+      background: linear-gradient(180deg, #efe1c2 0%, #e4d1aa 100%);
+      border: 1px solid #8d6b3f;
       border-radius: 3px;
+      color: #4d3921;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 1px 1px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
     }
   }
 }

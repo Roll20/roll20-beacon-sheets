@@ -26,35 +26,37 @@
 
     &.action-btn {
       display: inline-block;
-      padding: 0.25rem;
-      transition: background-color 0.2s ease-in-out;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
       border-radius: 0.25rem;
-      background-color: var(--taintedgrail-primary);
-      color: white;
+      border: 1px solid #000;
+      background-color: transparent;
+      color: #000;
       &:hover {
-        background-color: var(--taintedgrail-secondary);
-        color: black;
+        background-color: rgba(0, 0, 0, 0.08);
+        color: #000;
       }
     }
   }
 
   input {
-	background: transparent;
-	border-radius: 3px;
-	border: 1px solid var(--taintedgrail-color-border-light-tertiary);
-	width: 100%;
-	padding: 2px;
-	font-weight: 500;
-	
-	&:focus {
-		outline: none;
-		box-shadow: 0 0 5px #ff0000;
-		background: rgba(255, 255, 255, 0.1);
-	}
+    background: transparent;
+    border-radius: 3px;
+    border: 1px solid var(--taintedgrail-color-border-light-tertiary);
+    width: 100%;
+    padding: 2px;
+    font-weight: 500;
 
-	&:disabled {
-		background: lightgrey;
-		cursor: not-allowed;
-	}
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 5px #ff0000;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &:disabled {
+      background: lightgrey;
+      cursor: not-allowed;
+    }
   }
 }

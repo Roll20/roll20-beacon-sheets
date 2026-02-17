@@ -4,7 +4,13 @@ import { useNPCStore } from '@/sheet/stores/character/npcStore';
 import { CategoryType, type AnyItem, type Spell, type Weapon } from '@/sheet/stores/inventory/inventoryStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useWaysStore, type WaysScore } from '@/sheet/stores/ways/waysStore';
-import { capitalizeFirstLetter, domainToFriendlyName, friendlyNameToDomain, spellDisciplineToFriendlyName } from '@/utility/formattedNames';
+import {
+  capitalizeFirstLetter,
+  domainToFriendlyName,
+  friendlyNameToDomain,
+  spellDisciplineToFriendlyName,
+  wayToFaultName,
+} from '@/utility/formattedNames';
 import rollToChat from '@/utility/rollToChat';
 import sendToChat from '@/utility/sendToChat';
 import sendUserError from '@/utility/sendUserError';
@@ -17,8 +23,10 @@ export const wayRoll = async (way: WaysScore) => {
   const healthModifier = rollHealthScore();
   const friendlyName = capitalizeFirstLetter(way);
 
+  const faultName = wayToFaultName(way);
+
   await rollToChat({
-    title: `Way Roll: ${friendlyName}`,
+    title: `Way Roll: ${friendlyName} / ${faultName}`,
     subtitle: '1d10 + Way - Health Modifier',
     allowCrit: true,
     components: [
@@ -133,7 +141,10 @@ export const weaponRoll = async (item: Weapon) => {
 
   // Check if weapon has either domain or discipline. Discipline takes priority (but they really shouldn't have both).
   const hasDomain = !!item.domain;
-  const hasDiscipline = !!item.discipline;
+
+  // Player should have the discipline, otherwise we can't get the score.
+  const disciplineObject = getDisciplineByName(item.discipline as string);
+  const hasDiscipline = disciplineObject !== undefined;
 
   const combativeness = waysScores.combativeness;
   const healthModifier = rollHealthScore();
@@ -142,18 +153,12 @@ export const weaponRoll = async (item: Weapon) => {
   let labelToUse = '';
   // Grab discipline score if it exists.
   if (hasDiscipline) {
-    const disciplineObject = getDisciplineByName(item.discipline as string);
-    if (disciplineObject) {
-      scoreToUse = disciplineObject.base;
-      labelToUse = `Discipline (${disciplineObject.name})`;
-    }
+    scoreToUse = disciplineObject.base;
+    labelToUse = `Discipline (${disciplineObject.name})`;
   } else if (hasDomain) {
-    const domainName = friendlyNameToDomain(item.domain as string);
-    const domainObject = domains[domainName as keyof typeof domains];
-    if (domainObject) {
-      scoreToUse = domainObject.base;
-      labelToUse = `Domain (${item.domain})`;
-    }
+    const friendlyDomainName = domainToFriendlyName(item.domain as string);
+    scoreToUse = domains[item.domain as keyof typeof domains].base;
+    labelToUse = `Domain (${friendlyDomainName})`;
   }
 
   // Stance Modifier
@@ -201,18 +206,34 @@ export const magicRoll = async (item: Spell) => {
   const healthModifier = rollHealthScore();
 
   const friendlySpellDiscipline = spellDisciplineToFriendlyName(item.discipline);
-  const disciplineScore = getDisciplineByName(item.discipline)?.base || 0;
+  const disciplineScore = getDisciplineByName(item.discipline)?.base || undefined;
+  const hasDiscipline = disciplineScore !== undefined;
 
   // Get the parent domain of the spell discipline (which should always be magic, realistically)
-  const parentDomain = getDisciplineByName(friendlySpellDiscipline)?.parentDomain;
+  // const parentDomain = getDisciplineByName(friendlySpellDiscipline)?.parentDomain;
+  const parentDomain = 'magic';
 
   // It could be that the player (for some reason) removed the discipline needed from their sheet, but still has the spell.
-  if (!parentDomain) {
-    await sendUserError({
-      title: `Unable to roll spell`,
-      textContent: `You do not have the required discipline: ${friendlySpellDiscipline}`,
-    });
-    return;
+  //   if (!parentDomain) {
+  //     await sendUserError({
+  //       title: `Unable to roll spell`,
+  //       textContent: `You do not have the required discipline: ${friendlySpellDiscipline}`,
+  //     });
+  //     return;
+  //   }
+  // let domainScore = 0;
+
+  let labelToUse = '';
+  let scoreToUse = 0;
+
+  const domainScore = domains[parentDomain as keyof typeof domains].total || 0;
+  // If we do not have the discipline, fall back to domain.
+  if (hasDiscipline) {
+    labelToUse = `Discipline (${friendlySpellDiscipline})`;
+    scoreToUse = disciplineScore;
+  } else if (parentDomain) {
+    labelToUse = `Domain (${domainToFriendlyName(parentDomain)})`;
+    scoreToUse = domainScore;
   }
 
   // Get the way score for the parent domain (again, should always be Reason)
@@ -222,11 +243,11 @@ export const magicRoll = async (item: Spell) => {
 
   await rollToChat({
     title: `Magic Roll: ${item.name}`,
-    subtitle: `1d10 + ${friendlySpellDiscipline} + ${formattedWay} - Health Modifier`,
+    subtitle: `1d10 + ${labelToUse} + ${formattedWay} - Health Modifier`,
     allowCrit: true,
     components: [
       { label: 'Roll', sides: 10 },
-      { label: `Discipline (${friendlySpellDiscipline})`, value: disciplineScore },
+      { label: labelToUse, value: scoreToUse },
       { label: `Way (${formattedWay})`, value: wayScore },
       { label: 'Health Modifier', value: -healthModifier, negative: true },
     ],

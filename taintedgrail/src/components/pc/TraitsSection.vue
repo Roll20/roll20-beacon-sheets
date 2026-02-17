@@ -9,7 +9,7 @@
         <div class="traits__divider"></div>
         <div class="traits__content">
           <div class="traits__item" v-for="advantage in inventory.advantages" :key="advantage._id">
-            <Item :item="advantage" :canRoll="false" :isCompact="true" />
+            <ItemComponent :item="advantage" :canRoll="false" :isCompact="true" />
           </div>
         </div>
       </div>
@@ -22,7 +22,7 @@
         <div class="traits__divider"></div>
         <div class="traits__content">
           <div class="traits__item" v-for="disadvantage in inventory.disadvantages" :key="disadvantage._id">
-            <Item :item="disadvantage" :canRoll="false" :isCompact="true" />
+            <ItemComponent :item="disadvantage" :canRoll="false" :isCompact="true" />
           </div>
         </div>
       </div>
@@ -37,7 +37,7 @@
         <div class="traits__divider"></div>
         <div class="traits__content">
           <div class="traits__item" v-for="torment in inventory.torments" :key="torment._id">
-            <Item :item="torment" :canRoll="false" :isCompact="true" />
+            <ItemComponent :item="torment" :canRoll="false" :isCompact="true" />
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@
         <div class="traits__divider"></div>
         <div class="traits__content">
           <div class="traits__item" v-for="rout in inventory.routs" :key="rout._id">
-            <Item :item="rout" :canRoll="false" :isCompact="true" />
+            <ItemComponent :item="rout" :canRoll="false" :isCompact="true" />
           </div>
         </div>
       </div>
@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import Item from '../parts/Item.vue';
+import ItemComponent from '../parts/ItemComponent.vue';
 
 const inventory = useInventoryStore();
 </script>

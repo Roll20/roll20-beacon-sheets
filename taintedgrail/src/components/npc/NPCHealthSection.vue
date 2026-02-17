@@ -104,7 +104,7 @@ const healthConditions = computed(() => {
     border-bottom: 1px solid #7a7971;
     .condition-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 0;
       padding: 0.6rem 0.5rem;
 
@@ -116,15 +116,19 @@ const healthConditions = computed(() => {
         width: 50px;
         font-size: 1.2rem;
         margin-right: 2rem;
+        flex-shrink: 0;
       }
 
       .condition-circles {
         display: flex;
+        flex-wrap: wrap;
         gap: 0.5rem;
+        flex: 1;
+        min-width: 0;
 
         .condition-circle {
-          width: 18px;
-          height: 18px;
+          width: 14px;
+          height: 14px;
           border: 1px solid #7a7971;
           border-radius: 50%;
           background-color: transparent;
