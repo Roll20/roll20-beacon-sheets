@@ -34,12 +34,8 @@ jobs:
 
           # Extract unique top-level folders from changed files
           # Only consider files that are in a subfolder (contain a /)
-          MODIFIED_FOLDERS=$(echo "$CHANGED_FILES" | grep '/' | cut -d'/' -f1 | sort -u | xargs)
-
-          echo "Modified subfolders: $MODIFIED_FOLDERS"
-
-          # Count modified folders
-          FOLDER_COUNT=$(echo "$MODIFIED_FOLDERS" | wc -w | xargs)
+          # Exclude folders that start with a dot (like .github, .vscode)
+          MODIFIED_FOLDERS=$(echo "$CHANGED_FILES" | grep '/' | cut -d'/' -f1 | grep -v '^\.' | sort -u | xargs)
 
           echo "modified_folders=$MODIFIED_FOLDERS" >> $GITHUB_OUTPUT
           echo "folder_count=$FOLDER_COUNT" >> $GITHUB_OUTPUT
