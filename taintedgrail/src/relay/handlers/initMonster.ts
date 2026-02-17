@@ -11,7 +11,7 @@ type CompendiumProperties = {
   Source: string;
   Token: string;
   expansion: number;
-  'data-Attack': 16;
+  'data-Attack': number;
   'data-Damage': number;
   'data-Defense': number;
   'data-Feats': number;
