@@ -18,153 +18,82 @@ jobs:
         with:
           fetch-depth: 0  # Fetch full history to detect changes
 
+      - name: Load approved folders
+        id: load_approved
+        run: |
+          # Parse approved.yaml and create a lookup string
+          APPROVED=$(cat approved.yaml | grep -A 100 'folders:' | grep ':' | grep -v 'folders:' | sed 's/^  //' | tr '\n' '|')
+          echo "approved=$APPROVED" >> $GITHUB_OUTPUT
+
       - name: Detect modified subfolders
         id: detect
         run: |
-          # Get the list of changed files between the previous commit and current
-          if [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]; then
-            # First push to branch, compare with HEAD~1
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-          else
-            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          # Get first changed subfolder (excluding dot-prefixed folders)
+          DETECTED_FOLDER=$(git diff --name-only HEAD~1 | awk -F/ '/^[^.].*\// {print $1; exit}')
+
+          echo "Detected folder: $DETECTED_FOLDER"
+
+          # Look up shortname from approved.yaml
+          APPROVED="${{ steps.load_approved.outputs.approved }}"
+          SHORTNAME=$(echo "$APPROVED" | tr '|' '\n' | grep "^$DETECTED_FOLDER:" | cut -d':' -f2 | xargs)
+
+          # If no shortname found, use the detected folder name
+          if [ -z "$SHORTNAME" ]; then
+            SHORTNAME="$DETECTED_FOLDER"
           fi
 
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Extract unique top-level folders from changed files
-          # Only consider files that are in a subfolder (contain a /)
-          # Exclude folders that start with a dot (like .github, .vscode)
-          MODIFIED_FOLDERS=$(echo "$CHANGED_FILES" | grep '/' | cut -d'/' -f1 | grep -v '^\.' | sort -u | xargs)
-
-          echo "modified_folders=$MODIFIED_FOLDERS" >> $GITHUB_OUTPUT
-          echo "folder_count=$FOLDER_COUNT" >> $GITHUB_OUTPUT
-
-      - name: Check folder count
-        id: check
-        run: |
-          FOLDER_COUNT="${{ steps.detect.outputs.folder_count }}"
-          MODIFIED_FOLDERS="${{ steps.detect.outputs.modified_folders }}"
-
-          echo "Number of modified folders: $FOLDER_COUNT"
-
-          if [ "$FOLDER_COUNT" -eq "0" ]; then
-            echo "No subfolders were modified. Skipping deployment."
-            echo "should_deploy=false" >> $GITHUB_OUTPUT
-            echo "should_fail=false" >> $GITHUB_OUTPUT
-          elif [ "$FOLDER_COUNT" -gt "1" ]; then
-            echo "ERROR: Multiple subfolders were modified: $MODIFIED_FOLDERS"
-            echo "should_deploy=false" >> $GITHUB_OUTPUT
-            echo "should_fail=true" >> $GITHUB_OUTPUT
-            echo "failure_reason=multiple_folders" >> $GITHUB_OUTPUT
-          else
-            echo "Exactly one subfolder was modified: $MODIFIED_FOLDERS"
-            echo "should_deploy=true" >> $GITHUB_OUTPUT
-            echo "should_fail=false" >> $GITHUB_OUTPUT
-            echo "target_folder=$MODIFIED_FOLDERS" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create issue for multiple folder changes
-        if: steps.check.outputs.should_fail == 'true' && steps.check.outputs.failure_reason == 'multiple_folders'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const modifiedFolders = '${{ steps.detect.outputs.modified_folders }}';
-            const commitSha = '${{ github.sha }}';
-            const commitUrl = `https://github.com/${{ github.repository }}/commit/${commitSha}`;
-
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '❌ Deployment Failed: Multiple Subfolders Modified',
-              body: `## Deployment Failure
-
-            **Commit:** [${commitSha.substring(0, 7)}](${commitUrl})
-            **Branch:** ${{ github.ref_name }}
-
-            ### Issue
-            Multiple subfolders were modified in a single merge, which violates the deployment policy.
-
-            ### Modified Subfolders
-            ${modifiedFolders.split(' ').map(f => `- \`${f}\``).join('\n')}
-
-            ### Resolution
-            Please ensure that pull requests only modify a single subfolder at a time. If you need to update multiple projects, submit separate pull requests for each.
-
-            ### Details
-            - **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            - **Triggered by:** ${{ github.actor }}
-            - **Timestamp:** ${new Date().toISOString()}
-            `,
-              labels: ['deployment-failure', 'automated-issue']
-            });
-
-      - name: Fail workflow if multiple folders modified
-        if: steps.check.outputs.should_fail == 'true'
-        run: |
-          echo "::error::Multiple subfolders were modified. Deployment aborted."
-          exit 1
+          echo "Shortname for deployment: $SHORTNAME"
+          echo "detected_folder=$DETECTED_FOLDER" >> $GITHUB_OUTPUT
+          echo "target_folder=$SHORTNAME" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
-        if: steps.check.outputs.should_deploy == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: '${{ steps.check.outputs.target_folder }}/package-lock.json'
-
-      - name: Install dependencies
-        if: steps.check.outputs.should_deploy == 'true'
-        working-directory: ${{ steps.check.outputs.target_folder }}
-        run: npm ci
-
-      - name: Build application
-        if: steps.check.outputs.should_deploy == 'true'
-        working-directory: ${{ steps.check.outputs.target_folder }}
-        run: npm run build
 
       - name: Authenticate to Google Cloud
-        if: steps.check.outputs.should_deploy == 'true'
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       - name: Set up Cloud SDK
-        if: steps.check.outputs.should_deploy == 'true'
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Install dependencies
+        working-directory: ${{ steps.detect.outputs.detected_folder }}
+        run: npm ci
+
+      - name: Build application
+        working-directory: ${{ steps.detect.outputs.detected_folder }}
+        run: npm run build
+
       - name: Deploy to Google Cloud Storage
-        if: steps.check.outputs.should_deploy == 'true'
         run: |
-          TARGET_FOLDER="${{ steps.check.outputs.target_folder }}"
+          DETECTED_FOLDER="${{ steps.detect.outputs.detected_folder }}"
+          TARGET_FOLDER="${{ steps.detect.outputs.target_folder }}"
           BUCKET_NAME="${{ secrets.GCS_BUCKET_NAME }}"
 
-          echo "Deploying $TARGET_FOLDER to gs://$BUCKET_NAME/$TARGET_FOLDER/"
+          echo "Deploying $DETECTED_FOLDER to gs://$BUCKET_NAME/$TARGET_FOLDER/"
 
-          # Upload the dist folder to the bucket
-          gsutil -m rsync -r -d \
-            "$TARGET_FOLDER/dist" \
-            "gs://$BUCKET_NAME/$TARGET_FOLDER/"
-
-          echo "✅ Deployment successful!"
-          echo "Deployed $TARGET_FOLDER to Google Cloud Storage"
+          gsutil -m rsync -r -d "$DETECTED_FOLDER/dist" "gs://$BUCKET_NAME/$TARGET_FOLDER/"
 
       - name: Deployment summary
-        if: steps.check.outputs.should_deploy == 'true'
         run: |
           echo "### 🚀 Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Project:** \`${{ steps.check.outputs.target_folder }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Bucket:** \`gs://${{ secrets.GCS_BUCKET_NAME }}/${{ steps.check.outputs.target_folder }}/\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Project:** \`${{ steps.detect.outputs.detected_folder }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Deploy Name:** \`${{ steps.detect.outputs.target_folder }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Bucket:** \`gs://${{ secrets.GCS_BUCKET_NAME }}/${{ steps.detect.outputs.target_folder }}/\`" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Create issue on build/deploy failure
-        if: failure() && steps.check.outputs.should_deploy == 'true'
+        if: failure()
         uses: actions/github-script@v7
         with:
           script: |
-            const targetFolder = '${{ steps.check.outputs.target_folder }}';
+            const detectedFolder = '${{ steps.detect.outputs.detected_folder }}';
+            const targetFolder = '${{ steps.detect.outputs.target_folder }}';
             const commitSha = '${{ github.sha }}';
             const commitUrl = `https://github.com/${{ github.repository }}/commit/${commitSha}`;
             const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
@@ -172,10 +101,11 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `❌ Deployment Failed: ${targetFolder}`,
+              title: `❌ Deployment Failed: ${detectedFolder}`,
               body: `## Deployment Failure
 
-            **Project:** \`${targetFolder}\`
+            **Project:** \`${detectedFolder}\`
+            **Deploy Name:** \`${targetFolder}\`
             **Commit:** [${commitSha.substring(0, 7)}](${commitUrl})
             **Branch:** ${{ github.ref_name }}
 
