@@ -1,6 +1,6 @@
 <template>
   <div class="section stats">
-	<h3>Stats</h3>
+    <h3>Stats</h3>
     <div class="section__body">
       <!-- Attack, Defense, Damage, Protection -->
       <div class="stats__row">
@@ -39,7 +39,7 @@
           <input type="number" v-model="npc.stamina" class="stat-input" min="0" />
         </div>
         <div class="stat-group">
-          <div class="stat-label">Mental Res:</div>
+          <div class="stat-label">Mental Resistance:</div>
           <input type="number" v-model="npc.mentalResistance" class="stat-input" min="0" />
         </div>
         <div class="stat-group">
@@ -84,12 +84,12 @@ const SPEECH_BUBBLE_ICON = new URL('@/assets/speech-bubble.svg', import.meta.url
         display: flex;
         align-items: center;
         gap: 0.25rem;
-        
+
         .roll-icon {
           cursor: pointer;
           width: 16px;
           height: 16px;
-          
+
           img {
             width: 100%;
           }

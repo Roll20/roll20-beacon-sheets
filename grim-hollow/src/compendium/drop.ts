@@ -52,7 +52,8 @@ export type compendiumCategory =
   | 'Weapons'
   | 'Armor Modifications'
   | 'Trapper Gadgets'
-  | 'Mutations';
+  | 'Mutations'
+  | 'Heritages';
 
 export type CompendiumPage = {
   id: string;
@@ -118,6 +119,11 @@ category(name: "${categoryName}") {
 return request;
 };
 
+const normalizeTokenUrl = (url?: string): string => {
+  if (!url) return '';
+  return url.replace(/^https?:\/\/s3\.amazonaws\.com\/files\.d20\.io\//, 'https://files.d20.io/');
+};
+
 export type CascadeData = {
   spellSourceId?: string;
   source?: string;
@@ -168,8 +174,8 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   'Armor Modifications': onDropFeature,
   'Trapper Gadgets': onDropFeature,
   Mutations: onDropFeature,
+  Heritages: onDropRace,
 };
-
 export const drag = async (
   { dropData, coordinates }: DropArgs,
   dispatch?: Dispatch,
@@ -199,7 +205,6 @@ export const drag = async (
   if (coordinates) {
     const elements = document.elementsFromPoint(coordinates.left, coordinates.top);
     const targetEl = elements.find((el) => el.closest('[data-npc-id]'));
-    console.log('Elements at drop point:', elements);
     if (targetEl) {
       npcId = targetEl.closest('[data-npc-id]')?.getAttribute('data-npc-id') || undefined;
     }
@@ -211,17 +216,19 @@ export const drag = async (
 
       if (page.properties.hasOwnProperty('data-payload')) {
         payload = JSON.parse(page.properties['data-payload']);
-        if (
-          category === 'Monsters' &&
-          (!payload.token || payload.token.length === 0) &&
-          page.properties.Token
-        ) {
+        if (category === 'Monsters' && (!payload.token || payload.token.length === 0) && page.properties.Token) {
           payload.token = page.properties.Token;
+        }
+        if (category === 'Monsters' && payload.token) {
+          payload.token = normalizeTokenUrl(payload.token);
         }
       } else if (transformers[category]) {
         const transformer = transformers[category];
         const rawPayload = { name: page.name, book: page.book, properties: page.properties };
         payload = transformer(rawPayload, page.book, page.properties);
+        if (category === 'Monsters' && payload?.token) {
+          payload.token = normalizeTokenUrl(payload.token);
+        }
       } else {
         console.error(
           `Item is not in native format and no transformer was found for category: "${category}".`,

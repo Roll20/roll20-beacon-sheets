@@ -198,6 +198,24 @@ export const useWaysStore = defineStore('ways', () => {
     disciplines.value = disciplines.value.filter((d) => d._id !== disciplineId);
   };
 
+  const addCustomDiscipline = (parentDomain: string) => {
+    let name = 'New Discipline';
+    let suffix = 2;
+    while (getDisciplineByName(name)) {
+      name = `New Discipline ${suffix}`;
+      suffix += 1;
+    }
+
+    const newDiscipline: Discipline = {
+      _id: uuidv4(),
+      name,
+      parentDomain,
+      base: 6,
+      total: 6,
+    };
+    disciplines.value.push(newDiscipline);
+  };
+
   const getDisciplineByName = (disciplineName: string): Discipline | undefined => {
     return disciplines.value.find((discipline) => discipline.name.toLowerCase() === disciplineName.toLowerCase());
   };
@@ -317,6 +335,7 @@ export const useWaysStore = defineStore('ways', () => {
 
     // Discipline functions
     addDiscipline,
+    addCustomDiscipline,
     removeDiscipline,
     getDisciplineByName,
 

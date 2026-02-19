@@ -2,7 +2,7 @@
   <div class="domains-tab">
     <div class="domains-header">
       <h3>Domains and Disciplines</h3>
-      <img :src="eyeIcon" class="eye-icon" alt="Eye" title="Edit Domains and Disciplines" @click="showModal = true" />
+      <img :src="pencilIcon" class="pencil-icon" alt="Pencil" title="Edit Domains and Disciplines" @click="showModal = true" />
     </div>
 
     <div class="domains-grid">
@@ -17,7 +17,7 @@
             <span class="domain-total"
               >Total:
               <input
-                title="Click on 👁️ to edit"
+                title="Click on ✏️ to edit"
                 type="number"
                 :value="ways.domains[domainKey as keyof typeof ways.domains].total"
                 readonly
@@ -33,7 +33,7 @@
             </span>
             <span class="discipline-name">{{ discipline.name }}</span>
             <span class="discipline-total"
-              >Total: <input title="Click on 👁️ to edit" type="number" :value="discipline.total" readonly class="total-input readonly"
+              >Total: <input title="Click on ✏️ to edit" type="number" :value="discipline.total" readonly class="total-input readonly"
             /></span>
           </div>
         </div>
@@ -58,7 +58,8 @@ import { domainRoll, disciplineRoll } from '@/system/rolls';
 import { domainToFriendlyName } from '@/utility/formattedNames';
 
 const dieIcon = new URL('@/assets/d10.svg', import.meta.url).href;
-const eyeIcon = new URL('@/assets/eye.svg', import.meta.url).href;
+// const eyeIcon = new URL('@/assets/eye.svg', import.meta.url).href;
+const pencilIcon = new URL('@/assets/pencil.svg', import.meta.url).href;
 
 const ways = useWaysStore();
 const showModal = ref(false);
@@ -92,6 +93,16 @@ const closeModal = () => {
 </script>
 
 <style scoped lang="scss">
+.total-input:focus {
+  box-shadow: none !important;
+  outline: inherit !important;
+}
+
+.total-input.readonly {
+  user-select: none;
+  caret-color: transparent;
+}
+
 .domains-tab {
   .domains-header {
     display: flex;
@@ -108,7 +119,7 @@ const closeModal = () => {
       margin: 0;
     }
 
-    .eye-icon {
+    .pencil-icon {
       cursor: pointer;
       width: 16px;
       height: 16px;

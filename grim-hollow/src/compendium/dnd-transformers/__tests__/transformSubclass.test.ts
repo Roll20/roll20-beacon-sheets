@@ -124,7 +124,7 @@ describe('transformDnDSubclass', () => {
     const result = transformDnDSubclass(rawPayload, mockBook, properties);
 
     expect(result['data-features']['level-1']).toHaveLength(1);
-    expect(result['data-features']['level-1'][0].label).toBe('Good Feature');
+    expect(result['data-features']['level-1'][0].label).toBe('Good');
   });
 
   it('ignores records with invalid levels', () => {

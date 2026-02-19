@@ -5,8 +5,118 @@ import type { ProgressionHydrate } from '@/sheet/stores/progression/progressionS
 import type { ProficienciesHydrate, RankedProficiency } from '@/sheet/stores/proficiencies/proficienciesStore';
 import { getModifiedValue } from './effects';
 import { proficiencyLevelsValues } from '@/sheet/stores/proficiencies/proficienciesStore';
-import { get } from 'lodash';
+import type { Character, Dispatch } from '@roll20-official/beacon-sdk';
+import { type CombatHydrate } from '@/sheet/stores/combat/combatStore';
 
+export const getHitPoints = ({ character }: { character: Character }): { current: number; max: number } => {
+  const combat = character.attributes?.combat;
+  const progression = character.attributes?.progression;
+
+  const max = typeof progression === 'object' && progression !== null && 'classes' in progression
+    ? Object.values((progression as ProgressionHydrate).classes).reduce((total, cls) => {
+        return total + Object.values(cls.hitPoints).reduce((sum, hp) => sum + hp, 0);
+      }, 0) + (getAbilityModifier({ character }, 'constitution') * getLevel({ character }))
+    : 0;
+  const modifiedMax = getModifiedValue(max, 'hit-points-max', undefined, character);
+  const current = typeof combat === 'object' && combat !== null && 'life' in combat 
+    ? (combat.life as any)?.hitPoints || 0 
+    : 0;
+  
+  return {
+    current: modifiedMax > 0 ? current : 0,
+    max: modifiedMax
+  };
+};
+
+export const getTempHitPoints = ({ character }: { character: Character }): number => {
+  const combat = character.attributes?.combat as CombatHydrate | undefined;
+
+  const tempHp = combat?.life?.temporary || 0;
+
+  return tempHp;
+};
+
+export const setTempHitPoints = (
+  {
+    character,
+    dispatch,
+  }: {
+    character: Character;
+    dispatch: Dispatch;
+  },
+  ...args: any[]
+) => {
+  const newValue = args[0];
+  const oldValue = getTempHitPoints({ character });
+  const characterId = character.id;
+  const finalValue = applyChange(oldValue, newValue);
+  dispatch.update({
+    character: {
+      id: characterId,
+      attributes: {
+        updateId: 'TOKENCHANGE',
+        combat: {
+          life: {
+            temporary: finalValue,
+          },
+        }
+      },
+    },
+  });
+};
+
+export const getArmorClass = ({ character }: { character: Character }): number => {
+  const combat = character.attributes?.combat as CombatHydrate | undefined;
+  const baseAc = combat?.armorClass.base || 10;
+  const abilityMod = getAbilityModifier({ character }, combat?.armorClass.ability || 'dexterity');
+  const modifiedAc = getModifiedValue(baseAc + abilityMod, 'armor-class', undefined, character);
+  return modifiedAc;
+};
+
+const applyChange = (oldValue: number, newValue: number | string) => {
+  if (typeof newValue === 'string') newValue = newValue.trim();
+  const operator = typeof newValue === 'string' ? newValue[0] : false;
+  if (typeof newValue === 'string' && (operator === '-' || operator === '+')) {
+    const intValue = parseInt(newValue.substring(1));
+    if (isNaN(intValue)) return oldValue;
+    if (operator === '+') return oldValue + intValue;
+    if (operator === '-') return oldValue - intValue;
+    else return oldValue;
+  } else {
+    const intValue = typeof newValue === 'string' ? parseInt(newValue) : newValue;
+    if (isNaN(intValue)) return oldValue;
+    return intValue;
+  }
+};
+
+export const setHitPoints = (
+  {
+    character,
+    dispatch,
+  }: {
+    character: Character;
+    dispatch: Dispatch;
+  },
+  ...args: any[]
+) => {
+  const newValue = args[0];
+  const oldValue = getHitPoints({ character }).current;
+  const characterId = character.id;
+  const finalValue = applyChange(oldValue, newValue);
+  dispatch.update({
+    character: {
+      id: characterId,
+      attributes: {
+        updateId: 'TOKENCHANGE',
+        combat: {
+          life: {
+            hitPoints: finalValue,
+          },
+        }
+      },
+    },
+  });
+};
 
 export const getLevel = ({ character }: Context): number => {
   const classes = 
@@ -42,7 +152,7 @@ export const getAbilityModifier = ({ character }: Context, ability: AbilityKey):
   const score = getAbilityScore({ character }, ability);
   const modifier = score === 0
     ? 0
-    : Math.ceil((score - 10) / 2);
+    : Math.floor((score - 10) / 2);
   return modifier;
 };
 

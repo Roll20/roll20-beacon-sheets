@@ -89,6 +89,10 @@
             />
           </div>
         </div>
+        <div class="roll-dialog__config">
+          <ToggleSwitch v-model="combat.useRollDialog" :disabled="false" class="toggle-switch--small"/>
+          {{ t('descriptions.always-show-roll-dialog') }}
+        </div>
         <div class="roll-dialog__footer">
           <button class="button button--primary button--full-width" @click="handleRoll">
             {{ t('actions.roll') }}
@@ -117,8 +121,11 @@ import { type DiceComponent } from '@/rolltemplates/rolltemplates';
 import { parseFormula } from '@/sheet/stores/formulas';
 import { HitDieSize, useProgressionStore } from '@/sheet/stores/progression/progressionStore';
 import { config } from '@/config';
+import ToggleSwitch from './ToggleSwitch.vue';
+import { useCombatStore } from '@/sheet/stores/combat/combatStore';
 
 const store = useRollDialogStore();
+const combat = useCombatStore();
 const { t } = useI18n();
 
 const progressionStore = useProgressionStore();
@@ -305,6 +312,17 @@ const handleRoll = async () => {
     align-items: center;
     justify-content: center;
     z-index: 2000;
+  }
+
+  &__config {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    margin: 1rem 1rem 0 1rem;
+    padding: 1rem;
+    gap: 10px;
+    border-top: 1px solid var(--color-tertiary);
+    border-bottom: 1px solid var(--color-tertiary);
+    font-family: Arial, Helvetica, sans-serif;
   }
 
   & {

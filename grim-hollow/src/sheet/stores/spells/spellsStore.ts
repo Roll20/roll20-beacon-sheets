@@ -85,6 +85,7 @@ export const SpellSchema = z.object({
   tagId: z.string(),
   'data-tags': z.array(z.string()).optional(),
   required: z.array(RequirementSchema).optional(),
+  prepared: z.boolean().optional(),
 });
 
 export type UpcastModifier = z.infer<typeof UpcastModifierSchema>;
@@ -217,6 +218,7 @@ export const useSpellsStore = defineStore('spells', () => {
       spellSourceId: sources.value[0]?._id ?? '',
       effectId: uuidv4(),
       tagId: uuidv4(),
+      prepared: true,
       ...patch,
     };
   };

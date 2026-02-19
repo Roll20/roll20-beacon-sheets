@@ -18,6 +18,7 @@ import {
   onDragOver,
   onDropOver,
 } from './handlers/handlers';
+import { initMonster } from './handlers/initMonster';
 import { reactive, ref, watch, nextTick, type Ref, type App, shallowRef } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { setLife } from '@/relay/handlers/computed';
@@ -37,6 +38,7 @@ const relayConfig = {
     onTranslationsRequest,
     onDragOver,
     onDropOver,
+    initMonster,
   },
   actions: {
     /*
@@ -156,6 +158,11 @@ export const createRelay = async ({ devMode = false, primaryStore = 'taintedgrai
     // Beacon Provides access to settings, like campaign id for example
     store.setCampaignId(initValues.settings.campaignId);
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
+
+    // Prefill NPC values
+    if (initValues.compendiumDrop?.categoryName === 'Monsters') {
+      initMonster({ coordinates: { left: 0, top: 0 }, dropData: initValues.compendiumDrop }, dispatch, initValues.character);
+    }
 
     // Watch for changes
     store.$subscribe(() => {

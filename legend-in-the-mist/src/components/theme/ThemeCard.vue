@@ -19,7 +19,7 @@
             </div>
             <div class="theme-meta__book">
               <span class="title">Type</span>
-              <SelectInput v-model="theme.themebook" :showDefaultOption="true" defaultOptionLabel="Choose..." :options="types" />
+              <SelectInput v-model="theme.themebook" :allowCustom="true" :options="types" />
             </div>
           </div>
           <div class="card__section theme-powers">

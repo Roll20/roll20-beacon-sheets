@@ -1,6 +1,15 @@
 <template>
   <div class="select-input" :class="{ disabled, readonly }">
+    <TextInput
+      v-show="allowCustom && (modelValue === '...' || !includesCustomOption) && modelValue"
+      v-model="customValue"
+      @update:modelValue="updateCustomValue"
+      @clear="clearCustomValue"
+      placeholder="Custom..."
+      ref="customValueEl"
+    />
     <select
+      v-if="!(allowCustom && (modelValue === '...' || !includesCustomOption) && modelValue)"
       ref="selectEl"
       :value="modelValue"
       :disabled="disabled"
@@ -26,6 +35,7 @@
       >
         {{ option.label }}
       </option>
+      <option v-if="allowCustom" value="...">Custom...</option>
     </select>
     <button
       v-if="showClear"
@@ -41,8 +51,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { computed, nextTick, ref, toRefs, watch } from 'vue'
 import SvgIcon from '@/components/shared/SvgIcon.vue';
+import TextInput from './TextInput.vue';
 
 interface Option {
   label: string
@@ -61,9 +72,11 @@ const props =  withDefaults(defineProps<{
   clearOnEsc?: boolean
   showClearWhen?: 'never' | 'always' | 'hasValue' | 'hover'
   clearAriaLabel?: string
+  allowCustom?: boolean 
 }>(), {
   clearOnEsc: false,
   showClearWhen: 'never',
+  allowCustom: false,
 })
 
 const emit = defineEmits<{
@@ -115,6 +128,39 @@ function onChange(e: Event) {
 function focus() {
   selectEl.value?.focus()
 }
+
+const getInitialCustomValue = () => {
+  return modelValue.value === '...' ? '' : String(modelValue.value) || '';
+};
+
+const customValueEl = ref();
+const customValue = ref<string>(getInitialCustomValue());
+const includesCustomOption = computed(() => {
+  if(!customValue.value) return true;
+  return props.options.filter(opt => opt.value === customValue.value).length > 0;
+});
+
+const clearCustomValue = () => {
+  const value = showDefaultOption ? '' : undefined;
+  modelValue.value = value;
+  customValue.value = '';
+  emit('update:modelValue', value);
+  emit('change', value === undefined ? null : value);
+};
+
+const updateCustomValue = (value: string) => {
+  modelValue.value = value;
+  emit('update:modelValue', value);
+  emit('change', value);
+}
+
+watch(() => modelValue.value, (val:any) => {
+  if (val === '...') {
+    nextTick(() => {
+      customValueEl.value?.focus();
+    });
+  }
+});
 
 defineExpose({ focus })
 </script>

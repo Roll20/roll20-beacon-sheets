@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { CategoryType, useInventoryStore } from '../inventory/inventoryStore';
+import type { CompendiumData } from '@/relay/handlers/initMonster';
 
 export type NPCHydrate = {
   npc: {
@@ -43,6 +45,33 @@ export const useNPCStore = defineStore('npc', () => {
   const hpOkayMax = ref(0);
   const hpBadMax = ref(0);
   const hpCriticalMax = ref(0);
+
+  const prefillFromCompendium = (compendiumData: CompendiumData) => {
+    level.value = compendiumData.properties['data-Level'];
+    description.value = compendiumData.properties['data-description'];
+    stamina.value = compendiumData.properties['data-Stamina'];
+    mentalResistance.value = compendiumData.properties['data-MentalResistance'];
+    attack.value = compendiumData.properties['data-Attack'];
+    defense.value = compendiumData.properties['data-Defense'];
+    speed.value = compendiumData.properties['data-Speed'];
+    potential.value = compendiumData.properties['data-Potential'];
+    damage.value = compendiumData.properties['data-Damage'];
+    protection.value = compendiumData.properties['data-Protection'];
+    perception.value = compendiumData.properties['data-Perception'];
+    stealth.value = compendiumData.properties['data-Stealth'];
+    feats.value = compendiumData.properties['data-Feats'];
+    hpGoodMax.value = compendiumData.properties['data-HealthGood'];
+    hpOkayMax.value = compendiumData.properties['data-HealthOkay'];
+    hpBadMax.value = compendiumData.properties['data-HealthBad'];
+    hpCriticalMax.value = compendiumData.properties['data-HealthCritical'];
+
+    // Add traits and special abilities to inventory store.
+    const inventory = useInventoryStore();
+    const parsedTraits = JSON.parse(compendiumData.properties['data-Traits']);
+    const parsedSpecialAbilities = JSON.parse(compendiumData.properties['data-SpecialAbilities']);
+    parsedTraits.forEach((trait: any) => inventory.addItem(trait, CategoryType.TRAIT));
+    parsedSpecialAbilities.forEach((specialAbility: any) => inventory.addItem(specialAbility, CategoryType.SPECIAL_ABILITY));
+  };
 
   const setHealth = (value: number) => {
     healthCondition.value = value;
@@ -126,6 +155,7 @@ export const useNPCStore = defineStore('npc', () => {
     hpBadMax,
     hpCriticalMax,
     setHealth,
+    prefillFromCompendium,
     rollHealthScore,
     dehydrate,
     hydrate,

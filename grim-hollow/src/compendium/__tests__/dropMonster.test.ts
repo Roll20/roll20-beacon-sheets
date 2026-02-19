@@ -157,6 +157,19 @@ describe('dropMonster', () => {
       expect(store.isNpc).toBe(false);
     });
 
+    it('should store token when dropped as companion', async () => {
+      const store = useNpcStore();
+
+      await onDropMonster({
+        payload: { ...validMonsterPayload, token: 'https://s3.amazonaws.com/files.d20.io/images/390059088/Ewmk2luFix7r1hifN9499w/original.png' },
+        isNewSheet: false,
+      });
+
+      const npc = store.npcs[0];
+      expect(npc.isCompanion).toBe(true);
+      expect(npc.token).toBe('https://s3.amazonaws.com/files.d20.io/images/390059088/Ewmk2luFix7r1hifN9499w/original.png');
+    });
+
     it('should fail gracefully with invalid payload', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

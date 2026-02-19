@@ -379,4 +379,21 @@ describe('dnd-transformers/transformMonster', () => {
     // defaults to int if not found
     expect(result.spellSources[0].ability).toBe('intelligence');
   });
+
+  it('maps Token property to token in the output', () => {
+    const properties = {
+      ...baseProperties,
+      Token: 'https://s3.amazonaws.com/files.d20.io/images/390059088/Ewmk2luFix7r1hifN9499w/original.png',
+    };
+
+    const result = transformDnDMonster({ name: 'Cat' }, {}, properties);
+
+    expect(result.token).toBe('https://s3.amazonaws.com/files.d20.io/images/390059088/Ewmk2luFix7r1hifN9499w/original.png');
+  });
+
+  it('defaults token to empty string when Token property is missing', () => {
+    const result = transformDnDMonster({ name: 'Test' }, {}, { ...baseProperties });
+
+    expect(result.token).toBe('');
+  });
 });

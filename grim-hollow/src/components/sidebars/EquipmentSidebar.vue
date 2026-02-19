@@ -39,10 +39,14 @@
           <textarea v-model="description" rows="4" />
         </label>
         <TagsInput :tagId="tagId" @update="updateTags" label="titles.tags" tagSource="equipment" />
-        <label class="effects-editor">
-          {{ $t('titles.effects') }}
+        <details>
+          <summary>
+            <label class="effects-editor">
+              {{ $t('titles.effects') }}
+            </label>
+          </summary>
           <textarea v-model="effects" rows="5" />
-        </label>
+        </details>
       </div>
     </form>
   </div>

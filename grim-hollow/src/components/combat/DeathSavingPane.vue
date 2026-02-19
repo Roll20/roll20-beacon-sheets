@@ -79,11 +79,6 @@ const deathSaveRollArgs = computed((): D20RollArgs => {
 
   const bonuses: LabeledBonus[] = [];
   const modifier = proficiencies.getProficiencyModifier(deathSavingProf);
-  
-  const effectsSum = modifier.value.modifiers.reduce((sum, mod) => sum + mod.value, 0);
-  if (modifier.value.final !== effectsSum) {
-      bonuses.push({ label: t('titles.abilities.constitution'), value: modifier.value.final - effectsSum });
-  }
 
   modifier.value.modifiers.forEach((mod) => {
     bonuses.push({ label: mod.name, value: mod.value });

@@ -12,7 +12,7 @@ import { useResourcesStore } from '@/sheet/stores/resources/resourcesStore';
 import { useI18n } from 'vue-i18n';
 import SidebarLink from '../shared/SidebarLink.vue';
 import { type HitDieSize, useProgressionStore } from '@/sheet/stores/progression/progressionStore';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import DicePool from '../shared/DicePool.vue';
 import { useEffectsStore } from '@/sheet/stores/modifiers/modifiersStore';
 import { useAbilitiesStore } from '@/sheet/stores/abilities/abilitiesStore';

@@ -14,12 +14,19 @@ const FilterConditionSchema = z.object({
   ])
 });
 
+export const defaultPicker = z.object({
+  pageName: z.string(),
+  expansionId: z.string().optional(),
+})
+
 export const compendiumPickers = z.object({
   label: z.string(),
   category: z.string(),
-  filter: z.record(z.string(), FilterConditionSchema).optional(), 
+  filter: z.record(z.string(), FilterConditionSchema).optional(),
   featureId: z.string().optional(),
   featureLabel: z.string().optional(),
+  default: defaultPicker.optional(),
+  defaultId: z.string().optional(),
 });
 
 export const FeatureCompendiumSchema = z.object({

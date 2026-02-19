@@ -48,6 +48,15 @@ watch(
   },
 );
 
+watch(
+  () => maxHp.value,
+  (newMaxHp, oldMaxHp) => {
+    const change = newMaxHp - oldMaxHp;
+    const updatedHp = combat.life.hitPoints + change;
+    combat.life.hitPoints = Math.min(newMaxHp, Math.max(0, updatedHp));
+  },
+);
+
 const onInputFilter = (event: Event) => {
   const inputEl = event.target as HTMLInputElement;
   const match = inputEl.value.match(/^([+-]?\d*)$/);

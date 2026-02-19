@@ -157,6 +157,28 @@ describe('transformDnDEquipment', () => {
       expect(result.value).toEqual({ amount: 2, currency: 'gp' });
     });
 
+    it('parses string weight to number', () => {
+      const rawPayload = { name: 'Backpack' };
+      const itemRecord = {
+        type: 'Item',
+        name: 'Backpack',
+        weight: '5',
+        cost: '2 GP',
+        description: 'Holds things.',
+      };
+      
+      const properties = {
+        'data-datarecords': JSON.stringify([
+          { payload: JSON.stringify(itemRecord) }
+        ])
+      };
+
+      const result = transformDnDEquipment(rawPayload, mockBook, properties);
+
+      expect(result.weight).toBe(5);
+      expect(typeof result.weight).toBe('number');
+    });
+
     it('adds mastery property to tags', () => {
       const rawPayload = { name: 'Greatsword' };
       const records = [

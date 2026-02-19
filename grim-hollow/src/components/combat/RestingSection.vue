@@ -137,7 +137,8 @@ const rest = {
     //Hit Dice
     const hitDice = progression.getHitDice;
     Object.entries(hitDice).forEach(([size, dice]) => {
-      const recovered = Math.ceil(dice / 2);
+      //const recovered = Math.ceil(dice / 2); //2014
+      const recovered = Math.ceil(dice / 1);
       const key = size as keyof typeof progression.hitDice.used;
       progression.hitDice.used[key] = Math.min(dice, (progression.hitDice.used[key] || 0) + recovered);
     });

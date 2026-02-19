@@ -340,4 +340,149 @@ describe('transformDnDSpell', () => {
       expect(result.name).toBe('Partial Fail Spell');
     });
   });
+
+  describe('Healing Spells', () => {
+    it('transforms a modern healing spell', () => {
+      const rawPayload = { name: 'Healing Word' };
+      const properties = {
+        Level: '1',
+        School: 'Evocation',
+        'Casting Time': '1 bonus action',
+        Range: '60 feet',
+        Duration: 'Instantaneous',
+        Components: 'V',
+        Concentration: 'No',
+        Ritual: 'No',
+        'Spell Attack': 'None',
+        'data-description': 'A creature of your choice that you can see within range regains hit points.',
+        'Higher Spell Slot Desc': 'The healing increases by 1d4 for each slot level above 1st.',
+        'data-datarecords': JSON.stringify([
+          { payload: '{"type":"Spell","description":"Healing Word description"}' },
+          {
+            name: 'Healing Word Healing',
+            payload: '{"type":"Healing","ability":"auto","isTemp":false,"diceCount":1,"diceSize":"d4"}',
+          },
+          {
+            name: 'Healing Word Healing Upcasting',
+            parent: 'Healing Word Healing',
+            payload: '{"type":"Upcasting","mode":"Per X Spell Level","startingLevel":2,"level":1,"target":"$.diceCount","value":1}',
+          },
+        ]),
+      };
+
+      const result = transformDnDSpell(rawPayload, mockBook, properties);
+
+      expect(result.name).toBe('Healing Word');
+      expect(result.level).toBe(1);
+      expect(result.damage).toBeDefined();
+      expect(result.damage?.[0]).toEqual({
+        ability: 'spellcasting',
+        damage: '1d4',
+        type: 'healing',
+      });
+
+      // Upcasting
+      expect(result.upcast).toBeDefined();
+      expect(result.upcast).toHaveLength(8); // Levels 2-9
+      expect(result.upcast?.[0].level).toBe(2);
+      expect(result.upcast?.[0].damage[0].damage).toBe('2d4');
+      expect(result.upcast?.[0].damage[0].type).toBe('healing');
+      expect(result.upcast?.[0].damage[0].ability).toBe('spellcasting');
+      expect(result.upcast?.[7].level).toBe(9);
+      expect(result.upcast?.[7].damage[0].damage).toBe('9d4');
+    });
+
+    it('transforms a modern temporary hit points spell', () => {
+      const rawPayload = { name: 'False Life' };
+      const properties = {
+        Level: '1',
+        School: 'Necromancy',
+        'Casting Time': '1 action',
+        Range: 'Self',
+        Duration: '1 hour',
+        Components: 'V, S, M',
+        Concentration: 'No',
+        Ritual: 'No',
+        'Spell Attack': 'None',
+        'data-description': 'You gain temporary hit points.',
+        'data-datarecords': JSON.stringify([
+          { payload: '{"type":"Spell","description":"False Life description"}' },
+          {
+            name: 'False Life THP',
+            payload: '{"type":"Healing","ability":"none","isTemp":true,"diceCount":1,"diceSize":"d4"}',
+          },
+        ]),
+      };
+
+      const result = transformDnDSpell(rawPayload, mockBook, properties);
+
+      expect(result.damage).toBeDefined();
+      expect(result.damage?.[0]).toEqual({
+        ability: 'none',
+        damage: '1d4',
+        type: 'temporary-hit-points',
+      });
+    });
+
+    it('transforms a legacy healing spell', () => {
+      const rawPayload = { name: 'Cure Wounds' };
+      const properties = {
+        Level: '1',
+        School: 'Evocation',
+        'Casting Time': '1 action',
+        Range: 'Touch',
+        Duration: 'Instantaneous',
+        Components: 'V, S',
+        Concentration: 'No',
+        Ritual: 'No',
+        'Spell Attack': 'None',
+        Healing: '1d8',
+        'Add Casting Modifier': 'Yes',
+        'data-description': 'A creature you touch regains hit points.',
+        'Higher Spell Slot Desc': 'When you cast this spell using a spell slot of 2nd level or higher, the healing increases by 1d8 for each slot level above 1st.',
+        'Higher Spell Slot Dice': '1',
+      };
+
+      const result = transformDnDSpell(rawPayload, mockBook, properties);
+
+      expect(result.name).toBe('Cure Wounds');
+      expect(result.damage).toBeDefined();
+      expect(result.damage?.[0]).toEqual({
+        ability: 'spellcasting',
+        damage: '1d8',
+        type: 'healing',
+      });
+
+      expect(result.upcast).toBeDefined();
+      expect(result.upcast?.[0].level).toBe(2);
+      expect(result.upcast?.[0].damage[0].damage).toBe('2d8');
+      expect(result.upcast?.[0].damage[0].type).toBe('healing');
+    });
+
+    it('transforms a legacy healing spell without casting modifier', () => {
+      const rawPayload = { name: 'Goodberry' };
+      const properties = {
+        Level: '1',
+        School: 'Transmutation',
+        'Casting Time': '1 action',
+        Range: 'Touch',
+        Duration: 'Instantaneous',
+        Components: 'V, S, M',
+        Concentration: 'No',
+        Ritual: 'No',
+        'Spell Attack': 'None',
+        Healing: '1',
+        'data-description': 'Up to ten berries appear in your hand.',
+      };
+
+      const result = transformDnDSpell(rawPayload, mockBook, properties);
+
+      expect(result.damage).toBeDefined();
+      expect(result.damage?.[0]).toEqual({
+        ability: 'none',
+        damage: '1',
+        type: 'healing',
+      });
+    });
+  });
 });

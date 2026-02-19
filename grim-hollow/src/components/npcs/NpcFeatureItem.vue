@@ -25,12 +25,15 @@
         rows="3"
         class="npc-feature-editor__textarea"
       ></textarea>
-      <textarea
-        v-model="effectsJson"
-        :placeholder="t('titles.effects')"
-        rows="4"
-        class="npc-feature-editor__textarea"
-      ></textarea>
+      <label class="npc-feature-editor__effects-label">
+        {{ t('titles.effects') }}
+        <textarea
+          v-model="effectsJson"
+          :placeholder="t('titles.effects')"
+          rows="4"
+          class="npc-feature-editor__textarea"
+        ></textarea>
+      </label>
     </div>
   </div>
 </template>
@@ -40,11 +43,12 @@ import { computed, ref, watch } from 'vue';
 import { type Effect } from '@/sheet/stores/modifiers/modifiersStore';
 import { useI18n } from 'vue-i18n';
 import { v4 as uuidv4 } from 'uuid';
-import { type Npc, type NpcFeature } from '@/sheet/stores/npc/npcStore';
+import { type Npc, type NpcFeature, useNpcStore } from '@/sheet/stores/npc/npcStore';
 import { stripIds } from '@/utility/jsonTools';
 import { parseSimpleMarkdown } from '@/utility/markdownParser';
 
 const { t } = useI18n();
+const npcStore = useNpcStore();
 const props = defineProps<{
   feature: NpcFeature;
   localNpc: Npc;
@@ -60,10 +64,16 @@ const parsedDescription = computed(() => parseSimpleMarkdown(props.feature.descr
  * - set: Parses the JSON string and updates the effect in the localNpc's effects array.
  * It creates the effect object on-demand when editing if it doesn't already exist.
  */
+const getDefaultEffectJson = () => JSON.stringify(
+  stripIds(npcStore.getEmptyNpcEffect({ label: props.feature.name })),
+  null,
+  2,
+);
+
 const effectsJson = computed({
   get() {
     const effect = props.localNpc.effects.find((e) => e._id === props.feature.effectId);
-    if (!effect) return '{}';
+    if (!effect) return getDefaultEffectJson();
     const cleanEffect = stripIds(JSON.parse(JSON.stringify(effect)));
     return JSON.stringify(cleanEffect, null, 2);
   },
@@ -148,5 +158,13 @@ const effectsJson = computed({
   width: 24px;
   height: 24px;
   cursor: pointer;
+}
+.npc-feature-editor__effects-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  font-weight: bold;
+  font-size: 0.85rem;
 }
 </style>

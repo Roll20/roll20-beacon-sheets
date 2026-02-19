@@ -132,20 +132,7 @@
     </div>
     <hr />
 
-    <!-- Effects List Editor and Display -->
-    <div v-if="editMode" class="npc-statblock__list-editor">
-      <h4>{{ t('titles.effects') }}</h4>
-      <textarea
-        :value="newEffectJson"
-        @input="$emit('update:newEffectJson', ($event.target as HTMLTextAreaElement).value)"
-        rows="5"
-      ></textarea>
-      <div>
-        <button type="button" @click="$emit('addEffect')">
-          {{ t('actions.add') }} {{ t('titles.effects') }}
-        </button>
-      </div>
-    </div>
+    <!-- Effects List Display -->
     <NpcEffectsList
       :effects="npc.effects"
       :editMode="editMode" 
@@ -420,13 +407,10 @@ const props = defineProps({
   skillsWithBonuses: { type: Array as PropType<string[]>, required: true },
   challengeRatings: { type: Array as PropType<string[]>, required: true },
   challengeRatingValue: { type: String, required: true },
-  newEffectJson: { type: String, required: true },
 });
 
 const emit = defineEmits([
   'update:challengeRatingValue',
-  'update:newEffectJson',
-  'addEffect',
   'toggleEffect',
   'removeEffect',
   'addFeature',
@@ -497,7 +481,6 @@ const groupedSpells = computed(() => {
     addToGroup(source._id, groupKey, spell);
 
     if (!source.isInnate && spell.level > 0 && spell.upcast && spell.upcast.length > 0) {
-      console.log('Processing upcasts for spell:', spell.name);
       spell.upcast.forEach((upcastMod, index) => {
         const targetLevel = upcastMod.level;
 

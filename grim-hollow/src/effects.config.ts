@@ -248,6 +248,40 @@ const passiveSkillKeys = (Object.keys(config.skills) as Array<keyof typeof confi
   {} as Record<`${keyof typeof config.skills}-passive`, `${keyof typeof config.skills}-passive`>,
 );
 
+type ToolProficiencyName = keyof typeof config.autocomplete.toolProficiencies;
+
+const toolProficiencyKeys = (Object.keys(config.autocomplete.toolProficiencies) as ToolProficiencyName[]).reduce((acc, tool) => {
+  const key = `${tool}-proficiency` as const;
+  acc[key] = key;
+  return acc;
+}, {} as Record<`${ToolProficiencyName}-proficiency`, `${ToolProficiencyName}-proficiency`>);
+
+const toolModifierKeys = (Object.keys(config.autocomplete.toolProficiencies) as ToolProficiencyName[]).reduce((acc, tool) => {
+  const key = `${tool}` as const;
+  const value = `${tool}-modifier` as const;
+  acc[key] = value;
+  return acc;
+}, {} as Record<`${ToolProficiencyName}`, `${ToolProficiencyName}-modifier`>);
+
+const toolRollKeys = (Object.keys(config.autocomplete.toolProficiencies) as ToolProficiencyName[]).reduce((acc, tool) => {
+  const key = `${tool}-roll` as const;
+  const value = `${tool}-roll-modifier` as const;
+  acc[key] = value;
+  return acc;
+}, {} as Record<`${ToolProficiencyName}-roll`, `${ToolProficiencyName}-roll-modifier`>);
+
+const toolActionDieKeys = (Object.keys(config.autocomplete.toolProficiencies) as ToolProficiencyName[]).reduce((acc, tool) => {
+  const key = `${tool}-action-die` as const;
+  acc[key] = key;
+  return acc;
+}, {} as Record<`${ToolProficiencyName}-action-die`, `${ToolProficiencyName}-action-die`>);
+
+const toolActionDieMinKeys = (Object.keys(config.autocomplete.toolProficiencies) as ToolProficiencyName[]).reduce((acc, tool) => {
+  const key = `${tool}-action-die-min` as const;
+  acc[key] = key;
+  return acc;
+}, {} as Record<`${ToolProficiencyName}-action-die-min`, `${ToolProficiencyName}-action-die-min`>);
+
 const spellSlotKeys = {} as Record<string, string>;
 for (let i = 1; i <= 9; i++) {
   spellSlotKeys[`spell-slots-${i}`] = `spell-slots-${i}`;
@@ -294,6 +328,11 @@ export const effectKeys = {
   ...savingThrowKeys,
   ...savingThrowProficiencyKeys,
   ...skillProficiencyKeys,
+  ...toolProficiencyKeys,
+  ...toolModifierKeys,
+  ...toolRollKeys,
+  ...toolActionDieKeys,
+  ...toolActionDieMinKeys,
   ...skillKeys,
   ...hitDiceKeys,
   ...abilityModifierRollKeys,

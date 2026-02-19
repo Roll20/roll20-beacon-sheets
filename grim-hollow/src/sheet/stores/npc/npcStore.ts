@@ -260,6 +260,22 @@ export const useNpcStore = defineStore('npcs', () => {
     effectId: patch.effectId ?? uuidv4(),
   });
 
+  const getEmptyNpcEffect = (patch: Partial<Effect> = {}): Effect => ({
+    _id: patch._id ?? uuidv4(),
+    label: patch.label ?? '',
+    description: patch.description ?? '',
+    required: patch.required ?? [],
+    effects: patch.effects ?? [],
+    enabled: patch.enabled ?? true,
+    toggleable: patch.toggleable ?? false,
+    removable: patch.removable ?? false,
+    actions: patch.actions ?? [],
+    resources: patch.resources ?? [],
+    spellSources: patch.spellSources ?? [],
+    spells: patch.spells ?? [],
+    pickers: patch.pickers ?? [],
+  });
+
   const getEmptyNpcAction = (patch: Partial<NpcAction>): NpcAction => ({
     _id: patch._id ?? uuidv4(),
     name: patch.name ?? '',
@@ -1020,6 +1036,7 @@ export const useNpcStore = defineStore('npcs', () => {
     duplicateNpc,
     getEmptyNpc,
     getEmptyNpcAction,
+    getEmptyNpcEffect,
     hydrate,
     dehydrate,
     getNpcFormulaContext,

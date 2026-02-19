@@ -292,20 +292,10 @@ describe('proficienciesStore', () => {
         }]
       });
 
-      effectsStore.addEffect({
-        label: 'Hardy',
-        enabled: true,
-        effects: [{
-          _id: 'e2',
-          attribute: effectKeys['constitution-saving'],
-          operation: 'add',
-          value: 2,
-          formula: ''
-        }]
-      });
+      
 
       const mod = store.getProficiencyModifier(store.deathSaving);
-      expect(mod.value.final).toBe(3);
+      expect(mod.value.final).toBe(1);
     });
 
     it('updateUnranked updates an unranked proficiency', () => {
@@ -360,6 +350,187 @@ describe('proficienciesStore', () => {
 
       expect(store.ranked).toHaveLength(1);
       expect(store.ranked[0].label).toBe('Custom Skill');
+    });
+  });
+
+  describe('Tool Proficiencies from Effects', () => {
+    it('should add a known tool proficiency from an effect', () => {
+      const store = useProficienciesStore();
+      const effectsStore = useEffectsStore();
+
+      effectsStore.addEffect({
+        label: 'Background: Criminal',
+        enabled: true,
+        effects: [{
+          _id: 'eff-thieves',
+          attribute: effectKeys['thieves-tools-proficiency'],
+          operation: 'set',
+          value: 1,
+          formula: ''
+        }]
+      });
+
+      const tools = store.combinedTools;
+      const thievesTools = tools.find(t => t.label === 'titles.proficiency-type.tool-proficiencies.thieves-tools');
+      expect(thievesTools).toBeDefined();
+      expect(thievesTools!.isFromEffect).toBe(true);
+      expect(thievesTools!.sourceEffectLabel).toBe('Background: Criminal');
+      expect(thievesTools!.toolKey).toBe('thieves-tools');
+    });
+
+    it('should not duplicate when user already has a matching tool', () => {
+      const store = useProficienciesStore();
+      const effectsStore = useEffectsStore();
+
+      store.updateRanked(undefined, {
+        label: 'titles.proficiency-type.tool-proficiencies.thieves-tools',
+        ability: 'dexterity',
+        group: 'tools'
+      });
+
+      effectsStore.addEffect({
+        label: 'Background',
+        enabled: true,
+        effects: [{
+          _id: 'eff-thieves',
+          attribute: effectKeys['thieves-tools-proficiency'],
+          operation: 'set',
+          value: 1,
+          formula: ''
+        }]
+      });
+
+      const tools = store.combinedTools;
+      const thievesMatches = tools.filter(t =>
+        t.label.toLowerCase() === 'titles.proficiency-type.tool-proficiencies.thieves-tools'
+      );
+      expect(thievesMatches).toHaveLength(1);
+      expect(thievesMatches[0].toolKey).toBe('thieves-tools');
+    });
+
+    it('should modify proficiency level of an effect-sourced tool', () => {
+      const store = useProficienciesStore();
+      const effectsStore = useEffectsStore();
+
+      effectsStore.addEffect({
+        label: 'Feature',
+        enabled: true,
+        effects: [{
+          _id: 'eff-tools',
+          attribute: effectKeys['alchemist-supplies-proficiency'],
+          operation: 'set',
+          value: 1,
+          formula: ''
+        }]
+      });
+
+      const tools = store.combinedTools;
+      const alchemist = tools.find(t => t.toolKey === 'alchemist-supplies')!;
+      expect(alchemist).toBeDefined();
+
+      const level = store.getModifiedProficiencyLevel(alchemist);
+      expect(level.value.final).toBe(1);
+    });
+
+    it('should remove effect-sourced tool when effect is removed', () => {
+      const store = useProficienciesStore();
+      const effectsStore = useEffectsStore();
+
+      const effect = effectsStore.addEffect({
+        label: 'Background',
+        enabled: true,
+        effects: [{
+          _id: 'eff-thieves',
+          attribute: effectKeys['thieves-tools-proficiency'],
+          operation: 'set',
+          value: 1,
+          formula: ''
+        }]
+      });
+
+      expect(store.combinedTools.some(t => t.toolKey === 'thieves-tools')).toBe(true);
+
+      effectsStore.remove(effect._id);
+
+      expect(store.combinedTools.some(t => t.toolKey === 'thieves-tools')).toBe(false);
+    });
+
+    it('should apply global tools-proficiency to effect-sourced tools', () => {
+      const store = useProficienciesStore();
+      const effectsStore = useEffectsStore();
+
+      effectsStore.addEffect({
+        label: 'Per-Tool',
+        enabled: true,
+        effects: [
+          {
+            _id: 'eff-thieves',
+            attribute: effectKeys['thieves-tools-proficiency'],
+            operation: 'set',
+            value: 1,
+            formula: ''
+          },
+        ]
+      });
+
+      effectsStore.addEffect({
+        label: 'Tool Expert',
+        enabled: true,
+        effects: [
+          {
+            _id: 'eff-global',
+            attribute: effectKeys['tools-proficiency'],
+            operation: 'add',
+            value: 1,
+            formula: ''
+          }
+        ]
+      });
+
+      const tools = store.combinedTools;
+      const thievesTools = tools.find(t => t.toolKey === 'thieves-tools')!;
+
+      const level = store.getModifiedProficiencyLevel(thievesTools);
+      expect(level.value.final).toBe(1);
+
+      store.updateRanked(undefined, { label: 'Wrench', ability: 'strength', group: 'tools' });
+      const wrench = store.combinedTools.find(t => t.label === 'Wrench')!;
+      const wrenchLevel = store.getModifiedProficiencyLevel(wrench);
+      expect(wrenchLevel.value.final).toBe(0);
+    });
+
+    it('should allow user to edit an effect-sourced tool', () => {
+      const store = useProficienciesStore();
+      const effectsStore = useEffectsStore();
+
+      effectsStore.addEffect({
+        label: 'Background',
+        enabled: true,
+        effects: [{
+          _id: 'eff-smith',
+          attribute: effectKeys['smith-tools-proficiency'],
+          operation: 'set',
+          value: 1,
+          formula: ''
+        }]
+      });
+
+      let tools = store.combinedTools;
+      const smithTool = tools.find(t => t.toolKey === 'smith-tools')!;
+      expect(smithTool.isFromEffect).toBe(true);
+
+      store.updateRanked(undefined, {
+        label: smithTool.label,
+        ability: 'intelligence',
+        group: 'tools',
+        level: 2 
+      });
+
+      tools = store.combinedTools;
+      const smithMatches = tools.filter(t =>
+        t.label.toLowerCase() === smithTool.label.toLowerCase()
+      );
+      expect(smithMatches).toHaveLength(1);
     });
   });
 });

@@ -1,5 +1,4 @@
-import { tr } from 'zod/v4/locales';
-import { transformDnDFeature, transformDnDFeatureSet } from './transformFeature';
+import { mergeRecordsIntoFeatures } from './transformFeature';
 import { deepTransformFormulas } from './utils';
 import { createEffectFragment } from './transformEffects';
 
@@ -96,6 +95,70 @@ const transformLegacyClass = (rawPayload: any, properties: any): Record<string, 
   return transformedPayload;
 };
 
+
+const preprocessModifiers = (dataRecords: any[]): any[] => {
+  const modifierRecords = dataRecords.filter((rec: any) => rec.modify !== undefined);
+  if (modifierRecords.length === 0) return modifierRecords;
+
+  const modifiersByTarget = new Map<string, any[]>();
+  for (const mod of modifierRecords) {
+    const target = mod.modify;
+    if (!modifiersByTarget.has(target)) {
+      modifiersByTarget.set(target, []);
+    }
+    modifiersByTarget.get(target)!.push(mod);
+  }
+
+  for (const [targetName, modifiers] of modifiersByTarget.entries()) {
+    const targetRecord = dataRecords.find((rec: any) => rec.name === targetName);
+    if (!targetRecord) continue;
+
+    try {
+      const targetPayload = JSON.parse(targetRecord.payload);
+
+      if (targetPayload.type === 'Resource') {
+        const baseValue = targetPayload.maxValueFormula?.flatValue || 0;
+        const sortedModifiers = [...modifiers].sort(
+          (a, b) => parseInt(a.level) - parseInt(b.level),
+        );
+
+        let formula = String(baseValue);
+        let prevValue = baseValue;
+
+        for (const mod of sortedModifiers) {
+          try {
+            const modPayload = JSON.parse(mod.payload);
+            const modLevel = parseInt(mod.level);
+            const newValue = modPayload.modifications?.['maxValueFormula.flatValue'];
+
+            if (newValue !== undefined && !isNaN(modLevel)) {
+              const delta = newValue - prevValue;
+              if (delta !== 0) {
+                formula += ` + ${delta} * floor(min(max($ownerlevel - ${modLevel - 1}, 0), 1))`;
+              }
+              prevValue = newValue;
+            }
+          } catch {
+            // Skip invalid modifier payloads
+          }
+        }
+
+        if (formula !== String(baseValue)) {
+          targetPayload.maxValueFormula = {
+            ...targetPayload.maxValueFormula,
+            customFormula: formula,
+          };
+          targetRecord.payload = JSON.stringify(targetPayload);
+        }
+      }
+    } catch {
+      // Skip if target payload can't be parsed
+    }
+  }
+
+  return modifierRecords;
+};
+
 export const transformDnDClass = (
   rawPayload: any,
   book: any,
@@ -103,6 +166,9 @@ export const transformDnDClass = (
 ): Record<string, any> => {
   if (properties['data-datarecords']) {
     const dataRecords = JSON.parse(properties['data-datarecords'] || '[]');
+
+    // Pre-process modifier records before any feature transformation to apply level-dependent formulas
+    const modifierRecords = preprocessModifiers(dataRecords);
 
     let hitDie = '1d8'; 
     const hitDiceRecord = dataRecords.find((rec: any) => {
@@ -212,7 +278,7 @@ export const transformDnDClass = (
       }
     }
 
-    let featuresByLevel: Record<string, any[]> = {};
+    const featuresByLevel: Record<string, any[]> = {};
 
     const level1ProficiencyRecords = dataRecords.filter((rec: any) => {
       if (rec.level !== 1 && rec.level !== '1') return false;
@@ -249,6 +315,7 @@ export const transformDnDClass = (
 
     const otherRecords = dataRecords.filter((rec: any) => {
       if (level1ProficiencyRecords.includes(rec)) return false;
+      if (modifierRecords.includes(rec)) return false;
       try {
         const payload = JSON.parse(rec.payload);
         return payload.type !== 'Spellcasting' && payload.type !== 'Spell Choice';
@@ -257,23 +324,20 @@ export const transformDnDClass = (
       }
     });
 
-    for (const record of otherRecords) {
-      const feature = transformDnDFeature(record);
-      if (feature) {
-        const hasDescription = feature.description && feature.description.trim() !== '';
-        const hasEffects = !!feature['data-effects'];
-        const hasSpells = !!feature['data-spells'];
+    const mergedFeatures = mergeRecordsIntoFeatures(dataRecords, otherRecords);
+    for (const { feature, level } of mergedFeatures) {
+      const hasDescription = feature.description && feature.description.trim() !== '';
+      const hasEffects = !!feature['data-effects'];
+      const hasSpells = !!feature['data-spells'];
 
-        if (hasDescription || hasEffects || hasSpells) {
-          feature.group = 'class-features';
-          const level = parseInt(record.level, 10);
-          if (!isNaN(level) && level > 0) {
-            const levelKey = `level-${level}`;
-            if (!featuresByLevel[levelKey]) {
-              featuresByLevel[levelKey] = [];
-            }
-            featuresByLevel[levelKey].push(feature);
+      if (hasDescription || hasEffects || hasSpells) {
+        feature.group = 'class-features';
+        if (level > 0) {
+          const levelKey = `level-${level}`;
+          if (!featuresByLevel[levelKey]) {
+            featuresByLevel[levelKey] = [];
           }
+          featuresByLevel[levelKey].push(feature);
         }
       }
     }

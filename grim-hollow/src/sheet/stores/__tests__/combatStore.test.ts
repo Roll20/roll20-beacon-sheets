@@ -289,24 +289,22 @@ describe('useCombatStore', () => {
 
       const dehydrated = store.dehydrate();
 
-      expect(dehydrated.combat.exhaustion).toBe(2);
-      expect(dehydrated.combat.inspiration).toBe(1);
-      expect(dehydrated.combat.armorClass).toEqual(store.armorClass);
+      expect(dehydrated.exhaustion).toBe(2);
+      expect(dehydrated.inspiration).toBe(1);
+      expect(dehydrated.armorClass).toEqual(store.armorClass);
     });
 
     it('should hydrate store state merging speeds correctly', () => {
       const store = useCombatStore();
       
       const payload = {
-        combat: {
-          armorClass: { mode: 'manual' as const, base: 15, ability: 'constitution' as const },
-          // Partial speed update
-          speed: { walk: { base: 45, description: 'Monk' } } as any,
-          deathSaves: { successes: 1, failures: 2 },
-          life: { hitPoints: 50, temporary: 10 },
-          exhaustion: 3,
-          inspiration: 1,
-        },
+        armorClass: { mode: 'manual' as const, base: 15, ability: 'constitution' as const },
+        // Partial speed update
+        speed: { walk: { base: 45, description: 'Monk' } } as any,
+        deathSaves: { successes: 1, failures: 2 },
+        life: { hitPoints: 50, temporary: 10 },
+        exhaustion: 3,
+        inspiration: 1,
       };
 
       store.hydrate(payload);
