@@ -437,7 +437,6 @@ export const useProgressionStore = defineStore('progression', () => {
   const removeAncestryExpiredFeatures = (expirationLevel: number) => {
     const featuresStore = useFeaturesStore();
     if(ancestry.value.featureIds.length) {
-      debugger;
       const expiredFeatures = ancestry.value.featureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel <= expirationLevel);
       expiredFeatures.forEach(fid => featuresStore.remove(fid.id));
       ancestry.value.featureIds = ancestry.value.featureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel > expirationLevel);
