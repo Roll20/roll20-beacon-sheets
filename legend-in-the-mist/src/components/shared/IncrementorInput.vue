@@ -66,18 +66,21 @@ const onInputFilter = (event: Event) => {
 };
 
 const onInput = () => {
-  const value = localValue.value.toString();
+  const value = (inputEl.value?.value ?? localValue.value.toString()).trim();
   let update = props.modelValue;
-  
+  const minValue = props.min ?? -Infinity;
+  const maxValue = props.max ?? Infinity;
+
   if (value[0] === '-') {
     const raw = parseInt(value.slice(1)) || 0;
-    update = Math.max(0, props.modelValue - raw);
+    update = Math.max(minValue, props.modelValue - raw);
   } else if (value[0] === '+') {
     const raw = parseInt(value.slice(1)) || 0;
-    update = Math.min(props.max || Infinity, props.modelValue + raw);
+    update = Math.min(maxValue, props.modelValue + raw);
   } else {
-    const raw = Math.min(props.max || Infinity, Math.max(0, parseInt(value))) || 0;
-    update = raw;
+    const parsed = parseInt(value);
+    const raw = Number.isNaN(parsed) ? 0 : parsed;
+    update = Math.min(maxValue, Math.max(minValue, raw));
   }
   
   if (inputEl.value) {

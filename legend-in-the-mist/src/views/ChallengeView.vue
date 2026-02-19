@@ -140,7 +140,7 @@
                                   <path d="M24.593,15.851L24.067,14.893L23.895,13.699L23.667,12.521L22.563,11.285L21.505,9.991L21.279,9.787L19.519,9.029L18.331,8.963L17.061,8.911L15.799,9.107L14.527,8.991L12.653,10.003L11.527,11.249L10.435,12.517L10.309,13.719L10.117,14.955L9.395,15.975L8.855,16.757L9.005,18.315L9.375,19.831L9.811,20.455L10.851,21.153L11.889,21.879L12.439,22.991L12.901,24.625L14.383,25.333L14.643,23.865L15.597,24.137L15.971,25.277L16.365,26.515L16.969,26.455L17.151,26.429L17.675,26.457L18.143,25.275L18.399,24.397L19.361,24.159L19.723,25.357L21.107,24.653L21.593,22.969L22.245,21.889L23.239,21.111L24.309,20.453L24.779,19.845L25.027,18.299L25.223,16.761L24.593,15.851ZM14.523,19.803L12.549,18.807L11.817,17.333L12.331,15.975L14.807,16.425L15.941,18.497L14.523,19.803ZM17.323,22.071L17.061,22.229L16.799,22.071L16.227,20.499L17.061,19.081L17.893,20.499L17.323,22.071ZM21.573,18.807L21.183,19.003C21.183,19.003 20.955,19.115 20.813,19.189C20.667,19.267 20.357,19.419 20.357,19.419L19.597,19.803L18.179,18.497L19.313,16.425L21.789,15.975L22.303,17.333L21.573,18.807Z" style="fill:rgb(58,49,89);fill-rule:nonzero;"/>
                               </g>
                             </svg>
-                            <input type="text" v-model="newConsequence" placeholder="New Consequence">
+                            <input type="text" v-model="newConsequence[threat._id]" placeholder="New Consequence">
                             <button type="button" @click="addConsequence(threat)" class="action-button action-button--add"><SvgIcon icon="Add" /></button>
                         </div>
                       </div>
@@ -275,17 +275,17 @@ const newTagOrStatus = ref<{ name: string; value: number | null }>({ name: '', v
 const newMight = ref<{ type: 'Origin' | 'Adventure' | 'Greatness'; description: string }>({ type: 'Origin', description: '' });
 const newSpecialFeature = ref<{ name: string; description: string }>({ name: '', description: '' });
 
-const newConsequence = ref<string>('');
+const newConsequence = ref<Record<string, string>>({});
 
 const addConsequence = (threat:Threat) => {
-  const description = newConsequence.value;
+  const description = newConsequence.value[threat._id] || '';
   if (description.trim() !== '') {
     const updatedThreat: Threat = {
       ...threat,
       consequences: [...threat.consequences, { ...challenge.getEmptyConsequence(), description }]
     }
     challenge.updateThreat(updatedThreat);
-    newConsequence.value = '';
+    newConsequence.value[threat._id] = '';
   }
 };
 
