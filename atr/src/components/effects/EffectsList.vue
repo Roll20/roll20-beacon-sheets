@@ -33,7 +33,7 @@
           >{{ $t('actions.delete') }}</button>
         </div>
 
-        <div v-if="Array.isArray(effectParent.pickers) && effectParent.pickers.length > 0" class="pickers">
+        <div v-if="effectParent.enabled && Array.isArray(effectParent.pickers) && effectParent.pickers.length > 0" class="pickers">
           <div v-for="(picker, index) in effectParent.pickers" :key="index" class="picker">
             <label>
               {{ picker.label }}

@@ -79,4 +79,7 @@ export const onDropBackground = async ({
   const level = progressionStore.getLevel || 1;
 
   progressionStore.addFeaturesToBackground(1, level);
+
+  const characterLevel = progressionStore.getLevel || 0;
+  progressionStore.removeBackgroundExpiredFeatures(characterLevel);
 };

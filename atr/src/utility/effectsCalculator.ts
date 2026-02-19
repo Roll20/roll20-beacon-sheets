@@ -4,7 +4,6 @@ import type {
   SingleEffect,
   ExtendedSingleEffect,
   DicePool,
-  EffectsDescriptionList,
   ModifierBreakdown,
   Picker,
 } from '@/sheet/stores/modifiers/modifiersStore';
@@ -17,6 +16,9 @@ import { type Action, useActionsStore } from '@/sheet/stores/actions/actionsStor
 import { type Resource, useResourcesStore } from '@/sheet/stores/resources/resourcesStore';
 import { type TagGroup, useTagsStore } from '@/sheet/stores/tags/tagsStore';
 import { v4 as uuidv4 } from 'uuid';
+import { useProgressionStore } from '@/sheet/stores/progression/progressionStore';
+import { effect } from 'zod';
+import { useEquipmentStore } from '@/sheet/stores/equipment/equipmentStore';
 
 const operationPriority: Record<SingleEffect['operation'], number> = {
   'set-base': 1,
@@ -39,29 +41,125 @@ const operationPriority: Record<SingleEffect['operation'], number> = {
   push: 7,
 };
 
-function getPicker<T extends string | string[]>(value: T, pickers?: Picker[]): T {
-  const regex = /^\$picker:[0-9]+/;
-  const values = Array.isArray(value) ? [...value] : [value];
-  
-  let broken = false;
-  
-  values.forEach((val, i) => {
-    if (!regex.test(val)) return;
-    const index = parseInt(val.split(':')[1]);
-    if (Array.isArray(pickers) && pickers[index]) {
-      const picker = pickers[index];
-      if(picker.value) {
-        values[i] = String(picker.value);
-      } else {
-        broken = true;
+export type RequirementContext = {
+  pickers?: Picker[];
+  isEquipped?: boolean;
+  isAttuned?: boolean;
+  level?: number;
+};
+
+export const checkRequirements = (
+  requirements: string[] | undefined,
+  context: RequirementContext,
+): boolean => {
+  if (!requirements || requirements.length === 0) return true;
+  console.log('Checking requirements:', requirements, 'with context:', context);
+  return requirements.every((req) => {
+    if (req === 'equipped') return context.isEquipped ?? true;
+    if (req === 'attuned') return context.isAttuned ?? true;
+
+    if (req.startsWith('$picker:')) {
+      const match = req.match(/^\$picker:(\d+)(==|<=|>=|<|>)(.+)$/);
+      if (match) {
+        const index = parseInt(match[1], 10);
+        const operator = match[2];
+        const targetValue = match[3];
+
+        if (!context.pickers || !context.pickers[index]) return false;
+
+        const pickerValue = Number(context.pickers[index].value);
+        const compareValue = Number(targetValue);
+
+        switch (operator) {
+          case '==':
+            return String(context.pickers[index].value) === targetValue;
+          case '<=':
+            return pickerValue <= compareValue;
+          case '>=':
+            return pickerValue >= compareValue;
+          case '<':
+            return pickerValue < compareValue;
+          case '>':
+            return pickerValue > compareValue;
+          default:
+            return false;
+        }
       }
     }
+
+    const levelMatch = req.match(/^(cl|ol)(<|<=|==|=>|>=|>)(\d+)$/);
+    if (levelMatch) {
+      const operator = levelMatch[2];
+      const targetValue = parseInt(levelMatch[3], 10);
+      const currentLevel = context.level || 0;
+
+      switch (operator) {
+        case '<':
+          return currentLevel < targetValue;
+        case '<=':
+          return currentLevel <= targetValue;
+        case '==':
+          return currentLevel === targetValue;
+        case '=>':
+          return currentLevel >= targetValue;
+        case '>=':
+          return currentLevel >= targetValue;
+        case '>':
+          return currentLevel > targetValue;
+        default:
+          return false;
+      }
+    }
+
+    return true;
+  });
+};
+
+function getPicker<T extends string | string[]>(value: T, pickers?: Picker[]): T {
+  const regex = /\$picker:(\d+)/g;
+
+  const isArray = Array.isArray(value);
+  const values: string[] = isArray ? [...value] : [value];
+
+  let broken = false;
+
+  const processedValues = values.map((val) => {
+    if (typeof val !== 'string' || !val.includes('$picker:')) return val;
+
+    return val.replace(regex, (match, indexString) => {
+      const index = parseInt(indexString, 10);
+
+      if (Array.isArray(pickers) && pickers[index]) {
+        const picker = pickers[index];
+        if (picker.value !== undefined && picker.value !== null && picker.value !== '') {
+          return String(picker.value);
+        }
+      }
+
+      broken = true;
+      return match;
+    });
   });
 
-  if(broken) return Array.isArray(value) ? ([] as unknown as T) : ('' as T);
-  return Array.isArray(value) ? (values as T) : (values[0] as T);
+  if (broken) {
+    return (isArray ? [] : '') as T;
+  }
+
+  return (isArray ? processedValues : processedValues[0]) as T;
 }
 
+export const isNpcEffectActive = (effect: Effect, singleEffect: SingleEffect): boolean => {
+  if (!effect.enabled) return false;
+
+  const context: RequirementContext = {
+    pickers: effect.pickers,
+    isEquipped: true,
+    isAttuned: true,
+    level: 0,
+  };
+
+  return checkRequirements(singleEffect.required, context);
+};
 
 const defaultGetters = {
   actions: (patch: Partial<Action>) => useActionsStore().getEmptyAction(patch),
@@ -117,19 +215,32 @@ function collectFromEffects<T extends { _id: string }>(
   })[] = [];
 
   const getDefault = defaultGetters[key as keyof typeof defaultGetters];
+  const equipmentStore = useEquipmentStore();
+  const owner = equipmentStore.equipment.find((item) => item.effectId === effect._id);
+  const progressionStore = useProgressionStore();
 
-  allEffects.forEach((effect) => {
+ allEffects.forEach((effect) => {
     if (isActiveCheck(effect) && effect[key]) {
       const items = (effect[key] as unknown as T[]) || [];
+      
       items.forEach((item) => {
-        const completeItem = { ...getDefault(item as Partial<T>), ...item };
+        const itemContext: RequirementContext = {
+          pickers: effect.pickers,
+          isEquipped: owner ? owner.equipped : true,
+          isAttuned: owner ? owner.isAttuned : true,
+          level: progressionStore.getLevel,
+        };
 
-        collectedItems.push({
-          ...completeItem,
-          isFromEffect: true,
-          sourceEffectId: effect._id,
-          sourceEffectLabel: effect.label,
-        } as T & { isFromEffect: true; sourceEffectId: string; sourceEffectLabel: string });
+        if (checkRequirements((item as any).required, itemContext)) {
+          const completeItem = { ...getDefault(item as Partial<T>), ...item };
+
+          collectedItems.push({
+            ...completeItem,
+            isFromEffect: true,
+            sourceEffectId: effect._id,
+            sourceEffectLabel: effect.label,
+          } as T & { isFromEffect: true; sourceEffectId: string; sourceEffectLabel: string });
+        }
       });
     }
   });
@@ -169,8 +280,7 @@ function calculateModifiedTags(
   isActiveCheck: (effect: Effect, singleEffect: SingleEffect) => boolean,
 ): { text: string; isDefault: boolean; isFromEffect: boolean; sourceLabel: string }[] {
   const validEffects = getValidEffects(allEffects, attribute, isActiveCheck).filter(
-    (eff) =>
-      eff.operation === 'push' && (typeof eff.value === 'string' || Array.isArray(eff.value)),
+    (eff) => eff.operation === 'push',
   );
 
   const pushedTags: {
@@ -180,7 +290,20 @@ function calculateModifiedTags(
     sourceLabel: string;
   }[] = [];
   for (const effect of validEffects) {
-    const tagList = Array.isArray(effect.value) ? effect.value : [effect.value];
+    let resolvedValue: string | string[] | number = effect.value;
+
+    if (effect.formula && typeof effect.formula === 'string' && effect.formula.includes('$picker:')) {
+      const resolved = getPicker(effect.formula, effect.pickers);
+      if (resolved) resolvedValue = resolved;
+    } else if (typeof resolvedValue === 'string' && resolvedValue.includes('$picker:')) {
+      resolvedValue = getPicker(resolvedValue, effect.pickers);
+    } else if (Array.isArray(resolvedValue)) {
+      resolvedValue = getPicker(resolvedValue, effect.pickers);
+    }
+
+    if (!resolvedValue || (typeof resolvedValue !== 'string' && !Array.isArray(resolvedValue))) continue;
+
+    const tagList = Array.isArray(resolvedValue) ? resolvedValue : [resolvedValue];
 
     const isDefenseAttribute =
       effect.attribute === 'damage-resistances' ||
@@ -287,9 +410,19 @@ function calculateModifiedDicePool(
 
   validEffects.forEach((effect) => {
     const formulaRegex = /-formula$/g;
-    const value = formulaRegex.test(effect.operation)
-      ? evaluate(parseFormula(getPicker(effect.formula || '0', effect.pickers) as string), {})
-      : effect.value;
+
+    let value: string | number;
+
+    if (formulaRegex.test(effect.operation)) {
+      const parsed = parseFormula(getPicker(effect.formula || '0', effect.pickers) as string);
+      try {
+        value = evaluate(parsed, {});
+      } catch (e) {
+        value = parsed;
+      }
+    } else {
+      value = effect.value as string | number;
+    }
     const operation = effect.operation.replace(formulaRegex, '');
 
     let contribution = 0;
@@ -379,7 +512,10 @@ function calculateModifiedRollBonuses(
 function calculateActionDie(validEffects: ExtendedSingleEffect[]): number {
   const values = validEffects.map((effect) => {
     const formulaRegex = /-formula$/g;
-    return formulaRegex.test(effect.operation) ? evaluate(parseFormula(getPicker(effect.formula || '0', effect.pickers) as string), {}) : effect.value;
+    if (formulaRegex.test(effect.operation)) {
+      return parseFormulaAndEvaluate(getPicker(effect.formula || '0', effect.pickers) as string);
+    }
+    return Number(effect.value);
   });
 
   const hasAdvantage = values.some((v) => v > 0);
@@ -408,4 +544,8 @@ export const EffectsCalculator = {
   calculateActionDie,
   calculateModifiedTags,
   collectFromEffects,
+  checkRequirements,
+  isNpcEffectActive,
+  getPicker,
+  constrain,
 };

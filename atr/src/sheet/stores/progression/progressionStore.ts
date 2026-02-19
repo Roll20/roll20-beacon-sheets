@@ -356,7 +356,7 @@ export const useProgressionStore = defineStore('progression', () => {
         }
       }
     } catch (error) {
-      console.warn("Failed to parse class features from compendium data", error);
+      console.warn("Failed to parse ancestry features from compendium data", error);
     }
   }
 
@@ -437,14 +437,14 @@ export const useProgressionStore = defineStore('progression', () => {
   const removeAncestryExpiredFeatures = (expirationLevel: number) => {
     const featuresStore = useFeaturesStore();
     if(ancestry.value.featureIds.length) {
-      const expiredFeatures = ancestry.value.featureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel >= expirationLevel);
+      const expiredFeatures = ancestry.value.featureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel <= expirationLevel);
       expiredFeatures.forEach(fid => featuresStore.remove(fid.id));
-      ancestry.value.featureIds = ancestry.value.featureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel < expirationLevel);
+      ancestry.value.featureIds = ancestry.value.featureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel > expirationLevel);
     }
     if(ancestry.value.subraceFeatureIds.length) {
-      const expiredFeatures = ancestry.value.subraceFeatureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel >= expirationLevel);
+      const expiredFeatures = ancestry.value.subraceFeatureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel <= expirationLevel);
       expiredFeatures.forEach(fid => featuresStore.remove(fid.id));
-      ancestry.value.subraceFeatureIds = ancestry.value.subraceFeatureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel < expirationLevel);
+      ancestry.value.subraceFeatureIds = ancestry.value.subraceFeatureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel > expirationLevel);
     }
   }
 
@@ -481,9 +481,9 @@ export const useProgressionStore = defineStore('progression', () => {
   const removeBackgroundExpiredFeatures = (expirationLevel: number) => {
     const featuresStore = useFeaturesStore();
     if(ancestry.value.featureIds.length) {
-      const expiredFeatures = background.value.featureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel >= expirationLevel);
+      const expiredFeatures = background.value.featureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel <= expirationLevel);
       expiredFeatures.forEach(fid => featuresStore.remove(fid.id));
-      background.value.featureIds = background.value.featureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel < expirationLevel);
+      background.value.featureIds = background.value.featureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel > expirationLevel);
     }
   }
 

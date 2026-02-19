@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import FeatureItem from './FeatureItem.vue';
+import { Feature, type FeatureGroup } from '@/sheet/stores/features/faturesStore';
 import { useFeaturesStore } from '@/sheet/stores/features/faturesStore';
 import { useI18n } from 'vue-i18n';
 import SidebarLink from '../shared/SidebarLink.vue';
@@ -30,7 +31,31 @@ import { computed } from 'vue';
 const features = useFeaturesStore();
 const { t } = useI18n();
 
-const orderedFeatures = computed(() => features.features.slice().sort((a, b) => a.label.localeCompare(b.label)));
+//const orderedFeatures = computed(() => features.features.slice().sort((a, b) => a.label.localeCompare(b.label)));
+const orderedFeatures = computed(() => { 
+  const groups:Record<FeatureGroup, Feature[]> = {
+    'core-personality-traits': [],
+    'class-features': [],
+    'ancestry-features': [],
+    'feats': [],
+    'others': [],
+  };
+  const orderedFeatures = features.features.slice().sort((a, b) => a.label.localeCompare(b.label));
+  for (const feature of orderedFeatures) {
+    const group = feature.group as FeatureGroup;
+    if (groups[group]) {
+      groups[group].push(feature);
+    }
+  }
+  return [
+    ...groups['core-personality-traits'],
+    ...groups['ancestry-features'],
+    ...groups['class-features'],
+    ...groups['feats'],
+    ...groups['others'],
+  ];
+});
+
 </script>
 
 <style lang="scss" scoped>

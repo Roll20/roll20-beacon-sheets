@@ -29,9 +29,10 @@ import { useMetaStore } from '../meta/metaStore';
 import { dispatchRef, initValues } from '@/relay/relay';
 import { createRollTemplate } from '@/rolltemplates/rolltemplates';
 import type { Dispatch } from '@roll20-official/beacon-sdk';
-import { EffectsCalculator } from '@/utility/effectsCalculator';
+import { EffectsCalculator} from '@/utility/effectsCalculator';
 import { evaluateDiceFormula, parseFormula } from '../formulas';
 import { getRollProperties } from '@/utility/roll';
+import { RequirementSchema } from '../modifiers/requirement';
 
 export type SpellSchool = (typeof config.spellSchools)[number];
 export type SpellComponent = (typeof config.spellComponents)[number];
@@ -80,6 +81,7 @@ export const SpellSchema = z.object({
   effectId: z.string(),
   tagId: z.string(),
   'data-tags': z.array(z.string()).optional(),
+  required: z.array(RequirementSchema).optional(),
 });
 
 export type UpcastModifier = z.infer<typeof UpcastModifierSchema>;
@@ -90,17 +92,19 @@ const BaseSpellSourceSchema = z.object({
   name: z.string(),
   isPrepared: z.boolean().optional(),
   cantripsKnown: z.array(z.number()).optional(),
-  spellsKnown: z.array(z.number()).optional()
+  spellsKnown: z.array(z.number()).optional(),
 });
 
 export const StandardSpellSourceSchema = BaseSpellSourceSchema.extend({
   type: z.literal('ability'),
   ability: z.custom<AbilityKey>(),
+  required: z.array(RequirementSchema).optional(),
 });
 
 export const FlatSpellSourceSchema = BaseSpellSourceSchema.extend({
   type: z.literal('flat'),
   flat: z.number(),
+  required: z.array(RequirementSchema).optional(),
 });
 
 export const SpellSourceSchema = z.discriminatedUnion('type', [
@@ -333,11 +337,17 @@ export const useSpellsStore = defineStore('spells', () => {
       components: arrayToIndexedObject(spell.components),
       damage: arrayToIndexedObject(spell.damage),
       upcast: arrayToIndexedObject(spell.upcast),
+      required: spell.required ? arrayToIndexedObject(spell.required) : undefined,
+    }));
+
+    const dehydratedSources = userSources.value.map((source) => ({
+      ...source,
+      required: source.required ? arrayToIndexedObject(source.required) : undefined,
     }));
 
     return {
       spells: arrayToObject(dehydratedSpells),
-      sources: arrayToObject(userSources.value),
+      sources: arrayToObject(dehydratedSources),
       slots: {
         mode: slots.value.mode,
         total: {
@@ -356,10 +366,18 @@ export const useSpellsStore = defineStore('spells', () => {
           components: indexedObjectToArray(spell.components as Record<string, SpellComponent>),
           damage: indexedObjectToArray(spell.damage as Record<string, DamageRoll>),
           upcast: indexedObjectToArray(spell.upcast as Record<string, Partial<Spell>>),
+          required: spell.required
+            ? indexedObjectToArray(spell.required as unknown as Record<string, string>)
+            : undefined,
         }))
       : [];
     userSpells.value = spellsHydration;
-    userSources.value = payload?.sources ? objectToArray(payload.sources) : [];
+    userSources.value = payload?.sources 
+      ? objectToArray(payload.sources).map((source) => ({
+          ...source,
+          required: source.required ? indexedObjectToArray(source.required as unknown as Record<string, string>) : undefined,
+        })) 
+      : [];
     slots.value = payload?.slots
       ? {
           mode: payload.slots.mode || 'automatic',

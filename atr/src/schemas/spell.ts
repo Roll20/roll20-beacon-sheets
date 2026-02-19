@@ -4,6 +4,7 @@ import { DamageSchema } from './damage';
 import { type AbilityKey } from '@/sheet/stores/abilities/abilitiesStore';
 import { EffectCompendiumCoreSchema } from './common/effect.core';
 import { ta } from 'zod/v4/locales';
+import { RequirementSchema } from './common/common';
 
 const SpellLevelSchema = z
   .number()
@@ -22,6 +23,7 @@ const BaseSpellSourceSchema = z.object({
   isPrepared: z.boolean().optional(),
   cantripsKnown: z.array(z.number()).optional(),
   spellsKnown: z.array(z.number()).optional(),
+  required: z.array(RequirementSchema).optional(),
 });
 
 export const BaseSpellSourceCompendiumSchema = BaseSpellSourceSchema.omit({ _id: true });
@@ -50,6 +52,11 @@ export const UpcastModifierSchema = z.object({
   description: z.string().optional(),
   concentration: z.boolean().optional(),
   damage: z.array(DamageSchema).optional(),
+});
+
+export const SpellCompatibilitySchema = z.object({
+  name: z.enum(['Monster Hunter', 'Cleric', 'Druid', 'Bard', 'Barbarian', 'Fighter', 'Monk', 'Paladin', 'Rogue', 'Wizard', 'Warlock', 'Ranger', 'Sorcerer']),
+  sourceBook: z.number().optional(),
 });
 
 export const SpellCompendiumSchema = z.object({
@@ -84,9 +91,13 @@ export const SpellCompendiumSchema = z.object({
 
   'data-effects': EffectCompendiumCoreSchema.optional(),
   'data-tags': z.array(z.string()).optional(),
+  'data-compatibility': z.array(SpellCompatibilitySchema).optional(),
+  required: z.array(RequirementSchema).optional(),
+  
 });
 
 export const SpellSchema = SpellCompendiumSchema.extend({
   _id: z.string().optional(),
+  innateUsage: z.string().optional(),
   spellSourceId: z.string().optional(),
 });

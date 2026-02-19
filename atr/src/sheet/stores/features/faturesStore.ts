@@ -8,7 +8,7 @@ import { useTagsStore, type Tag } from '../tags/tagsStore';
 import { useEffectsStore } from '../modifiers/modifiersStore';
 import { e } from 'mathjs';
 
-export type FeatureGroup = 'class-features' | 'ancestry-features' | 'feats' | 'others'
+export type FeatureGroup = 'core-personality-traits' | 'class-features' | 'ancestry-features' | 'feats' | 'others'
 
 export type Feature = {
   _id: string;

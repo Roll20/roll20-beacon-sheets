@@ -2,7 +2,8 @@ import type { Character } from '@roll20-official/beacon-sdk';
 import type { SingleEffect, Effect, EffectsHydrate } from "@/sheet/stores/modifiers/modifiersStore";
 import type { EquipmentHydrate } from '@/sheet/stores/equipment/equipmentStore';
 import { indexedObjectToArray, objectToArray } from '@/utility/objectify';
-import { EffectsCalculator } from '@/utility/effectsCalculator';
+import { EffectsCalculator, type RequirementContext } from '@/utility/effectsCalculator';
+import { getLevel } from './computed';
 
 const isEffectActive = (effect: Effect, character: Character): boolean => {
   if (!effect.enabled) {
@@ -21,15 +22,12 @@ const isEffectActive = (effect: Effect, character: Character): boolean => {
 
   const owner = Object.values(equipment).find((item) => item.effectId === effect._id);
 
-  if (!owner) {
-    return true;
-  }
-
-  const currentStates: string[] = [];
-  if (owner.equipped) currentStates.push('equipped');
-  if (owner.isAttuned) currentStates.push('attuned');
-
-  return effect.required.every((req) => currentStates.includes(req));
+  return {
+    pickers: effect.pickers,
+    isEquipped: owner ? owner.equipped : false,
+    isAttuned: owner ? owner.isAttuned : false,
+    level: getLevel({ character }),
+  };
 };
 
 const isEffectSingleActive = (effect: Effect, singleEffect: SingleEffect, character: Character): boolean => {
