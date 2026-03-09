@@ -662,7 +662,8 @@
       "full-examples": "(Shepherd, Conservator...)",
       "half": "Half",
       "half-examples": "(Arbiter)",
-      "third": "Third"
+      "third": "Third",
+      "third-examples": "(Auxiliary)"
     },
     "tabs": {
       "core": "Core",
