@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { type TagGroup, useTagsStore } from '@/sheet/stores/tags/tagsStore';
 import z from 'zod';
 import { processItemTags } from '@/utility/effectsCalculator';
+import { useBiographyStore } from '@/sheet/stores/biography/biographyStore';
 
 type Feature = z.infer<typeof FeatureSchema>;
 
@@ -135,6 +136,11 @@ if (
   if (cascade?.source) newFeature.source = cascade.source;
   
   featuresStore.update(newFeature);
+
+  if (result.data.group === 'core-personality-traits') {
+    const biographyStore = useBiographyStore();
+    biographyStore.corePersonality = result.data.label;
+  }
 
   return newFeature._id;
 };
