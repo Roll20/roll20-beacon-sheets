@@ -139,10 +139,7 @@ if (
 
   if (result.data.group === 'core-personality-traits') {
     const biographyStore = useBiographyStore();
-    const current = biographyStore.corePersonality.trim();
-    biographyStore.corePersonality = current
-      ? `${current}, ${result.data.label}`
-      : result.data.label;
+    biographyStore.corePersonality = result.data.label;
   }
 
   return newFeature._id;
