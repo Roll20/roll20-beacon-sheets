@@ -1,0 +1,1 @@
+import type { Character, Dispatch } from '@roll20-official/beacon-sdk';
