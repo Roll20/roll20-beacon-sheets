@@ -219,7 +219,7 @@ const toggleEssence = (index: keyof Essences) => {
     outline: none;
   }
   .check {
-    fill: rgb(var(--color-palette-highlight));
+    fill: rgb(var(--color-palette-dark));
   }
 }
 </style>

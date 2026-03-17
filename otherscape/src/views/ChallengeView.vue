@@ -480,6 +480,7 @@ const addTracker = async () => {
     background: var(--color-text-tertiary);
     width: 1px;
     opacity: 0.5;
+    height: calc(100% + 35px);
   }
   &__right-col {
     grid-area: right-col;
@@ -796,7 +797,7 @@ const addTracker = async () => {
   .sheet__trackers {
     margin-top: 20px;
     grid-column: 1 / -1;
-    border-top: 1px solid rgb(var(--color-palette-foreground) / 0.25);
+    border-top: 1px solid rgb(var(--color-palette-foreground) / calc(var(--color-palette-disabled) / 2));
     padding-top: 40px;
     .chip {
       box-shadow: none!important;
