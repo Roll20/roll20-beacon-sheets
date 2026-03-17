@@ -96,56 +96,136 @@
           <text x="67.873px" y="275.114px" style="font-family:'Rajdhani-Bold', 'Rajdhani';font-weight:700;font-size:32px;fill:#48a5ca;">NOISE</text>
           <text x="222.024px" y="275.114px" style="font-family:'Rajdhani-Bold', 'Rajdhani';font-weight:700;font-size:32px;fill:#965fd0;">MYTHOS</text>
         </g>
-        <g id="essence-tracker__nexus" class="essence-tracker__toggler" @click="toggleEssence('nexus')" v-tooltip="'Nexus'">
+        <g
+          id="essence-tracker__nexus"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="0"
+          aria-label="Nexus"
+          @click="toggleEssence('nexus')"
+          @keydown.enter.prevent="toggleEssence('nexus')"
+          @keydown.space.prevent="toggleEssence('nexus')"
+          v-tooltip="'Nexus'"
+        >
           <g>
             <ellipse cx="190.018" cy="215.884" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M190.018,198.413C199.673,198.413 207.512,206.242 207.512,215.884C207.512,225.527 199.673,233.356 190.018,233.356C180.363,233.356 172.525,225.527 172.525,215.884C172.525,206.242 180.363,198.413 190.018,198.413ZM190.018,200.521C181.527,200.521 174.633,207.404 174.633,215.884C174.633,224.365 181.527,231.248 190.018,231.248C198.509,231.248 205.404,224.365 205.404,215.884C205.404,207.404 198.509,200.521 190.018,200.521Z" style="fill:#ced1bd;" />
           </g>
           <ellipse cx="190.018" cy="215.884" rx="10.5" ry="10.487" class="check" v-if="essences.nexus"/>
         </g>
-        <g id="essence-tracker__cyborg" class="essence-tracker__toggler" @click="toggleEssence('cyborg')" v-tooltip="'Cyborg'">
+        <g
+          id="essence-tracker__cyborg"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="1"
+          aria-label="Cyborg"
+          @click="toggleEssence('cyborg')"
+          @keydown.enter.prevent="toggleEssence('cyborg')"
+          @keydown.space.prevent="toggleEssence('cyborg')"
+          v-tooltip="'Cyborg'"
+        >
           <g>
             <ellipse cx="17.509" cy="116.299" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M17.509,98.827C27.163,98.827 35.002,106.656 35.002,116.299C35.002,125.941 27.163,133.77 17.509,133.77C7.854,133.77 0.015,125.941 0.015,116.299C0.015,106.656 7.854,98.827 17.509,98.827ZM17.509,100.935C9.018,100.935 2.123,107.818 2.123,116.299C2.123,124.779 9.018,131.662 17.509,131.662C25.999,131.662 32.894,124.779 32.894,116.299C32.894,107.818 25.999,100.935 17.509,100.935Z" style="fill:#ced1bd;" />
           </g>
           <ellipse cx="17.509" cy="116.299" rx="10.5" ry="10.487" class="check" v-if="essences.cyborg"/>
         </g>
-        <g id="essence-tracker__singularity" class="essence-tracker__toggler" @click="toggleEssence('singularity')" v-tooltip="'Singularity'">
+        <g
+          id="essence-tracker__singularity"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="2"
+          aria-label="Singularity"
+          @click="toggleEssence('singularity')"
+          @keydown.enter.prevent="toggleEssence('singularity')"
+          @keydown.space.prevent="toggleEssence('singularity')"
+          v-tooltip="'Singularity'"
+        >
           <g>
             <ellipse cx="17.509" cy="315.47" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M17.509,297.999C27.163,297.999 35.002,305.827 35.002,315.47C35.002,325.113 27.163,332.941 17.509,332.941C7.854,332.941 0.015,325.113 0.015,315.47C0.015,305.827 7.854,297.999 17.509,297.999ZM17.509,300.106C9.018,300.106 2.123,306.99 2.123,315.47C2.123,323.95 9.018,330.834 17.509,330.834C25.999,330.834 32.894,323.95 32.894,315.47C32.894,306.99 25.999,300.106 17.509,300.106Z" style="fill:#ced1bd;" />
           </g>
           <ellipse cx="17.509" cy="315.47" rx="10.5" ry="10.487" class="check" v-if="essences.singularity"/>
         </g>
-        <g id="essence-tracker__transhuman" class="essence-tracker__toggler" @click="toggleEssence('transhuman')" v-tooltip="'Transhuman'">
+        <g
+          id="essence-tracker__transhuman"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="3"
+          aria-label="Transhuman"
+          @click="toggleEssence('transhuman')"
+          @keydown.enter.prevent="toggleEssence('transhuman')"
+          @keydown.space.prevent="toggleEssence('transhuman')"
+          v-tooltip="'Transhuman'"
+        >
           <g>
             <ellipse cx="190.002" cy="414.529" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M190.002,397.057C199.657,397.057 207.496,404.886 207.496,414.529C207.496,424.171 199.657,432 190.002,432C180.348,432 172.509,424.171 172.509,414.529C172.509,404.886 180.348,397.057 190.002,397.057ZM190.002,399.165C181.512,399.165 174.617,406.048 174.617,414.529C174.617,423.009 181.512,429.892 190.002,429.892C198.493,429.892 205.388,423.009 205.388,414.529C205.388,406.048 198.493,399.165 190.002,399.165Z" style="fill:#ced1bd;" />
           </g>
           <ellipse cx="190.002" cy="414.529" rx="10.5" ry="10.487" class="check" v-if="essences.transhuman"/>
         </g>
-        <g id="essence-tracker__conduit" class="essence-tracker__toggler" @click="toggleEssence('conduit')" v-tooltip="'Conduit'">
+        <g
+          id="essence-tracker__conduit"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="4"
+          aria-label="Conduit"
+          @click="toggleEssence('conduit')"
+          @keydown.enter.prevent="toggleEssence('conduit')"
+          @keydown.space.prevent="toggleEssence('conduit')"
+          v-tooltip="'Conduit'"
+        >
           <g>
             <ellipse cx="362.528" cy="357.034" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M362.528,339.563C372.183,339.563 380.021,347.391 380.021,357.034C380.021,366.677 372.183,374.506 362.528,374.506C352.873,374.506 345.035,366.677 345.035,357.034C345.035,347.391 352.873,339.563 362.528,339.563ZM362.528,341.67C354.037,341.67 347.142,348.554 347.142,357.034C347.142,365.514 354.037,372.398 362.528,372.398C371.019,372.398 377.914,365.514 377.914,357.034C377.914,348.554 371.019,341.67 362.528,341.67Z" style="fill:#ced1bd;" />
           </g>
           <ellipse cx="362.528" cy="357.034" rx="10.5" ry="10.487" class="check" v-if="essences.conduit"/>
         </g>
-        <g id="essence-tracker__avatar" class="essence-tracker__toggler" @click="toggleEssence('avatar')" v-tooltip="'Avatar'">
+        <g
+          id="essence-tracker__avatar"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="5"
+          aria-label="Avatar"
+          @click="toggleEssence('avatar')"
+          @keydown.enter.prevent="toggleEssence('avatar')"
+          @keydown.space.prevent="toggleEssence('avatar')"
+          v-tooltip="'Avatar'"
+        >
           <g>
             <ellipse cx="362.528" cy="315.47" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M362.528,297.999C372.183,297.999 380.021,305.827 380.021,315.47C380.021,325.113 372.183,332.941 362.528,332.941C352.873,332.941 345.035,325.113 345.035,315.47C345.035,305.827 352.873,297.999 362.528,297.999ZM362.528,300.106C354.037,300.106 347.142,306.99 347.142,315.47C347.142,323.95 354.037,330.834 362.528,330.834C371.019,330.834 377.914,323.95 377.914,315.47C377.914,306.99 371.019,300.106 362.528,300.106Z" style="fill:#ced1bd;" />
           </g>
           <ellipse cx="362.528" cy="315.47" rx="10.5" ry="10.487" class="check" v-if="essences.avatar"/>
         </g>
-        <g id="essence-tracker__spiritualist" class="essence-tracker__toggler" @click="toggleEssence('spiritualist')" v-tooltip="'Spiritualist'">
+        <g
+          id="essence-tracker__spiritualist"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="6"
+          aria-label="Spiritualist"
+          @click="toggleEssence('spiritualist')"
+          @keydown.enter.prevent="toggleEssence('spiritualist')"
+          @keydown.space.prevent="toggleEssence('spiritualist')"
+          v-tooltip="'Spiritualist'"
+        >
           <g>
             <ellipse cx="362.528" cy="116.299" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M362.528,98.827C372.183,98.827 380.021,106.656 380.021,116.299C380.021,125.941 372.183,133.77 362.528,133.77C352.873,133.77 345.035,125.941 345.035,116.299C345.035,106.656 352.873,98.827 362.528,98.827ZM362.528,100.935C354.037,100.935 347.142,107.818 347.142,116.299C347.142,124.779 354.037,131.662 362.528,131.662C371.019,131.662 377.914,124.779 377.914,116.299C377.914,107.818 371.019,100.935 362.528,100.935Z" style="fill:#ced1bd;" />
           </g>
           <ellipse cx="362.528" cy="116.299" rx="10.5" ry="10.487" class="check" v-if="essences.spiritualist"/>
         </g>
-        <g id="essence-tracker__real" class="essence-tracker__toggler" @click="toggleEssence('real')" v-tooltip="'Real'">
+        <g
+          id="essence-tracker__real"
+          class="essence-tracker__toggler"
+          role="button"
+          tabindex="7"
+          aria-label="Real"
+          @click="toggleEssence('real')"
+          @keydown.enter.prevent="toggleEssence('real')"
+          @keydown.space.prevent="toggleEssence('real')"
+          v-tooltip="'Real'"
+        >
           <g>
             <ellipse cx="190.002" cy="17.471" rx="17.493" ry="17.471" style="fill:#fff;" />
             <path d="M190.002,0C199.657,0 207.496,7.829 207.496,17.471C207.496,27.114 199.657,34.943 190.002,34.943C180.348,34.943 172.509,27.114 172.509,17.471C172.509,7.829 180.348,0 190.002,0ZM190.002,2.108C181.512,2.108 174.617,8.991 174.617,17.471C174.617,25.952 181.512,32.835 190.002,32.835C198.493,32.835 205.388,25.952 205.388,17.471C205.388,8.991 198.493,2.108 190.002,2.108Z" style="fill:#ced1bd;" />
