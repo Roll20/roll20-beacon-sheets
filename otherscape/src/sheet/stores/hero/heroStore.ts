@@ -127,15 +127,15 @@ export const heroStore = defineStore('hero', () => {
   };
 
   const hydrate = (payload: HeroStoreHydratate) => {
-    player.value = payload.player || player.value;
-    fellowshipRelations.value = objectToArray(payload.fellowshipRelations) || fellowshipRelations.value;
+    player.value = payload.player ?? player.value;
+    fellowshipRelations.value = objectToArray(payload.fellowshipRelations) ?? fellowshipRelations.value;
     promise.value = payload.promise;
-    quintessences.value = objectToArray(payload.quintessences) || quintessences.value;
-    backpack.value = objectToArray(payload.backpack) || backpack.value;
-    notes.value = payload.notes || notes.value;
-    fulfillments.value = objectToArray(payload.fulfillments) || fulfillments.value;
-    specials.value = objectToArray(payload.specials) || specials.value;
-    essences.value = payload.essences || essences.value;
+    quintessences.value = objectToArray(payload.quintessences) ?? quintessences.value;
+    backpack.value = objectToArray(payload.backpack) ?? backpack.value;
+    notes.value = payload.notes ?? notes.value;
+    fulfillments.value = objectToArray(payload.fulfillments) ?? fulfillments.value;
+    specials.value = objectToArray(payload.specials) ?? specials.value;
+    essences.value = payload.essences ?? essences.value;
   };
 
   const firstName = ref<string>('');

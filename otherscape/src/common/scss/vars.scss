@@ -45,7 +45,7 @@ html {
   --font-size-small: 11px;
   --font-size-xsmall: 8px;
   --font-size-xlarge: 18px;
-  --font-family-title: 'Orbitron', sans-serif;;
+  --font-family-title: 'Orbitron', sans-serif;
   --font-family-body: 'Rajdhani', sans-serif;
 
   --color-palette-character: 31 31 31;
@@ -60,7 +60,7 @@ html {
   --color-palette-muted: 0.8;
   --color-palette-disabled: 0.25;
 
-  --color-card-title: var(-color-text-secondary);
+  --color-card-title: var(--color-text-secondary);
   --color-herocard-background: #{$color-2};
   --color-herocard-border: #{$color-3};
   --color-herocard-line: #{$color-4};

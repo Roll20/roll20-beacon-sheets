@@ -202,16 +202,16 @@ export const challengeStore = defineStore('challenge', () => {
   };
 
   const hydrate = (payload: ChallengeStoreHydratate) => {
-    sheetType.value = payload.sheetType || sheetType.value;
-    meta.value = payload.meta || meta.value;
-    limits.value = objectToArray(payload.limits) || limits.value;
-    tagsAndStatuses.value = objectToArray(payload.tagsAndStatuses) || tagsAndStatuses.value;
-    mighties.value = objectToArray(payload.mighties) || mighties.value;
-    specialFeatures.value = objectToArray(payload.specialFeatures) || specialFeatures.value;
+    sheetType.value = payload.sheetType ?? sheetType.value;
+    meta.value = payload.meta ?? meta.value;
+    limits.value = objectToArray(payload.limits) ?? limits.value;
+    tagsAndStatuses.value = objectToArray(payload.tagsAndStatuses) ?? tagsAndStatuses.value;
+    mighties.value = objectToArray(payload.mighties) ?? mighties.value;
+    specialFeatures.value = objectToArray(payload.specialFeatures) ?? specialFeatures.value;
     threats.value = objectToArray(payload.threats).map(t => ({
       ...t,
-      consequences: objectToArray(payload.threats[t._id]?.consequences) || [],
-    })) || threats.value;
+      consequences: objectToArray(payload.threats[t._id]?.consequences) ?? [],
+    })) ?? threats.value;
   };
 
   const mode = ref<'edit' | 'view'>('view');
