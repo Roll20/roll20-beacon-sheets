@@ -1,0 +1,24 @@
+<div class='roll__components'>
+  {{#each components}}
+    {{#if (or (not (isEqual this.value 0)) this.alwaysShowInBreakdown)}}
+      <div class='roll__component component'>
+        <div class='component__description'>
+          {{#if this.label}}
+            <span class='component__label'>
+              {{this.label}}
+            </span>
+          {{else}}
+            {{#if this.sides}}
+              <span class='component__label'>
+                {{this.count}}d{{this.sides}}
+              </span>
+            {{/if}}
+          {{/if}}
+          <span class='component__value'>
+            ({{#if @index}}{{#if (isGreater @index 1)}}{{#if (isGreater this.value 0)}}+{{/if}}{{/if}}{{/if}}{{this.value}})
+          </span>
+        </div>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>
