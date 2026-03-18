@@ -330,8 +330,8 @@ const addTracker = async () => {
 
 <style scoped lang="scss">
 .view {
-  --color-palette-highlight: 207 255 87;
-  --challenge-color-1: #ACFF00;
+  --color-palette-highlight: var(--color-palette-neon);
+  --challenge-color-1: rgb(var(--color-palette-neon));
   --challenge-color-2: #724a32;
   --challenge-color-3: #63758B;
   --challenge-color-4: #e7e3d8;

@@ -57,7 +57,7 @@ watch(
 </script>
 <style scoped lang="scss">
   .view--configuration {
-    --color-palette-highlight: 207 255 87;
+    --color-palette-highlight: var(--color-palette-neon);
     
     width: 100%;
     height: 100%;

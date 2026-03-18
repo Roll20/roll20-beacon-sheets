@@ -124,7 +124,7 @@ const roll = () => {
 
 <style lang="scss" scoped>
 .roller {
-  --color-palette-highlight: 207 255 87;
+  --color-palette-highlight: var(--color-palette-neon);
 
   background-color: rgb(41 36 53 / 90%);
   border-radius: 5px 5px 0 0;

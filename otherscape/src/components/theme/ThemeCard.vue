@@ -463,8 +463,8 @@ watch([showScrollbar, visiblePowers], async ([hasScrollbar]) => {
         text-decoration: line-through;
       }
       .svg-icon {
-        fill: #ffa000;
-        filter: drop-shadow(0px 0px 5px red);
+        fill: rgb(var(--color-palette-neon));
+        filter: drop-shadow(0px 0px 5px rgb(var(--color-palette-foreground)));
       }
     }
     &:has(input:disabled) {
@@ -510,8 +510,8 @@ watch([showScrollbar, visiblePowers], async ([hasScrollbar]) => {
         text-decoration: line-through;
       }
       .svg-icon {
-        fill: #ffa000;
-        filter: drop-shadow(0px 0px 5px red);
+        fill: rgb(var(--color-palette-neon));
+        filter: drop-shadow(0px 0px 5px rgb(var(--color-palette-foreground)));
       }
     }
     &:has(input:disabled) {
