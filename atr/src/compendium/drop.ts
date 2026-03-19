@@ -13,12 +13,13 @@ import { onDropSubrace } from "./dropSubrace";
 import { onDropRace } from "./dropRace";
 import { onDropBackground } from "./dropBackground";
 import { onDropMonster, setToken } from "./dropMonster";
+import { onDropPositiveReaction, onDropNegativeReaction } from "./dropReaction";
 import { type Dispatch } from "@roll20-official/beacon-sdk";
 import { SpellSchema } from "@/schemas/spell";
 
 type Feature = z.infer<typeof FeatureSchema>;
 
-export type compendiumCategory = "Core Personality Traits" | "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Ancestries" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories"| "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" |"Brews" | "Magic Weapons" | "Magic Armor"| "Wondrous Items" | "Mutations" | "Progeny - Sin Nature" | "Descended - Angelic Banner Origin" | "NPC Classes";
+export type compendiumCategory = "Core Personality Traits" | "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Ancestries" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories"| "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" |"Brews" | "Magic Weapons" | "Magic Armor"| "Wondrous Items" | "Mutations" | "Progeny - Sin Nature" | "Descended - Angelic Banner Origin" | "NPC Classes" | "Positive Reactions" | "Negative Reactions";
 
 export type CompendiumPage = {
   id: string;
@@ -126,6 +127,8 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   "Progeny - Sin Nature": onDropSubrace,
   "Descended - Angelic Banner Origin": onDropSubrace,
   "NPC Classes": onDropClass,
+  "Positive Reactions": onDropPositiveReaction,
+  "Negative Reactions": onDropNegativeReaction,
 
 };
 

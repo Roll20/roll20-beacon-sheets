@@ -409,6 +409,14 @@ export const useEffectsStore = defineStore('effects', () => {
                       : undefined,
                     damage: spell.damage ? arrayToIndexedObject(spell.damage) : undefined,
                     required: spell.required ? arrayToIndexedObject(spell.required) : undefined,
+                    upcast: spell.upcast
+                      ? arrayToIndexedObject(
+                          spell.upcast.map((u) => ({
+                            ...u,
+                            damage: u.damage ? arrayToIndexedObject(u.damage) : undefined,
+                          })),
+                        )
+                      : undefined,
                   })),
                 )
               : undefined,
@@ -466,7 +474,13 @@ export const useEffectsStore = defineStore('effects', () => {
               ...spell,
               components: spell.components ? indexedObjectToArray(spell.components) : [],
               damage: spell.damage ? indexedObjectToArray(spell.damage) : [],
-              required: spell.required ? indexedObjectToArray(spell.required) : undefined, 
+              required: spell.required ? indexedObjectToArray(spell.required) : undefined,
+              upcast: spell.upcast
+                ? indexedObjectToArray(spell.upcast).map((u: any) => ({
+                    ...u,
+                    damage: u.damage ? indexedObjectToArray(u.damage) : [],
+                  }))
+                : [],
             }))
           : [],
         pickers: effect.pickers || [],

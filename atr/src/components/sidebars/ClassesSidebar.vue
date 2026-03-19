@@ -38,7 +38,7 @@ const progression = useProgressionStore();
 const spells = useSpellsStore();
 
 const localClasses = ref<ClassProgression[]>(jsonClone(progression.classes));
-const localSpellSources = ref<SpellSource[]>(jsonClone(spells.sources));
+const localSpellSources = ref<SpellSource[]>(jsonClone(spells.userSources));
 
 const classIdsToRemove = ref<string[]>([]);
 const sourcesToRemove = ref<string[]>([]);
