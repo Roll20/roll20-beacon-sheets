@@ -95,7 +95,7 @@
                   <input type="text" v-model="feature.name" placeholder="Name">
                   <button type="button" @click="challenge.deleteSpecialFeature(feature._id)" class="action-button action-button--delete"><SvgIcon icon="Delete" /></button>
                 </div>
-                <textarea v-model="feature.description" placeholder="Progress Special Feature"></textarea>
+                <textarea v-model="feature.description" placeholder="Special Feature Description"></textarea>
               </div>
               <div class="newfeature">
                 <div class="actionable-row">

@@ -10,7 +10,7 @@
     />
     <span
       v-if="!isCustomMode"
-      class="select-display"
+      :class="{ 'select-display': true, 'select-display--autohide': autoHidePlaceholder && !hasValue }"
       :title="selectedDisplayLabel"
     >{{ selectedDisplayLabel }}</span>
     <select
@@ -76,6 +76,7 @@ const props =  withDefaults(defineProps<{
   readonly?: boolean
   ariaLabel?: string
   placeholder?: string
+  autoHidePlaceholder?: boolean
   clearOnEsc?: boolean
   showClearWhen?: 'never' | 'always' | 'hasValue' | 'hover'
   clearAriaLabel?: string
@@ -227,6 +228,11 @@ defineExpose({ focus })
   &:focus-within select {
     border-color: rgb(var(--color-palette-highlight));
   }
+  &:hover, &:focus-within {
+    .select-display--autohide {
+      opacity: 1;
+    }
+  }
 }
 
 .select-input.has-clear {
@@ -254,6 +260,9 @@ defineExpose({ focus })
   text-align: left;
   white-space: nowrap;
   box-sizing: border-box;
+  &--autohide {
+    opacity: 0;
+  }
 }
 
 .select-input .clear-btn {

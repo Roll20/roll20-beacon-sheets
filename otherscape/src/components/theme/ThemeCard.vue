@@ -12,6 +12,7 @@
             <SvgIcon class="decorator" icon="Loadout" />
           </h2>
           <h2 class="title" v-else>Theme Card</h2>
+          <CardDecoration :theme="cardTheme"/>
         </div>
         <div class="card__body" :class="{ 'card__body--fellowship': theme.isFellowship, 'card__body--loadout': theme.isLoadout }">
           <div class="card__header-separator" v-if="cardType !== 'theme'"></div>
@@ -33,54 +34,55 @@
           </div>
           <div class="card__section tags">
             <div class="card__section theme-powers">
-              <component :is="showScrollbar ? OverlayScrollbarsComponent : 'div'" 
-                :defer="showScrollbar ? true : undefined"
-                :options="showScrollbar ? { scrollbars: { autoHide: 'move'} } : undefined"
-                :events="showScrollbar ? scrollEvents : undefined"
+              <OverlayScrollbarsComponent
+                :defer="true"
+                :options="{ scrollbars: { autoHide: 'move'} }"
+                :events="scrollEvents"
                 ref="scroll"
-                :class="showScrollbar ? ['scroll-area', `scroll-area--${cardType}`, { 'scroll-area--not-at-start': isScrollNotAtStart, 'scroll-area--at-end': isScrollAtEnd }] : ''">
+                :class="['scroll-area', { 'scroll-area--not-at-start': isScrollNotAtStart, 'scroll-area--at-end': isScrollAtEnd }]"
+              >
                 <div :class="`list taglist taglist--${cardType}`">
-                  <TagBox v-for="(power, index) in visiblePowers" :key="power._id" :isActive="power.checked" :isDisabled="power.name.trim() === ''" :isBurnt="power.burnt" :isWeakness="power.type === 'Weakness'">
+                  <TagBox v-for="(power, index) in visibleTags" :key="power._id" :isActive="power.checked" :isDisabled="power.name.trim() === ''" :isBurnt="power.burnt" :isWeakness="power.type === 'Weakness'">
                     <div class="theme-tag" :class="{'theme-tag--loadout': theme.isLoadout}">
-                        <div class="power-toggle image-toggle">
-                          <template v-if="!(power.name.trim() === '')">
-                            <input type="checkbox" v-model="power.checked" :disabled="power.name.trim() === '' || power.burnt">
-                            <SvgIcon icon="Power"/>
-                          </template>
-                        </div>
-                        <TextInput
-                          v-model="power.name"
-                          :disabled="power.burnt"
-                          :class="{'line-through': power.burnt }"
-                          :placeholder="(index === 0 && !theme.isLoadout)
-                            ? 'Theme Title'
-                            : (power.type === 'Weakness' ? 'Weakness Tag' : 'Power Tag')"
-                          :autoHidePlaceholder="true"
-                          @clear="clearTheme(power)"/>
+                      <div class="power-toggle image-toggle">
+                        <template v-if="!(power.name.trim() === '')">
+                          <input type="checkbox" v-model="power.checked" :disabled="power.name.trim() === '' || power.burnt">
+                          <SvgIcon icon="Power"/>
+                        </template>
+                      </div>
+                      <TextInput
+                        v-model="power.name"
+                        :disabled="power.burnt"
+                        :class="{'line-through': power.burnt }"
+                        :placeholder="(index === 0 && !theme.isLoadout)
+                          ? 'Theme Title'
+                          : (power.type === 'Weakness' ? 'Weakness Tag' : 'Power Tag')"
+                        :autoHidePlaceholder="true"
+                        @clear="clearTheme(power)"/>
                       <div class="broken-toggle image-toggle" v-if="theme.isLoadout" :class="{'broken': theme.isLoadout && power.type === 'Weakness'}">
-                          <template v-if="!(power.name.trim() === '')">
-                            <input
-                              type="checkbox"
-                              v-model="power.type"
-                              true-value="Weakness"
-                              false-value="Power"
-                              :disabled="power.name.trim() === '' || power.burnt"
-                            >
-                            <SvgIcon icon="Broken"/>
-                          </template>
-                        </div>
-                        <div class="burnt-toggle image-toggle" :class="{'broken': theme.isLoadout && power.type === 'Weakness'}">
-                          <template v-if="!(power.name.trim() === '')">
-                            <input type="checkbox" v-model="power.burnt" :disabled="power.name.trim() === '' || power.type === 'Weakness'" @click="scratchPower(power)">
-                            <SvgIcon icon="Burn"/>
-                          </template>
-                        </div>
+                        <template v-if="!(power.name.trim() === '')">
+                          <input
+                            type="checkbox"
+                            v-model="power.type"
+                            true-value="Weakness"
+                            false-value="Power"
+                            :disabled="power.name.trim() === '' || power.burnt"
+                          >
+                          <SvgIcon icon="Broken"/>
+                        </template>
+                      </div>
+                      <div class="burnt-toggle image-toggle" :class="{'broken': theme.isLoadout && power.type === 'Weakness'}">
+                        <template v-if="!(power.name.trim() === '')">
+                          <input type="checkbox" v-model="power.burnt" :disabled="power.name.trim() === '' || power.type === 'Weakness'" @click="scratchPower(power)">
+                          <SvgIcon icon="Burn"/>
+                        </template>
+                      </div>
                     </div>
                   </TagBox>
                 </div>
-              </component>
+              </OverlayScrollbarsComponent>
             </div>
-            <div class="card__section theme-weaknesses" v-if="!theme.isLoadout">
+            <!-- <div class="card__section theme-weaknesses" v-if="!theme.isLoadout">
               <div class="list">
                 <TagBox v-for="weakness in weaknesses" :key="weakness._id" :isWeakness="true" :isActive="weakness.checked" :isDisabled="weakness.name.trim() === ''">
                   <div class="theme-tag">
@@ -94,7 +96,7 @@
                   </div>
                 </TagBox>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="card__section theme-quest" v-if="!theme.isLoadout">
             <h3 class="title break-padding">{{ questLabel }}</h3>
@@ -106,9 +108,18 @@
               </div>
             </div>
           </div>
+          <div class="card__section theme-quest" v-else>
+            <div class="quest-progress quest-progress--loadout">
+              <div class="quest-progress-item">
+                <RangeBar v-model="theme.quest.upgrade" :max="3" />
+                <span class="title">Upgrade</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card__footer"  @click="flipped = !flipped">
           <OtherScape />
+          <CardDecoration :theme="cardTheme"/>
         </div>
       </div>
       <div class="card__side card__side--back">
@@ -122,6 +133,7 @@
             <SvgIcon class="decorator" icon="Loadout" />
           </h2>
           <h2 class="title" v-else>Theme Card</h2>
+          <CardDecoration :theme="cardTheme"/>
         </div>
         <div class="card__body" :class="{ 'card__body--fellowship': theme.isFellowship, 'card__body--loadout': theme.isLoadout }">
           <div class="card__section theme-improvements">
@@ -144,6 +156,7 @@
         </div>
         <div class="card__footer"  @click="flipped = !flipped">
           <OtherScape />
+          <CardDecoration :theme="cardTheme"/>
         </div>
       </div>
       <div class="card__fader"></div>
@@ -153,24 +166,27 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
-import type { EventListeners } from 'overlayscrollbars';
 import TextInput from '../shared/TextInput.vue';
 import RangeBar from '../shared/RangeBar.vue';
 import SelectInput from '../shared/SelectInput.vue';
 import { spine } from '@/spine/spine';
 import { themesStore, type Theme, type ThemeMight, type QuestImprovement, type Tag } from '@/sheet/stores/themes/themesStore';
 import SvgIcon from '../shared/SvgIcon.vue';
-import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentRef } from 'overlayscrollbars-vue';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
 import TagBox from '../shared/TagBox.vue';
 import OtherScape from '../logo/OtherScape.vue';
 import CyberEffect from '../shared/CyberEffect.vue';
+import { useOverlayScrollArea } from '@/utility/useOverlayScrollArea';
+import CardDecoration from '../shared/CardDecoration.vue';
 
 const props = withDefaults(defineProps<{
   theme: Theme;
   visiblePowers?: number;
+  visibleWeaknesses?: number;
   visibleLoadout?: number;
 }>(), {
-  visiblePowers: 8,
+  visiblePowers: 7,
+  visibleWeaknesses: 3,
   visibleLoadout: 14
 });
 
@@ -224,6 +240,18 @@ const visiblePowers = computed(() => {
   });
 });
 
+const visibleWeaknesses = computed(() => {
+  return weaknesses.value.filter((w, index) => {
+    if (index < props.visibleWeaknesses) return true;
+    else { return weaknesses.value[index-1].name.trim() !== '' || w.name.trim() !== '' }
+  });
+});
+
+const visibleTags = computed(() => {
+  if(props.theme.isLoadout) return visiblePowers.value;
+  else return [...visiblePowers.value, ...visibleWeaknesses.value];
+});
+
 const showScrollbar = computed(() => {
   if(props.theme.isLoadout) return true;
   const limit = props.theme.isLoadout ? props.visibleLoadout : props.visiblePowers;
@@ -231,7 +259,7 @@ const showScrollbar = computed(() => {
 });
 
 const scrollAreaHeight = computed(() => {
-  const rows = props.theme.isLoadout ? props.visibleLoadout : props.visiblePowers;
+  const rows = props.theme.isLoadout ? props.visibleLoadout : props.visiblePowers+props.visibleWeaknesses;
   const gaps = Math.max(rows - 1, 0);
   return `calc(30px * ${rows} + 5px * ${gaps} + 1px)`;
 });
@@ -258,42 +286,24 @@ const cardType = computed(() => {
   return 'theme';
 });
 
-const scroll = ref<OverlayScrollbarsComponentRef | HTMLDivElement | null>(null);
-const isScrollAtEnd = ref(false);
-const isScrollNotAtStart = ref(false);
+const cardTheme = computed(() => {
+  if(props.theme.isFellowship) return 'crew';
+  else if(props.theme.isLoadout) return 'loadout';
+  return props.theme.might.toLowerCase();
+});
 
-const getScrollElement = () => {
-  const current = scroll.value;
-  if (!current) return null;
-  if ('osInstance' in current) {
-    return current.osInstance()?.elements().scrollOffsetElement ?? null;
-  }
-  return current;
-};
+const {
+  scroll,
+  isScrollAtEnd,
+  isScrollNotAtStart,
+  resetScrollState,
+  syncScrollState,
+  scrollEvents
+} = useOverlayScrollArea();
 
-const syncScrollState = () => {
-  const scrollElement = getScrollElement();
-  if (!scrollElement) {
-    isScrollNotAtStart.value = false;
-    isScrollAtEnd.value = true;
-    return;
-  }
-
-  const maxScrollTop = scrollElement.scrollHeight - scrollElement.clientHeight;
-  isScrollNotAtStart.value = scrollElement.scrollTop > 1;
-  isScrollAtEnd.value = maxScrollTop <= 0 || scrollElement.scrollTop >= maxScrollTop - 1;
-};
-
-const scrollEvents: EventListeners = {
-  initialized: () => syncScrollState(),
-  updated: () => syncScrollState(),
-  scroll: () => syncScrollState()
-};
-
-watch([showScrollbar, visiblePowers], async ([hasScrollbar]) => {
+watch([showScrollbar, visibleTags], async ([hasScrollbar]) => {
   if (!hasScrollbar) {
-    isScrollNotAtStart.value = false;
-    isScrollAtEnd.value = true;
+    resetScrollState();
     return;
   }
 
@@ -383,6 +393,9 @@ watch([showScrollbar, visiblePowers], async ([hasScrollbar]) => {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     margin-top: 10px;
+    &--loadout {
+      grid-template-columns: 1fr;
+    }
     .title {
       font-size: var(--font-size-xsmall);
     }
@@ -609,14 +622,12 @@ watch([showScrollbar, visiblePowers], async ([hasScrollbar]) => {
     padding: 5px 7px 0 0;
     box-sizing: border-box;
     margin-top: -5px;
-    &--loadout {
-      max-height: 476px;
-    }
+    max-height: 427px;
     &:before, &:after {
       content: '';
       position: absolute;
       left: 0;
-      width: calc(100% - 2px);
+      width: calc(100% - 7px);
       height: var(--tag-box-height);
       pointer-events: none;
       display: block;
