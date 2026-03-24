@@ -7,11 +7,11 @@
         </div>
         <div class="card__body">
           <div class="card__section character-name">
-            <input type="text" v-model="meta.name" placeholder="Character Name" />
+            <input type="text" v-model="meta.name" placeholder="Character Name" spellcheck="false" />
           </div>
           <div class="card__section player-name">
             <h3 class="title break-padding">Player Name</h3>
-            <input type="text" v-model="hero.player"/>
+            <input type="text" v-model="hero.player" spellcheck="false"/>
           </div>
           <div class="card__section fellowship-relationships">
             <h3 class="title break-padding">Fellowship Relationships</h3>
@@ -19,14 +19,28 @@
               <h4 class="title">Companion</h4>
               <h4 class="title">Relationship</h4>
             </div>
-            <div class="table fellowship-table">
-              <div class="table__body">
-                <div class="table__row" v-for="relationship in hero.fellowshipRelations" :key="relationship._id">
-                  <TextInput v-model="relationship.companion" />
-                  <TextInput v-model="relationship.tag" />
+            <OverlayScrollbarsComponent
+              :defer="true"
+              :options="{ scrollbars: { autoHide: 'move'} }"
+              :class="['scroll-area','scroll-area--crew']"
+            >
+              <div class="table fellowship-table">
+                <div class="table__body">
+                  <div class="table__row" v-for="relationship in hero.fellowshipRelations" :key="relationship._id">
+                    <TextInput v-model="relationship.companion" />
+                    <div class="relationship-tag">
+                      <TextInput v-model="relationship.tag" @clear="relationship.scratched = false" :disabled="relationship.scratched"/>
+                      <div class="scratched-toggle image-toggle">
+                        <template v-if="!(relationship.tag.trim() === '')">
+                          <input type="checkbox" v-model="relationship.scratched" :disabled="relationship.tag.trim() === ''"/>
+                          <SvgIcon icon="Scratched"/>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </OverlayScrollbarsComponent>
             <div class="promises">
               <span class="title">Promises</span>
               <RangeBar :count="hero.promise" :max="5" v-model="hero.promise"/>
@@ -43,10 +57,10 @@
           </div>
           <div class="card__section notes">
             <h3 class="title break-padding">Notes</h3>
-            <textarea v-model="hero.notes" class="smart-textarea"></textarea>
+            <textarea spellcheck="false" v-model="hero.notes" class="smart-textarea"></textarea>
           </div>
         </div>
-        <div class="card__footer">
+        <div class="card__footer" @click="flipped = !flipped">
           <LegendsInTheMist />
         </div>
       </div>
@@ -68,7 +82,7 @@
                 </div>
                 <TextInput v-model="item.name" @clear="clearTheme(item)" :class="{ 'line-through': item.scratched }" />
                 <div class="scratched-toggle image-toggle">
-                  <input type="checkbox" v-model="item.scratched" :disabled="item.name.trim() === ''" @click="scratchPower(item)">
+                  <input type="checkbox" v-model="item.scratched" :disabled="item.name.trim() === ''" />
                   <SvgIcon icon="Scratched"/>
                 </div>
               </div>
@@ -89,7 +103,7 @@
             </div>
           </div>
         </div>
-        <div class="card__footer">
+        <div class="card__footer" @click="flipped = !flipped">
           <SonsOfOak />
         </div>
       </div>
@@ -109,6 +123,7 @@ import SonsOfOak from '../logo/SonsOfOak.vue';
 import LegendsInTheMist from '../logo/LegendsInTheMist.vue';
 import SvgIcon from '../shared/SvgIcon.vue';
 import { type Tag } from '@/sheet/stores/themes/themesStore';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
 
 const meta = metaStore();
 const hero = heroStore();
@@ -156,9 +171,20 @@ const clearTheme = (tag:Tag) => {
   tag.scratched = false;
 };
 
-const scratchPower = (power:Tag) => {
-  //power.checked = !power.scratched;
-};
+const visibleFulfillments = computed(() => {
+  const limit = 6; // show at least 3 evolutions, even if they are empty
+  return hero.fulfillments.filter((p, index) => {
+    if (index < limit) return true;
+    else { return hero.fulfillments[index-1].description && hero.fulfillments[index-1].description?.trim() !== '' || p.description && p.description.trim() !== ''}
+  });
+});
+// const visibleSpecials = computed(() => {
+//   const limit = 6; // show at least 3 evolutions, even if they are empty
+//   return hero.specials.filter((p, index) => {
+//     if (index < limit) return true;
+//     else { return hero.specials[index-1].checked || p.checked}
+//   });
+// });
 </script>
 
 <style lang="scss" scoped>
@@ -344,5 +370,88 @@ const scratchPower = (power:Tag) => {
       font-size: var(--font-size-medium);
       font-family: Arial, Helvetica, sans-serif;
     }
+  }
+  .relationship-tag {
+    position: relative;
+    &:hover, &:focus-within {
+      .scratched-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input) {
+        input {
+          padding-right: 35px!important;
+        }
+        .clear-btn {
+          right: 20px;
+          display: block!important;
+        }
+      }
+    }
+    &:has(.scratched-toggle input:checked) {
+      .scratched-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input) {
+        input {
+          padding-right: 20px;
+          text-decoration: line-through;
+        }
+      }
+    }
+    &:hover, &:focus-within {
+      .scratched-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input:not(.disabled)) {
+        input {
+          padding-right: 35px!important;
+        }
+        .clear-btn {
+          right: 20px;
+          display: block!important;
+        }
+      }
+    }
+  }
+  .scratched-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    transition: opacity ease 0.2s;
+    opacity: 0;
+    position: absolute;
+    top: calc(calc(50% - var(--toggle-size) / 2));
+    right: 0;
+    .svg-icon {
+      width: var(--toggle-size);
+      height: var(--toggle-size);
+      fill: rgb(var(--color-palette-foreground));
+    }
+    &:has(input:checked) {
+      input[type="text"] {
+        text-decoration: line-through;
+      }
+      .svg-icon {
+        fill: rgb(var(--color-palette-neon));
+        filter: drop-shadow(0px 0px 5px rgb(var(--color-palette-foreground)));
+      }
+    }
+    &:not(:has(input:checked)) {
+      .svg-icon {
+        opacity: 0.35;
+      }
+    }
+    &:has(input:disabled) {
+      input { cursor: not-allowed; }
+      .svg-icon {
+        opacity: 0.25;
+      }
+    }
+    &.broken {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+  .scroll-area--crew {
+    max-height: 111px;
   }
 </style>

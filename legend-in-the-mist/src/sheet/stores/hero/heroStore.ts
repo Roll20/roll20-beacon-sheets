@@ -9,6 +9,7 @@ type FellowshipRelation = {
   _id: string;
   companion: string;
   tag: string;
+  scratched?: boolean;
 };
 
 type Quintessence = {
@@ -50,6 +51,7 @@ export const heroStore = defineStore('hero', () => {
       _id: uuidv4(),
       companion: '',
       tag: '',
+      scratched: false,
     };
   };
   const getEmptyQuintessence = (): Quintessence => {
@@ -114,7 +116,7 @@ export const heroStore = defineStore('hero', () => {
   const lastName = ref<string>('');
   const player = ref<string>('');
   const fellowshipRelations = ref<FellowshipRelation[]>(
-    Array.from({ length: 5 }, () => getEmptyRelation())
+    Array.from({ length: 8 }, () => getEmptyRelation())
   );
   const promise = ref<PromiseValue>(0);
   const quintessences = ref<Quintessence[]>(

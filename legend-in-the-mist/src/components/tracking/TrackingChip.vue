@@ -6,17 +6,23 @@
           <SvgIcon v-if="tracker.mode === 'bonus'" icon="Power" />
           <SvgIcon v-if="tracker.mode === 'penalty'" icon="Weakness" />
         </div>
-        <select v-model="tracker.mode">
+        <select v-model="tracker.mode" :disabled="tracker.scratched">
           <option :value="undefined">Choose...</option>
           <option value="bonus">Bonus</option>
           <option value="penalty">Penalty</option>
         </select>
       </div>
-      <TextInput v-model="tracker.name" class="chip__label text-input--centered" @clear="deleteChip" placeholder="Tag or Status"/>
+      <TextInput v-model="tracker.name" class="chip__label" @clear="deleteChip" :placeholder="isTag ? 'Tag' : 'Status'" :disabled="tracker.scratched"/>
+      <div class="scratched-toggle image-toggle" v-if="isTag">
+        <template v-if="!(tracker.name.trim() === '')">
+          <input type="checkbox" v-model="tracker.scratched" :disabled="tracker.name.trim() === '' || tracker.mode === 'penalty'"/>
+          <SvgIcon icon="Scratched"/>
+        </template>
+      </div>
     </div>
     <div class="chip__stages">
-      <div v-for="stage in [1, 2, 3, 4, 5, 6]" :key="stage" class="chip__stage">
-        <input type="checkbox" :checked="getStageValue(stage)" @change="setStageValue(stage, ($event.target as HTMLInputElement).checked)" />
+      <div v-for="stage in [1, 2, 3, 4, 5, 6]" :key="stage" :class="`chip__stage chip__stage--${stage}`">
+        <input type="checkbox" :checked="getStageValue(stage)" @change="setStageValue(stage, ($event.target as HTMLInputElement).checked)" :disabled="tracker.scratched" />
         <span>{{ stage }}</span>
       </div>
     </div>
@@ -73,7 +79,6 @@ const isTag = computed(() => {
   &__label {
     width: 0px;
     min-width: 100%;
-    margin-bottom: 10px;
   }
   &__stages {
     display: flex;
@@ -108,9 +113,16 @@ const isTag = computed(() => {
       color: rgb(5, 44, 31);
       border: 2px solid white;
     }
+    &:has(input:disabled) {
+      input {
+        cursor: not-allowed;
+      }
+      opacity: 0.5;
+    }
   }
   &__title {
     position: relative;
+    margin-bottom: 10px;
   }
   &__mode {
     width: var(--toggle-size);
@@ -133,6 +145,9 @@ const isTag = computed(() => {
     select {
       opacity: 0;
       cursor: pointer;
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
   }
   &__indicator {
@@ -153,6 +168,7 @@ const isTag = computed(() => {
     input {
       color: var(--color-herocard-title);
       font-weight: bold;
+      padding-left: 20px;
       &::placeholder {
         color: rgba(255, 255, 255, 0.35);
       }
@@ -179,5 +195,70 @@ const isTag = computed(() => {
   --color-trackingchip-background: #CFB97D;
   --color-textinput-line: #a8a18b;
   border-color: #b5b0a4;
+}
+.chip--tag {
+  .chip__title {
+    position: relative;
+    &:has(.scratched-toggle input:checked) {
+      .scratched-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input) {
+        input {
+          padding-right: 20px;
+          text-decoration: line-through;
+        }
+      }
+    }
+    &:hover, &:focus-within {
+      .scratched-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input:not(.disabled)) {
+        input {
+          padding-right: 35px!important;
+        }
+        .clear-btn {
+          right: 20px;
+          display: block!important;
+        }
+      }
+    }
+  }
+  .scratched-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    transition: opacity ease 0.2s;
+    opacity: 0;
+    position: absolute;
+    top: calc(calc(50% - var(--toggle-size) / 2));
+    right: 0;
+    .svg-icon {
+      width: var(--toggle-size);
+      height: var(--toggle-size);
+      fill: rgb(var(--color-palette-foreground));
+    }
+    &:has(input:checked) {
+      input[type="text"] {
+        text-decoration: line-through;
+      }
+      .svg-icon {
+        fill: rgb(var(--color-palette-neon));
+        filter: drop-shadow(0px 0px 5px rgb(var(--color-palette-foreground)));
+      }
+    }
+    &:not(:has(input:checked)) {
+      .svg-icon {
+        opacity: 0.35;
+      }
+    }
+    &:has(input:disabled) {
+      input { cursor: not-allowed; }
+    }
+    &.broken {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 }
 </style>
