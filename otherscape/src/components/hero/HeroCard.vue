@@ -36,7 +36,7 @@
                   <div class="table__row" v-for="relationship in hero.fellowshipRelations" :key="relationship._id">
                     <TextInput v-model="relationship.companion" />
                     <div class="relationship-tag">
-                      <TextInput v-model="relationship.tag" @clear="relationship.burnt === false" :disabled="relationship.burnt"/>
+                      <TextInput v-model="relationship.tag" @clear="relationship.burnt = false" :disabled="relationship.burnt"/>
                       <div class="burnt-toggle image-toggle">
                         <template v-if="!(relationship.tag.trim() === '')">
                           <input type="checkbox" v-model="relationship.burnt" :disabled="relationship.tag.trim() === ''"/>
