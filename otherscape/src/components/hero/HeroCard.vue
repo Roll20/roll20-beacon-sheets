@@ -4,6 +4,7 @@
       <div class="card__side card__side--front">
         <div class="card__header" @click="flipped = !flipped">
           <h2 class="title">Character Card</h2>
+          <CardDecoration :theme="'hero'"/>
         </div>
         <div class="card__body">
           <div class="card__section character-name">
@@ -23,23 +24,41 @@
               <h4 class="title">Crew Member</h4>
               <h4 class="title">Relationship</h4>
             </div>
-            <div class="table fellowship-table">
-              <div class="table__body">
-                <div class="table__row" v-for="relationship in hero.fellowshipRelations" :key="relationship._id">
-                  <TextInput v-model="relationship.companion" />
-                  <TextInput v-model="relationship.tag" />
+            <OverlayScrollbarsComponent
+              :defer="true"
+              :options="{ scrollbars: { autoHide: 'move'} }"
+              :events="crewScrollEvents"
+              ref="crewScroll"
+              :class="['scroll-area','scroll-area--crew', { 'scroll-area--not-at-start': crewIsScrollNotAtStart, 'scroll-area--at-end': crewIsScrollAtEnd }]"
+            >
+              <div class="table fellowship-table">
+                <div class="table__body">
+                  <div class="table__row" v-for="relationship in hero.fellowshipRelations" :key="relationship._id">
+                    <TextInput v-model="relationship.companion" />
+                    <div class="relationship-tag">
+                      <TextInput v-model="relationship.tag" @clear="relationship.burnt = false" :disabled="relationship.burnt"/>
+                      <div class="burnt-toggle image-toggle">
+                        <template v-if="!(relationship.tag.trim() === '')">
+                          <input type="checkbox" v-model="relationship.burnt" :disabled="relationship.tag.trim() === ''"/>
+                          <SvgIcon icon="Burn"/>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </OverlayScrollbarsComponent>
           </div>
         </div>
         <div class="card__footer"  @click="flipped = !flipped">
           <OtherScape />
+          <CardDecoration :theme="'hero'"/>
         </div>
       </div>
       <div class="card__side card__side--back">
         <div class="card__header" @click="flipped = !flipped">
           <h2 class="title">Hero Card</h2>
+          <CardDecoration :theme="'hero'"/>
         </div>
         <div class="card__body">
           <!-- <div class="card__section backpack">
@@ -62,13 +81,16 @@
             </div>
           </div> -->
           <div class="card__section fulfillments">
-            <h3 class="title break-padding">Evolution</h3>
+            <div class="title break-padding evolution">
+              <h3>Evolution</h3>
+              <RangeBar v-model="hero.promise" :max="5" />
+            </div>
             <OverlayScrollbarsComponent
               :defer="true"
               :options="{ scrollbars: { autoHide: 'move'} }"
-              :events="scrollEvents"
-              ref="scroll"
-              :class="['scroll-area', { 'scroll-area--not-at-start': isScrollNotAtStart, 'scroll-area--at-end': isScrollAtEnd }]"
+              :events="fulfillmentsScrollEvents"
+              ref="fulfillmentsScroll"
+              :class="['scroll-area', { 'scroll-area--not-at-start': fulfillmentsIsScrollNotAtStart, 'scroll-area--at-end': fulfillmentsIsScrollAtEnd }]"
             >
               <div class="list fulfillment-list">
                 <div class="fulfillment" v-for="fulfillment in visibleFulfillments" :key="fulfillment._id">
@@ -78,32 +100,42 @@
                     :options="spine.fulfillments.map(desc => ({ value: desc, label: desc }))"
                     :allowedOptions="optionsForFulfillment(fulfillment.description)"
                     :showDefaultOption="true"
-                    defaultOptionLabel="Fulfillment"
-                    showClearWhen="hover"/>
+                    defaultOptionLabel="Moments of Evolution"
+                    showClearWhen="hover"
+                    :autoHidePlaceholder="true"/>
                 </div>
               </div>
             </OverlayScrollbarsComponent>
           </div>
           <div class="card__section specials">
             <h3 class="title break-padding">Specials</h3>
-            <div class="list improvement-list">
-              <template  v-for="special in visibleSpecials" :key="special._id" >
-                <div class="improvement-item">
-                  <div class="improvement__title">
-                    <div class="improvement-toggle image-toggle">
-                      <input type="checkbox" v-model="special.checked" />
-                      <SvgIcon icon="Check"/>
+             <OverlayScrollbarsComponent
+                :defer="true"
+                :options="{ scrollbars: { autoHide: 'move'} }"
+               :events="specialsScrollEvents"
+               ref="specialsScroll"
+               :class="['scroll-area','scroll-area--specials', { 'scroll-area--not-at-start': specialsIsScrollNotAtStart, 'scroll-area--at-end': specialsIsScrollAtEnd }]"
+              >
+                <div class="list improvement-list">
+                  <template  v-for="special in visibleSpecials" :key="special._id" >
+                    <div class="improvement-item">
+                      <div class="improvement__title">
+                        <div class="improvement-toggle image-toggle">
+                          <input type="checkbox" v-model="special.checked" />
+                          <SvgIcon icon="Check"/>
+                        </div>
+                        <TextInput v-model="special.name" placeholder="Special" :autoHidePlaceholder="!special.checked" @clear="special.description='';special.checked=false"/>
+                      </div>
+                      <textarea v-if="special.checked" v-model="special.description" class="smart-textarea improvement" placeholder="Description" spellcheck="false"></textarea>
                     </div>
-                    <TextInput v-model="special.name" placeholder="Special" :autoHidePlaceholder="!special.checked" @clear="special.description='';special.checked=false"/>
-                  </div>
-                  <textarea v-if="special.checked" v-model="special.description" class="smart-textarea improvement" placeholder="Description" spellcheck="false"></textarea>
+                  </template>
                 </div>
-              </template>
-            </div>
+              </OverlayScrollbarsComponent>
           </div>
         </div>
         <div class="card__footer"  @click="flipped = !flipped">
           <OtherScape />
+          <CardDecoration :theme="'hero'"/>
         </div>
       </div>
       <div class="card__fader"></div>
@@ -122,11 +154,12 @@ import { spine } from '@/spine/spine';
 import SonsOfOak from '../logo/SonsOfOak.vue';
 import LegendsInTheMist from '../logo/LegendsInTheMist.vue';
 import SvgIcon from '../shared/SvgIcon.vue';
-import { type Tag } from '@/sheet/stores/themes/themesStore';
+import type { Tag } from '@/sheet/stores/themes/themesStore';
 import EssenceTracker from '../essence/EssenceTracker.vue';
 import OtherScape from '../logo/OtherScape.vue';
-import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentRef } from 'overlayscrollbars-vue';
-import type { EventListeners } from 'overlayscrollbars';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
+import { useOverlayScrollArea } from '@/utility/useOverlayScrollArea';
+import CardDecoration from '../shared/CardDecoration.vue';
 
 const meta = metaStore();
 const hero = heroStore();
@@ -203,6 +236,10 @@ const clearTheme = (tag:Tag) => {
   tag.burnt = false;
 };
 
+const scratchRelationship = (relationship: typeof hero.fellowshipRelations[0]) => {
+  relationship.burnt = !relationship.burnt;
+};
+
 const visibleFulfillments = computed(() => {
   const limit = 6; // show at least 3 evolutions, even if they are empty
   return hero.fulfillments.filter((p, index) => {
@@ -211,53 +248,65 @@ const visibleFulfillments = computed(() => {
   });
 });
 const visibleSpecials = computed(() => {
-  const limit = 3; // show at least 3 evolutions, even if they are empty
+  const limit = 6; // show at least 3 evolutions, even if they are empty
   return hero.specials.filter((p, index) => {
     if (index < limit) return true;
     else { return hero.specials[index-1].checked || p.checked}
   });
 });
-const scroll = ref<OverlayScrollbarsComponentRef | HTMLDivElement | null>(null);
-const isScrollAtEnd = ref(false);
-const isScrollNotAtStart = ref(false);
+const {
+  scroll: crewScroll,
+  isScrollAtEnd: crewIsScrollAtEnd,
+  isScrollNotAtStart: crewIsScrollNotAtStart,
+  resetScrollState: resetCrewScrollState,
+  syncScrollState: syncCrewScrollState,
+  scrollEvents: crewScrollEvents
+} = useOverlayScrollArea();
+const {
+  scroll: fulfillmentsScroll,
+  isScrollAtEnd: fulfillmentsIsScrollAtEnd,
+  isScrollNotAtStart: fulfillmentsIsScrollNotAtStart,
+  resetScrollState: resetFulfillmentsScrollState,
+  syncScrollState: syncFulfillmentsScrollState,
+  scrollEvents: fulfillmentsScrollEvents
+} = useOverlayScrollArea();
+const {
+  scroll: specialsScroll,
+  isScrollAtEnd: specialsIsScrollAtEnd,
+  isScrollNotAtStart: specialsIsScrollNotAtStart,
+  resetScrollState: resetSpecialsScrollState,
+  syncScrollState: syncSpecialsScrollState,
+  scrollEvents: specialsScrollEvents
+} = useOverlayScrollArea();
 
-const getScrollElement = () => {
-  const current = scroll.value;
-  if (!current) return null;
-  if ('osInstance' in current) {
-    return current.osInstance()?.elements().scrollOffsetElement ?? null;
-  }
-  return current;
-};
-
-const syncScrollState = () => {
-  const scrollElement = getScrollElement();
-  if (!scrollElement) {
-    isScrollNotAtStart.value = false;
-    isScrollAtEnd.value = true;
-    return;
-  }
-
-  const maxScrollTop = scrollElement.scrollHeight - scrollElement.clientHeight;
-  isScrollNotAtStart.value = scrollElement.scrollTop > 1;
-  isScrollAtEnd.value = maxScrollTop <= 0 || scrollElement.scrollTop >= maxScrollTop - 1;
-};
-
-const scrollEvents: EventListeners = {
-  initialized: () => syncScrollState(),
-  updated: () => syncScrollState(),
-  scroll: () => syncScrollState()
-};
-
-watch(visibleFulfillments, async (items) => {
-  if (!items.length) {
-    isScrollNotAtStart.value = false;
-    isScrollAtEnd.value = true;
+watch(() => hero.fellowshipRelations.length, async (count) => {
+  if (!count) {
+    resetCrewScrollState();
     return;
   }
 
   await nextTick();
-  syncScrollState();
+  syncCrewScrollState();
+}, { immediate: true });
+
+watch(visibleFulfillments, async (items) => {
+  if (!items.length) {
+    resetFulfillmentsScrollState();
+    return;
+  }
+
+  await nextTick();
+  syncFulfillmentsScrollState();
+}, { immediate: true });
+
+watch(visibleSpecials, async (items) => {
+  if (!items.length) {
+    resetSpecialsScrollState();
+    return;
+  }
+
+  await nextTick();
+  syncSpecialsScrollState();
 }, { immediate: true });
 </script>
 
@@ -468,7 +517,7 @@ watch(visibleFulfillments, async (items) => {
       content: '';
       position: absolute;
       left: 0;
-      width: calc(100% - 2px);
+      width: calc(100% - 7px);
       height: var(--tag-box-height);
       pointer-events: none;
       display: block;
@@ -486,6 +535,12 @@ watch(visibleFulfillments, async (items) => {
     &:not(.scroll-area--not-at-start):before {
       display: none;
     }
+    &--specials {
+      height: 253px;
+    }
+    &--crew {
+      height: 153px;
+    }
   }
   .card__fader {
     position: absolute;
@@ -499,5 +554,79 @@ watch(visibleFulfillments, async (items) => {
     border-radius: 5px;
     transition: opacity var(--card-transition-duration) ease;
     z-index: 9999;
+  }
+  .evolution {
+    display: flex;
+    align-items: center;
+    padding-left: 5px!important;
+    padding-right: 5px!important;
+    box-sizing: border-box;
+    justify-content: space-around;
+    h3 {
+      font-size: var(--font-size-small);
+    }
+  }
+  :deep(.range-bar) {
+    .range-bar__option--checked {
+      border-color: rgb(var(--color-palette-foreground) / 0.50);
+    }
+  }
+  .relationship-tag {
+    position: relative;
+    &:has(.burnt-toggle input:checked) {
+      .burnt-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input) {
+        input {
+          padding-right: 20px;
+          text-decoration: line-through;
+        }
+      }
+    }
+    &:hover, &:focus-within {
+      .burnt-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input:not(.disabled)) {
+        input {
+          padding-right: 35px!important;
+        }
+        .clear-btn {
+          right: 20px;
+          display: block!important;
+        }
+      }
+    }
+  }
+  .burnt-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    transition: opacity ease 0.2s;
+    opacity: 0;
+    position: absolute;
+    top: calc(calc(50% - var(--toggle-size) / 2));
+    right: 0;
+    .svg-icon {
+      width: var(--toggle-size);
+      height: var(--toggle-size);
+      fill: rgb(var(--color-palette-foreground));
+    }
+    &:has(input:checked) {
+      input[type="text"] {
+        text-decoration: line-through;
+      }
+      .svg-icon {
+        fill: rgb(var(--color-palette-neon));
+        filter: drop-shadow(0px 0px 5px rgb(var(--color-palette-foreground)));
+      }
+    }
+    &:has(input:disabled) {
+      input { cursor: not-allowed; }
+    }
+    &.broken {
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 </style>

@@ -37,6 +37,12 @@ body {
 
   &__header, &__footer {
     cursor: e-resize;
+    position: relative;
+    overflow: hidden;
+    > *:not(.card-decoration) {
+      z-index: 2;
+      position: relative;
+    }
   }
 
   .card__side--back {
@@ -177,7 +183,7 @@ h4.title {
   resize: none;
 
   font-family: var(--font-family-body);
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-medium);
 
   border: 1px solid rgb(var(--color-palette-foreground) / var(--color-palette-disabled));
   color: var(--color-text-primary);
@@ -277,9 +283,9 @@ button {
     }
   }
   .os-scrollbar-handle {
-    background-color: rgb(var(--color-palette-dark) / 0.25);
+    background-color: rgb(var(--color-palette-highlight) / 0.25);
     &:hover {
-      background-color: rgb(var(--color-palette-dark) / 0.5);
+      background-color: rgb(var(--color-palette-highlight) / 0.5);
     }
   }
 }
