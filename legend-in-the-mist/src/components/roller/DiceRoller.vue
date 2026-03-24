@@ -62,6 +62,9 @@ const power = computed(() => {
   const tagsBonus = tags.filter(tracker => getTrackerValue(tracker, 'tag') !== 0).map(tracker => {
     return { name: tracker.name, value: getTrackerValue(tracker, 'tag') };
   });
+  const scratchedTagsBonus = tags.filter(tracker => getTrackerValue(tracker, 'tag') !== 0 && tracker.scratched).map(tracker => {
+    return { name: `scratched ${tracker.name}`, value: 2 };
+  });
   const statusesBonus = (() => {
     const positives = allStatusesBonus.filter(b => b.value > 0);
     const negatives = allStatusesBonus.filter(b => b.value < 0);
@@ -69,7 +72,7 @@ const power = computed(() => {
     const minNegative = negatives.reduce((best, curr) => (curr.value < best.value ? curr : best), negatives[0]);
     return [maxPositive, minNegative].filter(Boolean);
   })();
-  return [...themeBonus, ...backpackBonus, ...statusesBonus, ...tagsBonus].map(b => {
+  return [...themeBonus, ...backpackBonus, ...statusesBonus, ...tagsBonus, ...scratchedTagsBonus].map(b => {
     return { name: `${b.name} (${b.value > 0 ? '+' : ''}${b.value})`, value: b.value };
   });
 });

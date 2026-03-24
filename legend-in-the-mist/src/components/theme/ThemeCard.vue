@@ -55,7 +55,7 @@
           </div>
           <div class="card__section theme-quest">
             <h3 class="title break-padding">Quest</h3>
-             <textarea v-model="theme.quest.description" class="smart-textarea notes"></textarea>
+             <textarea spellcheck="false" v-model="theme.quest.description" class="smart-textarea notes"></textarea>
              <div class="quest-progress">
                 <div class="quest-progress-item" v-for="progress in ['Abandon', 'Improve', 'Milestone']" :key="progress">
                   <RangeBar v-model="theme.quest[progress.toLowerCase() as QuestImprovement]" :max="3" />
@@ -64,7 +64,7 @@
              </div>
           </div>
         </div>
-        <div class="card__footer">
+        <div class="card__footer" @click="flipped = !flipped">
           <LegendsInTheMist />
         </div>
       </div>
@@ -89,7 +89,7 @@
                     </div>
                     <TextInput v-model="improvement.name" placeholder="Improvement"/>
                   </div>
-                  <textarea v-if="improvement.checked" v-model="improvement.description" class="smart-textarea improvement" placeholder="Description"></textarea>
+                  <textarea spellcheck="false" v-if="improvement.checked" v-model="improvement.description" class="smart-textarea improvement" placeholder="Description"></textarea>
                 </div>
               </template>
               <!-- <template  v-for="improvement in theme.specialImprovements" :key="improvement._id" >
@@ -100,7 +100,7 @@
             </div>
           </div>
         </div>
-        <div class="card__footer">
+        <div class="card__footer" @click="flipped = !flipped">
           <SonsOfOak />
         </div>
       </div>
@@ -392,12 +392,6 @@ const showScrollbar = computed(() => {
     .theme-powers {
       min-height: 252px;
     }
-  }
-  .scroll-area {
-    height: 229px;
-    width: calc(100% + 7px);
-    padding-right: 7px;
-    box-sizing: border-box;
   }
   .notes {
     min-height: auto;
