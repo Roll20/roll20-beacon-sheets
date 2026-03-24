@@ -712,4 +712,11 @@ watch([showScrollbar, visibleTags], async ([hasScrollbar]) => {
     transition: opacity var(--card-transition-duration) ease;
     z-index: 9999;
   }
+  .themecard--fellowship, .themecard--loadout {
+    :deep(.range-bar) {
+      .range-bar__option--checked {
+        border-color: rgb(var(--color-palette-foreground) / 0.50);
+      }
+    }
+  }
 </style>
