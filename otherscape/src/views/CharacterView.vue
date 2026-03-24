@@ -209,6 +209,10 @@ const addTracker = async () => {
     display: flex;
     justify-content: center;
     z-index: 9999;
+    pointer-events: none;
+    .roller {
+    pointer-events: all;
+    }
   }
 }
 @media (min-width: #{vars.$sheet-width}) {
