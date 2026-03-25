@@ -1,0 +1,10 @@
+# Approved subfolders and their deployment shortnames
+# Format: folder-name: shortname
+
+folders:
+  ageofficial: ageofficial
+  atr: atrofficial
+  grim-hollow: grimhollow
+  legend-in-the-mist: legendinthemistofficial
+  magiknights: magiknights
+  taintedgrail: taintedgrailofficial

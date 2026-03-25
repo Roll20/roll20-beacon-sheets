@@ -1,0 +1,111 @@
+name: Deploy on PR Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  detect-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to detect changes
+
+      - name: Load approved folders
+        id: load_approved
+        run: |
+          # Parse approved.yaml and create a lookup string
+          APPROVED=$(cat approved.yaml | grep -A 100 'folders:' | grep ':' | grep -v 'folders:' | sed 's/^  //' | tr '\n' '|')
+          echo "approved=$APPROVED" >> $GITHUB_OUTPUT
+
+      - name: Detect modified subfolders
+        id: detect
+        run: |
+          # Get first changed subfolder (excluding dot-prefixed folders)
+          DETECTED_FOLDER=$(git diff --name-only HEAD~1 | awk -F/ '/^[^.].*\// {print $1; exit}')
+
+          echo "Detected folder: $DETECTED_FOLDER"
+
+          # Look up shortname from approved.yaml
+          APPROVED="${{ steps.load_approved.outputs.approved }}"
+          SHORTNAME=$(echo "$APPROVED" | tr '|' '\n' | grep "^$DETECTED_FOLDER:" | cut -d':' -f2 | xargs)
+
+          # If no shortname found, use the detected folder name
+          if [ -z "$SHORTNAME" ]; then
+            SHORTNAME="$DETECTED_FOLDER"
+          fi
+
+          echo "Shortname for deployment: $SHORTNAME"
+          echo "detected_folder=$DETECTED_FOLDER" >> $GITHUB_OUTPUT
+          echo "target_folder=$SHORTNAME" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Install dependencies
+        working-directory: ${{ steps.detect.outputs.detected_folder }}
+        run: npm ci
+
+      - name: Build application
+        working-directory: ${{ steps.detect.outputs.detected_folder }}
+        run: npm run build
+
+      - name: Deploy to Google Cloud Storage
+        run: |
+          DETECTED_FOLDER="${{ steps.detect.outputs.detected_folder }}"
+          TARGET_FOLDER="${{ steps.detect.outputs.target_folder }}"
+          BUCKET_NAME="${{ secrets.GCS_BUCKET_NAME }}"
+
+          echo "Deploying $DETECTED_FOLDER to gs://$BUCKET_NAME/$TARGET_FOLDER/"
+
+          gsutil -m rsync -r -d "$DETECTED_FOLDER/dist" "gs://$BUCKET_NAME/$TARGET_FOLDER/"
+
+      - name: Create issue on build/deploy failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const detectedFolder = '${{ steps.detect.outputs.detected_folder }}';
+            const targetFolder = '${{ steps.detect.outputs.target_folder }}';
+            const commitSha = '${{ github.sha }}';
+            const commitUrl = `https://github.com/${{ github.repository }}/commit/${commitSha}`;
+            const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `❌ Deployment Failed: ${detectedFolder}`,
+              body: `## Deployment Failure
+
+            **Project:** \`${detectedFolder}\`
+            **Deploy Name:** \`${targetFolder}\`
+            **Commit:** [${commitSha.substring(0, 7)}](${commitUrl})
+            **Branch:** ${{ github.ref_name }}
+
+            ### Issue
+            The deployment process failed during build or deployment to Google Cloud Storage. Check the [workflow logs](${workflowUrl}) for detailed error messages
+
+            ### Details
+            - **Workflow Run:** [View Logs](${workflowUrl})
+            - **Triggered by:** ${{ github.actor }}
+            - **Timestamp:** ${new Date().toISOString()}
+            `,
+              labels: ['deployment-failure', 'automated-issue']
+            });
