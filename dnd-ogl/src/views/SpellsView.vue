@@ -48,16 +48,13 @@
             <div class="list spell-list">
               <template v-for="spell in getSpellsByLevel(level)" :key="spell._id">
                 <template v-if="!isPreparing">
-                  <SpellItem :spell="spell" :class="{ 'disabled': isSpellFromPreparedSource(spell) && !spell.prepared }"/>
+                  <SpellItem :spell="spell" :class="{ 'disabled': spell.prepared === false }"/>
                 </template>
-                <template v-else-if="isSpellFromPreparedSource(spell)">
+                <template v-else-if="!isUpcast(spell)">
                   <div class="prepare-spells__item">
-                    <ToggleSwitch v-model="spell.prepared!" class="toggle-switch--x-small" :disabled="false"/>
+                    <ToggleSwitch :modelValue="spell.prepared ?? true" class="toggle-switch--x-small" :disabled="false" @update:modelValue="(val) => toggleSpellPrepared(spell, !!val)"/>
                     {{ spell.name }}
                   </div>
-                </template>
-                <template v-else>
-                  <SpellItem :spell="spell" />
                 </template>
               </template>
             </div>
@@ -123,6 +120,23 @@ function getSpellsByLevel(level: SpellLevel) {
 function isSpellFromPreparedSource(spell: Spell): boolean {
   const source = spells.sources.find((s) => s._id === spell.spellSourceId);
   return source?.isPrepared === true;
+}
+
+function isUpcast(spell: Spell): boolean {
+  return spell._id.includes('-upcast-');
+}
+
+function getBaseSpellId(spell: Spell): string {
+  const idx = spell._id.indexOf('-upcast-');
+  return idx !== -1 ? spell._id.substring(0, idx) : spell._id;
+}
+
+function toggleSpellPrepared(spell: Spell, val: boolean) {
+  const baseId = getBaseSpellId(spell);
+  const baseSpell = spells.spells.find((s) => s._id === baseId);
+  if (baseSpell) {
+    baseSpell.prepared = val;
+  }
 }
 
 function divideIntoThreeParts<T>(array: T[]): T[][] {

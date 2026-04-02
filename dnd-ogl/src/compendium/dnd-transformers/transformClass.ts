@@ -276,6 +276,17 @@ export const transformDnDClass = (
           // If a class has a spells known progression, it's not a prepared caster.
           transformedPayload['data-spellSource'].isPrepared = false;
         }
+
+        const hasPreparedSlots = dataRecords.some((rec: any) => {
+          try {
+            return JSON.parse(rec.payload).type === 'Prepared Spell Slot';
+          } catch {
+            return false;
+          }
+        });
+        if (hasPreparedSlots) {
+          transformedPayload['data-spellSource'].isPrepared = true;
+        }
       }
     }
 
