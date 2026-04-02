@@ -1,0 +1,181 @@
+{
+  "pagesByCategory": {
+    "Classes": {
+      "Arbiter": {
+        "data-payload": {
+          "name": "Arbiter",
+          "hitDie": "1d10",
+          "spellcasting": "full",
+          "data-spellcastingAbility": "wisdom",
+          "data-features": {
+            "level-1": [
+              {
+                "label": "Aware",
+                "group": "class-features",
+                "description": "",
+                "data-effects": {
+                  "label": "Aware",
+                  "effects": [
+                    {
+                      "attribute": "initiative-modifier",
+                      "operation": "add",
+                      "value": 5
+                    },
+                    {
+                      "attribute": "perception-passive",
+                      "operation": "add",
+                      "value": 4
+                    }
+                  ]
+                }
+              }
+            ],
+            "level-2": [
+              {
+                "label": "Judgment",
+                "group": "class-features",
+                "description": "",
+                "data-effects": {
+                  "label": "Judgment",
+                  "effects": [
+                    {
+                      "attribute": "strength",
+                      "operation": "add",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ],
+            "level-3": [
+              {
+                "label": "Judgment 2",
+                "group": "class-features",
+                "description": "",
+                "data-effects": {
+                  "label": "Judgment",
+                  "effects": [
+                    {
+                      "attribute": "dexterity",
+                      "operation": "add",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "content": ""
+      }
+    },
+    "Features": {
+      "Aware": {
+        "data-payload": {
+          "label": "Aware",
+          "group": "feats",
+          "description": "",
+          "data-effects": {
+            "label": "Aware",
+            "effects": [
+              {
+                "attribute": "initiative-modifier",
+                "operation": "add",
+                "value": 5
+              },
+              {
+                "attribute": "perception-passive-modifier",
+                "operation": "add",
+                "value": 4
+              }
+            ]
+          }
+        },
+        "content": "<div class=\"feed-post bstn-item-shape type-materia\" id=\"de445326-89fa-4116-8cb2-37d08f32d281\" data-mrf-layout=\"\" data-mrf-link=\"https://g1.globo.com/politica/noticia/2025/09/09/moraes-vota-para-condenar-bolsonaro-e-outros-sete-reus-por-tentativa-de-golpe-de-estado.ghtml\" cmp-ltrk=\"Home - Post Padrão\" cmp-ltrk-idx=\"0\" mrfobservableid=\"8c4f9db8-d8f4-476a-a99f-488c96c17eea\"><div class=\"feed-post-body\"><div class=\"feed-post-header\"></div><div class=\"feed-post-body-title gui-color-primary gui-color-hover \" ref=\"[object Object]\"><div class=\"_evt\"><h2><a href=\"https://g1.globo.com/politica/noticia/2025/09/09/moraes-vota-para-condenar-bolsonaro-e-outros-sete-reus-por-tentativa-de-golpe-de-estado.ghtml\" class=\"feed-post-link gui-color-primary gui-color-hover\" data-mrf-layout-anchor=\"\" data-mrf-link=\"https://g1.globo.com/politica/noticia/2025/09/09/moraes-vota-para-condenar-bolsonaro-e-outros-sete-reus-por-tentativa-de-golpe-de-estado.ghtml\" cmp-ltrk=\"Home - Post Padrão\" cmp-ltrk-idx=\"0\" mrfobservableid=\"a2de49d6-88e1-432d-8297-e88ac153c095\"><p elementtiming=\"text-csr\" data-mrf-layout-title=\"\">Em seu voto, Moraes lista provas e diz que não há dúvidas de crimes</p></a></h2></div></div><div class=\"feed-media-wrapper\"><a href=\"https://g1.globo.com/politica/noticia/2025/09/09/moraes-vota-para-condenar-bolsonaro-e-outros-sete-reus-por-tentativa-de-golpe-de-estado.ghtml\" class=\"feed-post-figure-link gui-image-hover\" ref=\"[object Object]\" data-mrf-link=\"https://g1.globo.com/politica/noticia/2025/09/09/moraes-vota-para-condenar-bolsonaro-e-outros-sete-reus-por-tentativa-de-golpe-de-estado.ghtml\" cmp-ltrk=\"Home - Post Padrão\" cmp-ltrk-idx=\"0\" mrfobservableid=\"a44ed501-917f-49b5-b900-2aa83438d1ad\"><div class=\"bstn-fd-item-cover \"><picture class=\"bstn-fd-cover-picture\"><img class=\"bstn-fd-picture-image\" alt=\"Em seu voto, Moraes lista provas e diz que não há dúvidas de crimes - Foto: (Adriano Machado/Reuters)\" title=\"Em seu voto, Moraes lista provas e diz que não há dúvidas de crimes - Foto: (Adriano Machado/Reuters)\" loading=\"lazy\" elementtiming=\"image-csr\" srcset=\"https://s2-g1.glbimg.com/jXW9eF_Qos7Wy7oeT8YlyCT5qt8=/0x174:3800x2312/540x304/smart/filters:max_age(3600)/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2025/h/2/DxitdkTnOWpImFgMpjwA/2025-09-09t123759z-516744180-rc2cogamyjco-rtrmadp-3-brazil-bolsonaro-trial.jpg 540w,https://s2-g1.glbimg.com/qyCT-nkGJ8Q5EWgLZwITVnK0eKU=/0x174:3800x2312/810x456/smart/filters:max_age(3600)/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2025/h/2/DxitdkTnOWpImFgMpjwA/2025-09-09t123759z-516744180-rc2cogamyjco-rtrmadp-3-brazil-bolsonaro-trial.jpg 810w,https://s2-g1.glbimg.com/iPnouJmHGpDIcD9r3Cuhpk7t5wY=/0x174:3800x2312/1080x608/smart/filters:max_age(3600)/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2025/h/2/DxitdkTnOWpImFgMpjwA/2025-09-09t123759z-516744180-rc2cogamyjco-rtrmadp-3-brazil-bolsonaro-trial.jpg 1080w\" sizes=\"(min-width: 540px) 50vw, (min-width: 900px) 30vw, 100vw\" src=\"https://s2-g1.glbimg.com/jXW9eF_Qos7Wy7oeT8YlyCT5qt8=/0x174:3800x2312/540x304/smart/filters:max_age(3600)/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2025/h/2/DxitdkTnOWpImFgMpjwA/2025-09-09t123759z-516744180-rc2cogamyjco-rtrmadp-3-brazil-bolsonaro-trial.jpg\" data-mrf-layout-img=\"\"></picture></div></a></div><div class=\"feed-post-metadata\"><span class=\"feed-post-datetime\">Há 24 minutos</span><span class=\"feed-post-metadata-section\"> Política </span></div><div class=\"bstn-related\"><ul class=\"bstn-relateditems\" ref=\"[object Object]\"><li class=\"bstn-relateditem\"><div class=\"bstn-fd-relatedtext\"><a class=\"gui-color-primary gui-color-hover feed-post-body-title bstn-relatedtext\" href=\"https://g1.globo.com/politica/noticia/2025/09/09/moraes-diz-que-bolsonaro-liderou-organizacao-criminosa-e-buscava-se-manter-no-poder-apesar-do-resultado-das-eleicoes.ghtml\" data-mrf-link=\"https://g1.globo.com/politica/noticia/2025/09/09/moraes-diz-que-bolsonaro-liderou-organizacao-criminosa-e-buscava-se-manter-no-poder-apesar-do-resultado-das-eleicoes.ghtml\" cmp-ltrk=\"Home - Post Padrão\" cmp-ltrk-idx=\"1\" mrfobservableid=\"23ad51c4-0273-40eb-8a56-b802d829b78e\">Apontado como líder do golpe, Bolsonaro pode ter pena maior</a><div class=\"feed-post-metadata\"><span class=\"feed-post-datetime\">Há 24 minutos</span></div></div></li><li class=\"bstn-relateditem\"><div class=\"bstn-fd-relatedtext\"><a class=\"gui-color-primary gui-color-hover feed-post-body-title bstn-relatedtext\" href=\"https://g1.globo.com/politica/blog/andreia-sadi/post/2025/09/09/moraes-destaca-bolsonaro-como-lider-da-trama-golpista-para-juristas-pena-vai-vir-pesada.ghtml\" data-mrf-link=\"https://g1.globo.com/politica/blog/andreia-sadi/post/2025/09/09/moraes-destaca-bolsonaro-como-lider-da-trama-golpista-para-juristas-pena-vai-vir-pesada.ghtml\" cmp-ltrk=\"Home - Post Padrão\" cmp-ltrk-idx=\"2\" mrfobservableid=\"c509aedb-5aa0-4fbc-9742-6612364e64a3\">SADI: Juristas acreditam em pena 'pesada' para Bolsonaro</a><div class=\"feed-post-metadata\"><span class=\"feed-post-datetime\">Há 24 minutos</span></div></div></li><li class=\"bstn-relateditem\"><div class=\"bstn-fd-relatedtext\"><a class=\"gui-color-primary gui-color-hover feed-post-body-title bstn-relatedtext\" href=\"https://g1.globo.com/politica/noticia/2025/09/09/julgamento-da-trama-golpista-moraes-vota-pela-aplicacao-simultanea-de-crimes-pela-democracia-e-pela-soma-das-penas-entenda-o-que-significa.ghtml\" data-mrf-link=\"https://g1.globo.com/politica/noticia/2025/09/09/julgamento-da-trama-golpista-moraes-vota-pela-aplicacao-simultanea-de-crimes-pela-democracia-e-pela-soma-das-penas-entenda-o-que-significa.ghtml\" cmp-ltrk=\"Home - Post Padrão\" cmp-ltrk-idx=\"3\" mrfobservableid=\"e5cdac53-e3b1-4fa6-b904-ae50a675efe8\">Moraes defende 'separar' crimes contra a democracia; entenda</a><div class=\"feed-post-metadata\"><span class=\"feed-post-datetime\">Há 24 minutos</span></div></div></li></ul></div></div></div>"
+      }
+    },
+    "Scavenge": {
+      "Ring Mail": {
+        "data-payload": {
+          "name": "Studded Armor",
+          "type": "armor",
+          "value": {
+            "amount": 17
+          },
+          "weight": 40,
+          "data-tags": [
+            "attunement"
+          ],
+          "data-effects": {
+            "label": "Ring Mail",
+            "enabled": true,
+            "toggleable": false,
+            "removable": false,
+            "description": "Provides a base AC of 14.",
+            "effects": [
+              {
+                "attribute": "$picker:0",
+                "operation": "add",
+                "value": 2
+              }
+            ],
+            "pickers": [
+              {
+                "label": "Ability",
+                "options": [
+                  {
+                    "label": "Strength",
+                    "value": "strength"
+                  },
+                  {
+                    "label": "Dexterity",
+                    "value": "dexterity"
+                  },
+                  {
+                    "label": "Constitution",
+                    "value": "constitution"
+                  },
+                  {
+                    "label": "Intelligence",
+                    "value": "intelligence"
+                  },
+                  {
+                    "label": "Wisdom",
+                    "value": "wisdom"
+                  },
+                  {
+                    "label": "Charisma",
+                    "value": "charisma"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "content": ""
+      }
+    },
+    "Spells": {
+      "Alarm": {
+        "data-payload": {
+          "name": "Alarm",
+          "level": 1,
+          "school": "abjuration",
+          "castingTime": "1 minute",
+          "range": "30 feet",
+          "components": [
+            "verbal",
+            "somatic",
+            "material"
+          ],
+          "target": "a location",
+          "duration": "8 hours",
+          "description": {
+            "default": "You set an alarm against unwanted intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot cube. Until the spell ends, an alarm alerts you whenever a Tiny or larger creature touches or enters the warded area. When you cast the spell, you can designate creatures that won't set off the alarm. You also choose whether the alarm is mental or audible. A mental alarm alerts you with a ping in your mind if you are within 1 mile of the warded area. This ping awakens you if you are sleeping. An audible alarm produces a deep buzzing sound for 10 seconds within 60 feet."
+          }
+        },
+        "content": ""
+      }
+    }
+  }
+}
