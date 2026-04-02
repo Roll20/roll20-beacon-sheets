@@ -1,0 +1,37 @@
+{{#> wrapper type="roll" keyValues=keyValues }}
+  {{#> header characterName=characterName title=title subtitle=subtitle}}
+  {{/ header}}
+
+  <div class="body">
+    {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
+
+    {{#if allowHeroDie }}
+      {{> heroDie total=(sumComponents ../components multiplier) title=title }}
+    {{/if}}
+    <details class="show-more">
+      <summary class="show-more__button"></summary>
+      <div class="show-more__content">
+        {{> rollComponents components=components }}
+      </div>
+    </details>
+
+    {{#if keyValues}}
+      {{> keyValues keyValues=keyValues }}
+    {{/if}}
+
+    {{#if textContent}}
+      {{> textContent textContent=textContent }}
+    {{/if}}
+
+    {{#if traits}}
+      <hr>
+      <div class="trait-list">
+        {{#each traits as |trait|}}
+          <div class="trait">
+            {{capitalize trait}}
+          </div>
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+{{/ wrapper }}
