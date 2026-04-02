@@ -464,6 +464,9 @@ export const useEffectsStore = defineStore('effects', () => {
                   effect.pickers.map((singlePicker) => ({
                     ...singlePicker,
                     options: arrayToIndexedObject(singlePicker.options),
+                    required: singlePicker.required
+                      ? arrayToIndexedObject(singlePicker.required)
+                      : undefined,
                   })),
                 )
               : undefined,
@@ -528,6 +531,9 @@ export const useEffectsStore = defineStore('effects', () => {
               options: picker.options
                 ? indexedObjectToArray(picker.options as Record<string, any>)
                 : [],
+              required: picker.required
+                ? indexedObjectToArray(picker.required as Record<string, any>)
+                : undefined,
             }))
           : [],
       })) || effects.value;
