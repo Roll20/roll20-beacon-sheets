@@ -9,7 +9,7 @@
       <h5 class="mt-3">{{ quality }}</h5>
       <div class="accordion age-accordion">        
         <CharacterQualitiesView
-          v-for="(qty, index) in item.items.filter(item => getQuality(quality).includes(item.type))"
+          v-for="(qty, index) in sortedItemsByQuality[quality]"
           :type="quality"
           :key="qty._id"
           :feature="qty"
@@ -29,7 +29,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import QualitiesModal from './QualitiesModal.vue';
@@ -68,6 +69,29 @@ let featureNew = ref({
   modifiers:[]
   })
 const item = useItemStore();
+const { items: qualityItems } = storeToRefs(item);
+
+const sortedItemsByQuality = computed(() => {
+  const allItems = [...qualityItems.value];
+  return Object.fromEntries(
+    qualitiesArray.value.map((quality) => {
+      const types = getQuality(quality);
+      const filtered = allItems.filter((i) => types.includes(i.type));
+      if (quality === 'Ability Focus') {
+        filtered.sort((a, b) => {
+          const aAbility = String(a.ability ?? '');
+          const bAbility = String(b.ability ?? '');
+          if (aAbility !== bAbility) return aAbility < bAbility ? -1 : 1;
+          const aName = String(a.name ?? '');
+          const bName = String(b.name ?? '');
+          return aName < bName ? -1 : aName > bName ? 1 : 0;
+        });
+      }
+      return [quality, filtered];
+    })
+  );
+});
+
 function resetFeature(){
   featureNew.value = {
   type: '',
