@@ -34,6 +34,16 @@ describe('parseSpOptions', () => {
     expect(parseSpOptions('3+', 2)).toEqual([]);
   });
 
+  it('open-ended 0+ returns empty array', () => {
+    expect(parseSpOptions('0+', 5)).toEqual([]);
+  });
+
+  it('availableSP 0 returns empty for any format', () => {
+    expect(parseSpOptions('1', 0)).toEqual([]);
+    expect(parseSpOptions('1-3', 0)).toEqual([]);
+    expect(parseSpOptions('1+', 0)).toEqual([]);
+  });
+
   it('handles legacy numeric value coerced to string', () => {
     expect(parseSpOptions(String(2), 5)).toEqual([2]);
   });

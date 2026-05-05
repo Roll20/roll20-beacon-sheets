@@ -16,6 +16,7 @@ export function parseSpOptions(cost: string | number, availableSP: number): numb
   const openMatch = s.match(/^(\d+)\+$/);
   if (openMatch) {
     const step = parseInt(openMatch[1], 10);
+    if (step === 0) return [];
     const result: number[] = [];
     for (let i = step; i <= availableSP; i += step) result.push(i);
     return result;
