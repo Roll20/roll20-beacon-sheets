@@ -12,6 +12,7 @@
             <button
               v-for="amount in options"
               :key="amount"
+              type="button"
               class="age-btn sp-cost-btn"
               @click="$emit('confirm', amount)"
             >
@@ -60,6 +61,7 @@ defineEmits<{
 }
 .sp-cost-btn {
   min-width: 56px;
+  width: auto;
 }
 .sp-cost-cancel {
   text-align: center;
