@@ -46,7 +46,7 @@
             </div>       
           </div>
           <!-- // TODO Items unique to genre slices. Technofantasy, Cthulhu Awakens, Cyberpunk, etc. -->
-          <!-- <div class="row age-modal-row"  v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'mage'">
+          <div class="row age-modal-row"  v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'mage'">
             <h4>Genre Slices</h4>
             <div style="display: grid;grid-template-columns: repeat(2,1fr);">
               <div class=" input-group" v-if="settings.gameSystem === 'mage'">
@@ -54,24 +54,24 @@
                     <input type="checkbox"  v-model="settings.cyberpunk" @change="updateGameSystem" />
                     <span class="slider round" ></span>
                 </label>
-                <span class="age-toggle-label">Use Cyberpunk</span>
+                <span class="age-toggle-label">Cyberpunk</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu'">
               <label class="age-checkbox-toggle" style="margin:1rem;">
                   <input type="checkbox"  v-model="settings.cthulhuMythos" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
-              <span class="age-toggle-label">Use Cthulhu Mythos</span>
+              <span class="age-toggle-label">Cthulhu Mythos</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
               <label class="age-checkbox-toggle" style="margin:1rem;">
                   <input type="checkbox"  v-model="settings.technofantasy" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
-              <span class="age-toggle-label">Use Technofantasy</span>
+              <span class="age-toggle-label">Technofantasy</span>
               </div>
             </div>
-          </div> -->
+          </div>
           <div class="row age-modal-row">
             <h4>System Options</h4>
             <div style="display: grid;grid-template-columns: repeat(3,1fr);">
