@@ -1,3 +1,12 @@
+export const arcaneFocusNames = new Set([
+  'Arcane',
+  'Arcane Blast',
+  'Arcana',
+  'Arcane Lore',
+  'Shaping',
+  'Sorcery Lore',
+]);
+
 export const fage1e = {
   Accuracy: [
     "Arcane Blast",

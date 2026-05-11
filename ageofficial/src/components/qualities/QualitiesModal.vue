@@ -54,7 +54,7 @@
                     @change="setFocus(selected)">
                       <option disabled value="">Select an option</option>
                       <!-- Arcana group first -->
-                      <optgroup label="Arcana" v-if="feature.ability === 'Intelligence'">
+                      <optgroup label="Arcana" v-if="feature.ability === 'Intelligence' && settings.showArcana">
                         <option
                           v-for="option in arcanaFocuses"
                           :key="`Arcana-${option}`"
@@ -354,7 +354,7 @@ import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { v4 as uuidv4 } from 'uuid';
 import SpellModView from '@/components/modifiers/SpellModView.vue';
 import AbilityModView from '@/components/modifiers/AbilityModView.vue';
-import { bluerose, cthulhu, expanse, fage1e, fage2e, mage } from '../modifiers/focuses';
+import { arcaneFocusNames, bluerose, cthulhu, expanse, fage1e, fage2e, mage } from '../modifiers/focuses';
 import CustomAttackModView from '../modifiers/CustomAttackModView.vue';
 import {useModifiersStore} from '@/sheet/stores/modifiers/modifiersStore'
 import BaseModView from '@/components/modifiers/BaseModView.vue';
@@ -371,32 +371,39 @@ const mods = useModifiersStore();
 const settings = useSettingsStore()
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower'];
 // mods.modifiers = [];
-const filteredFocuses = ref(fage2e)
-const arcanaFocuses = ref([]);
-const psychicFocuses = ref([]);
-switch(useSettingsStore().gameSystem){
-  case 'fage2e':
-    filteredFocuses.value = fage2e;
-    arcanaFocuses.value = fageArcana;
-  break;
-  case 'mage':
-    filteredFocuses.value = mage;
-    arcanaFocuses.value = magePowers;
-    psychicFocuses.value = magePsychicPowers;
-  break;
-  case 'fage1e':
-    filteredFocuses.value = fage1e;
-  break;
-  case 'blue rose':
-    filteredFocuses.value = bluerose;
-    arcanaFocuses.value = brArcana;
-  break;
-  case 'cthulhu':
-    filteredFocuses.value = cthulhu;
-  break;
-  case 'expanse':
-    filteredFocuses.value = expanse;
-}
+const arcanaFocuses = computed(() => {
+  switch (settings.gameSystem) {
+    case 'fage2e':
+    case 'fage1e':
+    case 'cthulhu': return fageArcana;
+    case 'mage':    return magePowers;
+    case 'blue rose': return brArcana;
+    default: return [];
+  }
+});
+const psychicFocuses = computed(() => settings.gameSystem === 'mage' ? magePsychicPowers : []);
+
+const filteredFocuses = computed(() => {
+  let base;
+  switch (settings.gameSystem) {
+    case 'fage2e':    base = fage2e;    break;
+    case 'mage':      base = mage;      break;
+    case 'fage1e':    base = fage1e;    break;
+    case 'blue rose': base = bluerose;  break;
+    case 'cthulhu':   base = cthulhu;   break;
+    case 'expanse':   base = expanse;   break;
+    default:          base = fage2e;    break;
+  }
+  if (!settings.showArcana) {
+    return Object.fromEntries(
+      Object.entries(base).map(([ability, focuses]) => [
+        ability,
+        focuses.filter(f => !arcaneFocusNames.has(f))
+      ])
+    );
+  }
+  return base;
+});
 const setFocus = (selectedOption) => {
   const [group, option] = selected.value.split('(');
   if(option){
