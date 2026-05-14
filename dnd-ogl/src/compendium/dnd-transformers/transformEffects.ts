@@ -50,10 +50,36 @@ export interface EffectFragment {
   spellSources?: any[];
 }
 
+export const parseDamagePayload = (datarecord: any): any | null => {
+  try {
+    const payload = deepTransformFormulas(JSON.parse(datarecord.payload));
+    if (payload.type !== 'Damage') return null;
+ 
+    const diceCount = payload.diceCount || 1;
+    const diceSize = String(payload.diceSize || 'd8').replace(/^d/, '');
+ 
+    const entry: any = {
+      ability: payload.ability && payload.ability !== 'none'
+        ? payload.ability.toLowerCase()
+        : 'none',
+      damage: `${diceCount}d${diceSize}`,
+      type: (payload.damageType || 'untyped').toLowerCase(),
+    };
+ 
+    if (payload.critDamage) {
+      entry.critDamage = payload.critDamage;
+    }
+ 
+    return entry;
+  } catch {
+    return null;
+  }
+};
+
 /**
  * Transforms a single datarecord into an EffectFragment.
  */
-export const createEffectFragment = (datarecord: any): EffectFragment | null => {
+export const createEffectFragment = (datarecord: any, childRecords?: any[]): EffectFragment | null => {
   try {
     const payload = deepTransformFormulas(JSON.parse(datarecord.payload));
     const fragment: EffectFragment = {};
@@ -102,20 +128,40 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
           }
         }
 
-        fragment.actions = [
-          {
-            name: payload.name,
-            group: actionTypeMap[payload.actionType] || 'actions',
-            description: (payload.description || '').trim(),
-            range: payload.range,
-            isAttack: !!payload.attack,
-            attackAbility: attackAbility,
-            attackBonus: attackBonus,
-            saving: saveAbility || 'none',
-            savingDc: savingDc,
-            critRange: payload.critRange || 20,
-          },
-        ];
+        // Add in Damage children
+        const damageRolls: any[] = [];
+        if (childRecords) {
+          for (const child of childRecords) {
+            const damageEntry = parseDamagePayload(child);
+            if (damageEntry) {
+              damageRolls.push(damageEntry);
+            }
+          }
+        }
+
+        const action: any = {
+          name: payload.name,
+          group: actionTypeMap[payload.actionType] || 'actions',
+          description: (payload.description || payload.onHitDisplay || '').trim(),
+          range: payload.range,
+          isAttack: !!payload.attack,
+          attackAbility: attackAbility,
+          attackBonus: attackBonus,
+          saving: saveAbility || 'none',
+          savingDc: savingDc,
+          critRange: payload.critRange || 20,
+        };
+
+        if (damageRolls.length > 0) {
+          action.damage = damageRolls;
+        }
+
+        fragment.actions = [action];
+        break;
+      }
+
+      case 'Condition': {
+        fragment.description = payload.description || '';
         break;
       }
 
@@ -269,9 +315,6 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
         fragment.resources = [
           {
             name: payload.name,
-            count:
-              Number(maxFormula) ||
-              Number(payload.maxValueFormula?.flatValue || 0),
             max:
               maxFormula ||
               String(payload.maxValueFormula?.flatValue || 0),
@@ -415,6 +458,10 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
           },
         ];
         break;
+
+      case 'Damage': {
+        break;
+      }
 
       case 'Defense': {
         const attribute = defenseMap[payload.defense];

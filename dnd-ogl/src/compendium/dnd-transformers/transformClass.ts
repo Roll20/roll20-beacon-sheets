@@ -198,6 +198,14 @@ export const transformDnDClass = (
       }
     });
 
+    const classDetailsRecordName: string =
+      classDetailsRecord?.name ??
+      [`${rawPayload.name} Class Details`, `${rawPayload.name} Basics`].find((candidate) =>
+        dataRecords.some((rec: any) => rec.parent === candidate),
+      ) ??
+      `${rawPayload.name} Class Details`;
+ 
+
     if (classDetailsRecord) {
       const classDetailsPayload = JSON.parse(classDetailsRecord.payload);
       if (classDetailsPayload.subclassLevel) {
@@ -292,13 +300,15 @@ export const transformDnDClass = (
 
     const featuresByLevel: Record<string, any[]> = {};
 
-    const classDetailsName = `${rawPayload.name} Class Details`;
     const level1ProficiencyRecords = dataRecords.filter((rec: any) => {
       if (rec.level !== 1 && rec.level !== '1') return false;
       try {
         const payload = JSON.parse(rec.payload);
         const type = payload.type;
-        return (type === 'Proficiency' || type === 'Proficiency Choice') && rec.parent === classDetailsName;
+        return (
+          (type === 'Proficiency' || type === 'Proficiency Choice') &&
+          rec.parent === classDetailsRecordName
+        );
       } catch {
         return false;
       }

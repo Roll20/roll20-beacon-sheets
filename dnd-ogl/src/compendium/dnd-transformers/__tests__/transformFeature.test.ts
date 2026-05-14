@@ -91,9 +91,13 @@ describe('dnd-transformers/transformFeature', () => {
       expect(result?.['data-effects']?.resources).toHaveLength(1);
       expect(result?.['data-effects']?.resources![0]).toMatchObject({
         name: 'Ki',
-        count: 5,
         max: '5',
-        refreshOnShortRest: 'all'
+        refreshOnDawn: 'none',
+        refreshOnDawnAmount: '',
+        refreshOnLongRest: 'none',
+        refreshOnLongRestAmount: '',
+        refreshOnShortRest: 'all',
+        refreshOnShortRestAmount: '',
       });
     });
 

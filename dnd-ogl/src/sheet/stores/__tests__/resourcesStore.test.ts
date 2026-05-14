@@ -65,7 +65,29 @@ describe('resourcesStore', () => {
 
             expect(store.userResources).toHaveLength(1);
             expect(store.userResources[0].name).toBe('Hit Dice');
+            expect(store.userResources[0].count).toBe(10);
             expect(store.userResources[0]._id).toBeDefined();
+        });
+
+        it('should default count to max when only max is provided', () => {
+            const store = useResourcesStore();
+            store.add({ name: 'Ki Points', max: '5' });
+
+            expect(store.userResources[0].count).toBe(5);
+        });
+
+        it('should respect explicit count when provided', () => {
+            const store = useResourcesStore();
+            store.add({ name: 'Sorcery Points', max: '10', count: 3 });
+
+            expect(store.userResources[0].count).toBe(3);
+        });
+
+        it('should default count to 0 when max is not provided', () => {
+            const store = useResourcesStore();
+            store.add({ name: 'Custom Counter' });
+
+            expect(store.userResources[0].count).toBe(0);
         });
     });
 

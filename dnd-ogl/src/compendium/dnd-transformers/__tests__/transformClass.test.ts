@@ -249,6 +249,61 @@ describe('dnd-transformers/transformClass', () => {
       expect(result['data-features']['level-5'][0].label).toBe('Extra Attack');
     });
 
+    it('creates cumulative level variants for features with multi-level children', () => {
+      const rawPayload = { name: 'Paladin' };
+      const dataRecords = [
+        {
+          level: 6,
+          name: 'Aura of Protection',
+          payload: JSON.stringify({
+            type: 'Features',
+            name: 'Aura of Protection',
+            description: 'Aura grants save bonus.',
+          }),
+        },
+        {
+          level: 6,
+          name: 'Aura of Protection Bonus',
+          parent: 'Aura of Protection',
+          payload: JSON.stringify({
+            type: 'Language',
+            name: 'Common',
+          }),
+        },
+        {
+          level: 18,
+          name: 'Aura of Protection Bonus 18',
+          parent: 'Aura of Protection',
+          overwrite: 'Aura of Protection Bonus',
+          payload: JSON.stringify({
+            type: 'Language',
+            name: 'Elvish',
+          }),
+        },
+      ];
+      const properties = {
+        'data-datarecords': JSON.stringify(dataRecords),
+      };
+
+      const result = transformDnDClass(rawPayload, mockBook, properties);
+      const features = result['data-features'];
+
+      expect(features['level-6']).toHaveLength(1);
+      expect(features['level-18']).toHaveLength(1);
+
+      const level6 = features['level-6'][0];
+      expect(level6.label).toBe('Aura of Protection');
+      expect(level6['data-effects'].effects).toHaveLength(1);
+      expect(level6['data-effects'].effects[0].value).toBe('Common');
+      expect(level6.validUntilLevel).toBe(18);
+
+      const level18 = features['level-18'][0];
+      expect(level18.label).toBe('Aura of Protection');
+      expect(level18['data-effects'].effects).toHaveLength(1);
+      expect(level18['data-effects'].effects[0].value).toBe('Elvish');
+      expect(level18.validUntilLevel).toBeUndefined();
+    });
+
     it('falls back to property if Hit Dice record parse fails', () => {
       const rawPayload = { name: 'Fighter' };
       const dataRecords = [

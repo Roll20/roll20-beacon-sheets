@@ -60,9 +60,10 @@ export const useResourcesStore = defineStore('resources', () => {
   });
 
   const add = (resource: Partial<Resource>) => {
+    const count = resource.count ?? (resource.max ? parseFormulaAndEvaluate(resource.max) : 0);
     userResources.value.push({
       name: '',
-      count: 0,
+      count,
       max: '',
       refreshOnShortRest: 'none',
       refreshOnLongRest: 'none',
