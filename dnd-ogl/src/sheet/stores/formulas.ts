@@ -204,18 +204,10 @@ export const formulas = new Proxy<Partial<Record<FormulaKey, ComputedRef<number>
           (c) =>
             c.name.toLowerCase().replace(/ /g, '-') === prop.toLowerCase().replace(/-level$/g, ''),
         );
-        /*const transformation = useProgressionStore().transformation;
-        const existingTransformation = transformation && 
-          transformation.name.toLowerCase().replace(/ /g, '-') === 
-          prop.toLowerCase().replace(/-level$/g, '')
-          ? transformation
-          : undefined;*/
+
         if (existingClass) {
           return computed(() => existingClass.level || 1);
         }
-        /*if (existingTransformation) {
-          return computed(() => existingTransformation.level || 1);
-        }*/
         return undefined;
       }
 

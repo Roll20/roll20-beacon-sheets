@@ -1,4 +1,4 @@
-import type { Dispatch, InitArgs, SharedSettingsChangeArgs } from '@roll20-official/beacon-sdk';
+import type { Dispatch, InitArgs, SharedSettingsChangeArgs, Character } from '@roll20-official/beacon-sdk';
 import { initValues, beaconPulse, sharedSettingsRef } from '../relay';
 import { drag } from '@/compendium/drop';
 

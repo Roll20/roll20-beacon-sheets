@@ -618,7 +618,6 @@
       "add": "Add",
       "info": "Info",
       "send-to-chat": "Send to Chat",
-      "grim": "Grim",
       "filter": "Filter",
       "star": "Prepare Spells",
       "shield": "Shield",
@@ -717,31 +716,11 @@
     "tier-label": "Tier:",
     "tiers": {
       "none": "None",
-      "copper": "Copper",
-      "silver": "Silver",
-      "gold": "Gold",
-      "platinum": "Platinum",
-      "founder": "Founder",
+      "apprentice": "Apprentice",
+      "guild-member": "Guild Member",
+      "master-crafter": "Master Crafter",
       "unknown": "Unknown"
     },
-    "campaign-premium-title": "Campaign Premium",
-    "campaign-claimed": "This campaign is currently claimed.",
-    "campaign-claimed-by-other": "This campaign was claimed by another GM. Only they can unclaim it.",
-    "campaign-not-claimed": "This campaign is not claimed. Claiming it will unlock the sheet's premium features for all players.",
-    "claim-campaign": "Claim Campaign",
-    "claiming": "Claiming...",
-    "unclaim-campaign": "Unclaim Campaign",
-    "removing": "Removing...",
-    "no-subscription": "No active Patreon subscription detected. To unlock the settings and campaign claiming features, check out our patreon.",
-    "errors": {
-      "limit-reached": "Campaign claim limit reached (max 3 campaigns).",
-      "claim-failed": "Failed to claim campaign. Please try again.",
-      "unclaim-failed": "Failed to unclaim campaign. Please try again."
-    }
-  },
-  "sheet-locked": {
-    "title": "Premium Content",
-    "message": "This character sheet requires an active Patreon subscription to use as it's currently in closed Alpha.",
-    "hint": "If you believe this is an error, ask your GM to claim this campaign from the settings tab on the right sidebar."
+    "no-subscription": "No active Patreon subscription detected. To unlock the settings, check out our patreon."
   }
 }

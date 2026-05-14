@@ -40,7 +40,6 @@ import SpellSlotsSidebar from '../sidebars/SpellSlotsSidebar.vue';
 import AncestrySidebar from '../sidebars/AncestrySidebar.vue';
 import EffectSidebar from '../sidebars/EffectSidebar.vue';
 import BackgroundSidebar from '../sidebars/BackgroundSidebar.vue';
-import TransformationSidebar from '../sidebars/TransformationSidebar.vue';
 const sidebarRegistry = {
   FeatureSidebar,
   ActionSidebar,
@@ -66,7 +65,6 @@ const sidebarRegistry = {
   AncestrySidebar,
   EffectSidebar,
   BackgroundSidebar,
-  TransformationSidebar,
 };
 type SidebarComponent = keyof typeof sidebarRegistry;
 

@@ -12,7 +12,6 @@ import { onDropClass } from './dropClass';
 import { z } from 'zod';
 
 import { transformers } from './dnd-transformers';
-import { onDropTransformation } from './dropTransformation';
 import { FeatureSchema } from "@/schemas/feature";
 import { onDropSubclass } from "./dropSubclass";
 import { onDropSubrace } from "./dropSubrace";

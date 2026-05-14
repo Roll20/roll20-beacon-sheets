@@ -57,7 +57,7 @@ const computedRankedModifiers = Object.fromEntries(
     { tokenBarValue: false, get: (context: Context) => getSkillModifier(context, skill) }
   ])
 );
-const relayConfig = {
+export const relayConfig = {
   handlers: {
     onInit,
     onChange,
@@ -101,16 +101,16 @@ const relayConfig = {
     // These are defined token bar attributes
     life: { tokenBarValue: true, get: getLife, set: setLife },
     */
-   pb: { tokenBarValue: false, get: getProficiencyBonus },
-   level: { tokenBarValue: false, get: getLevel },
-   initiative: { tokenBarValue: false, get: getInitiative },
-   "Hit Points": { tokenBarValue: true, get: getHitPoints, set: setHitPoints },
-   "Temporary Hit Points": { tokenBarValue: true, get: getTempHitPoints, set: setTempHitPoints },
-   "Armor Class": { tokenBarValue: true, get: getArmorClass },
-   ...computedAbilities,
-   ...computedAbilitiesModifiers,
-   ...computedRankedSkills,
-   ...computedRankedModifiers
+    pb: { tokenBarValue: false, get: getProficiencyBonus },
+    level: { tokenBarValue: false, get: getLevel },
+    initiative: { tokenBarValue: false, get: getInitiative },
+    "Hit Points": { tokenBarValue: true, get: getHitPoints, set: setHitPoints },
+    "Temporary Hit Points": { tokenBarValue: true, get: getTempHitPoints, set: setTempHitPoints },
+    "Armor Class": { tokenBarValue: true, get: getArmorClass },
+    ...computedAbilities,
+    ...computedAbilitiesModifiers,
+    ...computedRankedSkills,
+    ...computedRankedModifiers
   },
 };
 
@@ -169,12 +169,12 @@ It will log the updates to the console instead of sending them to the VTT or Rol
 This is useful for testing the sheet without having to connect to the server.
 */
 const devRelay = async () =>
-  ({
-    update: (...args: any[]) => console.log('devRelay update', args),
-    updateCharacter: (...args: any[]) => console.log('devRelay updateCharacter', args),
-    characters: {},
-    updateTokensByCharacter: () => '',
-  } as any as Dispatch);
+({
+  update: (...args: any[]) => console.log('devRelay update', args),
+  updateCharacter: (...args: any[]) => console.log('devRelay updateCharacter', args),
+  characters: {},
+  updateTokensByCharacter: () => '',
+} as any as Dispatch);
 
 /*
 This function is called to create the relay.

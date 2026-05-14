@@ -24,7 +24,6 @@ import { add, transform } from 'lodash';
 import { dropBackgroundFeatures } from '@/compendium/dropBackground';
 import { effectKeys } from '@/effects.config';
 import { useEffectsStore } from '../modifiers/modifiersStore';
-import { dropTransformationFeatures } from '@/compendium/dropTransformation';
 import { re } from 'mathjs';
 
 export type FeatureId = {
@@ -53,16 +52,6 @@ export type ClassProgression = {
     class: string | null;
     subclass: string | null;
   };
-};
-
-export type TransformationProgression = {
-  name: string;
-  sourceBook: number;
-  featureIds: FeatureId[];
-  level: number;
-  compendiumData: {
-    transformation: string | null;
-  }
 };
 
 export type RaceProgression = {
@@ -96,9 +85,6 @@ export type ProgressionHydrate = {
       hitPoints: Record<string, number>;
     }
   >;
-  transformation: Omit<TransformationProgression, 'featureIds'> & {
-    featureIds: Record<string, FeatureId>;
-  };
   ancestry: Omit<RaceProgression, 'featureIds' | 'subraceFeatureIds'> & {
     featureIds: Record<string, FeatureId>;
     subraceFeatureIds: Record<string, FeatureId>;
@@ -125,15 +111,6 @@ export type HitDice = {
 
 export const useProgressionStore = defineStore('progression', () => {
   const classes: Ref<Array<ClassProgression>> = ref([]);
-  const transformation: Ref<TransformationProgression> = ref({
-    name: '',
-    sourceBook: -1,
-    featureIds: [],
-    level: 0,
-    compendiumData: {
-      transformation: null,
-    }
-  });
   const ancestry: Ref<RaceProgression> = ref({
     name: '',
     sourceBook: -1,
@@ -218,11 +195,6 @@ export const useProgressionStore = defineStore('progression', () => {
       .trim();
 
     return trimWithEllipsis(summary, 13);
-  });
-
-  const getTransformationSummary = computed(() => {
-    if(transformation.value.name && transformation.value.level && transformation.value.level > 0) return `${transformation.value.name} ${transformation.value.level}`;
-    return '';
   });
 
   const getAncestrySummary = computed(() => {
@@ -445,21 +417,6 @@ export const useProgressionStore = defineStore('progression', () => {
     }
   };
 
-  const addFeaturesToTransformation = async (startingLevel: number, endingLevel: number = startingLevel, onlyExpired: boolean = false, previousLevels?: number[]) => {
-    try {
-      const transformationData = transformation.value.compendiumData.transformation ? JSON.parse(transformation.value.compendiumData.transformation) : {};
-
-      const cascade = {
-        source: transformation.value.name
-      }
-      for(let lvl = startingLevel; lvl <= endingLevel; lvl++) {
-        await dropTransformationFeatures({features:transformationData, levelOverride:lvl, onlyExpired, previousLevels, cascade});
-      }
-    } catch (error) {
-      console.warn("Failed to parse transformation features from compendium data", error);
-    }
-  }
-
   const addFeaturesToAncestry = async (startingLevel: number, endingLevel: number = startingLevel, raceFeatures: boolean = true, subraceFeatures: boolean = true, onlyExpired: boolean = false, previousLevels?: number[]) => {
     try {
       const raceData = ancestry.value.compendiumData.race
@@ -527,21 +484,7 @@ export const useProgressionStore = defineStore('progression', () => {
       }
     }
   };
-  const removeTransformation = () => {
-    if(transformation.value.featureIds.length) {
-      const featuresStore = useFeaturesStore();
-      transformation.value.featureIds.forEach(fid => featuresStore.remove(fid.id));
-    }
-    transformation.value = {
-      name: '',
-      sourceBook: -1,
-      featureIds: [],
-      level: 0,
-      compendiumData: {
-        transformation: null,
-      }
-    }
-  }
+
   const removeSubrace = () => {
     if (ancestry.value.subraceFeatureIds.length) {
       const featuresStore = useFeaturesStore();
@@ -598,22 +541,7 @@ export const useProgressionStore = defineStore('progression', () => {
     }
   };
 
-  const removeTransformationFeatures = (aboveLevel: number) => {
-    const featuresStore = useFeaturesStore();
-    if(transformation.value.featureIds.length) {
-      const expiredFeatures = transformation.value.featureIds.filter(fid => fid.level > aboveLevel);
-      expiredFeatures.forEach(fid => featuresStore.remove(fid.id));
-      transformation.value.featureIds = transformation.value.featureIds.filter(fid => fid.level <= aboveLevel);
-    }
-  }
-  const removeTransformationExpiredFeatures = (expirationLevel: number) => {
-    const featuresStore = useFeaturesStore();
-    if(transformation.value.featureIds.length) {
-      const expiredFeatures = transformation.value.featureIds.filter(fid => fid.expirantionLevel && fid.expirantionLevel <= expirationLevel);
-      expiredFeatures.forEach(fid => featuresStore.remove(fid.id));
-      transformation.value.featureIds = transformation.value.featureIds.filter(fid => !fid.expirantionLevel || fid.expirantionLevel > expirationLevel);
-    }
-  }
+ 
 
   const removeAncestryExpiredFeatures = (expirationLevel: number) => {
     const featuresStore = useFeaturesStore();
@@ -701,11 +629,6 @@ export const useProgressionStore = defineStore('progression', () => {
       subclassFeatureIds: arrayToIndexedObject(cls.subclassFeatureIds),
     }));
 
-    const dehydratedTransformation = {
-      ...transformation.value,
-      featureIds: arrayToIndexedObject(transformation.value.featureIds),
-    }
-
     const dehydratedAncestry = {
       ...ancestry.value,
       featureIds: arrayToIndexedObject(ancestry.value.featureIds),
@@ -719,7 +642,6 @@ export const useProgressionStore = defineStore('progression', () => {
 
     return {
       classes: arrayToObject(dehydratedClasses),
-      transformation: dehydratedTransformation,
       ancestry: dehydratedAncestry,
       HitPointsMode: hitPointsMode.value,
       experiencePoints: experiencePoints.value,
@@ -740,13 +662,7 @@ export const useProgressionStore = defineStore('progression', () => {
           ),
         }))
       : classes.value;
-    
-    const transformationHydration = payload?.transformation
-      ? {
-          ...payload.transformation,
-          featureIds: indexedObjectToArray(payload.transformation.featureIds as Record<string, FeatureId>),
-        }
-      : transformation.value;
+
 
     const raceHydration = payload?.ancestry
       ? {
@@ -770,7 +686,6 @@ export const useProgressionStore = defineStore('progression', () => {
       : background.value;
 
     classes.value = classesHydration;
-    transformation.value = transformationHydration;
     ancestry.value = raceHydration;
     hitPointsMode.value = payload?.HitPointsMode ?? hitPointsMode.value;
     experiencePoints.value = payload?.experiencePoints ?? experiencePoints.value;
@@ -781,7 +696,6 @@ export const useProgressionStore = defineStore('progression', () => {
 
   return {
     classes,
-    transformation,
     ancestry,
     hitPointsMode,
     experiencePoints,
@@ -793,23 +707,18 @@ export const useProgressionStore = defineStore('progression', () => {
     getEmptyBackground,
     getHitDice,
     getClassesSummary,
-    getTransformationSummary,
     getAncestrySummary,
     getLevel,
     getProficiencyBonus,
     addFeaturesToClass,
-    addFeaturesToTransformation,
     addFeaturesToAncestry,
     levelUpClass,
-    removeTransformationFeatures,
-    removeTransformationExpiredFeatures,
     removeAncestryFeatures,
     removeAncestryExpiredFeatures,
     removeClass,
     removeSubclass,
     removeClassFeatures,
     updateClass,
-    removeTransformation,
     removeSubrace,
     removeRace,
 

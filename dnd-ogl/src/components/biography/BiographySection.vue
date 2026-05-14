@@ -56,21 +56,7 @@
           </span>
           <input type="text" :value="progression.getAncestrySummary" readonly @click="triggerAncestrySidebarLink"/>
         </label>
-        <!-- <label class="span-1">
-          <span class="label">
-            <SidebarLink
-              ref="transformationSidebarLink"
-              componentName="TransformationSidebar"
-              :options="{
-                title: t('actions.edit-transformation'),
-                hasSave: true
-              }"
-              :label="$t('titles.transformation')"
-              class="input-like"
-            />
-          </span>
-          <input type="text" :value="progression.getTransformationSummary" readonly @click="triggerTransformationSidebarLink"/>
-        </label> -->
+        
         <label class="span-1">
           <span class="label">{{ $t('titles.alignment') }}</span>
           <div class="alignment">
@@ -126,7 +112,6 @@ const progression = useProgressionStore();
 const classSidebarLink = ref();
 const ancestrySidebarLink = ref();
 const backgroundSidebarLink = ref();
-const transformationSidebarLink = ref();
 
 const triggerSidebarLink = () => {
   classSidebarLink.value?.openSidebar();
@@ -137,9 +122,7 @@ const triggerAncestrySidebarLink = () => {
 const triggerBackgroundSidebarLink = () => {
   backgroundSidebarLink.value?.openSidebar();
 }
-const triggerTransformationSidebarLink = () => {
-  transformationSidebarLink.value?.openSidebar();
-}
+
 </script>
 
 <style lang="scss" scoped>
