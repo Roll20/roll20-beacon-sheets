@@ -2,9 +2,6 @@
   <div v-if="isSettingsSheet">
     <SettingsView />
   </div>
-  <div v-else-if="!patron.isPatron">
-    <SheetLockedView />
-  </div>
   <template v-else>
     <div :class="['sheet', { 'ctrl-key-active': isCtrlPressed, 'sheet--npc': npcStore.isNpc }]">
       <div class="header">
@@ -13,10 +10,6 @@
           <router-link to="/spells" v-if="!npcStore.isNpc">{{$t(`titles.tabs.spells`)}}</router-link>
           <!-- <router-link to="/npcs">NPCs Tab</router-link> -->
         </div>
-      </div>
-      <div class="badges" v-if="patron.isPatron || patron.patronTierValue() >= 4">
-        <span class="premium-badge" v-if="patron.isPatron">🌟 Premium Active</span>
-        <span class="premium-badge premium-badge--gm" v-if="patron.patronTierValue() >= 4">👑 GM Pro</span>
       </div>
       <div class="npc-switch" v-if="isGM">
         {{ $t(`titles.npc-sheet`) }}
@@ -45,7 +38,6 @@ import { useMetaStore } from './sheet/stores/meta/metaStore';
 import { useVersionStore } from './sheet/stores/version/versionStore';
 import { initValues } from './relay/relay';
 import SettingsView from './views/SettingsView.vue';
-import SheetLockedView from './views/SheetLockedView.vue';
 
 const npcStore = useNpcStore();
 const router = useRouter();
@@ -82,7 +74,7 @@ watch(
 );
 
 onMounted(() => {
-  patron.checkPremiumStatus();
+  //patron.checkPremiumStatus();
 
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);

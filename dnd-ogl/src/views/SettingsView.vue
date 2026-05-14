@@ -7,45 +7,13 @@
       <p class="settings-view__tier">
         {{ $t('patreon.tier-label') }} <strong>{{ tierLabel }}</strong>
       </p>
-
-      <div class="settings-view__campaign" v-if="patron.patronTierValue() >= 4">
-        <h4>{{ $t('patreon.campaign-premium-title') }}</h4>
-        <p v-if="isCampaignClaimed" class="settings-view__status settings-view__status--active">
-          {{ $t('patreon.campaign-claimed') }}
-        </p>
-        <p v-if="isCampaignClaimed && !isCampaignClaimedByCurrentPlayer" class="settings-view__info">
-          {{ $t('patreon.campaign-claimed-by-other') }}
-        </p>
-        <p v-else-if="!isCampaignClaimed" class="settings-view__status">
-          {{ $t('patreon.campaign-not-claimed') }}
-        </p>
-
-        <button
-          v-if="!isCampaignClaimed"
-          class="settings-view__btn settings-view__btn--claim"
-          :disabled="loading"
-          @click="handleClaim"
-        >
-          {{ loading ? $t('patreon.claiming') : $t('patreon.claim-campaign') }}
-        </button>
-        <button
-          v-else
-          class="settings-view__btn settings-view__btn--unclaim"
-          :disabled="loading || !canUnclaimCampaign"
-          @click="handleUnclaim"
-        >
-          {{ loading ? $t('patreon.removing') : $t('patreon.unclaim-campaign') }}
-        </button>
-
-        <p v-if="errorMsg" class="settings-view__error">{{ errorMsg }}</p>
-      </div>
     </section>
 
     <section class="settings-view__section" v-else>
       <p>{{ $t('patreon.no-subscription') }}</p>
-      <a href="https://patreon.polyhedral.tools/" target="_blank">
+      <a href="https://patreon.sheet-smith.tools/" target="_blank">
         <p>
-          https://patreon.polyhedral.tools/
+          https://patreon.sheet-smith.tools/
         </p>
       </a>
     </section>
@@ -53,72 +21,30 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useVersionStore, PatronTier } from '@/sheet/stores/version/versionStore';
-import { sharedSettingsRef, initValues } from '@/relay/relay';
 
 const { t: $t } = useI18n();
 
 const patron = useVersionStore();
 
-const loading = ref(false);
-const errorMsg = ref('');
-
-const isCampaignClaimed = computed(() => {
-  return !!sharedSettingsRef.value?.isCampaignPremium;
-});
-
-const isCampaignClaimedByCurrentPlayer = computed(() => {
-  const claimedBy = sharedSettingsRef.value?.campaignClaimedBy;
-  const currentPlayerId = initValues.settings?.currentUserId;
-  return claimedBy === String(currentPlayerId);
-});
-
-const canUnclaimCampaign = computed(() => {
-  return isCampaignClaimed.value && isCampaignClaimedByCurrentPlayer.value;
-});
 
 const tierLabel = computed(() => {
   switch (patron.patronTier) {
     case PatronTier.None:
       return $t('patreon.tiers.none');
-    case PatronTier.Copper:
-      return $t('patreon.tiers.copper');
-    case PatronTier.Silver:
-      return $t('patreon.tiers.silver');
-    case PatronTier.Gold:
-      return $t('patreon.tiers.gold');
-    case PatronTier.Platinum:
-      return $t('patreon.tiers.platinum');
-    case PatronTier.Founder:
-      return $t('patreon.tiers.founder');
+    case PatronTier.Apprentice:
+      return $t('patreon.tiers.apprentice');
+    case PatronTier.GuildMember:
+      return $t('patreon.tiers.guild-member');
+    case PatronTier.MasterCrafter:
+      return $t('patreon.tiers.master-crafter');
     default:
       return $t('patreon.tiers.unknown');
   }
 });
 
-const handleClaim = async () => {
-  loading.value = true;
-  errorMsg.value = '';
-  const result = await patron.claimCampaign();
-  if (result?.error === 'limit_reached') {
-    errorMsg.value = $t('patreon.errors.limit-reached');
-  } else if (result?.error) {
-    errorMsg.value = $t('patreon.errors.claim-failed');
-  }
-  loading.value = false;
-};
-
-const handleUnclaim = async () => {
-  loading.value = true;
-  errorMsg.value = '';
-  const result = await patron.unclaimCampaign();
-  if (result?.error) {
-    errorMsg.value = $t('patreon.errors.unclaim-failed');
-  }
-  loading.value = false;
-};
 </script>
 
 <style lang="scss" scoped>
