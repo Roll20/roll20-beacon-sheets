@@ -94,6 +94,7 @@ import { type DiceComponent } from '@/rolltemplates/rolltemplates';
 import { parseFormula } from '@/sheet/stores/formulas';
 import ToggleSwitch from './ToggleSwitch.vue';
 import { useCombatStore } from '@/sheet/stores/combat/combatStore';
+import { useActionsStore } from '@/sheet/stores/actions/actionsStore';
 
 const store = useRollDialogStore();
 const combat = useCombatStore();
@@ -160,7 +161,10 @@ const handleRoll = async () => {
     newArgs.additionalComponents = diceToAdd;
     newArgs.advantage = store.selectedMode as -2 | -1 | 0 | 1;
 
-    await performD20Roll(newArgs);
+    const result = await performD20Roll(newArgs);
+    if (newArgs.actionId) {
+      useActionsStore().setLastAttackResult(newArgs.actionId, result);
+    }
   } else if (store.rollType === 'damage') {
     const newArgs = jsonClone(store.rollArgs as DamageRollArgs);
     const resolvedBonusDamage = parseFormula(store.additionalBonus);

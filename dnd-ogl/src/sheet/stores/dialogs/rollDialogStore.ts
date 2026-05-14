@@ -15,7 +15,11 @@ export const useRollDialogStore = defineStore('rollDialog', () => {
     rollType.value = type;
     rollArgs.value = args;
     additionalBonus.value = '';
-    selectedMode.value = type === 'd20' ? 0 : false;
+    if (type === 'd20') {
+      selectedMode.value = 0;
+    } else {
+      selectedMode.value = (args as DamageRollArgs).isCrit ?? false;
+    }
   }
 
   function close() {

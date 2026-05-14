@@ -40,6 +40,7 @@ export type D20RollArgs = {
   tokenId?: string;
   isCompanion?: boolean;
   avatar?: string;
+  actionId?: string;
 };
 
 export function getD20RollBreakdown(args: D20RollArgs) {

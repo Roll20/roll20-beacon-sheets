@@ -228,6 +228,7 @@ const rollArgs = computed((): D20RollArgs => {
     properties: getRollProperties(action, t, actionDC.value.value.final),
     description: action.description,
     sourceType: 'action',
+    actionId: action._id,
   };
 });
 </script>
