@@ -457,14 +457,12 @@ export const getRollProperties = (
       item.components.map((c: any) => t(`abbreviations.spell-components.${c}`)).join(', ') +
       ('material' in item && item.material ? ` (${item.material})` : '');
   }
-  console.log(item);
   if (item.saving && item.saving !== 'none') {
     const dc = saveDC ?? ('savingDc' in item ? item.savingDc : 0);
     if (dc) {
       properties[t('titles.saving-throw')] = `${t(`titles.abilities.${item.saving}`)} DC ${dc}`;
     }
   }
-  console.log(properties);
 
   return properties;
 };
