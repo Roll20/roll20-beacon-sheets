@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import { spine } from '@/spine/spine';
 import { arrayToObject, objectToArray } from '@/utility/objectify';
 import _ from 'lodash';
 
-type SelfThemebooks = typeof spine.themes['Self']['types'][number];
-type MythosThemebooks = typeof spine.themes['Mythos']['types'][number];
-type NoiseThemebooks = typeof spine.themes['Noise']['types'][number];
-type VariableThemebooks = typeof spine.themes['Variable']['types'][number]; 
+type Spine = typeof import('@/spine/spine').spine;
+
+type SelfThemebooks = Spine['themes']['Self']['types'][number];
+type MythosThemebooks = Spine['themes']['Mythos']['types'][number];
+type NoiseThemebooks = Spine['themes']['Noise']['types'][number];
+type VariableThemebooks = Spine['themes']['Variable']['types'][number]; 
 
 export type Tag = {
   _id: string;
@@ -33,31 +34,31 @@ type SharedTheme = {
 
 type SelfImprovement = {
   _id: string;
-  name: typeof spine.themes['Self']['improvements'][number] | '';
+  name: Spine['themes']['Self']['improvements'][number] | '';
   description?: string;
   checked: boolean;
 }
 type MythosImprovement = {
   _id: string;
-  name: typeof spine.themes['Mythos']['improvements'][number] | '';
+  name: Spine['themes']['Mythos']['improvements'][number] | '';
   description?: string;
   checked: boolean;
 }
 type NoiseImprovement = {
   _id: string;
-  name: typeof spine.themes['Noise']['improvements'][number] | '';
+  name: Spine['themes']['Noise']['improvements'][number] | '';
   description?: string;
   checked: boolean;
 }
 type VariableImprovement = {
   _id: string;
-  name: typeof spine.themes['Variable']['improvements'][number] | '';
+  name: Spine['themes']['Variable']['improvements'][number] | '';
   description?: string;
   checked: boolean;
 }
 type FellowshipImprovement = {
   _id: string;
-  name: typeof spine.themes['Fellowship']['improvements'][number] | '';
+  name: Spine['themes']['Fellowship']['improvements'][number] | '';
   description?: string;
   checked: boolean;
 }
@@ -69,7 +70,7 @@ type GenericImprovement = {
 }
 type SpecialImprovement = GenericImprovement | SelfImprovement | MythosImprovement | NoiseImprovement | VariableImprovement | FellowshipImprovement;
 
-export type ThemeMight = typeof spine.themeMights[number];
+export type ThemeMight = Spine['themeMights'][number];
 type SelfTheme = SharedTheme & {
   might: 'Self';
   themebook: SelfThemebooks | VariableThemebooks | '';
@@ -128,6 +129,7 @@ export const themesStore = defineStore('themes', () => {
   });
   const getEmptyTheme = (isFellowship: boolean = false, isLoadout: boolean = false): Theme => {
     const powerLines = isLoadout ? 40 : 20;
+    const weaknessLines = isLoadout ? 0 : 4;
     const newTheme: Theme = {
       _id: uuidv4(),
       name: '',
@@ -135,7 +137,7 @@ export const themesStore = defineStore('themes', () => {
       isLoadout: false,
       tags: [
         ...Array.from({ length: powerLines }, () => getEmptyTag()),
-        ...Array.from({ length: 2 }, () => getEmptyTag({ type: 'Weakness' })),
+        ...Array.from({ length: weaknessLines }, () => getEmptyTag({ type: 'Weakness' })),
       ],
       quest: {
         description: '',

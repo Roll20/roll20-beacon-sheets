@@ -270,7 +270,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Essences } from '@/sheet/stores/hero/heroStore';
+import type { Essences } from '@/sheet/stores/hero/heroStore';
 
 const props = defineProps<{
   essences: Essences;

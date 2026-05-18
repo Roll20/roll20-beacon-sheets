@@ -81,6 +81,19 @@ export const mergeRecordsIntoFeatures = (
     const fragment = createEffectFragment(rec);
     if (!fragment) continue;
 
+    const isMainClassOnly = rec.multiclass === 'FALSE' || rec.multiclass === 'false';
+    const isMulticlassOnly = rec.multiclass === 'TRUE' || rec.multiclass === 'true';
+    if (isMainClassOnly && fragment.effects) {
+      fragment.effects.forEach((eff: any) => {
+        eff.required = [...(eff.required || []), 'mainClassOnly'];
+      });
+    }
+    if (isMulticlassOnly && fragment.effects) {
+      fragment.effects.forEach((eff: any) => {
+        eff.required = [...(eff.required || []), 'multiclassOnly'];
+      });
+    }
+
     if (rootName && featureRoots.has(rootName)) {
       const root = featureRoots.get(rootName)!;
       if (fragment.effects) root.effects.push(...fragment.effects);

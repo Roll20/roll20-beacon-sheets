@@ -13,7 +13,7 @@
           <input type="text" v-model="challenge.meta.roles" placeholder="Roles (comma separated)"/>
         </div>
         <div class="challenge__description">
-          <textarea v-model="challenge.meta.description" placeholder="Description"></textarea>
+          <textarea spellcheck="false" v-model="challenge.meta.description" placeholder="Description"></textarea>
         </div>
       </div>
       <div class="challenge__left-col">
@@ -26,7 +26,7 @@
                   <input type="number" v-model="limit.value" placeholder="Value">
                   <button type="button" @click="challenge.deleteLimit(limit._id)" class="action-button action-button--delete"><SvgIcon icon="Delete" /></button>
                 </div>
-                <textarea v-model="limit.description" placeholder="Progress Special Feature"></textarea>
+                <textarea spellcheck="false" v-model="limit.description" placeholder="Progress Special Feature"></textarea>
               </div>
               <div class="newlimit">
                 <div class="limit__meta">
@@ -95,7 +95,7 @@
                   <input type="text" v-model="feature.name" placeholder="Name">
                   <button type="button" @click="challenge.deleteSpecialFeature(feature._id)" class="action-button action-button--delete"><SvgIcon icon="Delete" /></button>
                 </div>
-                <textarea v-model="feature.description" placeholder="Progress Special Feature"></textarea>
+                <textarea spellcheck="false" v-model="feature.description" placeholder="Progress Special Feature"></textarea>
               </div>
               <div class="newfeature">
                 <div class="actionable-row">
@@ -117,7 +117,7 @@
                       <input class="threat__name" type="text" v-model="threat.name">
                       <button class="threat__delete action-button action-button--delete" type="button" @click="challenge.deleteThreat(threat._id)"><SvgIcon icon="Delete" /></button>
                     </div>
-                    <textarea class="threat__description" v-model="threat.description"></textarea>
+                    <textarea spellcheck="false" class="threat__description" v-model="threat.description"></textarea>
                   </div>
                   <div class="threat__consequences">
                       <div class="list">

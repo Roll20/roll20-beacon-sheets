@@ -74,7 +74,7 @@ const addTracker = async () => {
   gap: 20px;
   &__cards {
     display: grid;
-    grid-template-columns: 184px repeat(v-bind(numberOfCards), 1fr);
+    grid-template-columns: var(--card-width) repeat(v-bind(numberOfCards), 1fr);
     width: 100%;
     overflow: hidden;
     border-radius: 4px;
@@ -104,7 +104,7 @@ const addTracker = async () => {
   }
   &__add-tracker {
     border: 2px dashed #a4b5a6;
-    width: 184px;
+    width: var(--card-width);
     height: 71px;
     background: none;
     border-radius: 5px;
@@ -141,6 +141,10 @@ const addTracker = async () => {
     display: flex;
     justify-content: center;
     z-index: 9999;
+    pointer-events: none;
+    .roller {
+    pointer-events: all;
+    }
   }
 }
 @media (min-width: 1150px) {

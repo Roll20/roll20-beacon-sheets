@@ -46,6 +46,7 @@ export type RequirementContext = {
   isEquipped?: boolean;
   isAttuned?: boolean;
   level?: number;
+  isMainClass?: boolean;
 };
 
 export const checkRequirements = (
@@ -56,6 +57,8 @@ export const checkRequirements = (
   return requirements.every((req) => {
     if (req === 'equipped') return context.isEquipped ?? true;
     if (req === 'attuned') return context.isAttuned ?? true;
+    if (req === 'mainClassOnly') return context.isMainClass ?? true;
+    if (req === 'multiclassOnly') return !(context.isMainClass ?? true);
 
     if (req.startsWith('$picker:')) {
       const match = req.match(/^\$picker:(\d+)(==|<=|>=|<|>)(.+)$/);
@@ -339,7 +342,9 @@ function calculateModifiedTags(
     }
   }
 
-  return pushedTags;
+  return pushedTags.filter(
+    (tag, index, self) => self.findIndex((t) => t.text.toLowerCase() === tag.text.toLowerCase()) === index,
+  );
 }
 
 function calculateModifiedValue(

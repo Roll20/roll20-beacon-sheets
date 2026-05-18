@@ -127,9 +127,9 @@ describe('Relay Computed Properties', () => {
       expect(getAbilityScore({ character }, 'strength')).toBe(0);
     });
 
-    it('calculates ability modifier (15 -> 3)', () => {
+    it('calculates ability modifier (15 -> 2)', () => {
       const character = setupCharacter(15);
-      expect(getAbilityModifier({ character }, 'strength')).toBe(3);
+      expect(getAbilityModifier({ character }, 'strength')).toBe(2);
     });
 
     it('calculates ability modifier (10 -> 0)', () => {
@@ -183,7 +183,7 @@ describe('Relay Computed Properties', () => {
         }
       });
       expect(getAbilityScore({ character }, 'strength')).toBe(19);
-      expect(getAbilityModifier({ character }, 'strength')).toBe(5);
+      expect(getAbilityModifier({ character }, 'strength')).toBe(4);
     });
   });
 

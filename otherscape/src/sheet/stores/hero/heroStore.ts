@@ -2,18 +2,20 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { arrayToObject, objectToArray } from '@/utility/objectify';
-import { spine } from '@/spine/spine';
-import { type Tag } from '@/sheet/stores/themes/themesStore';
+import type { Tag } from '@/sheet/stores/themes/themesStore';
+
+type Spine = typeof import('@/spine/spine').spine;
 
 type FellowshipRelation = {
   _id: string;
   companion: string;
   tag: string;
+  burnt?: boolean;
 };
 
 type Quintessence = {
   _id: string;
-  name: typeof spine.quintessences[number] | '';
+  name: Spine['quintessences'][number] | '';
   description?: string;
 }
 
@@ -68,6 +70,7 @@ export const heroStore = defineStore('hero', () => {
       _id: uuidv4(),
       companion: '',
       tag: '',
+      burnt: false,
     };
   };
   const getEmptyQuintessence = (): Quintessence => {
@@ -142,7 +145,7 @@ export const heroStore = defineStore('hero', () => {
   const lastName = ref<string>('');
   const player = ref<string>('');
   const fellowshipRelations = ref<FellowshipRelation[]>(
-    Array.from({ length: 6 }, () => getEmptyRelation())
+    Array.from({ length: 8 }, () => getEmptyRelation())
   );
   const promise = ref<PromiseValue>(0);
   const quintessences = ref<Quintessence[]>(
@@ -158,7 +161,7 @@ export const heroStore = defineStore('hero', () => {
       description: '',
     }))
   );
-  const specials = ref<Special[]>(Array.from({ length: 3 }, () => getEmptySpecial()));
+  const specials = ref<Special[]>(Array.from({ length: 6 }, () => getEmptySpecial()));
   const essences = ref<Essences>({
     real: false,
     spiritualist: false,

@@ -376,6 +376,12 @@ export const performDamageRoll = async (args: DamageRollArgs) => {
       damageGroups[firstGroupKey].components.push({ label: 'Bonus', value: flatBonus });
     }
     damageGroups[firstGroupKey].components.push(...rollBonuses);
+    if (isCrit) {
+      const critRollBonuses = rollBonuses
+        .filter((c) => c.sides)
+        .map((c) => ({ ...c, count: (c.count || 1), label: c.label ? `${c.label} (crit)` : t('rolls.crit-success') }));
+      damageGroups[firstGroupKey].components.push(...critRollBonuses);
+    }
     damageGroups[firstGroupKey].components.push(...additionalComponents);
   } else if (additionalComponents.length > 0 || rollBonuses.length > 0 || flatBonus !== 0) {
     damageGroups['bonus'] = { type: t('titles.damage'), components: [] };
@@ -383,6 +389,12 @@ export const performDamageRoll = async (args: DamageRollArgs) => {
       damageGroups['bonus'].components.push({ label: 'Bonus', value: flatBonus });
     }
     damageGroups['bonus'].components.push(...rollBonuses);
+    if (isCrit) {
+      const critRollBonuses = rollBonuses
+        .filter((c) => c.sides)
+        .map((c) => ({ ...c, count: (c.count || 1), label: c.label ? `${c.label} (crit)` : t('rolls.crit-success') }));
+      damageGroups['bonus'].components.push(...critRollBonuses);
+    }
     damageGroups['bonus'].components.push(...additionalComponents);
   }
 

@@ -4,7 +4,7 @@
       <span class="title">Sheet Type</span>
       <div class="list">
         <button type="button" @click="setCharacter" :class="{ active: sheetType === 'character' }">
-          <span>Character</span>
+          <span>Player Character</span>
         </button>
         <button type="button" @click="setChallenge" :class="{ active: sheetType === 'challenge' }">
           <span>Challenge</span>

@@ -7,6 +7,7 @@ export type Tracker = {
   _id: string;
   name: string;
   mode?: 'bonus' | 'penalty';
+  scratched?: boolean;
   stages: {
     level_1: boolean;
     level_2: boolean;
@@ -25,6 +26,7 @@ export const trackersStore = defineStore('trackers', () => {
   const getEmptyTracker = (): Tracker => ({
     _id: uuidv4(),
     name: '',
+    scratched: false,
     stages: {
       level_1: false,
       level_2: false,

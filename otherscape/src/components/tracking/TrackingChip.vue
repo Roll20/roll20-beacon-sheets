@@ -6,17 +6,23 @@
           <SvgIcon v-if="tracker.mode === 'bonus'" icon="Power" />
           <SvgIcon v-if="tracker.mode === 'penalty'" icon="Weakness" />
         </div>
-        <select v-model="tracker.mode">
+        <select v-model="tracker.mode" :disabled="tracker.burnt">
           <option :value="undefined">Choose...</option>
           <option value="bonus">Bonus</option>
           <option value="penalty">Penalty</option>
         </select>
       </div>
-      <TextInput v-model="tracker.name" class="chip__label text-input--centered" @clear="deleteChip" placeholder="Tag"/>
+      <TextInput v-model="tracker.name" class="chip__label" @clear="deleteChip" :placeholder="isTag ? 'Tag' : 'Status'" :disabled="tracker.burnt"/>
+      <div class="burnt-toggle image-toggle" v-if="isTag">
+        <template v-if="!(tracker.name.trim() === '')">
+          <input type="checkbox" v-model="tracker.burnt" :disabled="tracker.name.trim() === '' || tracker.mode === 'penalty'"/>
+          <SvgIcon icon="Burn"/>
+        </template>
+      </div>
     </div>
     <div class="chip__stages">
       <div v-for="stage in [1, 2, 3, 4, 5, 6]" :key="stage" :class="`chip__stage chip__stage--${stage}`">
-        <input type="checkbox" :checked="getStageValue(stage)" @change="setStageValue(stage, ($event.target as HTMLInputElement).checked)" />
+        <input type="checkbox" :checked="getStageValue(stage)" @change="setStageValue(stage, ($event.target as HTMLInputElement).checked)" :disabled="tracker.burnt" />
         <span>{{ stage }}</span>
       </div>
     </div>
@@ -24,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Tracker } from '@/sheet/stores/trackers/trackersStore';
+import type { Tracker } from '@/sheet/stores/trackers/trackersStore';
 import TextInput from '../shared/TextInput.vue';
 import { computed } from 'vue';
 import { trackersStore } from '@/sheet/stores/trackers/trackersStore';
@@ -153,6 +159,12 @@ const isTag = computed(() => {
         background-color: #CD024C;
       }
     }
+    &:has(input:disabled) {
+      input {
+        cursor: not-allowed;
+      }
+      opacity: 0.5;
+    }
   }
   &__title {
     position: relative;
@@ -178,6 +190,9 @@ const isTag = computed(() => {
     select {
       opacity: 0;
       cursor: pointer;
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
     &:hover {
       .chip__indicator {
@@ -207,6 +222,7 @@ const isTag = computed(() => {
       font-size: var(--font-size-xlarge);
       padding-bottom: 5px;
       margin-top: -5px;
+      padding-left: 25px;
       &::placeholder {
 
       }
@@ -234,5 +250,65 @@ const isTag = computed(() => {
 .chip--tag {
   --color-trackingchip-background: #CFB97D;
   --color-textinput-line: #a8a18b;
+}
+.chip--tag {
+  .chip__title {
+    position: relative;
+    &:has(.burnt-toggle input:checked) {
+      .burnt-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input) {
+        input {
+          padding-right: 20px;
+          text-decoration: line-through;
+        }
+      }
+    }
+    &:hover, &:focus-within {
+      .burnt-toggle {
+        opacity: 1;
+      }
+      :deep(.text-input:not(.disabled)) {
+        input {
+          padding-right: 35px!important;
+        }
+        .clear-btn {
+          right: 20px;
+          display: block!important;
+        }
+      }
+    }
+  }
+  .burnt-toggle {
+    height: var(--toggle-size);
+    width: var(--toggle-size);
+    transition: opacity ease 0.2s;
+    opacity: 0;
+    position: absolute;
+    top: calc(calc(50% - var(--toggle-size) / 2));
+    right: 0;
+    .svg-icon {
+      width: var(--toggle-size);
+      height: var(--toggle-size);
+      fill: rgb(var(--color-palette-foreground));
+    }
+    &:has(input:checked) {
+      input[type="text"] {
+        text-decoration: line-through;
+      }
+      .svg-icon {
+        fill: rgb(var(--color-palette-neon));
+        filter: drop-shadow(0px 0px 5px rgb(var(--color-palette-foreground)));
+      }
+    }
+    &:has(input:disabled) {
+      input { cursor: not-allowed; }
+    }
+    &.broken {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 }
 </style>

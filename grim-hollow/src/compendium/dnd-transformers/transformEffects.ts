@@ -126,7 +126,7 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
           Armor: 'armor-proficiencies',
           Weapon: 'weapon-proficiencies',
           Skill: `${payload.proficiency?.toLowerCase().replace(/\s/g, '-')}-proficiency`,
-          Tool: 'tool-proficiencies',
+          Tool: `${payload.proficiency?.toLowerCase().replace(/['']/g, '').replace(/ /g, '-')}-proficiency`,
         };
         const attribute = proficiencyMap[payload.category];
 
@@ -134,19 +134,76 @@ export const createEffectFragment = (datarecord: any): EffectFragment | null => 
           const operation =
             payload.category === 'Saving Throw'
               ? 'set'
-              : payload.category === 'Skill'
+              : payload.category === 'Skill' || payload.category === 'Tool'
               ? 'set-max'
               : 'push';
           let value: string | number = 1;
-          if (payload.category === 'Skill') {
+          if (payload.category === 'Skill' || payload.category === 'Tool') {
             value = proficiencyLevelMap[payload.proficiencyLevel] || 1;
           } else if (payload.category !== 'Saving Throw') {
-            value = payload.proficiency.toLowerCase().replace(/ /g, '-');
+            value = payload.proficiency.toLowerCase().replace(/['']/g, '').replace(/ /g, '-');
           }
 
           effects.push({ attribute, operation, value });
         }
         if (effects.length > 0) fragment.effects = effects;
+        break;
+      }
+
+      case 'Proficiency Choice': {
+        const choiceCategory = payload.subtype || payload.category;
+        const choiceList: string[] | undefined = payload.list || payload.from;
+        const profValue = proficiencyLevelMap[payload.proficiencyLevel] || 1;
+
+        if (choiceCategory === 'Skill') {
+          fragment.pickers = [];
+          fragment.effects = [];
+          const numChoices = payload.numOfChoices || payload.choose || 1;
+          const allSkills = Object.keys(config.skills);
+          const fromSkills = choiceList
+            ? (choiceList as string[]).map((s: string) => s.toLowerCase().replace(/\s/g, '-'))
+            : allSkills;
+          const skillOptions = fromSkills.map((skill: string) => ({
+            label: skill.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+            value: skill,
+          }));
+
+          for (let i = 0; i < numChoices; i++) {
+            const pickerIndex = payload.pickerIndexOffset ? payload.pickerIndexOffset + i : i;
+            fragment.pickers.push({
+              label: 'Skill Proficiency',
+              options: skillOptions,
+              mandatory: true,
+            });
+            fragment.effects.push({
+              attribute: `$picker:${pickerIndex}-proficiency`,
+              operation: 'set-max',
+              value: profValue,
+            });
+          }
+        } else if (choiceCategory === 'Tool') {
+          fragment.pickers = [];
+          fragment.effects = [];
+          const numChoices = payload.numOfChoices || payload.choose || 1;
+          const toolOptions = (choiceList || []).map((tool: string) => ({
+            label: tool,
+            value: tool.toLowerCase().replace(/['']/g, '').replace(/ /g, '-'),
+          }));
+
+          for (let i = 0; i < numChoices; i++) {
+            const pickerIndex = payload.pickerIndexOffset ? payload.pickerIndexOffset + i : i;
+            fragment.pickers.push({
+              label: 'Tool Proficiency',
+              options: toolOptions,
+              mandatory: true,
+            });
+            fragment.effects.push({
+              attribute: `$picker:${pickerIndex}-proficiency`,
+              operation: 'set-max',
+              value: profValue,
+            });
+          }
+        }
         break;
       }
 

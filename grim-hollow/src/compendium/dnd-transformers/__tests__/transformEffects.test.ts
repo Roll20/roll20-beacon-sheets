@@ -637,5 +637,230 @@ describe('dnd-transformers/transformEffects', () => {
         value: 18,
       });
     });
+
+    // Tool Proficiency tests 
+
+    it('transforms "Proficiency" type (Tool) using set-max', () => {
+      const record = {
+        name: 'Tool Prof',
+        payload: JSON.stringify({
+          type: 'Proficiency',
+          category: 'Tool',
+          proficiency: "Thieves' Tools",
+          proficiencyLevel: 'Proficient',
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.effects![0]).toEqual({
+        attribute: 'thieves-tools-proficiency',
+        operation: 'set-max',
+        value: 1,
+      });
+    });
+
+    it('transforms "Proficiency" type (Tool) with Expertise level', () => {
+      const record = {
+        name: 'Tool Expertise',
+        payload: JSON.stringify({
+          type: 'Proficiency',
+          category: 'Tool',
+          proficiency: 'Disguise Kit',
+          proficiencyLevel: 'Expertise',
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.effects![0]).toEqual({
+        attribute: 'disguise-kit-proficiency',
+        operation: 'set-max',
+        value: 2,
+      });
+    });
+
+    it('transforms "Proficiency" type (Weapon)', () => {
+      const record = {
+        name: 'Weapon Prof',
+        payload: JSON.stringify({
+          type: 'Proficiency',
+          category: 'Weapon',
+          proficiency: 'Simple Weapons',
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.effects![0]).toEqual({
+        attribute: 'weapon-proficiencies',
+        operation: 'push',
+        value: 'simple-weapons',
+      });
+    });
+
+    // Proficiency Choice tests
+
+    it('transforms "Proficiency Choice" Skill using subtype and list fields', () => {
+      const record = {
+        name: 'Rogue Skill Choice',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          subtype: 'Skill',
+          proficiencyLevel: 'Proficient',
+          list: ['Acrobatics', 'Athletics', 'Deception', 'Stealth'],
+          numOfChoices: 4,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.pickers).toHaveLength(4);
+      expect(result?.effects).toHaveLength(4);
+      expect(result?.pickers![0].label).toBe('Skill Proficiency');
+      expect(result?.pickers![0].options).toHaveLength(4);
+      expect(result?.pickers![0].options[0]).toEqual({ label: 'Acrobatics', value: 'acrobatics' });
+      expect(result?.pickers![0].options[3]).toEqual({ label: 'Stealth', value: 'stealth' });
+      expect(result?.effects![0]).toEqual({
+        attribute: '$picker:0-proficiency',
+        operation: 'set-max',
+        value: 1,
+      });
+      expect(result?.effects![3]).toEqual({
+        attribute: '$picker:3-proficiency',
+        operation: 'set-max',
+        value: 1,
+      });
+    });
+
+    it('transforms "Proficiency Choice" Skill using category and from fields (legacy)', () => {
+      const record = {
+        name: 'Legacy Skill Choice',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          category: 'Skill',
+          proficiencyLevel: 'Proficient',
+          from: ['History', 'Insight'],
+          choose: 1,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.pickers).toHaveLength(1);
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.pickers![0].options).toHaveLength(2);
+      expect(result?.pickers![0].options[0]).toEqual({ label: 'History', value: 'history' });
+    });
+
+    it('transforms "Proficiency Choice" Skill with Expertise level', () => {
+      const record = {
+        name: 'Expertise Choice',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          subtype: 'Skill',
+          proficiencyLevel: 'Expertise',
+          list: ['Proficient Skills'],
+          numOfChoices: 2,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.pickers).toHaveLength(2);
+      expect(result?.effects).toHaveLength(2);
+      expect(result?.effects![0].value).toBe(2);
+      expect(result?.effects![1].value).toBe(2);
+    });
+
+    it('transforms "Proficiency Choice" Skill defaults to all skills when no list', () => {
+      const record = {
+        name: 'Any Skill',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          subtype: 'Skill',
+          proficiencyLevel: 'Proficient',
+          numOfChoices: 1,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.pickers).toHaveLength(1);
+      // Should include all 18 skills from config
+      expect(result?.pickers![0].options.length).toBe(18);
+    });
+
+    it('transforms "Proficiency Choice" Tool using subtype and list fields', () => {
+      const record = {
+        name: 'Tool Choice',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          subtype: 'Tool',
+          proficiencyLevel: 'Proficient',
+          list: ["Thieves' Tools", 'Disguise Kit'],
+          numOfChoices: 1,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.pickers).toHaveLength(1);
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.pickers![0].label).toBe('Tool Proficiency');
+      expect(result?.pickers![0].options).toHaveLength(2);
+      expect(result?.pickers![0].options[0]).toEqual({ label: "Thieves' Tools", value: 'thieves-tools' });
+      expect(result?.pickers![0].options[1]).toEqual({ label: 'Disguise Kit', value: 'disguise-kit' });
+      expect(result?.effects![0]).toEqual({
+        attribute: '$picker:0-proficiency',
+        operation: 'set-max',
+        value: 1,
+      });
+    });
+
+    it('transforms "Proficiency Choice" Tool using category and from fields (legacy)', () => {
+      const record = {
+        name: 'Legacy Tool Choice',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          category: 'Tool',
+          from: ['Smith Tools', 'Brewer Supplies'],
+          choose: 1,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.pickers).toHaveLength(1);
+      expect(result?.effects).toHaveLength(1);
+      expect(result?.pickers![0].options[0]).toEqual({ label: 'Smith Tools', value: 'smith-tools' });
+    });
+
+    it('Proficiency Choice respects pickerIndexOffset', () => {
+      const record = {
+        name: 'Offset Choice',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          subtype: 'Skill',
+          proficiencyLevel: 'Proficient',
+          list: ['Athletics'],
+          numOfChoices: 1,
+          pickerIndexOffset: 5,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.effects![0].attribute).toBe('$picker:5-proficiency');
+    });
+
+    it('produces no pickers for unknown Proficiency Choice category', () => {
+      const record = {
+        name: 'Unknown Choice',
+        payload: JSON.stringify({
+          type: 'Proficiency Choice',
+          subtype: 'Armor',
+          list: ['Light Armor'],
+          numOfChoices: 1,
+        }),
+      };
+      const result = createEffectFragment(record);
+
+      expect(result?.pickers).toBeUndefined();
+      expect(result?.effects).toBeUndefined();
+    });
   });
 });

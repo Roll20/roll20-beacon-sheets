@@ -34,6 +34,7 @@ export const setToken = async ({ characterId, payload, dispatch }: { characterId
   }
   //Setting Default Token && Size
   const size = getMonsterSize(result.data.shortDescription);
+  const maxHitPoints = result.data.hitPoints.max ?? result.data.hitPoints.current;
   await dispatch.updateTokensByCharacter({
     characterId: characterId,
     token: {
@@ -41,6 +42,9 @@ export const setToken = async ({ characterId, payload, dispatch }: { characterId
       imgsrc: result.data.token,
       width: size * 70,
       height: size * 70,
+      bar1_value: `${result.data.hitPoints.current}`,
+      bar1_max: `${maxHitPoints}`,
+      bar2_value: `${result.data.armorClass}`,
     }
   });
 }

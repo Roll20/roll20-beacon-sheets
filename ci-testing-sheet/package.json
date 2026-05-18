@@ -1,0 +1,12 @@
+{
+  "name": "ci-testing-sheet",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^5.2.8"
+  }
+}

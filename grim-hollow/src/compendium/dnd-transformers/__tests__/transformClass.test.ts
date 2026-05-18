@@ -99,11 +99,13 @@ describe('dnd-transformers/transformClass', () => {
         attribute: 'strength-saving-proficiency',
         operation: 'set',
         value: 1,
+        required: ['mainClassOnly'],
       });
       expect(effects).toContainEqual({
         attribute: 'dexterity-saving-proficiency',
         operation: 'set',
         value: 1,
+        required: ['mainClassOnly'],
       });
     });
   });
@@ -188,6 +190,7 @@ describe('dnd-transformers/transformClass', () => {
       const dataRecords = [
         {
           level: 1,
+          parent: 'Barbarian Class Details',
           payload: JSON.stringify({
             type: 'Proficiency',
             category: 'Armor',
@@ -196,6 +199,7 @@ describe('dnd-transformers/transformClass', () => {
         },
         {
           level: 1,
+          parent: 'Barbarian Class Details',
           payload: JSON.stringify({
             type: 'Proficiency',
             category: 'Weapon',
@@ -325,6 +329,7 @@ describe('dnd-transformers/transformClass', () => {
         { level: 1, payload: 'invalid_json' },
         {
           level: 1,
+          parent: 'Warrior Class Details',
           payload: JSON.stringify({
             type: 'Proficiency',
             category: 'Armor',
@@ -354,6 +359,281 @@ describe('dnd-transformers/transformClass', () => {
       const result = transformDnDClass(rawPayload, mockBook, properties);
       // Since the record fails transformDnDFeature, it adds no features
       expect(result['data-features']).toBeUndefined();
+    });
+
+    it('groups Proficiency Choice records into the combined level-1 feature', () => {
+      const rawPayload = { name: 'Cleric' };
+      const dataRecords = [
+        {
+          level: '1',
+          multiclass: 'FALSE',
+          parent: 'Cleric Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency',
+            category: 'Saving Throw',
+            proficiency: 'Wisdom',
+            proficiencyLevel: 'Proficient',
+          }),
+        },
+        {
+          level: '1',
+          multiclass: 'FALSE',
+          parent: 'Cleric Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Skill',
+            proficiencyLevel: 'Proficient',
+            list: ['History', 'Insight', 'Medicine', 'Persuasion', 'Religion'],
+            numOfChoices: 2,
+          }),
+        },
+      ];
+      const properties = {
+        'data-datarecords': JSON.stringify(dataRecords),
+      };
+
+      const result = transformDnDClass(rawPayload, mockBook, properties);
+      const level1 = result['data-features']['level-1'];
+      const profFeature = level1.find((f: any) => f.label === 'Proficiencies');
+      expect(profFeature).toBeDefined();
+
+      const effects = profFeature['data-effects'].effects;
+      const pickers = profFeature['data-effects'].pickers;
+
+      // Saving Throw + 2 skill choice effects
+      expect(effects.length).toBe(3);
+      expect(pickers).toHaveLength(2);
+
+      // Saving throw should have mainClassOnly
+      expect(effects[0]).toEqual(expect.objectContaining({
+        attribute: 'wisdom-saving-proficiency',
+        required: ['mainClassOnly'],
+      }));
+
+      // Skill choices should have mainClassOnly and $picker references
+      expect(effects[1]).toEqual(expect.objectContaining({
+        attribute: '$picker:0-proficiency',
+        operation: 'set-max',
+        required: ['mainClassOnly'],
+      }));
+      expect(effects[2]).toEqual(expect.objectContaining({
+        attribute: '$picker:1-proficiency',
+        operation: 'set-max',
+        required: ['mainClassOnly'],
+      }));
+    });
+
+    it('handles multiclassOnly Proficiency Choice records', () => {
+      const rawPayload = { name: 'Rogue' };
+      const dataRecords = [
+        {
+          level: '1',
+          multiclass: 'FALSE',
+          parent: 'Rogue Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Skill',
+            proficiencyLevel: 'Proficient',
+            list: ['Acrobatics', 'Stealth'],
+            numOfChoices: 4,
+          }),
+        },
+        {
+          level: '1',
+          multiclass: 'TRUE',
+          parent: 'Rogue Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Skill',
+            proficiencyLevel: 'Proficient',
+            list: ['Acrobatics', 'Stealth'],
+            numOfChoices: 1,
+          }),
+        },
+      ];
+      const properties = {
+        'data-datarecords': JSON.stringify(dataRecords),
+      };
+
+      const result = transformDnDClass(rawPayload, mockBook, properties);
+      const level1 = result['data-features']['level-1'];
+      const profFeature = level1.find((f: any) => f.label === 'Proficiencies');
+      const effects = profFeature['data-effects'].effects;
+      const pickers = profFeature['data-effects'].pickers;
+
+      expect(effects).toHaveLength(5);
+      expect(pickers).toHaveLength(5);
+
+      // First 4 are mainClassOnly
+      for (let i = 0; i < 4; i++) {
+        expect(effects[i].required).toContain('mainClassOnly');
+        expect(pickers[i].required).toContain('mainClassOnly');
+      }
+      // Last one is multiclassOnly, with re-indexed picker
+      expect(effects[4].required).toContain('multiclassOnly');
+      expect(effects[4].attribute).toBe('$picker:4-proficiency');
+      expect(pickers[4].required).toContain('multiclassOnly');
+    });
+
+    it('re-indexes picker references when combining multiple Proficiency Choice records', () => {
+      const rawPayload = { name: 'Versatile' };
+      const dataRecords = [
+        {
+          level: '1',
+          parent: 'Versatile Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Skill',
+            proficiencyLevel: 'Proficient',
+            list: ['Athletics', 'Acrobatics'],
+            numOfChoices: 2,
+          }),
+        },
+        {
+          level: '1',
+          parent: 'Versatile Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Tool',
+            proficiencyLevel: 'Proficient',
+            list: ['Smith Tools', 'Brewer Supplies'],
+            numOfChoices: 1,
+          }),
+        },
+      ];
+      const properties = {
+        'data-datarecords': JSON.stringify(dataRecords),
+      };
+
+      const result = transformDnDClass(rawPayload, mockBook, properties);
+      const profFeature = result['data-features']['level-1'][0];
+      const effects = profFeature['data-effects'].effects;
+      const pickers = profFeature['data-effects'].pickers;
+
+      expect(pickers).toHaveLength(3);
+      expect(effects).toHaveLength(3);
+
+      // First two should reference picker 0 and 1
+      expect(effects[0].attribute).toBe('$picker:0-proficiency');
+      expect(effects[1].attribute).toBe('$picker:1-proficiency');
+      // Tool picker should be re-indexed to 2
+      expect(effects[2].attribute).toBe('$picker:2-proficiency');
+    });
+
+    it('handles Tool Proficiency with apostrophe in name (Thieves Tools)', () => {
+      const rawPayload = { name: 'Rogue' };
+      const dataRecords = [
+        {
+          level: '1',
+          parent: 'Rogue Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency',
+            category: 'Tool',
+            proficiency: "Thieves' Tools",
+            proficiencyLevel: 'Proficient',
+          }),
+        },
+      ];
+      const properties = {
+        'data-datarecords': JSON.stringify(dataRecords),
+      };
+
+      const result = transformDnDClass(rawPayload, mockBook, properties);
+      const profFeature = result['data-features']['level-1'][0];
+      const effects = profFeature['data-effects'].effects;
+
+      expect(effects[0]).toEqual(expect.objectContaining({
+        attribute: 'thieves-tools-proficiency',
+        operation: 'set-max',
+        value: 1,
+      }));
+    });
+
+    it('excludes level-1 proficiency records whose parent is not Class Details', () => {
+      const rawPayload = { name: 'Rogue' };
+      const dataRecords = [
+        {
+          level: '1',
+          multiclass: 'FALSE',
+          parent: 'Rogue Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency',
+            category: 'Saving Throw',
+            proficiency: 'Dexterity',
+            proficiencyLevel: 'Proficient',
+          }),
+        },
+        {
+          level: '1',
+          parent: 'Rogue Expertise',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Skill',
+            proficiencyLevel: 'Expertise',
+            list: ['Acrobatics', 'Stealth'],
+            numOfChoices: 2,
+          }),
+        },
+      ];
+      const properties = {
+        'data-datarecords': JSON.stringify(dataRecords),
+      };
+
+      const result = transformDnDClass(rawPayload, mockBook, properties);
+      const level1 = result['data-features']['level-1'];
+      const profFeature = level1.find((f: any) => f.label === 'Proficiencies');
+
+      // Only the saving throw should be in the combined proficiency feature
+      expect(profFeature['data-effects'].effects).toHaveLength(1);
+      expect(profFeature['data-effects'].effects[0]).toEqual(expect.objectContaining({
+        attribute: 'dexterity-saving-proficiency',
+      }));
+
+      expect(profFeature['data-effects'].pickers).toBeUndefined();
+
+      const expertiseFeature = level1.find((f: any) => f.label !== 'Proficiencies');
+      expect(expertiseFeature).toBeDefined();
+    });
+
+    it('propagates mainClassOnly/multiclassOnly requirements to pickers', () => {
+      const rawPayload = { name: 'Fighter' };
+      const dataRecords = [
+        {
+          level: '1',
+          multiclass: 'FALSE',
+          parent: 'Fighter Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Skill',
+            proficiencyLevel: 'Proficient',
+            list: ['Athletics', 'Acrobatics'],
+            numOfChoices: 1,
+          }),
+        },
+        {
+          level: '1',
+          multiclass: 'TRUE',
+          parent: 'Fighter Class Details',
+          payload: JSON.stringify({
+            type: 'Proficiency Choice',
+            subtype: 'Tool',
+            proficiencyLevel: 'Proficient',
+            list: ['Smith Tools', 'Brewer Supplies'],
+            numOfChoices: 1,
+          }),
+        },
+      ];
+      const properties = {
+        'data-datarecords': JSON.stringify(dataRecords),
+      };
+
+      const result = transformDnDClass(rawPayload, mockBook, properties);
+      const profFeature = result['data-features']['level-1'][0];
+      const pickers = profFeature['data-effects'].pickers;
+
+      expect(pickers).toHaveLength(2);
+      expect(pickers[0].required).toContain('mainClassOnly');
+      expect(pickers[1].required).toContain('multiclassOnly');
     });
   });
 });

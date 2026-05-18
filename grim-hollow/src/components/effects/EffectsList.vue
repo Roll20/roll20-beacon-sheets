@@ -34,7 +34,7 @@
         </div>
 
         <div v-if="effectParent.enabled && Array.isArray(effectParent.pickers) && effectParent.pickers.length > 0" class="pickers">
-          <div v-for="(picker, index) in effectParent.pickers" :key="index" class="picker">
+          <div v-for="(picker, index) in effectParent.pickers" :key="index" class="picker" v-show="effectsStore.isPickerVisible(effectParent, picker)">
             <label>
               {{ picker.label }}
               <select :class="{'picker-unselected': !picker.value}" v-model="picker.value">

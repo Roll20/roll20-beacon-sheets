@@ -1,0 +1,208 @@
+name: Deploy on PR Merge
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      folder:
+        description: 'Sheet folder to deploy'
+        required: true
+        default: 'ci-testing-sheet'
+        type: string
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      detected_folder: ${{ steps.resolve.outputs.detected_folder }}
+      target_folder: ${{ steps.resolve.outputs.target_folder }}
+      should_deploy: ${{ steps.resolve.outputs.should_deploy }}
+
+    steps:
+      - name: Get changed files from push
+        if: github.event_name == 'push'
+        id: changed_files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Get all changed files across commits in this push via the GitHub API
+          CHANGED_FILES=$(gh api "repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }}" \
+            --jq '.files[].filename')
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "files<<$EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - name: Detect modified subfolders
+        if: github.event_name == 'push'
+        id: detect
+        run: |
+          # Check if all changes are to root-level files or dot-prefixed folders
+          CHANGED_SUBFOLDERS=$(echo "$FILES" | awk -F/ '/^[^.].*\// {print $1}' | sort -u)
+
+          if [ -z "$CHANGED_SUBFOLDERS" ]; then
+            echo "All changes are to root-level files or dot-prefixed folders. Skipping deployment."
+            exit 0
+          fi
+
+          DETECTED_FOLDER=$(echo "$CHANGED_SUBFOLDERS" | head -n 1)
+          echo "Detected folder: $DETECTED_FOLDER"
+          echo "detected_folder=$DETECTED_FOLDER" >> $GITHUB_OUTPUT
+        env:
+          FILES: ${{ steps.changed_files.outputs.files }}
+
+      - name: Resolve folder and shortname
+        id: resolve
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DETECTED_FOLDER="${{ inputs.folder }}"
+          else
+            DETECTED_FOLDER="${{ steps.detect.outputs.detected_folder }}"
+          fi
+
+          if [ -z "$DETECTED_FOLDER" ]; then
+            echo "No folder to deploy. Skipping."
+            exit 0
+          fi
+
+          # Check for package.json via the GitHub API
+          STATUS=$(gh api "repos/${{ github.repository }}/contents/$DETECTED_FOLDER/package.json" \
+            --jq '.name' 2>/dev/null || echo "not_found")
+
+          if [ "$STATUS" = "not_found" ]; then
+            echo "::error::Detected folder '$DETECTED_FOLDER' does not contain a package.json"
+            exit 1
+          fi
+
+          # Fetch approved.yaml and look up shortname
+          SHORTNAME=$(gh api "repos/${{ github.repository }}/contents/approved.yaml" \
+            --jq '.content' | base64 -d | yq e ".folders.\"$DETECTED_FOLDER\"")
+
+          if [ -z "$SHORTNAME" ] || [ "$SHORTNAME" = "null" ]; then
+            echo "::error::Folder '$DETECTED_FOLDER' is not listed in approved.yaml"
+            exit 1
+          fi
+
+          echo "Shortname for deployment: $SHORTNAME"
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+          echo "detected_folder=$DETECTED_FOLDER" >> $GITHUB_OUTPUT
+          echo "target_folder=$SHORTNAME" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  deploy:
+    needs: detect
+    if: needs.detect.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            ${{ needs.detect.outputs.detected_folder }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.SHEET_ACCESS_KEY_FILE }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Install dependencies
+        working-directory: ${{ needs.detect.outputs.detected_folder }}
+        run: npm i
+
+      - name: Compute CDN path
+        id: cdn_path
+        env:
+          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+        run: |
+          # Strip the leading bucket segment from GCS_BUCKET_NAME so the public
+          # URL on cdn.roll20.net (which already maps to that bucket at its
+          # root) doesn't end up with a duplicated bucket prefix.
+          CDN_PATH="${GCS_BUCKET_NAME#*/}"
+          echo "cdn_path=$CDN_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Build application
+        env:
+          VITE_SHEET_PATH: https://cdn.roll20.net/${{ steps.cdn_path.outputs.cdn_path }}
+          VITE_SHEET_SHORT_NAME: ${{ needs.detect.outputs.target_folder }}
+        working-directory: ${{ needs.detect.outputs.detected_folder }}
+        run: npm run build
+
+      - name: Deploy to Google Cloud Storage
+        run: |
+          DETECTED_FOLDER="${{ needs.detect.outputs.detected_folder }}"
+          TARGET_FOLDER="${{ needs.detect.outputs.target_folder }}"
+          BUCKET_NAME="${{ secrets.GCS_BUCKET_NAME }}"
+
+          echo "Deploying $DETECTED_FOLDER to gs://$BUCKET_NAME/$TARGET_FOLDER/"
+
+          # Sheet entry filenames (sheet.js, sheet.css, assets/[name][extname])
+          # are unhashed, so we tell the CDN/browser not to cache them.
+          CACHE_CONTROL="no-cache, max-age=0, must-revalidate"
+
+          gsutil -m -h "Cache-Control:$CACHE_CONTROL" rsync -r -d "$DETECTED_FOLDER/dist" "gs://$BUCKET_NAME/$TARGET_FOLDER/"
+
+          # Upload preview.png and sheet.json from the sheet root if they exist
+          for FILE in preview.png sheet.json; do
+            if [ -f "$DETECTED_FOLDER/$FILE" ]; then
+              echo "Uploading $FILE"
+              gsutil -h "Cache-Control:$CACHE_CONTROL" cp "$DETECTED_FOLDER/$FILE" "gs://$BUCKET_NAME/$TARGET_FOLDER/$FILE"
+            else
+              echo "::warning::$FILE not found in $DETECTED_FOLDER"
+            fi
+          done
+
+      - name: Create issue on build/deploy failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const detectedFolder = '${{ needs.detect.outputs.detected_folder }}';
+            const targetFolder = '${{ needs.detect.outputs.target_folder }}';
+            const commitSha = '${{ github.sha }}';
+            const commitUrl = `https://github.com/${{ github.repository }}/commit/${commitSha}`;
+            const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `❌ Deployment Failed: ${detectedFolder}`,
+              body: `## Deployment Failure
+
+            **Project:** \`${detectedFolder}\`
+            **Deploy Name:** \`${targetFolder}\`
+            **Commit:** [${commitSha.substring(0, 7)}](${commitUrl})
+            **Branch:** ${{ github.ref_name }}
+
+            ### Issue
+            The deployment process failed during build or deployment to Google Cloud Storage. Check the [workflow logs](${workflowUrl}) for detailed error messages
+
+            ### Details
+            - **Workflow Run:** [View Logs](${workflowUrl})
+            - **Triggered by:** ${{ github.actor }}
+            - **Timestamp:** ${new Date().toISOString()}
+            `,
+              labels: ['deployment-failure', 'automated-issue']
+            });

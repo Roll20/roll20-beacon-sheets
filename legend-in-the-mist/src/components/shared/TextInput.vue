@@ -12,6 +12,8 @@
       @blur="onBlur"
       :aria-label="ariaLabel || placeholder || 'Text input'"
       :list="list"
+      spellcheck="false"
+      v-tooltip="modelValue ? { content: modelValue, delay: { show: 1000 } } : ''"
     />
 
     <button
@@ -63,7 +65,7 @@ const disabled = toRef(props, 'disabled');
 const readonly = toRef(props, 'readonly');
 const clearOnEsc = toRef(props, 'clearOnEsc');
 const showClearWhen = toRef(props, 'showClearWhen');
-const ariaLabel = toRef(props, 'ariaLabel');
+const ariaLabel = toRef(props, 'ariaLabel');  
 const clearAriaLabel = toRef(props, 'clearAriaLabel');
 
 const inputEl = ref<HTMLInputElement | null>(null);
@@ -119,6 +121,9 @@ defineExpose({ focus, clear });
   border: 0;
   background: transparent;
   border-bottom: 1px solid var(--color-textinput-line);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 input[list]::-webkit-calendar-picker-indicator {
@@ -133,8 +138,7 @@ input[list] {
 .text-input .clear-btn {
   position: absolute;
   right: 0.5rem;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
+  top: calc(50% - 4px);
   border: none;
   background: transparent;
   cursor: pointer;
@@ -155,11 +159,6 @@ input[list] {
 .text-input.disabled .clear-btn,
 .text-input.readonly .clear-btn {
   display: none;
-}
-
-/* Optional: only show clear on hover if desired */
-.text-input:not(.disabled):not(.readonly):hover .clear-btn {
-  /* works with showClearWhen: 'hover', but we still guard with hasValue in JS */
 }
 
 .text-input--centered {

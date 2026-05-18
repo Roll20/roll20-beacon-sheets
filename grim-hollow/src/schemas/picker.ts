@@ -12,6 +12,7 @@ export const PickerCompendiumSchema = z.object({
   value: z.string().optional(),
   options: PickerOptionSchema.array(),
   mandatory: z.boolean().optional(),
+  required: z.string().array().optional(),
 });
 
 export const PickerSchema = PickerCompendiumSchema.extend({});

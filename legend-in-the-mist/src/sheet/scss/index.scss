@@ -34,7 +34,7 @@ body {
     transform-style: preserve-3d;
   }
 
-  &__header {
+  &__header, &__footer {
     cursor: e-resize;
   }
 
@@ -215,4 +215,11 @@ select {
 
 button {
   outline: none;
+}
+
+.scroll-area {
+  height: 229px;
+  width: calc(100% + 7px);
+  padding-right: 7px;
+  box-sizing: border-box;
 }

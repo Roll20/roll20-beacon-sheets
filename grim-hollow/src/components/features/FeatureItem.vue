@@ -54,7 +54,7 @@
         </div>
 
         <div v-if="pickers.length > 0" class="pickers">
-          <div v-for="(picker, index) in pickers" :key="index" class="picker">
+          <div v-for="(picker, index) in pickers" :key="index" class="picker" v-show="!featureEffect || effectsStore.isPickerVisible(featureEffect, picker)">
             <label>
               {{ picker.label }}
               <select :class="{ 'picker-unselected': !picker.value }" v-model="picker.value">
@@ -115,10 +115,13 @@ const featureTags = computed<Tag[]>(() => {
 
 const pickerData: Ref<Record<string, any>> = ref({});
 
+const featureEffect = computed(() => {
+  return effectsStore.effects.find((e) => e._id === props.feature.effectId) || null;
+});
+
 const pickers = computed(() => {
-  const existing = effectsStore.effects.find((e) => e._id === props.feature.effectId);
-  if (existing) {
-    return existing.pickers || [];
+  if (featureEffect.value) {
+    return featureEffect.value.pickers || [];
   } else {
     return [];
   }

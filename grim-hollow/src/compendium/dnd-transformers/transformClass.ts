@@ -38,6 +38,7 @@ const transformLegacyClass = (rawPayload: any, properties: any): Record<string, 
           attribute: `${st.toLowerCase()}-saving-proficiency`,
           operation: 'set',
           value: 1,
+          required: ['mainClassOnly'],
         });
       });
     } catch (e) {
@@ -275,15 +276,29 @@ export const transformDnDClass = (
           // If a class has a spells known progression, it's not a prepared caster.
           transformedPayload['data-spellSource'].isPrepared = false;
         }
+
+        const hasPreparedSlots = dataRecords.some((rec: any) => {
+          try {
+            return JSON.parse(rec.payload).type === 'Prepared Spell Slot';
+          } catch {
+            return false;
+          }
+        });
+        if (hasPreparedSlots) {
+          transformedPayload['data-spellSource'].isPrepared = true;
+        }
       }
     }
 
     const featuresByLevel: Record<string, any[]> = {};
 
+    const classDetailsName = `${rawPayload.name} Class Details`;
     const level1ProficiencyRecords = dataRecords.filter((rec: any) => {
       if (rec.level !== 1 && rec.level !== '1') return false;
       try {
-        return JSON.parse(rec.payload).type === 'Proficiency';
+        const payload = JSON.parse(rec.payload);
+        const type = payload.type;
+        return (type === 'Proficiency' || type === 'Proficiency Choice') && rec.parent === classDetailsName;
       } catch {
         return false;
       }
@@ -291,15 +306,50 @@ export const transformDnDClass = (
 
     if (level1ProficiencyRecords.length > 0) {
       const proficiencyEffects: any[] = [];
+      const proficiencyPickers: any[] = [];
+      let pickerOffset = 0;
 
       level1ProficiencyRecords.forEach((rec: any) => {
         const fragment = createEffectFragment(rec);
-        if (fragment && fragment.effects) {
-          proficiencyEffects.push(...fragment.effects);
+        if (!fragment) return;
+        const isMainClassOnly = rec.multiclass === 'FALSE' || rec.multiclass === 'false';
+        const isMulticlassOnly = rec.multiclass === 'TRUE' || rec.multiclass === 'true';
+
+        if (fragment.pickers && fragment.pickers.length > 0) {
+          // Re-index references to avoid collisions
+          const reindexedEffects = (fragment.effects || []).map((eff: any) => {
+            const reindexed = { ...eff };
+            if (typeof reindexed.attribute === 'string' && reindexed.attribute.includes('$picker:')) {
+              reindexed.attribute = reindexed.attribute.replace(/\$picker:(\d+)/, (_: string, idx: string) => `$picker:${parseInt(idx) + pickerOffset}`);
+            }
+            if (typeof reindexed.value === 'string' && reindexed.value.includes('$picker:')) {
+              reindexed.value = reindexed.value.replace(/\$picker:(\d+)/, (_: string, idx: string) => `$picker:${parseInt(idx) + pickerOffset}`);
+            }
+            return reindexed;
+          });
+          const reindexedPickers = fragment.pickers.map((picker: any) => {
+            const p = { ...picker };
+            if (isMainClassOnly) p.required = [...(p.required || []), 'mainClassOnly'];
+            if (isMulticlassOnly) p.required = [...(p.required || []), 'multiclassOnly'];
+            return p;
+          });
+          proficiencyPickers.push(...reindexedPickers);
+          reindexedEffects.forEach((eff: any) => {
+            if (isMainClassOnly) eff.required = [...(eff.required || []), 'mainClassOnly'];
+            if (isMulticlassOnly) eff.required = [...(eff.required || []), 'multiclassOnly'];
+            proficiencyEffects.push(eff);
+          });
+          pickerOffset += fragment.pickers.length;
+        } else if (fragment.effects) {
+          fragment.effects.forEach((eff: any) => {
+            if (isMainClassOnly) eff.required = [...(eff.required || []), 'mainClassOnly'];
+            if (isMulticlassOnly) eff.required = [...(eff.required || []), 'multiclassOnly'];
+            proficiencyEffects.push(eff);
+          });
         }
       });
 
-      const combinedProficiencyFeature = {
+      const combinedProficiencyFeature: Record<string, any> = {
         label: 'Proficiencies',
         group: 'class-features',
         description: 'Gained proficiencies from the ' + rawPayload.name + ' class.',
@@ -307,6 +357,7 @@ export const transformDnDClass = (
           label: `${rawPayload.name} Proficiencies`,
           enabled: true,
           effects: proficiencyEffects,
+          ...(proficiencyPickers.length > 0 ? { pickers: proficiencyPickers } : {}),
         },
       };
 

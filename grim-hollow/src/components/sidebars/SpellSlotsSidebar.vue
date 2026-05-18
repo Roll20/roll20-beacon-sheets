@@ -37,7 +37,6 @@ import { useSpellsStore } from '@/sheet/stores/spells/spellsStore';
 import { useSidebar } from './useSidebar';
 import { config } from '@/config';
 import { jsonClone } from '@/utility/jsonTools';
-
 const spellsStore = useSpellsStore();
 const localSlots = reactive({ ...jsonClone(spellsStore.slots) });
 const form = ref<HTMLFormElement | null>(null);

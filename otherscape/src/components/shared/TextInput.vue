@@ -3,7 +3,7 @@
     <input
       ref="inputEl"
       :type="type"
-      :value="displayValue"
+      :value="modelValue"
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
@@ -14,7 +14,7 @@
       :aria-label="ariaLabel || placeholder || 'Text input'"
       :list="list"
       spellcheck="false"
-      v-tooltip="displayValue !== modelValue ? { content: modelValue, delay: { show: 1000 } } : ''"
+      v-tooltip="modelValue ? { content: modelValue, delay: { show: 1000 } } : ''"
     />
 
     <button
@@ -67,50 +67,13 @@ const disabled = toRef(props, 'disabled');
 const readonly = toRef(props, 'readonly');
 const clearOnEsc = toRef(props, 'clearOnEsc');
 const showClearWhen = toRef(props, 'showClearWhen');
-const ariaLabel = toRef(props, 'ariaLabel');
+const ariaLabel = toRef(props, 'ariaLabel');  
 const clearAriaLabel = toRef(props, 'clearAriaLabel');
 
 const inputEl = ref<HTMLInputElement | null>(null);
 const isFocused = ref(false);
 
 const hasValue = computed(() => (modelValue.value ?? '').length > 0);
-
-function getTruncatedValue(): string {
-  if (isFocused.value || !hasValue.value || !inputEl.value) {
-    return modelValue.value;
-  }
-
-  const computedStyle = window.getComputedStyle(inputEl.value);
-  const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
-  const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
-  const inputWidth = inputEl.value.offsetWidth - paddingLeft - paddingRight;
-  
-  if (!inputWidth) return modelValue.value;
-
-  const font = `${computedStyle.fontWeight} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
-  const ellipsis = '...';
-
-  // Measure text width using canvas
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return modelValue.value;
-
-  ctx.font = font;
-  const ellipsisWidth = ctx.measureText(ellipsis).width;
-  const availableWidth = inputWidth - ellipsisWidth;
-
-  let displayText = modelValue.value;
-  if(ctx.measureText(displayText).width <= inputWidth) {
-    return displayText; // No truncation needed
-  } else {
-    while (ctx.measureText(displayText).width > availableWidth && displayText.length > 0) {
-      displayText = displayText.slice(0, -1);
-    }
-    return displayText + ellipsis;
-  }
-}
-
-const displayValue = computed(() => getTruncatedValue());
 
 const showClear = computed(() => {
   if (disabled.value || readonly.value) return false;
@@ -164,9 +127,10 @@ defineExpose({ focus, clear });
   }
 }
 
-.text-input.has-clear.has-value {
+.text-input.has-clear.has-value:hover,
+.text-input.has-clear.has-value:focus-within {
   input {
-    padding-right: 2rem; /* room for the clear button */
+    padding-right: var(--padding-right); /* room for the clear button */
   }
 }
 .text-input input {
@@ -175,11 +139,16 @@ defineExpose({ focus, clear });
   border-bottom: 1px solid rgb(var(--color-palette-foreground) / var(--color-palette-disabled));
   color: var(--color-text-primary);
   min-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  --padding-right: 2rem;
   &:hover:not(:focus) {
     border-color: rgb(var(--color-palette-foreground) / 0.5);
   }
   &:focus {
     border-color: rgb(var(--color-palette-highlight));
+    text-overflow: clip;
   }
 }
 input[list]::-webkit-calendar-picker-indicator {
@@ -193,8 +162,7 @@ input[list] {
 .text-input .clear-btn {
   position: absolute;
   right: 0.5rem;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
+  top: calc(50% - 4px);
   border: none;
   background: transparent;
   cursor: pointer;
@@ -218,18 +186,13 @@ input[list] {
   display: none;
 }
 
-/* Optional: only show clear on hover if desired */
-.text-input:not(.disabled):not(.readonly):hover .clear-btn {
-  /* works with showClearWhen: 'hover', but we still guard with hasValue in JS */
-}
-
 .text-input--centered {
   input {
     text-align: center;
   }
   &.has-clear {
     input {
-      padding-left: 2rem;
+      padding-left: var(--padding-right);
     }
   }
 }

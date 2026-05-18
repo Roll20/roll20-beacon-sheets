@@ -1,9 +1,14 @@
 <template>
   <div class="roller">
     <div class="roller__icons">
-      <SvgIcon icon="Self" />
-      <SvgIcon icon="Mythos" />
-      <SvgIcon icon="Noise" />
+      <button
+        v-for="theme in blazeThemes" :key="theme"
+        @click = "goOutInBlaze = goOutInBlaze === theme ? null : theme; customBonus = 0"
+        :class="{'blaze': true, 'blaze--active': goOutInBlaze === theme}"
+        v-tooltip="'Go Out in a Blaze'"
+      >
+        <SvgIcon :icon="theme"/>
+      </button>
     </div>
     <div class="roller__spacer"></div>
     <div class="roller__power">
@@ -13,7 +18,7 @@
     <div class="roller__spacer"></div>
     <div class="roller__custom-bonus">
       <h3 class="title">Modifier</h3>
-      <IncrementorInput v-model="customBonus" />
+      <IncrementorInput v-model="customBonus" :disabled="goOutInBlaze !== null"/>
     </div>
     <div class="roller__spacer"></div>   
     <button @click="roll" class="title roller__roll">Roll</button>
@@ -21,12 +26,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, type Ref, ref } from 'vue';
 import IncrementorInput from '@/components/shared/IncrementorInput.vue';
-import { trackersStore, type Tracker } from '@/sheet/stores/trackers/trackersStore';
+import { trackersStore } from '@/sheet/stores/trackers/trackersStore';
+import type { Tracker } from '@/sheet/stores/trackers/trackersStore';
 import { themesStore } from '@/sheet/stores/themes/themesStore';
 import rollToChat from '@/utility/rollToChat';
-import { type DiceComponent, type CommonParameters } from '@/rolltemplates/rolltemplates';
+import type { DiceComponent, CommonParameters } from '@/rolltemplates/rolltemplates';
 import { metaStore } from '@/sheet/stores/meta/metaStore';
 import { heroStore } from '@/sheet/stores/hero/heroStore';
 import SvgIcon from '../shared/SvgIcon.vue';
@@ -50,33 +56,44 @@ const getTrackerValue = (tracker:Tracker, type: 'tag' | 'status') => {
 
 const customBonus = ref(0);
 const power = computed(() => {
-  const themeBonus = themes.themes.reduce((acc: Array<{ name: string; value: number }>, theme) => [
-    ...acc,
-    ...theme.tags.filter(t => t.checked).map(t => { return { name: t.name, value: t.type === 'Power' ? 1 : -1 };}),
-    ...theme.tags.filter(t => t.checked && t.burnt).map(t => { return { name: `Burnt ${t.name}`, value: 2 };})
-  ], []);
-  const backpackBonus = [
-    ...hero.backpack.filter(t => t.checked).map(t => { return { name: t.name, value: t.type === 'Power' ? 1 : -1 };}),
-    ...hero.backpack.filter(t => t.checked && t.burnt).map(t => { return { name: `Burnt ${t.name}`, value: 2 };})
-  ];
-  const statuses = trackers.trackers.filter(tracker => tracker.mode && Object.values(tracker.stages).filter(value => value).length > 0);
-  const tags = trackers.trackers.filter(tracker => tracker.mode && Object.values(tracker.stages).filter(value => value).length === 0);
-  const allStatusesBonus = statuses.filter(tracker => getTrackerValue(tracker, 'status') !== 0).map(tracker => {
-    return { name: tracker.name, value: getTrackerValue(tracker, 'status') };
-  });
-  const tagsBonus = tags.filter(tracker => getTrackerValue(tracker, 'tag') !== 0).map(tracker => {
-    return { name: tracker.name, value: getTrackerValue(tracker, 'tag') };
-  });
-  const statusesBonus = (() => {
-    const positives = allStatusesBonus.filter(b => b.value > 0);
-    const negatives = allStatusesBonus.filter(b => b.value < 0);
-    const maxPositive = positives.reduce((best, curr) => (curr.value > best.value ? curr : best), positives[0]);
-    const minNegative = negatives.reduce((best, curr) => (curr.value < best.value ? curr : best), negatives[0]);
-    return [maxPositive, minNegative].filter(Boolean);
-  })();
-  return [...themeBonus, ...backpackBonus, ...statusesBonus, ...tagsBonus].map(b => {
-    return { name: `${b.name} (${b.value > 0 ? '+' : ''}${b.value})`, value: b.value };
-  });
+  if(goOutInBlaze.value) {
+    const themeCards = themes.themes.filter(theme => 
+      !theme.isLoadout && !theme.isFellowship && theme.might === goOutInBlaze.value
+    ).length;
+    return [{ name: `Go Out in a Blaze: ${goOutInBlaze.value}`, value: themeCards }];
+  } else {
+    const themeBonus = themes.themes.reduce((acc: Array<{ name: string; value: number }>, theme) => [
+      ...acc,
+      ...theme.tags.filter(t => t.checked).map(t => { return { name: t.name, value: t.type === 'Power' ? 1 : -1 };}),
+      ...theme.tags.filter(t => t.checked && t.burnt).map(t => { return { name: `Burnt ${t.name}`, value: 2 };})
+    ], []);
+    const backpackBonus = [
+      ...hero.backpack.filter(t => t.checked).map(t => { return { name: t.name, value: t.type === 'Power' ? 1 : -1 };}),
+      ...hero.backpack.filter(t => t.checked && t.burnt).map(t => { return { name: `Burnt ${t.name}`, value: 2 };})
+    ];
+    const statuses = trackers.trackers.filter(tracker => tracker.mode && Object.values(tracker.stages).filter(value => value).length > 0);
+    const tags = trackers.trackers.filter(tracker => tracker.mode && Object.values(tracker.stages).filter(value => value).length === 0);
+    const allStatusesBonus = statuses.filter(tracker => getTrackerValue(tracker, 'status') !== 0).map(tracker => {
+      return { name: tracker.name, value: getTrackerValue(tracker, 'status') };
+    });
+    const tagsBonus = tags.filter(tracker => getTrackerValue(tracker, 'tag') !== 0).map(tracker => {
+      return { name: tracker.name, value: getTrackerValue(tracker, 'tag') };
+    });
+    const burntTagsBonus = tags.filter(tracker => getTrackerValue(tracker, 'tag') !== 0 && tracker.burnt).map(tracker => {
+      return { name: `Burnt ${tracker.name}`, value: 2 };
+    });
+    
+    const statusesBonus = (() => {
+      const positives = allStatusesBonus.filter(b => b.value > 0);
+      const negatives = allStatusesBonus.filter(b => b.value < 0);
+      const maxPositive = positives.reduce((best, curr) => (curr.value > best.value ? curr : best), positives[0]);
+      const minNegative = negatives.reduce((best, curr) => (curr.value < best.value ? curr : best), negatives[0]);
+      return [maxPositive, minNegative].filter(Boolean);
+    })();
+    return [...themeBonus, ...backpackBonus, ...statusesBonus, ...tagsBonus, ...burntTagsBonus].map(b => {
+      return { name: `${b.name} (${b.value > 0 ? '+' : ''}${b.value})`, value: b.value };
+    });
+  }
 });
 const summedPower = computed(() => {
   return power.value.reduce((acc, curr) => acc + curr.value, 0);
@@ -117,9 +134,14 @@ const roll = () => {
   }
   rollToChat(rollParameters);
   customBonus.value = 0;
+  goOutInBlaze.value = null;
   uncheckThemes();
   uncheckTrackers();
 }
+
+type ThemeType = 'Self' | 'Mythos' | 'Noise';
+const blazeThemes: ThemeType[] = ['Self', 'Mythos', 'Noise'];
+const goOutInBlaze:Ref<ThemeType | null> = ref(null);
 </script>
 
 <style lang="scss" scoped>
@@ -147,23 +169,6 @@ const roll = () => {
       height: 100%;
       fill: var(--color-text-tertiary);
       transition: fill 0.3s ease;
-    }
-  }
-  &:hover {
-    .roller__icons {
-      .svg-icon {
-        width: auto;
-        height: 100%;
-        &--Self {
-          fill: rgb(var(--color-self));
-        }
-        &--Mythos {
-          fill: rgb(var(--color-mythos));
-        }
-        &--Noise {
-          fill: rgb(var(--color-noise));
-        }
-      }
     }
   }
   button {
@@ -246,6 +251,25 @@ const roll = () => {
       background-color: rgb(var(--color-palette-shadow) / 0.25);
       border: 2px solid rgb(var(--color-palette-highlight));
       color: rgb(var(--color-palette-highlight));
+    }
+  }
+  .blaze {
+    background: transparent;
+    padding: 0;
+    outline: none;
+    border: none;
+    &--active {
+      .svg-icon {
+        &--Self {
+          fill: rgb(var(--color-self));
+        }
+        &--Mythos {
+          fill: rgb(var(--color-mythos));
+        }
+        &--Noise {
+          fill: rgb(var(--color-noise));
+        }
+      }
     }
   }
 }

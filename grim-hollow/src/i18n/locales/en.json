@@ -248,6 +248,8 @@
     "hp": "HP",
     "hp-formula": "HP Formula",
     "initiative": "Initiative",
+    "main-class": "Main Class",
+    "prepared-caster": "Prepared Caster",
     "innate": "Innate",
     "innate-spellcasting": "Innate Spellcasting",
     "innate-usage": "Innate Usage (e.g., 1/Day)",
@@ -426,7 +428,9 @@
     "spell-save-dc": "Spell Save DC",
     "spell-slots": "Spell Slots",
     "spell-source": "Spell Source",
+    "spell-sources": "Spell Sources",
     "spellcasting-ability": "Spellcasting Ability",
+    "spellcasting-sources": "Spellcasting Sources",
     "standard-slots": "Standard Slots",
     "strength": "Strength",
     "subclass": "Subclass",
@@ -680,8 +684,7 @@
     "confirm-delete-effect": "Are you sure you want to delete the \"{label}\" effect? This cannot be undone.",
     "confirm-delete-npc": "Are you sure you want to delete {name}? This cannot be undone.",
     "encumbrance": {
-      "encumbered": "Your speed is reduced by 10 feet.",
-      "heavily-encumbered": "Your speed is reduced by 20 feet.\nYou have disadvantage on ability checks, attack rolls, and saving throws that use STR, DEX, or CON."
+      "encumbered": "You are carrying weight in excess of your carrying capacity. Your Speed is 5 feet."
     },
     "no-classes-for-hp": "Please add a class to the character before editing Hit Points.",
     "no-spell-sources": "No spell sources available. Please add a spell source first."
