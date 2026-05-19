@@ -18,7 +18,7 @@ const defenseMap: Record<string, string> = {
 
 const proficiencyLevelMap: Record<string, number> = {
   Proficient: 1,
-  Expertise: 2, 
+  Expertise: 2,
 };
 
 /**
@@ -38,6 +38,8 @@ const buildFormulaEffect = (
       : { value: valueFormula?.flatValue || 0 }),
   };
 };
+
+
 
 // This defines the fragment that a datarecord can be broken down into.
 export interface EffectFragment {
@@ -79,7 +81,10 @@ export const parseDamagePayload = (datarecord: any): any | null => {
 /**
  * Transforms a single datarecord into an EffectFragment.
  */
-export const createEffectFragment = (datarecord: any, childRecords?: any[]): EffectFragment | null => {
+export const createEffectFragment = (
+  datarecord: any,
+  childRecords?: any[],
+): EffectFragment | null => {
   try {
     const payload = deepTransformFormulas(JSON.parse(datarecord.payload));
     const fragment: EffectFragment = {};
@@ -128,7 +133,7 @@ export const createEffectFragment = (datarecord: any, childRecords?: any[]): Eff
           }
         }
 
-        // Add in Damage children
+        // Wire in Damage children
         const damageRolls: any[] = [];
         if (childRecords) {
           for (const child of childRecords) {
@@ -137,6 +142,14 @@ export const createEffectFragment = (datarecord: any, childRecords?: any[]): Eff
               damageRolls.push(damageEntry);
             }
           }
+        }
+
+        const usesSpellcasting =
+          datarecord.use &&
+          datarecord.use.split(',').some((u: string) => /spellcasting/i.test(u.trim()));
+
+        if (usesSpellcasting && saveAbility) {
+          savingDc = '@{spell-dc}';
         }
 
         const action: any = {
@@ -151,6 +164,10 @@ export const createEffectFragment = (datarecord: any, childRecords?: any[]): Eff
           savingDc: savingDc,
           critRange: payload.critRange || 20,
         };
+
+        if (usesSpellcasting) {
+          action.spellSourceId = '$source:0';
+        }
 
         if (damageRolls.length > 0) {
           action.damage = damageRolls;
@@ -181,8 +198,8 @@ export const createEffectFragment = (datarecord: any, childRecords?: any[]): Eff
             payload.category === 'Saving Throw'
               ? 'set'
               : payload.category === 'Skill' || payload.category === 'Tool'
-              ? 'set-max'
-              : 'push';
+                ? 'set-max'
+                : 'push';
           let value: string | number = 1;
           if (payload.category === 'Skill' || payload.category === 'Tool') {
             value = proficiencyLevelMap[payload.proficiencyLevel] || 1;
@@ -345,7 +362,6 @@ export const createEffectFragment = (datarecord: any, childRecords?: any[]): Eff
             value: value,
           },
         ];
-        
         break;
       }
 
