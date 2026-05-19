@@ -55,7 +55,7 @@ export const UpcastModifierSchema = z.object({
 });
 
 export const SpellCompatibilitySchema = z.object({
-  name: z.enum(['Monster Hunter', 'Cleric', 'Druid', 'Bard', 'Barbarian', 'Fighter', 'Monk', 'Paladin', 'Rogue', 'Wizard', 'Warlock', 'Ranger', 'Sorcerer']),
+  name: z.string().optional(),
   sourceBook: z.number().optional(),
 });
 

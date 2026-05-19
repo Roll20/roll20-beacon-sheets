@@ -53,7 +53,6 @@ export const checkRequirements = (
   context: RequirementContext,
 ): boolean => {
   if (!requirements || requirements.length === 0) return true;
-  console.log('Checking requirements:', requirements, 'with context:', context);
   return requirements.every((req) => {
     if (req === 'equipped') return context.isEquipped ?? true;
     if (req === 'attuned') return context.isAttuned ?? true;
