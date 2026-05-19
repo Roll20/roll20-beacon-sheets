@@ -1,10 +1,13 @@
 <template>
   <div class="view-container">
     <div class="columns columns-3">
+      <!--
       <div class="total-resources span-3">
         <span class="total-resources__value">{{ breakdown.totalResources }}</span>
-        <span class="total-resources__label">{{ $t('titles.total') }}<!-- <template v-if="breakdown.treasureItems.length"> ({{ $t('descriptions.including-treasure') }})</template> --></span>
+        <span class="total-resources__label">{{ $t('titles.total') }}
+          <template v-if="breakdown.treasureItems.length"> ({{ $t('descriptions.including-treasure') }})</template></span>
       </div>
+      -->
       <label v-for="currency in currencyTypes" :key="currency" class="span-1">
         {{ $t(`titles.currency-types.${currency}`) }}
         <template v-if="breakdown.breakdown[currency].total > 0"> ({{ breakdown.breakdown[currency].total }})</template>
