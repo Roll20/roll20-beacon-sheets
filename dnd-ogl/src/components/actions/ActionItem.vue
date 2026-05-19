@@ -3,37 +3,20 @@
     <details class="accordion">
       <summary class="accordion__summary">
         <div class="cols">
-          <SidebarLink
-            componentName="ActionSidebar"
-            :props="{ action: action }"
-            :options="{
-              title: t('actions.edit-action'),
-              hasSave: true,
-              hasDelete: true,
-            }"
-            :label="action.name"
-            class="action-summary__name"
-          />
-          <button
-            v-if="action.description || action.target || action.range"
-            class="action-item__chat-button"
-            :title="t('titles.icons.send-to-chat')"
-            @click.stop="actionsStore.sendActionInfoToChat(action._id, t)"
-          >
+          <SidebarLink componentName="ActionSidebar" :props="{ action: action }" :options="{
+            title: t('actions.edit-action'),
+            hasSave: true,
+            hasDelete: true,
+          }" :label="action.name" class="action-summary__name" />
+          <button v-if="action.description || action.target || action.range" class="action-item__chat-button"
+            :title="t('titles.icons.send-to-chat')" @click.stop="actionsStore.sendActionInfoToChat(action._id, t)">
             <SvgIcon icon="chat" />
           </button>
           <span class="action-item__attack-bonus" v-if="action.isAttack">
-            <RollModifier
-              :finalBonus="attackBonus.value.final"
-              :rollArgs="rollArgs"
-              @rolled="handleAttackRolled"
-            />
+            <RollModifier :finalBonus="attackBonus.value.final" :rollArgs="rollArgs" @rolled="handleAttackRolled" />
           </span>
           <span class="action-item__attack-bonus" v-else-if="isSave(action)">
-            <button
-              class="button--link"
-              @click.stop="actionsStore.sendActionInfoToChat(action._id, t)"
-            >
+            <button class="button--link" @click.stop="actionsStore.sendActionInfoToChat(action._id, t)">
               DC {{ actionDC.value.final }}
             </button>
           </span>
@@ -237,32 +220,41 @@ const rollArgs = computed((): D20RollArgs => {
 .action-item {
   display: flex;
   align-items: center;
+
   &__label {
     cursor: pointer;
     font-weight: bold;
   }
+
   .cols {
-    grid-template-columns: 1fr min-content 30px 80px;
+    grid-template-columns: 1fr min-content minmax(50px, auto) minmax(70px, auto);
+
     gap: 5px 10px;
+
     .sidebar-link {
       justify-self: left;
+      min-width: 0;
     }
   }
+
   .accordion__summary {
     .sidebar-link {
       text-align: left;
     }
   }
+
   &__chat-button {
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
     line-height: 1;
+
     .svg-icon {
       width: 1rem;
       height: 1rem;
       color: var(--color-tertiary);
+
       &:hover {
         color: var(--color-highlight);
       }
