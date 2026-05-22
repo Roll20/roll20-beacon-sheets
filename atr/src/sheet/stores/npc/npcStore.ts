@@ -282,7 +282,6 @@ export const useNpcStore = defineStore('npcs', () => {
 
   const removeNpc = (_id: string) => {
     const index = npcs.value.findIndex((n) => n._id === _id);
-    console.log(index);
     if (index > -1 && !npcs.value[index].isDefault) {
       npcs.value.splice(index, 1);
     }
