@@ -12,7 +12,11 @@ export const onInit = async ({ character, settings, compendiumDropData }: InitAr
 
   if (compendiumDropData) {
     if (compendiumDropData.categoryName === 'Monsters' || compendiumDropData.categoryName === 'NPC Classes') {
-      drag({ coordinates: { left: 0, top: 0 }, dropData: compendiumDropData }, dispatch, true, character);
+      try {
+        await drag({ coordinates: { left: 0, top: 0 }, dropData: compendiumDropData }, dispatch, true, character);
+      } catch (error) {
+        console.error('Failed to process compendium drop during init', error);
+      }
     }
   }
 };
