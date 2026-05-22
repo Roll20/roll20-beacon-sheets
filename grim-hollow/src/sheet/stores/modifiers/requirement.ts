@@ -1,7 +1,7 @@
 import z from "zod/v4";
 
 export const RequirementSchema = z.union([
-  z.enum(['equipped', 'attuned']),
+  z.enum(['equipped', 'attuned', 'mainClassOnly', 'multiclassOnly']),
   z.templateLiteral([
     z.enum(['cl', 'ol']),
     z.enum(['<', '<=', '=', '>', '>=']),

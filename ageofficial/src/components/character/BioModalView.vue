@@ -30,6 +30,7 @@
             <select  id="bio.profession" v-model="bio.type" class="age-atk-select form-select">
             <option value="AniMon">Animal or Monster</option>
             <option value="Character">Character</option>
+            <option value="Ship">Ship</option>
           </select>
           </div>          
           </div>

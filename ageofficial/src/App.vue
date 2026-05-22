@@ -60,9 +60,6 @@
             </div>
             <div class="age-header-menu">
               <div class="dropdown" style="text-align: right;">
-                <button class="btn" type="button" aria-expanded="false">
-                  <font-awesome-icon style="font-size: 24px;" :icon="['fa', 'bars']" />
-                </button>
                 <ul class="dropdown-menu">
                   <li>
                     <button v-if="settings.whisperRollsGM === 'toggle'" :class="{ active: settings.whisperRollsGMToggle }" class="age-btn" @click="settings.whisperRollsGMToggle = !settings.whisperRollsGMToggle">
@@ -111,8 +108,9 @@
               </div>
             </div>
     </div>
-    <PCView v-if="settings.sheetView" />
-    <NPCView v-if="!settings.sheetView" />
+    <PCView v-if="settings.sheetView && bio.type !== 'Ship'" />
+    <NPCView v-if="!settings.sheetView && bio.type !== 'Ship'" />
+    <ShipView v-if="settings.gameSystem === 'expanse' && bio.type === 'Ship'" />
   </main>
 
 
@@ -165,12 +163,15 @@ import NewSplashView from './views/NewSplashView.vue';
 import { productLineStyle } from '@/utility/productLineStyle';
 import {legacyCurrency, loadLegacyAbilityScores,loadLegacyCharacterDetails,loadLegacyGroupings} from '@/utility/legacyAdapter';
 import { useCharacterStore } from './sheet/stores/character/characterStore';
+import ShipView from './views/ShipView.vue';
+import { useBioStore } from './sheet/stores/bio/bioStore';
 const showModal = ref(false)
 
 const store = useAgeSheetStore();
 const meta = useMetaStore();
 const settings = useSettingsStore();
 const char = useCharacterStore();
+const bio = useBioStore();
 const campaignId = store.meta.campaignId;
 const colorTheme = initValues.settings.colorTheme;
 const isGM = computed(() => meta.permissions.isGM);

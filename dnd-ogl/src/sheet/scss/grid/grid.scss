@@ -1,0 +1,14 @@
+@for $cols from 2 through 12 {
+  .columns-#{$cols} {
+    display: grid;
+    grid-template-columns: repeat(#{$cols}, 1fr);
+    > * {
+      grid-column: 1 / -1;
+    }
+    @for $span from 1 through $cols {
+      > .span-#{$span} {
+        grid-column: auto / span #{$span};
+      }
+    }
+  }
+}

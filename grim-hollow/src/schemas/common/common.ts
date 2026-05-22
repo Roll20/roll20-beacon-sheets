@@ -15,7 +15,7 @@ export const levelRequirements = Array.from(parts1).flatMap(p1 =>
 );
 
 export const allEffectKeys = Object.values(effectKeys) as [string, ...string[]];
-export const allRequirements = ['attuned', 'equipped', ...levelRequirements] as const;
+export const allRequirements = ['attuned', 'equipped', 'mainClassOnly', 'multiclassOnly', ...levelRequirements] as const;
 const pickerKeys = ['$picker:0', '$picker:1', '$picker:2', '$picker:3', '$picker:4', '$picker:5', '$picker:6', '$picker:7', '$picker:8', '$picker:9'] as const;
 export const allEffectKeysWithPickers = [...allEffectKeys, ...pickerKeys] as [string, ...string[]];
 

@@ -731,7 +731,7 @@ export const useProgressionStore = defineStore('progression', () => {
 
   const hydrate = (payload: ProgressionHydrate) => {
     const classesHydration = payload?.classes
-      ? objectToArray(payload.classes).map((cls) => ({
+      ? objectToArray(payload.classes).map((cls, index) => ({
           ...cls,
           hitPoints: indexedObjectToArray(cls.hitPoints as Record<string, number>),
           featureIds: indexedObjectToArray(cls.featureIds as Record<string, FeatureId>),

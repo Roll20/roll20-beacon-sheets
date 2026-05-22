@@ -75,9 +75,11 @@
           <p>No duplicates in the dice roll.</p>
         {{/if}} --}}
         </div>
-        {{#if targetNumber}}
-          {{> spellTN total=(sumComponents ../components multiplier) spellTN=targetNumber}}
-        {{/if}}
+        {{#unless hideSuccessText}}
+          {{#if targetNumber}}
+            {{> spellTN total=(sumComponents ../components multiplier) spellTN=targetNumber}}
+          {{/if}}
+        {{/unless}}
         {{#if textContent}}
           <hr />
           <div>

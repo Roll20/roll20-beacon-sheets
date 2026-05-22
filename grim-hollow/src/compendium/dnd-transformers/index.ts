@@ -3,6 +3,7 @@ import { transformDnDClass } from './transformClass';
 import { transformDnDEquipment } from './transformEquipment';
 import { transformDnDFeatureSet } from './transformFeature';
 import { transformDnDMonster } from './transformMonster';
+import { transformDnDProficiency } from './transformProficiency';
 import { transformDnDRace } from './transformRace';
 import { transformDnDSpell } from './transformSpell';
 import { transformDnDSubclass } from './transformSubclass';
@@ -23,4 +24,5 @@ export const transformers: Record<string, Function> = {
   Armor: transformDnDEquipment,
   Weapons: transformDnDEquipment,
   Equipment: transformDnDEquipment,
+  Proficiencies: transformDnDProficiency,
 };

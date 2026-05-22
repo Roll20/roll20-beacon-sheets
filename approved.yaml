@@ -1,0 +1,12 @@
+# Approved subfolders and their deployment shortnames
+# Format: folder-name: shortname
+
+folders:
+  ci-testing-sheet: ci-testing-sheet
+  ageofficial: ageofficial
+  atr: atrofficial
+  grim-hollow: grimhollow
+  legend-in-the-mist: legendinthemistofficial
+  magiknights: magiknights
+  otherscape: otherscapeofficial
+  taintedgrail: taintedgrailofficial

@@ -33,6 +33,8 @@
         :localNpc="localNpc"
         :editMode="isEditing"
         :modifiedAbilities="modifiedAbilities"
+        :initiativeBonus="initiativeBonus"
+        :initiativeRollArgs="initiativeRollArgs"
         :savingThrowsWithBonuses="savingThrowsWithBonuses"
         :skillsWithBonuses="skillsWithBonuses"
         :challengeRatings="challengeRatings"

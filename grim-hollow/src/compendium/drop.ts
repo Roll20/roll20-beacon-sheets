@@ -18,6 +18,7 @@ import { onDropSubrace } from "./dropSubrace";
 import { onDropRace } from "./dropRace";
 import { onDropBackground } from "./dropBackground";
 import { onDropMonster, setToken } from "./dropMonster";
+import { onDropProficiency } from "./dropProficiency";
 import { type Dispatch } from "@roll20-official/beacon-sdk";
 import { SpellSchema } from "@/schemas/spell";
 
@@ -53,7 +54,8 @@ export type compendiumCategory =
   | 'Armor Modifications'
   | 'Trapper Gadgets'
   | 'Mutations'
-  | 'Heritages';
+  | 'Heritages'
+  | 'Proficiencies';
 
 export type CompendiumPage = {
   id: string;
@@ -175,6 +177,7 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   'Trapper Gadgets': onDropFeature,
   Mutations: onDropFeature,
   Heritages: onDropRace,
+  Proficiencies: onDropProficiency,
 };
 export const drag = async (
   { dropData, coordinates }: DropArgs,

@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+$color-1: #A3AAA2;
+$color-2: #D2DACD;
+$color-3: #8b5f3e;
+$color-4: #B8BDB4;
+$color-5: #70957c;
+$color-6: #2C294A;
+$color-7: #97795f;
+$color-8: #63503f;
+$color-9: #e3d4c7;
+$color-10: #36804c;
+$color-11: #ac0000;
+$color-12: 234 24 95;
+$color-13: 255 27 106;
+$color-14: 174 41 91;
+$color-15: 156 86 209;
+$color-16: 178 88 255;
+$color-17: 99 41 174;
+$color-18: 0 180 221;
+$color-19: 0 227 255;
+$color-20: 41 121 174;
+$color-21: 90 90 120;
+$color-22: 60 60 80;
+$color-23: 70 70 100;
+$color-24: 170 170 190;
+$color-25: 172 255 0;
+
+$color-self-highlight: rgb(202, 202, 202);
+$color-self-dark: rgb(110, 110, 110);
+$color-mythos: rgb(156, 86, 209);
+$color-mythos-highlight: rgb(178, 88, 255);
+$color-mythos-dark: rgb(99, 41, 174);
+$color-noise: rgb(0, 180, 221);
+$color-noise-highlight: rgb(0, 227, 255);
+$color-noise-dark: rgb(41, 121, 174);
+
+$card-width: 184px;
+$number-of-cards: 7;
+$sheet-width: $card-width * $number-of-cards + 50px;
+
+html {
+  --font-size-large: 14px;
+  --font-size-medium: 14px;
+  --font-size-small: 11px;
+  --font-size-xsmall: 8px;
+  --font-size-xlarge: 18px;
+  --font-family-title: 'Orbitron', sans-serif;
+  --font-family-body: 'Rajdhani', sans-serif;
+
+  --color-palette-character: 31 31 31;
+  --color-palette-challenge: 31 31 31;
+  --color-palette-default: #{$color-21};
+  --color-palette-highlight: #{$color-25};
+  --color-palette-dark: #{$color-23};
+  --color-palette-warning: 250 195 0;
+  --color-palette-background: 30 30 40;
+  --color-palette-foreground: 255 255 255;
+  --color-palette-shadow: 0 0 0;
+  --color-palette-muted: 0.8;
+  --color-palette-disabled: 0.25;
+  --color-palette-neon: #{$color-25};
+
+  --color-card-title: var(--color-text-secondary);
+  --color-herocard-background: #{$color-2};
+  --color-herocard-border: #{$color-3};
+  --color-herocard-line: #{$color-4};
+  --color-herocard-title: var(--color-card-title);
+  --color-herocard-title-box: #{$color-1};
+  --color-themecard-background: #{$color-6};
+  --color-themecard-border: #{$color-8};
+  --color-themecard-line: #{$color-9};
+  --color-themecard-title: var(--color-card-title);
+  --color-themecard-title-box: #{$color-7};
+  --color-trackingchip-background: #{$color-5};
+  --color-positive: #{$color-10};
+  --color-negative: #{$color-11};
+
+  --color-self: #{$color-12};
+  --color-self-highlight: #{$color-13};
+  --color-self-dark: #{$color-14};
+  --color-mythos: #{$color-15};
+  --color-mythos-highlight: #{$color-16};
+  --color-mythos-dark: #{$color-17};
+  --color-noise: #{$color-18};
+  --color-noise-highlight: #{$color-19};
+  --color-noise-dark: #{$color-20};
+  --color-fellowship: #{$color-21};
+  --color-fellowship-highlight: #{$color-24};
+  --color-fellowship-dark: #{$color-23};
+  --color-loadout: #{$color-21};
+  --color-loadout-highlight: #{$color-24};
+  --color-loadout-dark: #{$color-23};
+  --color-herocard: #{$color-21};
+  --color-herocard-highlight: #{$color-24};
+  --color-herocard-dark: #{$color-23};
+
+  --color-text-primary: rgb(var(--color-palette-foreground));
+  --color-text-secondary: rgb(var(--color-palette-foreground) / var(--color-palette-muted));
+  --color-text-tertiary: rgb(var(--color-palette-foreground) / var(--color-palette-disabled));
+
+  --card-height: 570px;
+  --card-width: #{$card-width};
+  --card-shadow-size: 50px;
+  --card-transition-duration: 0.2s;
+  --toggle-size: 16px;
+
+  --tag-box-height: 30px;
+  --tag-box-inclination-right: calc(var(--tag-box-height) / 2);
+  --tag-box-inclination-left: calc(var(--tag-box-inclination-right) / 4 * 3);
+  --tag-box-indicator-width: calc(var(--tag-box-inclination-left) / 6 * 4);
+  --tag-box-stripe-angle: atan2(var(--tag-box-height), var(--tag-box-inclination-right));
+  --tag-box-actions-width: calc(var(--tag-box-height) * 1.2);
+}
+
+.card {
+  --color-text-primary: rgb(var(--color-palette-foreground));
+  --color-text-secondary: rgb(var(--color-palette-foreground) / var(--color-palette-muted));
+  --color-text-tertiary: rgb(var(--color-palette-foreground) / var(--color-palette-disabled));
+
+  --tag-box-color: rgb(var(--color-palette-default) / 0.25);
+  --tag-box-color-hover: rgb(var(--color-palette-default) / 0.35);
+  --tag-box-color-active: rgb(var(--color-palette-default));
+  --tag-box-indicator-color-active: rgb(var(--color-palette-highlight));
+  --tag-box-actions-color: rgb(var(--color-palette-dark));
+  --tag-box-actions-color-active: rgb(var(--color-palette-dark));
+  --tag-box-indicator-color: rgb(var(--color-palette-foreground));
+  --tag-box-stripe-color: rgb(var(--color-palette-background) / 0.4);
+  --tag-box-stripe-color-active: rgb(var(--color-palette-background) / 0.1);
+  --tag-box-indicator-weakness-color: rgb(var(--color-palette-foreground));
+  --tag-box-indicator-weakness-color-active: rgb(var(--color-palette-warning));
+}

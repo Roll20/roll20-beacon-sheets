@@ -113,6 +113,7 @@ type CommonParameters = {
   rollType?:string;
   description?:string;
   targetNumber?:number;
+  hideSuccessText?: boolean;
 };
 
 export type SendToChatTemplate = {

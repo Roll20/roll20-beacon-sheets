@@ -30,20 +30,15 @@ const strengthScore = computed(() => {
 
 const totalWeight = computed(() => equipmentStore.getTotalWeight);
 
-const encumberedThreshold = computed(() => strengthScore.value * 5 * useEffectsStore().getModifiedValue(1, effectKeys['carry-capacity']).value.final);
-const heavilyEncumberedThreshold = computed(() => strengthScore.value * 10 * useEffectsStore().getModifiedValue(1, effectKeys['carry-capacity']).value.final);
 const maxWeight = computed(() => strengthScore.value * 15 * useEffectsStore().getModifiedValue(1, effectKeys['carry-capacity']).value.final);
 
 const status = computed(() => {
-  if (totalWeight.value > heavilyEncumberedThreshold.value) return 'heavily-encumbered';
-  if (totalWeight.value > encumberedThreshold.value) return 'encumbered';
+  if (totalWeight.value > maxWeight.value) return 'encumbered';
   return 'normal';
 });
 
 const encumbranceClass = computed(() => {
   switch (status.value) {
-    case 'heavily-encumbered':
-      return 'encumbrance-meter--heavy';
     case 'encumbered':
       return 'encumbrance-meter--encumbered';
     default:
@@ -52,9 +47,6 @@ const encumbranceClass = computed(() => {
 });
 
 const warningMessage = computed(() => {
-  if (status.value === 'heavily-encumbered') {
-    return t('warnings.encumbrance.heavily-encumbered');
-  }
   if (status.value === 'encumbered') {
     return t('warnings.encumbrance.encumbered');
   }

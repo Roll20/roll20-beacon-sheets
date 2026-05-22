@@ -880,6 +880,7 @@ body {
     display: inline-block;
     width: 36px;
     height: 18px;
+    min-width: 36px;
     & input {
       opacity: 0;
       width: 0;
@@ -1263,7 +1264,7 @@ body.sheet-darkmode {
     mask: var(--bs-accordion-btn-icon);
 
   }
-  & .age-activity-accordion, .age-accordion {
+  & .age-activity-accordion, .age-accordion, .age-crew-member-entry {
     --bs-accordion-bg:#292c41;
     --bs-accordion-border-color:#191b28;
     --bs-accordion-btn-color: #E0E0E0;

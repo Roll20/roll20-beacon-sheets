@@ -201,6 +201,9 @@ describe('dropMonster', () => {
           imgsrc: 'http://example.com/goblin.png',
           width: 140, // 2 * 70
           height: 140,
+          bar1_value: '7',
+          bar1_max: '7',
+          bar2_value: '15',
         },
       });
     });

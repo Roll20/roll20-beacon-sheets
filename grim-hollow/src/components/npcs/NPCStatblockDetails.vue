@@ -24,6 +24,10 @@
       :is-numeric="true"
       min="0"
     />
+    <div v-if="!editMode" class="npc-statblock__initiative">
+      <strong>{{ t('titles.initiative') }}:</strong>
+      <RollModifier :finalBonus="initiativeBonus.value.final" :rollArgs="initiativeRollArgs" />
+    </div>
     <LabeledTextField
       :editMode="editMode"
       :label="t('titles.speed')"
@@ -379,7 +383,7 @@ import {
 } from '@/sheet/stores/npc/npcStore';
 import { config } from '@/config';
 import { effectKeys } from '@/effects.config';
-import type { LabeledBonus } from '@/utility/roll';
+import type { D20RollArgs, LabeledBonus } from '@/utility/roll';
 
 import RollModifier from '@/components/shared/RollModifier.vue';
 import NpcEffectsList from '@/components/npcs/NpcEffectsList.vue';
@@ -394,8 +398,7 @@ import ProficiencySection from '@/components/npcs/ProficiencySection.vue';
 import ListSection from '@/components/npcs/shared/ListSection.vue';
 import DescribedListSection from '@/components/npcs/shared/DescribedListSection.vue';
 import { type AbilityKey } from '@/sheet/stores/abilities/abilitiesStore';
-import type { ModifierBreakdown } from '@/sheet/stores/modifiers/modifiersStore';
-import CurrentMaxNumber from '@/components/shared/CurrentMaxNumber.vue';
+import type { ModifierBreakdown, ModifiedValue } from '@/sheet/stores/modifiers/modifiersStore';
 import { jsonClone } from '@/utility/jsonTools';
 
 const props = defineProps({
@@ -403,6 +406,8 @@ const props = defineProps({
   localNpc: { type: Object as PropType<Npc>, required: true },
   editMode: { type: Boolean, required: true },
   modifiedAbilities: { type: Object, required: true },
+  initiativeBonus: { type: Object as PropType<ModifiedValue>, required: true },
+  initiativeRollArgs: { type: Object as PropType<D20RollArgs>, required: true },
   savingThrowsWithBonuses: { type: Array as PropType<string[]>, required: true },
   skillsWithBonuses: { type: Array as PropType<string[]>, required: true },
   challengeRatings: { type: Array as PropType<string[]>, required: true },
@@ -606,6 +611,13 @@ const shouldShowGroup = (source: NpcSpellSource, level: number, spellsInLevel: N
   p {
     margin: 0.5rem 0;
   }
+}
+
+.npc-statblock__initiative {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
 }
 
 .npc-statblock__abilities {

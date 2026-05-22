@@ -63,6 +63,15 @@
           </option>
         </select>
       </label>
+      <label class="span-2 main-class-toggle" v-if="classData.spellcasting !== 'none'">
+        <ToggleSwitch
+          :modelValue="spellSourceData.isPrepared ?? false"
+          :disabled="false"
+          @change="(val: boolean | string | number) => updateSpellSourceField('isPrepared', !!val)"
+        />
+        {{ $t('titles.prepared-caster') }}
+      </label>
+
     </div>
   </div>
 </template>
@@ -79,6 +88,7 @@ import { config } from '@/config';
 import type { AbilityKey } from '@/sheet/stores/abilities/abilitiesStore';
 import { useI18n } from 'vue-i18n';
 import SvgIcon from '../shared/SvgIcon.vue';
+import ToggleSwitch from '../shared/ToggleSwitch.vue';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -147,5 +157,10 @@ label:has(input[readonly]) {
     bottom: 4px;
     font-size: var(--size-font-large);
   }
+}
+.main-class-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>

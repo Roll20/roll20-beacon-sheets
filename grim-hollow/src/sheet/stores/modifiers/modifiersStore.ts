@@ -30,6 +30,7 @@ import { type EffectValue } from '@/effects.config';
 import { useTagsStore } from '../tags/tagsStore';
 import { RequirementSchema } from './requirement';
 import { useProgressionStore } from '../progression/progressionStore';
+import { useFeaturesStore } from '../features/faturesStore';
 export type ModifierBreakdown = {
   name: string;
   value: number;
@@ -72,6 +73,7 @@ export const PickerSchema = z.object({
   value: z.string().optional(),
   options: PickerOptionSchema.array(),
   mandatory: z.boolean().optional(),
+  required: RequirementSchema.array().optional(),
 });
 
 export const EffectSchema = z.object({
@@ -245,6 +247,28 @@ export const useEffectsStore = defineStore('effects', () => {
     return newEffect;
   };
 
+  const resolveIsMainClass = (effectId: string): boolean => {
+    const featuresStore = useFeaturesStore();
+    const progressionStore = useProgressionStore();
+    const feature = featuresStore.features.find(f => f.effectId === effectId);
+    if (!feature) return true;
+    const ownerClass = progressionStore.classes.find(c =>
+      c.featureIds.some(fid => fid.id === feature._id) ||
+      c.subclassFeatureIds.some(fid => fid.id === feature._id)
+    );
+    if (!ownerClass) return true;
+    return progressionStore.classes[0]?._id === ownerClass._id;
+  };
+
+  const isPickerVisible = (effect: Effect, picker: Picker): boolean => {
+    if (!picker.required || picker.required.length === 0) return true;
+    const context: RequirementContext = {
+      pickers: effect.pickers,
+      isMainClass: resolveIsMainClass(effect._id),
+    };
+    return EffectsCalculator.checkRequirements(picker.required, context);
+  };
+
   const isEffectActive = (effect: Effect): boolean => {
     if (!effect.enabled) return false;
 
@@ -258,6 +282,7 @@ export const useEffectsStore = defineStore('effects', () => {
       isEquipped: owner ? owner.equipped : true,
       isAttuned: owner ? owner.isAttuned : true,
       level: progressionStore.getLevel,
+      isMainClass: resolveIsMainClass(effect._id),
     };
 
     return EffectsCalculator.checkRequirements(effect.required, context);
@@ -275,6 +300,7 @@ export const useEffectsStore = defineStore('effects', () => {
       isEquipped: owner ? owner.equipped : true,
       isAttuned: owner ? owner.isAttuned : true,
       level: progressionStore.getLevel,
+      isMainClass: resolveIsMainClass(effect._id),
     };
 
     return EffectsCalculator.checkRequirements(singleEffect.required, context);
@@ -421,6 +447,14 @@ export const useEffectsStore = defineStore('effects', () => {
                       : undefined,
                     damage: spell.damage ? arrayToIndexedObject(spell.damage) : undefined,
                     required: spell.required ? arrayToIndexedObject(spell.required) : undefined,
+                    upcast: spell.upcast
+                      ? arrayToIndexedObject(
+                          spell.upcast.map((u) => ({
+                            ...u,
+                            damage: u.damage ? arrayToIndexedObject(u.damage) : undefined,
+                          })),
+                        )
+                      : undefined,
                   })),
                 )
               : undefined,
@@ -430,6 +464,9 @@ export const useEffectsStore = defineStore('effects', () => {
                   effect.pickers.map((singlePicker) => ({
                     ...singlePicker,
                     options: arrayToIndexedObject(singlePicker.options),
+                    required: singlePicker.required
+                      ? arrayToIndexedObject(singlePicker.required)
+                      : undefined,
                   })),
                 )
               : undefined,
@@ -480,6 +517,12 @@ export const useEffectsStore = defineStore('effects', () => {
               components: spell.components ? indexedObjectToArray(spell.components) : [],
               damage: spell.damage ? indexedObjectToArray(spell.damage) : [],
               required: spell.required ? indexedObjectToArray(spell.required) : undefined,
+              upcast: spell.upcast
+                ? indexedObjectToArray(spell.upcast).map((u: any) => ({
+                    ...u,
+                    damage: u.damage ? indexedObjectToArray(u.damage) : [],
+                  }))
+                : [],
             }))
           : [],
         pickers: effect.pickers
@@ -488,6 +531,9 @@ export const useEffectsStore = defineStore('effects', () => {
               options: picker.options
                 ? indexedObjectToArray(picker.options as Record<string, any>)
                 : [],
+              required: picker.required
+                ? indexedObjectToArray(picker.required as Record<string, any>)
+                : undefined,
             }))
           : [],
       })) || effects.value;
@@ -508,6 +554,7 @@ export const useEffectsStore = defineStore('effects', () => {
     update,
     isEffectActive,
     isEffectSingleActive,
+    isPickerVisible,
     getModifiedRollBonuses,
     getModifiedActionDie,
     visibleEffects,
