@@ -10,8 +10,10 @@ export const onInit = async ({ character, settings, compendiumDropData }: InitAr
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
   console.log('onInit -> Example Sheet Relay');
 
-  if(compendiumDropData && compendiumDropData.categoryName === 'Monsters') {
-    drag({coordinates: {left: 0, top: 0}, dropData: compendiumDropData}, dispatch, true, character);
+  if (compendiumDropData) {
+    if (compendiumDropData.categoryName === 'Monsters' || compendiumDropData.categoryName === 'NPC Classes') {
+      drag({ coordinates: { left: 0, top: 0 }, dropData: compendiumDropData }, dispatch, true, character);
+    }
   }
 };
 
