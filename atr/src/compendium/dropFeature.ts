@@ -96,7 +96,7 @@ export const onDropFeature = async ({
   const featuresStore = useFeaturesStore();
   const effectsStore = useEffectsStore();
 
-  if (resolvedEffects && resolvedEffects.spells && cascade?.spellSourceId) {
+  if (resolvedEffects && Array.isArray(resolvedEffects.spells) && cascade?.spellSourceId) {
     if (!resolvedEffects.spellSources || resolvedEffects.spellSources.length === 0) {
       resolvedEffects.spells.forEach((spell: Record<string, any>) => {
         spell.spellSourceId = cascade.spellSourceId;
