@@ -87,3 +87,8 @@ export const expanseWG = [
     'Rifles',
     'Throwing',
 ]
+
+export const technofantasyWG = [
+    'Blaster Longarms',
+    'Blaster Pistols',
+]

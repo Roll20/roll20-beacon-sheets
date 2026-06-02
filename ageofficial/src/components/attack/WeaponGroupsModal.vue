@@ -21,43 +21,40 @@
         </div>
     </Transition>
 </template>
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-import {blueRoseWG, cthulhuWG, fage1eWG, fage2eWG, mageWG } from '@/components/attack/weaponGroups';
+import { blueRoseWG, cthulhuWG, fage1eWG, fage2eWG, mageWG, technofantasyWG } from '@/components/attack/weaponGroups';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 
 const props = defineProps({
-  show:Boolean,
+  show: Boolean,
 })
+const settings = useSettingsStore();
 const char = useCharacterStore();
-const weaponGroups = ref(fage2eWG);
 const wgs = ref(char.weaponGroups ? JSON.parse(char.weaponGroups) : [])
 
-function handleCheckboxChange(wg) {  
-  if(wgs.value.includes(wg)){
-    wgs.value = wgs.value.filter(item => item !== wg);
+const weaponGroups = computed(() => {
+  let base: string[];
+  switch (settings.gameSystem) {
+    case 'mage':   base = mageWG;     break;
+    case 'fage1e': base = fage1eWG;   break;
+    case 'bluerose': base = blueRoseWG; break;
+    case 'cthulhu': base = cthulhuWG; break;
+    default:       base = fage2eWG;   break;
+  }
+  if (settings.technofantasy) {
+    return [...new Set([...base, ...technofantasyWG])].sort();
+  }
+  return base;
+});
+
+function handleCheckboxChange(wg: string) {
+  if (wgs.value.includes(wg)) {
+    wgs.value = wgs.value.filter((item: string) => item !== wg);
   } else {
     wgs.value.push(wg)
   }
   char.weaponGroups = JSON.stringify(wgs.value);
-}
-
-switch(useSettingsStore().gameSystem){
-  case 'fage2e':
-    weaponGroups.value = fage2eWG;
-  break;
-  case 'mage':
-    weaponGroups.value = mageWG;
-  break;
-  case 'fage1e':
-    weaponGroups.value = fage1eWG;
-  break;
-  case 'bluerose':
-    weaponGroups.value = blueRoseWG;
-  break;
-  case 'cthulhu':
-    weaponGroups.value = cthulhuWG;
-  break;
 }
 </script>
