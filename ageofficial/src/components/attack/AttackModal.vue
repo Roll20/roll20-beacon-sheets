@@ -174,7 +174,7 @@ const weaponGroups = computed(() => {
   return base;
 });
 const setWeaponGroupAbility = () => {
-    switch(props.item.weaponGroup){
+    switch(props.attack.weaponGroup){
       // ACCURACY
       case('Black Powder'):
       case('Bows'):
@@ -183,7 +183,7 @@ const setWeaponGroupAbility = () => {
       case('Light Blades'):
       case('Slings'):
       case('Staves'):
-        props.item.weaponGroupAbility = 'Accuracy';
+        props.attack.weaponGroupAbility = 'Accuracy';
       break;
       // FIGHTING
       case('Axes'):
@@ -192,10 +192,10 @@ const setWeaponGroupAbility = () => {
       case('Lances'):
       case('Polearms'):
       case('Spears'):
-        props.item.weaponGroupAbility = 'Fighting';
+        props.attack.weaponGroupAbility = 'Fighting';
       break;
       default:
-        props.item.weaponGroupAbility = ''
+        props.attack.weaponGroupAbility = ''
       break;
     }
 }
