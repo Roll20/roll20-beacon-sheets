@@ -1,0 +1,21 @@
+{{#> card sourceType=sourceType title=title subtitle=subtitle properties=properties description=description characterName=characterName}}
+  {{> rollTotal total=grandTotal resultType=resultType}}
+
+  <details class="show-more">
+    <summary class="show-more__button"></summary>
+    <div class="show-more__content">
+      {{#each damageGroups}}
+        <div class="damage-group">
+          <div class="damage-group__subtotal">
+            <span class="damage-group__total">{{this.total}}</span>
+            <span class="damage-group__type">{{this.type}}</span>
+          </div>
+          
+          <div class="damage-group__details">
+            {{> rollComponents components=this.components }}
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </details>
+{{/card}}
