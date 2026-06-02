@@ -121,6 +121,7 @@ import { useModifiersStore } from '@/sheet/stores/modifiers/modifiersStore';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useCustomConditionsStore } from '@/sheet/stores/conditions/customConditionsStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import { getMinSpCost } from '@/utility/spCost';
 
 const showModal = ref(false)
 const open = ref(false)
@@ -261,7 +262,7 @@ const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   if(attackDmgLabel){
     attackDamage.damageLabel = attackDmgLabel.label;
     attackDamage.source = attackDmgLabel.source;
-    attackDamage.spCost = Number(attackDmgLabel.spCost);
+    attackDamage.spCost = getMinSpCost(String(attackDmgLabel.spCost));
   }
   if(attackDamage.spCost){
     char.stunts = char.stunts - attackDamage.spCost;

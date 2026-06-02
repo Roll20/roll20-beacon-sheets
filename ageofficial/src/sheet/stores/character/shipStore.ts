@@ -72,7 +72,7 @@ export type QualityFlawHydrate = {
 export type ShipStuntDef = {
     _id: string;
     role: 'commander' | 'pilot' | 'engineer' | 'gunner' | 'sensors';
-    sp: number;
+    sp: string;
     name: string;
     description: string;
 };

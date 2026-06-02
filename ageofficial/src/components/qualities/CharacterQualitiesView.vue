@@ -30,15 +30,14 @@
         
           </div>   
           <div v-if="feature.type === 'Favored Stunt'"  style="display: grid;align-items: center;height: 100%;">
-            <div v-tippy="{ content: (char.stunts < feature.spCost) ? 'Not enough stunt points' : '' }">
-              <!-- <div v-if="!feature.modifiers || feature.modifiers.length === 0"> -->
+            <div v-tippy="{ content: (char.stunts < getMinSpCost(String(feature.spCost || '1'))) ? 'Not enough stunt points' : '' }">
               <button class="age-btn"
-                      :disabled="(char.stunts < feature.spCost)"
-                      :class="{ 'age-btn-disabled':(char.stunts < feature.spCost)}"
-                      @click="printStunt"
+                      :disabled="char.stunts < getMinSpCost(String(feature.spCost || '1'))"
+                      :class="{ 'age-btn-disabled': char.stunts < getMinSpCost(String(feature.spCost || '1')) }"
+                      @click="handleStuntClick"
                       >
                       <span>
-                        {{ feature.spCost }} SP
+                        {{ feature.spCost || '1' }} SP
                       </span>
               </button>
             </div>
@@ -166,10 +165,21 @@
       </template>
     </QualitiesModal>
   </Teleport>
+  <Teleport to="body">
+    <SpCostModal
+      :show="showSpCostModal"
+      :stuntName="feature.name"
+      :options="spCostOptions"
+      @confirm="onSpCostConfirm"
+      @cancel="showSpCostModal = false"
+    />
+  </Teleport>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue';
+import { parseSpOptions, getMinSpCost } from '@/utility/spCost';
+import SpCostModal from '@/components/shared/SpCostModal.vue';
 import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore'
 import QualitiesModal from './QualitiesModal.vue';
@@ -179,6 +189,8 @@ import { useAttackStore } from '@/sheet/stores/attack/attackStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 const { abilityScores, rollAbilityCheck } = useAbilityScoreStore();
 const showModal = ref(false)
+const showSpCostModal = ref(false);
+const spCostOptions = ref([]);
 const open = ref(false)
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -288,16 +300,31 @@ const selectedAttack = () => {
   // selAttack = props.spell
 };
 
-const printStunt = () => {
-  char.stunts = char.stunts - props.feature.spCost;
-  if(!props.feature.modifiers) return;
+const handleStuntClick = () => {
+  const options = parseSpOptions(String(props.feature.spCost || '1'), char.stunts);
+  if (options.length === 1) {
+    fireStunt(options[0]);
+  } else if (options.length > 1) {
+    spCostOptions.value = options;
+    showSpCostModal.value = true;
+  }
+};
+
+const onSpCostConfirm = (amount) => {
+  showSpCostModal.value = false;
+  fireStunt(amount);
+};
+
+const fireStunt = (spAmount) => {
+  char.stunts = char.stunts - spAmount;
+  if (!props.feature.modifiers) return;
   props.feature.modifiers.forEach(mod => {
-    if(mod.option === 'Damage'){
+    if (mod.option === 'Damage') {
       const attackStore = useAttackStore();
-      attackStore.printAttackDamage({name:props.feature.name,damage:mod.roll}); 
+      attackStore.printAttackDamage({ name: props.feature.name, damage: mod.roll });
     }
-  })
-}
+  });
+};
 </script>
 
 <style scoped lang="scss">

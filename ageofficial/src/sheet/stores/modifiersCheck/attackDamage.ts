@@ -9,6 +9,7 @@ import { useCharacterStore } from '../character/characterStore';
 import { useModifiersStore } from '../modifiers/modifiersStore';
 import type { Modifier } from '../modifiers/modifiersStore';
 import { useSettingsStore } from '../settings/settingsStore';
+import { getMinSpCost } from '@/utility/spCost';
 
 // interface Mod {
 //     label?: string;
@@ -50,7 +51,7 @@ export const damageMod = computed(() => {
         // mod.label = parent.name; 
 
         // if (mod.source === 'Favored Stunt') {
-            if(mod.source === 'Favored Stunt' && (parent.spCost || 0) <= char.stunts){
+            if(mod.source === 'Favored Stunt' && getMinSpCost(String(parent.spCost || '0')) <= char.stunts){
                 mod.label = parent.name; 
                 mod.source = parent.type;  
                 mod.spCost = parent.spCost;
@@ -64,7 +65,7 @@ export const damageMod = computed(() => {
                 damageOptions.value.push(mod); 
               }
             }
-            if (mod.source === 'Favored Stunt' && ((parent.spCost || 0) <= char.stunts)) {
+            if (mod.source === 'Favored Stunt' && (getMinSpCost(String(parent.spCost || '0')) <= char.stunts)) {
                 favoredStuntMods.value.push(mod);
             }           
         }

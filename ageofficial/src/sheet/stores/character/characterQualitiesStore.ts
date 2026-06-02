@@ -22,7 +22,7 @@ export type Quality = {
   qualityExpert?:string;
   qualityMaster?:string;
   roll?:string;
-  spCost?:number;
+  spCost?: string;
   stuntType?:string;
   modifiers?: Record<string,any>;
 }
