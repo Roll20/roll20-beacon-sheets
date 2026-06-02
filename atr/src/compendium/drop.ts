@@ -19,7 +19,7 @@ import { SpellSchema } from "@/schemas/spell";
 
 type Feature = z.infer<typeof FeatureSchema>;
 
-export type compendiumCategory = "Core Personality Traits" | "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Ancestries" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories"| "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" |"Brews" | "Magic Weapons" | "Magic Armor"| "Wondrous Items" | "Mutations" | "Progeny - Sin Nature" | "Descended - Angelic Banner Origin" | "NPC Classes" | "Positive Reactions" | "Negative Reactions";
+export type compendiumCategory = "Core Personality Traits" | "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Ancestries" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories" | "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" | "Brews" | "Magic Weapons" | "Magic Armor" | "Wondrous Items" | "Mutations" | "Progeny - Sin Nature" | "Descended - Angelic Banner Origin" | "NPC Classes" | "Positive Reactions" | "Negative Reactions";
 
 export type CompendiumPage = {
   id: string;
@@ -134,11 +134,10 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
 
 export const drag = async ({ dropData }: DropArgs, dispatch?: Dispatch, isNewSheet = false, character?: Character) => {
   const { pageName, expansionId } = dropData;
-  const  category = dropData.categoryName as compendiumCategory | string;
+  const category = dropData.categoryName as compendiumCategory | string;
   const request = createPageRequest(category, pageName);
-  
   const actualDispatch = dispatch ?? dispatchRef.value;
-  const response:CompendiumResults = await actualDispatch.compendiumRequest({ query: request })
+  const response: CompendiumResults = await actualDispatch.compendiumRequest({ query: request })
 
   if (response.errors)
     throw new Error("Expected a compendium request, but instead got an error.");
@@ -153,7 +152,7 @@ export const drag = async ({ dropData }: DropArgs, dispatch?: Dispatch, isNewShe
   const page = pages[correctPageIndex];
   console.log("Dropping page", page);
   if (dropHandlers.hasOwnProperty(category)) {
-    if(page.properties.hasOwnProperty('data-payload')) {
+    if (page.properties.hasOwnProperty('data-payload')) {
       try {
         console.log(page.properties);
 
@@ -187,9 +186,9 @@ export const drag = async ({ dropData }: DropArgs, dispatch?: Dispatch, isNewShe
         }
 
         const dropHandler = dropHandlers[category as compendiumCategory];
-        await dropHandler({payload, effects, tags, features, spells, expansionId, isNewSheet, dispatch: actualDispatch, character }); 
+        await dropHandler({ payload, effects, tags, features, spells, expansionId, isNewSheet, dispatch: actualDispatch, character });
 
-        if(isNewSheet) {
+        if (isNewSheet && category === 'Monsters') {
           await new Promise(resolve => setTimeout(resolve, 2000)); // 500ms delay
           setToken({ characterId: character!.id, payload, dispatch: actualDispatch });
         }
