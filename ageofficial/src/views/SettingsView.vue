@@ -48,7 +48,7 @@
           <!-- // TODO Items unique to genre slices. Technofantasy, Cthulhu Awakens, Cyberpunk, etc. -->
           <div class="row age-modal-row"  v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'mage'">
             <h4>Genre Slices</h4>
-            <div style="display: grid;grid-template-columns: repeat(2,1fr);">
+            <div style="display: grid;grid-template-columns: repeat(3,1fr);">
               <div class=" input-group" v-if="settings.gameSystem === 'mage'">
                 <label class="age-checkbox-toggle" style="margin:1rem;">
                     <input type="checkbox"  v-model="settings.cyberpunk" @change="updateGameSystem" />
@@ -69,6 +69,20 @@
                   <span class="slider round" ></span>
               </label>
               <span class="age-toggle-label">Technofantasy</span>
+              </div>
+              <div class=" input-group" v-if="settings.gameSystem === 'mage'">
+              <label class="age-checkbox-toggle" style="margin:1rem;">
+                  <input type="checkbox"  v-model="settings.threefold" @change="updateGameSystem" />
+                  <span class="slider round" ></span>
+              </label>
+              <span class="age-toggle-label">Threefold</span>
+              </div>
+              <div class=" input-group" v-if="settings.gameSystem === 'mage'">
+              <label class="age-checkbox-toggle" style="margin:1rem;">
+                  <input type="checkbox"  v-model="settings.powers" @change="updateGameSystem" />
+                  <span class="slider round" ></span>
+              </label>
+              <span class="age-toggle-label">Powers</span>
               </div>
             </div>
           </div>

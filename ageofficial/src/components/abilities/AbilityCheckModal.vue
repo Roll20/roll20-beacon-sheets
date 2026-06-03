@@ -35,7 +35,7 @@ import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocu
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 // import { defineEmits } from 'vue';
-import { mage, fage2e, bluerose,fage1e, cthulhu } from '../modifiers/focuses';
+import { resolveFocuses } from '../modifiers/focuses';
 import { abilityMods } from '@/sheet/stores/modifiersCheck/abilities';
 
 const { abilityScores, rollAbilityCheck } = useAbilityScoreStore();
@@ -45,25 +45,9 @@ const emit = defineEmits(['rerollCheck']);
 const abilityFocusArray = ref(
   [...quality.items.filter(foc => foc.ability === props.ability),...abilityMods.value.filter(am => am.ability === props.ability)]
 );
-const filteredFocuses = ref(fage2e)
-
-switch(useSettingsStore().gameSystem){
-  case 'fage2e':
-    filteredFocuses.value = fage2e;
-  break;
-  case 'mage':
-    filteredFocuses.value = mage;
-  break;
-  case 'fage1e':
-    filteredFocuses.value = fage1e;
-  break;
-  case 'bluerose':
-    filteredFocuses.value = bluerose;
-  break;
-  case 'cthulhu':
-    filteredFocuses.value = cthulhu;
-  break;
-}
+const settings = useSettingsStore();
+// Base focuses for the system, merged with any active genre-slice focuses.
+const filteredFocuses = computed(() => resolveFocuses(settings.gameSystem, settings));
 // const combinedArray = Object.entries(filteredFocuses).flatMap(([ability, names]) => {
 //     return names.map(name => {
 //         const matchingFocus = abilityFocusArray.value.find(item => item.ability === ability && item.name === name);

@@ -62,7 +62,7 @@
                           {{ option }}
                         </option>
                       </optgroup>
-                      <optgroup label="Psychic" v-if="feature.ability === 'Intelligence' && settings.gameSystem === 'mage'">
+                      <optgroup label="Psychic" v-if="feature.ability === 'Intelligence' && psychicFocuses.length">
                         <option
                           v-for="option in psychicFocuses"
                           :key="`Psychic-${option}`"
@@ -354,7 +354,7 @@ import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { v4 as uuidv4 } from 'uuid';
 import SpellModView from '@/components/modifiers/SpellModView.vue';
 import AbilityModView from '@/components/modifiers/AbilityModView.vue';
-import { arcaneFocusNames, bluerose, cthulhu, expanse, fage1e, fage2e, mage } from '../modifiers/focuses';
+import { arcaneFocusNames, sliceFocuses, SLICE_DEFS, resolveFocuses } from '../modifiers/focuses';
 import CustomAttackModView from '../modifiers/CustomAttackModView.vue';
 import {useModifiersStore} from '@/sheet/stores/modifiers/modifiersStore'
 import BaseModView from '@/components/modifiers/BaseModView.vue';
@@ -371,29 +371,33 @@ const mods = useModifiersStore();
 const settings = useSettingsStore()
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower'];
 // mods.modifiers = [];
+// Genre slices that are currently toggled on (definitions/flags shared via SLICE_DEFS).
+const activeSlices = () => SLICE_DEFS.filter((s) => settings[s.flag]);
+
 const arcanaFocuses = computed(() => {
+  let base;
   switch (settings.gameSystem) {
     case 'fage2e':
     case 'fage1e':
-    case 'cthulhu': return fageArcana;
-    case 'mage':    return magePowers;
-    case 'blue rose': return brArcana;
-    default: return [];
+    case 'cthulhu': base = fageArcana; break;
+    case 'mage':    base = magePowers; break;
+    case 'blue rose': base = brArcana; break;
+    default: base = []; break;
   }
+  // Append Arcana focuses contributed by any active genre slice, kept alphabetical.
+  const sliceArcana = activeSlices().flatMap((s) => sliceFocuses[s.key]?.Arcana || []);
+  return [...base, ...sliceArcana].sort((a, b) => a.localeCompare(b));
 });
-const psychicFocuses = computed(() => settings.gameSystem === 'mage' ? magePsychicPowers : []);
-
+const psychicFocuses = computed(() => {
+  const base = settings.gameSystem === 'mage' ? magePsychicPowers : [];
+  // Append Psychic focuses contributed by any active genre slice (e.g. Threefold, Powers).
+  const slicePsychic = activeSlices().flatMap((s) => sliceFocuses[s.key]?.Psychic || []);
+  return [...base, ...slicePsychic].sort((a, b) => a.localeCompare(b));
+});
 const filteredFocuses = computed(() => {
-  let base;
-  switch (settings.gameSystem) {
-    case 'fage2e':    base = fage2e;    break;
-    case 'mage':      base = mage;      break;
-    case 'fage1e':    base = fage1e;    break;
-    case 'blue rose': base = bluerose;  break;
-    case 'cthulhu':   base = cthulhu;   break;
-    case 'expanse':   base = expanse;   break;
-    default:          base = fage2e;    break;
-  }
+  // Base focuses for the system, with any active genre-slice focuses merged straight
+  // into each ability's list (Arcana/Psychic slice focuses are handled by their own groups).
+  const base = resolveFocuses(settings.gameSystem, settings);
   if (!settings.showArcana) {
     return Object.fromEntries(
       Object.entries(base).map(([ability, focuses]) => [
