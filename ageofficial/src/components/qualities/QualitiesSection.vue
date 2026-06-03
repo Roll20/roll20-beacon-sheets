@@ -75,6 +75,7 @@ import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { computed, reactive, ref } from 'vue';
 import QualitiesModal from './QualitiesModal.vue';
 import CharacterQualitiesView from './CharacterQualitiesView.vue';
+
 const props = defineProps({
   aim: { type: Boolean },
   aimValue: { type: Number },
@@ -152,12 +153,13 @@ function getItemType(type){
   return filteredType
 }
 function getQuality(quality) {
-  if (quality === 'Ancestry & Class') {    
+  if (quality === 'Ancestry & Class') {
     return ['Ancestry', 'Class'];
   } else {
     return [quality];  // Return as an array to simplify the filter logic
   }
 }
+
 </script>
 
 <style scoped lang="scss">

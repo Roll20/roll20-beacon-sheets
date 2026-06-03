@@ -125,7 +125,6 @@ import InventorySection from '@/components/inventory/InventorySection.vue';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import MagicSection from '@/components/magic/MagicSection.vue';
 import XPSection from '@/components/XPSection.vue';
-import QualitySection from '@/components/qualities/QualitiesSection.vue';
 import QualityClassSection from '@/components/qualities/QualitiesClassSection.vue';
 import QualityTalentSection from '@/components/qualities/QualitiesTalentSection.vue';
 import DefenseView from '@/components/DefenseView.vue';

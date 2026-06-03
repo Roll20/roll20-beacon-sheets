@@ -161,6 +161,12 @@ function combineObjects(array) {
     }
   });
 
+  result.sort((a, b) => {
+    const aName = String(a.name ?? '');
+    const bName = String(b.name ?? '');
+    return aName < bName ? -1 : aName > bName ? 1 : 0;
+  });
+
   return result;
 }
 </script>

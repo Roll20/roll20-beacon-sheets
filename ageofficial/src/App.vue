@@ -20,19 +20,19 @@
                   </button>
                 </div>
                 <div class="age-header-btn">
-                  <button v-if="settings.aimToggle === 'toggle'" :class="{ active: settings.aim }" class="age-btn" @click="updateToggle;settings.aim = !settings.aim">
+                  <button v-if="settings.aimToggle === 'toggle'" :class="{ active: settings.aim }" class="age-btn" @click="settings.aim = !settings.aim">
                     <div class="age-toggle-btn-icon age-toggle-aim-icon"></div>
                     <span>Aim</span>
                   </button>
                 </div>
                 <div class="age-header-btn">
-                  <button v-if="settings.guardToggle === 'toggle'" :class="{ active: settings.guard }" class="age-btn" @click="settings.guard = !settings.guard">
+                  <button v-if="settings.guardToggle === 'toggle'" :class="{ active: settings.guard }" class="age-btn" @click="settings.guard = !settings.guard;">
                     <div class="age-toggle-btn-icon age-toggle-guard-icon"></div>
                     <span>Guard</span>
                   </button>
                 </div>
                 <div class="age-header-btn">
-                  <button v-if="settings.rerollStunt === 'toggle'" :class="{ active: settings.reroll  }" class="age-btn" @click="settings.reroll = !settings.reroll">
+                  <button v-if="settings.rerollStunt === 'toggle'" :class="{ active: settings.reroll  }" class="age-btn" @click="settings.reroll = !settings.reroll;">
                     <div class="age-toggle-btn-icon age-toggle-reroll-icon"></div>
                     <span>ReRoll</span>
                   </button>
@@ -62,25 +62,25 @@
               <div class="dropdown" style="text-align: right;">
                 <ul class="dropdown-menu">
                   <li>
-                    <button v-if="settings.whisperRollsGM === 'toggle'" :class="{ active: settings.whisperRollsGMToggle }" class="age-btn" @click="settings.whisperRollsGMToggle = !settings.whisperRollsGMToggle">
+                    <button v-if="settings.whisperRollsGM === 'toggle'" :class="{ active: settings.whisperRollsGMToggle }" class="age-btn" @click="settings.whisperRollsGMToggle = !settings.whisperRollsGMToggle;">
                     <div class="age-toggle-btn-icon age-toggle-whisper-icon"></div>
                     <span>Whisper</span>
                   </button>
                   </li>
                   <li>
-                    <button v-if="settings.aimToggle === 'toggle'" :class="{ active: settings.aim }" class="age-btn" @click="updateToggle;settings.aim = !settings.aim">
+                    <button v-if="settings.aimToggle === 'toggle'" :class="{ active: settings.aim }" class="age-btn" @click="settings.aim = !settings.aim">
                     <div class="age-toggle-btn-icon age-toggle-aim-icon"></div>
                     <span>Aim</span>
                   </button>
                   </li>
                   <li>
-                    <button v-if="settings.guardToggle === 'toggle'" :class="{ active: settings.guard }" class="age-btn" @click="settings.guard = !settings.guard">
+                    <button v-if="settings.guardToggle === 'toggle'" :class="{ active: settings.guard }" class="age-btn" @click="settings.guard = !settings.guard;">
                     <div class="age-toggle-btn-icon age-toggle-guard-icon"></div>
                     <span>Guard</span>
                   </button>
                   </li>
                   <li>
-                    <button v-if="settings.rerollStunt === 'toggle'" :class="{ active: settings.reroll  }" class="age-btn" @click="settings.reroll = !settings.reroll">
+                    <button v-if="settings.rerollStunt === 'toggle'" :class="{ active: settings.reroll  }" class="age-btn" @click="settings.reroll = !settings.reroll;">
                     <div class="age-toggle-btn-icon age-toggle-reroll-icon"></div>
                     <span>ReRoll</span>
                   </button>
