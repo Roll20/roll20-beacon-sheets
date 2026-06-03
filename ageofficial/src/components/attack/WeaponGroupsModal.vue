@@ -39,7 +39,7 @@ const weaponGroups = computed(() => {
   switch (settings.gameSystem) {
     case 'mage':   base = mageWG;     break;
     case 'fage1e': base = fage1eWG;   break;
-    case 'bluerose': base = blueRoseWG; break;
+    case 'blue rose': base = blueRoseWG; break;
     case 'cthulhu': base = cthulhuWG; break;
     default:       base = fage2eWG;   break;
   }

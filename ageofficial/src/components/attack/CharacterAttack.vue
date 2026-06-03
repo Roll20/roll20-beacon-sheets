@@ -166,25 +166,28 @@ const modsBonus = computed(() => {
     .filter(item => {
       return item.option === "Damage" && item.enabled
     });
-  const baseModifier = Number(mod)  || 0; // Calculate mod / 2 only once
+  const baseModifier = Number(mod)  || 0;
   const abilityBonus = ref(0);
+  // Untrained weapons inflict half damage (FAGE 2e). That halving is applied at roll
+  // time via the `trained` flag (see handlePrintDamage -> sumComponents/rollResults),
+  // so the damage string here is always the full, un-halved value.
   if(settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'){
-    if (char.weaponGroups.includes(props.attack.weaponGroup)) {
-      abilityBonus.value = Math.floor(Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) / 2) ;
-    } else if(props.attack.weaponType === 'Spell Ranged'){
-      abilityBonus.value = Math.floor(Number(ability.abilityScores[props.attack.weaponGroupAbility]?.base) / 2) ; 
+    if(props.attack.weaponType === 'Spell Ranged'){
+      abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility]?.base);
+    } else {
+      abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base);
     }
   } else {
-    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) ;    
+    abilityBonus.value = Number(ability.abilityScores[props.attack.weaponGroupAbility === 'Fighting' ? 'Strength':'Perception']?.base) ;
   }
   const totalModifiers = modifiersStore.reduce((total, item) => {
-    const value = item.bonus || item.penalty || 0; // Use bonus or penalty, default to 0 if neither
-    return total + Number(value); // Add each bonus or penalty without reapplying mod/2 or abilityBonus/2
+    const value = item.bonus || item.penalty || 0;
+    return total + Number(value);
   }, 0);
   const modifier = totalModifiers + baseModifier + abilityBonus.value;
   const sign = modifier >= 0 ? "+" : "-";
   if (modifier === 0) {
-    return base; // Just return the base value if the modifier is 0
+    return base;
   }
   return `${base}${sign}${Math.abs(modifier)}`;
 });
