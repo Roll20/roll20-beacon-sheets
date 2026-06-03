@@ -44,32 +44,16 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-import { bluerose, cthulhu, fage1e, fage2e, mage } from '@/components/modifiers/focuses'
+import { resolveFocuses } from '@/components/modifiers/focuses'
 
 const props = defineProps({
     mod:{ type: Object}
 })
+const settings = useSettingsStore();
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower']
 
-const filteredFocuses = ref()
-
-switch(useSettingsStore().gameSystem){
-  case 'fage2e':
-    filteredFocuses.value = fage2e;
-  break;
-  case 'mage':
-    filteredFocuses.value = mage;
-  break;
-  case 'fage1e':
-    filteredFocuses.value = fage1e;
-  break;
-  case 'bluerose':
-    filteredFocuses.value = bluerose;
-  break;
-  case 'cthulhu':
-    filteredFocuses.value = cthulhu;
-  break;
-}
+// Base focuses for the system, merged with any active genre-slice focuses.
+const filteredFocuses = computed(() => resolveFocuses(settings.gameSystem, settings));
 </script>
