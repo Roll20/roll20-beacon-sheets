@@ -99,9 +99,10 @@ export const useItemStore = defineStore('quality', ()=>{
           })
         }
       }
-      if(mod.option === 'Ability Reroll'){
+      if(mod.option === 'Ability Reroll' || mod.option === 'Expertise'){
         Object.assign(newMod,{
-            abilityFocus: mod.abilityFocus
+            abilityFocus: mod.abilityFocus,
+            field: mod.field
           })
       }
       if(mod.option === 'Damage' || mod.option === 'Defense' || mod.option === 'Speed'){
@@ -121,7 +122,7 @@ export const useItemStore = defineStore('quality', ()=>{
           })
         }
       }   
-      if(mod.option === 'Ability Reroll'){
+      if(mod.option === 'Ability Reroll' || mod.option === 'Expertise'){
         Object.assign(newMod,{
             modifiedOption: mod.modifiedOption
           })

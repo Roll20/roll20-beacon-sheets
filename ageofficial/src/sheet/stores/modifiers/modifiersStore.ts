@@ -24,6 +24,8 @@ export type Modifier = {
     label?:string;
     enabled?:boolean;
     abilityFocus?:string;
+    modifiedOption?:string;
+    field?:string;
 }
 export type ModifiersHydrate = {
     modifiers: {

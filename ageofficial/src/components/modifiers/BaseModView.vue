@@ -11,6 +11,7 @@
   <DamageModView v-if="mod.option === 'Damage'" :mod="mod" />
   <DefenseModView v-if="mod.option === 'Defense'" :mod="mod" />
   <AbilityModView v-if="mod.option === 'Ability Reroll' || mod.option === 'Ability'" :mod="mod" />
+  <ExpertiseModView v-if="mod.option === 'Expertise'" :mod="mod" />
   <SpellModView v-if="mod.option === 'Spell'" :mod="mod" />
   <SpeedModView v-if="mod.option === 'Speed'" :mod="mod" />
   <ArmorModView v-if="mod.option === 'Armor Rating' || mod.option === 'Armor Penalty'" :mod="mod" />
@@ -26,6 +27,7 @@
 import DamageModView from './DamageModView.vue';
 import SpellModView from '@/components/modifiers/SpellModView.vue';
 import AbilityModView from '@/components/modifiers/AbilityModView.vue';
+import ExpertiseModView from '@/components/modifiers/ExpertiseModView.vue';
 import DefenseModView from '@/components/modifiers/DefenseModView.vue';
 import CustomAttackModView from '../modifiers/CustomAttackModView.vue';
 import { useModifiersStore } from '@/sheet/stores/modifiers/modifiersStore';
