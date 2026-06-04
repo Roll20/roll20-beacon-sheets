@@ -302,7 +302,7 @@
                 </div>
               </div>
             </div>
-              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Talent' && feature.type !== 'Specialization')">
+              <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Specialization')">
                <h3 style="display: flex;">
                   <span>Modifiers</span>                  
                   <button class="link-btn" @click="addModifier" 
@@ -419,11 +419,12 @@ const setFocus = (selectedOption) => {
 const selected = ref(arcanaFocuses.value.includes(props.feature.name) ? `Arcana (${props.feature.name})` : psychicFocuses.value.includes(props.feature.name) ? `Psychic (${props.feature.name})` : props.feature.name || '');
 
 const modOptions = computed(() => {
-  if(useSettingsStore().showArcana){
-    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Spell'];
-  } else {
-    return ['Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense','Speed','Toughness'];
-  }
+  const base = useSettingsStore().showArcana
+    ? ['Expertise', 'Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 'Speed', 'Spell']
+    : ['Expertise', 'Ability Reroll', 'Armor Penalty', 'Armor Rating', 'Custom Attack', 'Damage', 'Defense', 'Speed', 'Toughness'];
+  // Expertise is a Talent-only modifier.
+  const filtered = props.feature?.type === 'Talent' ? base : base.filter((o) => o !== 'Expertise');
+  return filtered.sort((a, b) => a.localeCompare(b));
 })
 
 const qualityLevels = computed(() => {

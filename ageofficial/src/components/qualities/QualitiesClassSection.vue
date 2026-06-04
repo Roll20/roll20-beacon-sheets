@@ -8,14 +8,20 @@
     <div v-for="quality in qualitiesArray" :key="quality" >
       <h5 class="mt-3">{{ quality }}</h5>
       <div class="accordion age-accordion">        
-        <CharacterQualitiesView
-          v-for="(qty, index) in sortedItemsByQuality[quality]"
-          :type="quality"
-          :key="qty._id"
-          :feature="qty"
-          :id="qty._id"
-          :index="index"
-        />
+        <template v-for="(qty, index) in sortedItemsByQuality[quality]" :key="qty._id">
+          <CharacterQualitiesView
+            :type="quality"
+            :feature="qty"
+            :id="qty._id"
+            :index="index"
+          />
+          <ExpertiseRow
+            v-for="exp in expertisesForFocus(qty)"
+            :key="exp._id"
+            :expertise="exp"
+            :focus="qty"
+          />
+        </template>
       </div>
     </div>
   </div>
@@ -35,6 +41,22 @@ import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import QualitiesModal from './QualitiesModal.vue';
 import CharacterQualitiesView from './CharacterQualitiesView.vue';
+import ExpertiseRow from './ExpertiseRow.vue';
+import { useModifiersStore } from '@/sheet/stores/modifiers/modifiersStore';
+
+// An expertise is an Ability bonus modifier (typically on a Talent) scoped to a focus
+// the character has. Render one row per expertise beneath its parent focus.
+function expertisesForFocus(item) {
+  if (item.type !== 'Ability Focus') return [];
+  const focusName = item.name === 'custom' ? item.customName : item.name;
+  return useModifiersStore().modifiers.filter((m) =>
+    m.enabled !== false &&
+    (m.option === 'Expertise' || m.option === 'Ability Reroll' || m.option === 'Ability') &&
+    m.modifiedOption === 'Bonus' &&
+    m.abilityFocus === focusName &&
+    m.modifiedValue === item.ability,
+  );
+}
 const props = defineProps({
   aim: { type: Boolean },
   aimValue: { type: Number },
