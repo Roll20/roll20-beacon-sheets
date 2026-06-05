@@ -61,7 +61,6 @@ export default async (
           value: overallSum - diceSum,
         });
       }
-      console.log(rollParts);
       components.splice(rollIndex, 1, ...rollParts);
     }
   }

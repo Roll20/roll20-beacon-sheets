@@ -195,10 +195,8 @@ const setTheme = () => {
 }
 if(!settings.incomeMode) {
     if(settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e') {
-      console.log('Setting income mode to currency for FAGE');
       settings.incomeMode = 'currency';
     } else {
-      console.log('Setting income mode to recources for non-FAGE');
       settings.incomeMode = 'recources';
     }
   }

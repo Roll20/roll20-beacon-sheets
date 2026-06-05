@@ -15,7 +15,6 @@ export const onInit = ({ character, settings, compendiumDropData }: InitArgs) =>
 export const onChange = async ({ character }: { character: Record<string, any> }) => {
   const old = beaconPulse.value; // This is a way to trigger a re-render of the sheet, see relay.ts for more information.
   beaconPulse.value = old + 1;
-  console.log('onChange -> Example Sheet Relay', character);
 };
 
 export const onSettingsChange = (e:any) => { Object.assign(initValues.settings, e.settings);lightDarkMode(e.settings.colorTheme)};
@@ -66,7 +65,7 @@ const dispatch = dispatchRef.value as Dispatch; // Need a different Relay instan
 })
 .then(response => {
     // if (response.success) {
-    console.log(response)
+        console.log(response)
         console.log("Compendium Entry Found:", response.data);
         // Handle the data (e.g., update character sheet or display information)
     // } else {

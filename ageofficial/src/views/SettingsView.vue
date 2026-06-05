@@ -304,7 +304,6 @@ const char = useCharacterStore();
 if(!settings.theme){
   settings.theme = 'basic';
 }
-console.log('SettingsView settings.theme',settings.theme);
 const theme = computed(() => {
   switch(settings.gameSystem) {
     case 'fage2e':

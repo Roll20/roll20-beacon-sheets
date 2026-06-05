@@ -44,7 +44,6 @@ export const useEnhancementStore = defineStore('enhancements', () => {
       const enhancement =
         enhancements.value.find((item) => item._id === _id);
           if (!enhancement) return;
-          console.log(enhancement)
           await sendToChat({
             title: enhancement.part,
             subtitle: 'Enhancement',
