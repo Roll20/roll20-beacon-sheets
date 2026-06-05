@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 100%;gap: 10px;display: flex;flex-direction: column;">
+    <div class="tabs-col">
         <div class="section-card">
             <div class="config-container">
                 <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
@@ -32,7 +32,7 @@
             </ul>
                         <div class="accordion age-activity-accordon">
                             <div :id="'secondaryBlock'" class="accordion-collapse age-accordion-collapse collapse show" data-bs-parent="#age-spell-accordion">
-                                <div style="padding: 6px;width: min-content;min-width: 100%;">
+                                <div class="tab-section-body">
                             <div class="age-label-content age-action-content">
                                 <div class="age-content">
                                     <div class="tab-content" id="myTabContent">
@@ -85,3 +85,16 @@ const openSidebar = () => {
   sidebarRef.value?.openSidebar(); // Optional chaining ensures sidebarRef is defined
 };
 </script>
+<style scoped>
+.tabs-col {
+  width: 100%;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.tab-section-body {
+  padding: 6px;
+  width: min-content;
+  min-width: 100%;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 100%;gap: 10px;display: flex;flex-direction: column;">
+    <div class="tabs-col">
         <div class="section-card">            
             <div>
                 <ul class="nav nav-tabs age-tabs-container">
@@ -100,3 +100,11 @@ const openSidebar = () => {
   sidebarRef.value?.openSidebar(); // Optional chaining ensures sidebarRef is defined
 };
 </script>
+<style scoped>
+.tabs-col {
+  width: 100%;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+}
+</style>

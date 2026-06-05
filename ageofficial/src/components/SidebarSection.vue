@@ -4,7 +4,7 @@
     <transition name="slide">
       <div class="sidebar" :class="[{ 'sidebar-hidden': !isVisible }, classWidth]">
         <div v-if="isVisible">
-        <button type="button" class="btn-close" style="position: absolute;right: 15px;" @click="closeSidebar" aria-label="Close"></button>
+        <button type="button" class="btn-close sidebar-close-btn" @click="closeSidebar" aria-label="Close"></button>
         <div class="content">
           <slot></slot>
         </div>
@@ -37,6 +37,9 @@
   </script>
   
   <style scoped>
-
+  .sidebar-close-btn {
+    position: absolute;
+    right: 15px;
+  }
   </style>
   
