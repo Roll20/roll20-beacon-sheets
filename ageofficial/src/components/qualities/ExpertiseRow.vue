@@ -1,7 +1,7 @@
 <template>
   <div class="accordion-item age-expertise-row">
     <div class="accordion-header attack attack__row age-qualities-accordion-header">
-      <div style="display: flex;position: relative;">
+      <div class="expertise-icon-container">
         <div class="age-quality-section age-quality-focus-icon"></div>
       </div>
       <div class="label">
@@ -13,14 +13,14 @@
       </div>
 
       <div class="age-weapon-range-reload">
-        <div style="display: grid;align-items: center;height: 100%;">
+        <div class="age-cell-center">
           <button
             class="age-btn"
             v-tippy="{ content: `${focusName}${expertise.field ? ' : ' + expertise.field : ''} Expertise` }"
             @click="rollExpertise()"
           >
             +{{ total }}
-            <font-awesome-icon :icon="['fa', 'dice']" style="margin-left:3px;" />
+            <font-awesome-icon :icon="['fa', 'dice']" class="age-btn-icon" />
           </button>
         </div>
       </div>
@@ -38,7 +38,7 @@
       <button type="button" class="config-btn age-icon-btn" @click="handlePrint" v-tippy="{ content: 'Share Expertise in chat' }">
         <font-awesome-icon :icon="['fa', 'comment']" />
       </button>
-      <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;">
+      <div class="expertise-gear-cell">
         <button type="button" class="config-btn age-icon-btn" @click="showModal = true" v-tippy="{ content: 'Edit Talent' }">
           <font-awesome-icon :icon="['fa', 'gear']" />
         </button>
@@ -126,6 +126,16 @@ const handleDelete = () => {
 </script>
 
 <style scoped>
+.expertise-icon-container {
+  display: flex;
+  position: relative;
+}
+.expertise-gear-cell {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr;
+  height: 100%;
+}
 .age-expertise-tag {
   display: inline-flex;
   align-items: center;

@@ -1,7 +1,7 @@
 <template>   
   <div class="age-content">
-    <div style="width: 100%;display: flex;justify-content: flex-end;">
-      <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;margin-bottom: -32px;" v-tippy="{ content: 'Add Skill' }">
+    <div class="qualities-class-add-header">
+      <button class="link-btn age-icon-btn qualities-class-add-btn" @click="showModal = true" v-tippy="{ content: 'Add Skill' }">
         <font-awesome-icon :icon="['fa', 'circle-plus']" />
       </button>
     </div>
@@ -174,6 +174,15 @@ function getQuality(quality) {
 </script>
 
 <style scoped lang="scss">
+.qualities-class-add-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.qualities-class-add-btn {
+  font-size: 1.5rem;
+  margin-bottom: -32px;
+}
 .traits {
   &__body {
   }

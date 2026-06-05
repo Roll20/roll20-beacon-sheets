@@ -1,7 +1,7 @@
 <template>
   <div class="accordion-item" >
     <div class="accordion-header attack attack__row age-qualities-accordion-header">
-        <div style="display: flex;position: relative;">
+        <div class="qualities-icon-container">
         <div class="age-quality-section age-quality-class-icon" v-if="feature.type === 'Class'"></div>
         <div class="age-quality-section age-quality-ancestry-icon" v-if="feature.type === 'Ancestry'"></div>
         <div class="age-quality-section age-quality-focus-icon" v-if="feature.type === 'Ability Focus'"></div>
@@ -19,17 +19,17 @@
        
         
         <div class="age-weapon-range-reload">
-          <div v-if="feature.type === 'Ability Focus'" style="display: grid;align-items: center;height: 100%;">
+          <div v-if="feature.type === 'Ability Focus'" class="age-cell-center">
             <div>
               <button class="age-btn"  @click="rollAbilityCheck(feature.ability, true, focusBonus(feature),feature);$emit('close')">
                 <span v-if="feature.focus && !feature.doubleFocus">+{{ Number(useAbilityScoreStore().abilityScores[props.feature.ability]?.base) + focusBonus(feature) }}</span>
                 <span v-if="feature.focus && feature.doubleFocus" >+{{ Number(useAbilityScoreStore().abilityScores[props.feature.ability]?.base) + focusBonus(feature) }}</span>
-                <font-awesome-icon :icon="['fa', 'dice']" style="margin-left:3px;" />
+                <font-awesome-icon :icon="['fa', 'dice']" class="age-btn-icon" />
               </button>
             </div>
         
           </div>   
-          <div v-if="feature.type === 'Favored Stunt'"  style="display: grid;align-items: center;height: 100%;">
+          <div v-if="feature.type === 'Favored Stunt'" class="age-cell-center">
             <div v-tippy="{ content: (char.stunts < getMinSpCost(String(feature.spCost || '1'))) ? 'Not enough stunt points' : '' }">
               <button class="age-btn"
                       :disabled="char.stunts < getMinSpCost(String(feature.spCost || '1'))"
@@ -54,7 +54,7 @@
                 <font-awesome-icon :icon="['fa', 'dice']" style="padding:3px;" />
             </button> -->
           </div>
-          <div v-else-if="feature.type === 'Ancestry'"  style="display: grid;align-items: center;height: 100%;">
+          <div v-else-if="feature.type === 'Ancestry'" class="age-cell-center">
             <div v-for="mod in feature.modifiers" :key="mod">
               <div v-if="mod.option === 'Spell'">
                 <button class="age-btn"
@@ -79,7 +79,7 @@
       <button type="button" class="config-btn age-icon-btn" @click="handlePrint" v-tippy="{ content: 'Share ' + feature.type + ' in chat'}">
           <font-awesome-icon :icon="['fa', 'comment']" />
         </button>
-      <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;">
+      <div class="qualities-gear-cell">
         <button type="button" class="config-btn age-icon-btn"  @click="showModal = true">
           <font-awesome-icon :icon="['fa', 'gear']" />
         </button> 
@@ -328,6 +328,16 @@ const fireStunt = (spAmount) => {
 </script>
 
 <style scoped lang="scss">
+.qualities-icon-container {
+  display: flex;
+  position: relative;
+}
+.qualities-gear-cell {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr;
+  height: 100%;
+}
 .age-modal-details-header {
   text-transform: capitalize;
 }

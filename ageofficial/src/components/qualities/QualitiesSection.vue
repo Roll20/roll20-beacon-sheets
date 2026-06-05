@@ -1,9 +1,9 @@
 <template>   
   <div class="age-content">
-    <button data-testid="test-add-trait-btn" class="link-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none;">
+    <button data-testid="test-add-trait-btn" class="link-btn" @click="showModal = true">
         + Add Quality
       </button>
-    <div style="padding: 6px;" v-for="quality in qualitiesArray" :key="quality" >
+    <div class="qualities-group-section" v-for="quality in qualitiesArray" :key="quality" >
       <!-- {{ item.items }} -->
       <h3 class="age-bio-header">{{ quality }}</h3>
       <div class="accordion age-accordion">
@@ -163,6 +163,9 @@ function getQuality(quality) {
 </script>
 
 <style scoped lang="scss">
+.qualities-group-section {
+  padding: 6px;
+}
 .traits {
   &__body {
   }
