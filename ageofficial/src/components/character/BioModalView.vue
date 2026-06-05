@@ -8,14 +8,14 @@
 
             </div>
       <div class="modal-body">
-        <div class="row" style="margin:0">
-          <div class="mb-3 col" style="flex-direction: column;padding: 0 2px;">
+        <div class="row age-row">
+          <div class="mb-3 col age-form-field">
           <span id="basic-addon1" class="age-input-label">Level</span>
           <div>
             <input type="number" class="form-control" aria-label="Character Name" v-model="charLevel"  aria-describedby="basic-addon1" @change="levelChange">
           </div>
         </div>
-        <div class="mb-3 col-10" style="flex-direction: column;padding: 0 2px;">
+        <div class="mb-3 col-10 age-form-field">
           <span id="basic-addon1" class="age-input-label">Name</span>
           <div>
                    <input type="text" class="form-control" aria-label="Character Name" v-model="meta.name"  aria-describedby="basic-addon1">
@@ -24,7 +24,7 @@
         </div>
         </div>
         
-        <div class="input-group mb-3" v-if="isGM" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3 age-form-field" v-if="isGM">
           <span id="basic-addon1" class="age-input-label">Type</span>
           <div>
             <select  id="bio.profession" v-model="bio.type" class="age-atk-select form-select">
@@ -34,7 +34,7 @@
           </select>
           </div>          
           </div>
-        <div class="input-group mb-3" v-if="bio.type === 'Character' && (settings.gameSystem !== 'mage' && settings.gameSystem !== 'expanse')" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3 age-form-field" v-if="bio.type === 'Character' && (settings.gameSystem !== 'mage' && settings.gameSystem !== 'expanse')">
           <span id="basic-addon1" class="age-input-label">Class</span>
           <div>
             <select  id="bio.profession" v-model="bio.profession" class="age-atk-select form-select" @change="classChange">
@@ -42,13 +42,13 @@
           </select>
           </div>          
         </div>
-        <div class="input-group mb-3" style="flex-direction: column;padding: 0 2px;" v-if="settings.gameSystem !== 'expanse'">
+        <div class="input-group mb-3 age-form-field" v-if="settings.gameSystem !== 'expanse'">
           <span id="basic-addon1" class="age-input-label">Ancestry</span>
           <div>
             <input type="text" class="form-control" aria-label="Ancestry" v-model="bio.ancestry"  aria-describedby="basic-addon1">
           </div>
         </div>
-        <div class="input-group mb-3" v-if="settings.gameSystem === 'expanse'" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3 age-form-field" v-if="settings.gameSystem === 'expanse'">
           <span id="basic-addon1" class="age-input-label">Origin</span>
           <div>
             <select  id="bio.profession" v-model="char.originFaction" class="age-atk-select form-select" @change="classChange">
@@ -57,41 +57,41 @@
           </select>
           </div>          
         </div>
-        <div class="row" style="margin:0">
-          <div class="mb-3 col" v-if="bio.type === 'Character'" style="flex-direction: column;padding: 0 2px;">
+        <div class="row age-row">
+          <div class="mb-3 col age-form-field" v-if="bio.type === 'Character'">
             <span id="basic-addon1" class="age-input-label">Social Class</span>
             <div>
               <input type="text" class="form-control" aria-label="Social Class" v-model="bio.socialClass"  aria-describedby="basic-addon1">
             </div>
           </div>
-          <div class="mb-3 col" v-if="bio.type === 'Character'" style="flex-direction: column;padding: 0 2px;">
+          <div class="mb-3 col age-form-field" v-if="bio.type === 'Character'">
             <span id="basic-addon1" class="age-input-label">Background</span>
             <div>
               <input type="text" class="form-control" aria-label="Background" v-model="bio.background"  aria-describedby="basic-addon1">
             </div>
           </div>
         </div>
-        <div class="row" style="margin:0" v-if="settings.gameSystem === 'mage' || settings.gameSystem === 'expanse'">
-          <div class="mb-3 col" v-if="bio.type === 'Character'" style="flex-direction: column;padding: 0 2px;">
+        <div class="row age-row" v-if="settings.gameSystem === 'mage' || settings.gameSystem === 'expanse'">
+          <div class="mb-3 col age-form-field" v-if="bio.type === 'Character'">
             <span id="basic-addon1" class="age-input-label">Drive</span>
             <div>
               <input type="text" class="form-control" aria-label="Drive" v-model="bio.drive"  aria-describedby="basic-addon1">
             </div>
           </div>
-          <div class="mb-3 col" v-if="bio.type === 'Character'" style="flex-direction: column;padding: 0 2px;">
+          <div class="mb-3 col age-form-field" v-if="bio.type === 'Character'">
             <span id="basic-addon1" class="age-input-label">Profession</span>
             <div>
               <input type="text" class="form-control" aria-label="Profession" v-model="bio.profession"  aria-describedby="basic-addon1">
             </div>
           </div>
         </div>
-        <div class="input-group mb-3" v-if="bio.type === 'AniMon'" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3 age-form-field" v-if="bio.type === 'AniMon'">
           <span id="basic-addon1" class="age-input-label">Also Known As</span>
           <div>
             <input type="text" class="form-control" aria-label="Character Name" v-model="bio.aliases"  aria-describedby="basic-addon1">
           </div>
         </div>
-        <div class="input-group mb-3" v-if="bio.type === 'AniMon'" style="flex-direction: column;padding: 0 2px;">
+        <div class="input-group mb-3 age-form-field" v-if="bio.type === 'AniMon'">
           <span id="basic-addon1" class="age-input-label">Threat Level</span>
           <div>
             <select  id="bio.profession" v-model="bio.threat" class="age-atk-select form-select">
@@ -100,8 +100,8 @@
           </div>
           
         </div>
-        <div class="row" style="margin:0">
-          <div class="mb-3 col" style="flex-direction: column;padding: 0 2px;">
+        <div class="row age-row">
+          <div class="mb-3 col age-form-field">
             <span id="basic-addon1" class="age-input-label" v-if="!settings.useFortune">Max Health</span>
             <span id="basic-addon1" class="age-input-label" v-if="settings.useFortune">Max Fortune</span>
             <div>
@@ -109,13 +109,13 @@
 
           </div>
         </div>
-        <div class="mb-3 col"  v-if="settings.showArcana && !settings.userPowerFatigue" style="flex-direction: column;padding: 0 2px;">
+        <div class="mb-3 col age-form-field" v-if="settings.showArcana && !settings.userPowerFatigue">
           <span id="basic-addon1" class="age-input-label">Max {{settings.gameSystem === 'mage' ? 'Power' : 'Magic'}} Points</span>
           <div>
             <input type="number" class="form-control" aria-label="Character Name" v-model="char.magicMax"  aria-describedby="basic-addon1">
           </div>
         </div>
-        <div class="mb-3 col" style="flex-direction: column;padding: 0 2px;">
+        <div class="mb-3 col age-form-field">
           <span id="basic-addon1" class="age-input-label">Base Speed</span>
           <div>
             <input type="number" class="form-control" aria-label="Speed" v-model="char.speed"  aria-describedby="basic-addon1">

@@ -1,7 +1,7 @@
 <template>
   <Transition name="modal">
     <div v-if="show" class="modal-mask">
-        <div class="modal-container age-modal" :class="{ 'age-qualities-modal': feature.type }" style="min-width: 450px;">
+        <div class="modal-container age-modal age-qualities-modal-container" :class="{ 'age-qualities-modal': feature.type }">
             <div class="age-modal-header">
               <slot name="header">default header</slot>
               <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
@@ -24,7 +24,7 @@
                 
               </div>
               <div>
-              <div class="row" style="margin:0" v-if="feature.type === 'Ability Focus'">
+              <div class="row age-row" v-if="feature.type === 'Ability Focus'">
                 <div class="mb-3 col">
                   <span class="age-input-label" id="basic-addon1">Ability</span>
                   <select
@@ -38,19 +38,17 @@
                 </div>
                 <div class="mb-3 col">
                 <span class="age-input-label" id="basic-addon1">Focus Name</span>
-                <div class="custom-select-wrapper" style="position: relative;">
+                <div class="custom-select-wrapper">
                   <!-- Overlayed display for selected value -->
                   <div
-                    class="age-atk-select form-select"
-                    v-if="selected"
-                    style="position: absolute; top: 1px; left: 1px; width:99%; border:transparent; padding: 4px; pointer-events: none; background: white; z-index: 2;height: 92%;text-transform: capitalize;">
+                    class="age-atk-select form-select custom-select-overlay"
+                    v-if="selected">
                     {{ selected }}
                   </div>
                   <!-- Native select dropdown -->
-                  <select                    
-                    class="age-atk-select form-select"                    
+                  <select
+                    class="age-atk-select form-select custom-select-native"
                     v-model="selected"
-                    style="position: relative; background: transparent;"
                     @change="setFocus(selected)">
                       <option disabled value="">Select an option</option>
                       <!-- Arcana group first -->
@@ -91,14 +89,14 @@
                 </div>
                 <div class="age-focus-container">
                   <div class=" input-group">
-                    <label class="age-checkbox-toggle" style="margin:1rem;">
+                    <label class="age-checkbox-toggle qualities-toggle-label">
                         <input type="checkbox"  v-model="feature.focus" />
                         <span class="slider round" ></span>
                     </label>
                     <span class="age-toggle-label">Focus</span>
                   </div>
                   <div class=" input-group">
-                    <label class="age-checkbox-toggle" style="margin:1rem;" v-tippy="{ content: char.level < 10 ? 'Your character must be level 11 to double focus': ''}"  >
+                    <label class="age-checkbox-toggle qualities-toggle-label" v-tippy="{ content: char.level < 10 ? 'Your character must be level 11 to double focus': ''}"  >
                         <input type="checkbox"  v-model="feature.doubleFocus" :disabled="char.level < 10"  />
                         <span class="slider round" ></span>
                     </label>
@@ -121,7 +119,7 @@
                 </div>
                 
               </div>
-              <div class="row" style="margin:0" v-if="feature.type === 'Talent' || feature.type === 'Specialization'">
+              <div class="row age-row" v-if="feature.type === 'Talent' || feature.type === 'Specialization'">
                 <div class="mb-3 col">
                     <span class="age-input-label age-input-label" id="basic-addon1">Talent</span>          
                     <input type="text" class="form-control" placeholder="Talent" aria-label="Talent" v-model="feature.name"  aria-describedby="basic-addon1">
@@ -139,7 +137,7 @@
 
                 
               </div>
-              <div class="row" style="margin:0" v-if="feature.type === 'Favored Stunt'">
+              <div class="row age-row" v-if="feature.type === 'Favored Stunt'">
                 <div class="mb-3 col">
                     <span class="age-input-label age-input-label" id="basic-addon1">Stunt</span>          
                     <input type="text" class="form-control" placeholder="Stunt Name" aria-label="Talent" v-model="feature.name"  aria-describedby="basic-addon1">
@@ -165,7 +163,7 @@
                   <input type="text" class="form-control" placeholder="1" aria-label="Stunt Point Cost" v-model="feature.spCost" aria-describedby="basic-addon1">
                 </div>
               </div>
-              <div class="row" style="margin:0" v-if="feature.type === 'Ancestry' || feature.type === 'Class' || feature.type === 'Special Feature'">
+              <div class="row age-row" v-if="feature.type === 'Ancestry' || feature.type === 'Class' || feature.type === 'Special Feature'">
                 <div class="mb-3 col">
                     <span class="age-input-label age-input-label" id="basic-addon1">Ability Name</span>          
                     <input type="text" class="form-control" placeholder="Ability Name" aria-label="Talent" v-model="feature.name"  aria-describedby="basic-addon1">
@@ -173,7 +171,7 @@
                 
               </div>
               <!-- Description -->
-              <div class="row" style="margin:0">
+              <div class="row age-row">
                 <div class="mb-5 col" v-if="feature.type">
                     <span class="age-input-label">Description</span>
                     <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
@@ -196,7 +194,7 @@
                </div>
               
               <!-- Quality Levels -->
-              <div class="row" style="margin:0">
+              <div class="row age-row">
                 <div class="mb-5 col" v-if="feature.qualityLevel === 'novice' || feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                       <span class="age-input-label">Novice</span>
                       <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
@@ -217,7 +215,7 @@
                         scrollingContainer: true}" v-model:content="feature.qualityNovice" />
                 </div>
               </div>
-              <div class="row" style="margin:0">
+              <div class="row age-row">
                 <div class="mb-5 col" v-if="feature.qualityLevel === 'expert' || feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Expert</span>
                     <QuillEditor ref="quillEditor2" contentType="html" toolbar="" :options="{
@@ -238,7 +236,7 @@
                       scrollingContainer: true}" v-model:content="feature.qualityExpert" />
                 </div>
               </div>
-              <div class="row" style="margin:0">
+              <div class="row age-row">
                 <div class="mb-5 col" v-if="feature.qualityLevel === 'master' || feature.qualityLevel === 'gransmaster'  || feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Master</span>
                     <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
@@ -259,7 +257,7 @@
                       scrollingContainer: true}" v-model:content="feature.qualityMaster" />
                 </div>
               </div>
-              <div class="row" style="margin:0">
+              <div class="row age-row">
                 <div class="mb-5 col" v-if="feature.qualityLevel === 'gransmaster' || feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Master</span>
                     <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
@@ -280,7 +278,7 @@
                       scrollingContainer: true}" v-model:content="feature.qualityMaster" />
                 </div>
               </div>
-              <div class="row" style="margin:0">
+              <div class="row age-row">
                 <div class="mb-5 col" v-if="feature.qualityLevel === 'apex'" >
                     <span class="age-input-label">Master</span>
                     <QuillEditor ref="quillEditor3" contentType="html" toolbar="" :options="{
@@ -303,16 +301,16 @@
               </div>
             </div>
               <div class="age-quality-modifiers"  v-if="(feature.type && feature.type !== 'Ability Focus' && feature.type !== 'Specialization')">
-               <h3 style="display: flex;">
-                  <span>Modifiers</span>                  
-                  <button class="link-btn" @click="addModifier" 
-                  style="background: none; font-weight: bold;border:none; font-size: 14px;" v-tippy="{ content: 'Add Modifier' }">
+               <h3 class="age-flex">
+                  <span>Modifiers</span>
+                  <button class="link-btn" @click="addModifier"
+                  v-tippy="{ content: 'Add Modifier' }">
                   <font-awesome-icon :icon="['fa', 'plus']" />
                 
                 </button>
 
                 </h3>
-                <div v-for="(mod) in mode === 'create' ? feature.modifiers : mods.parentItems(feature._id)" :key="mod" style="display:flex;gap:10px; margin-bottom: 10px;">
+                <div v-for="(mod) in mode === 'create' ? feature.modifiers : mods.parentItems(feature._id)" :key="mod" class="qualities-mod-row">
                   <BaseModView :mod="mod" :modOptions="modOptions" />
                 </div>                
               </div>
@@ -466,7 +464,44 @@ const onAbilityChange = () => {
 
 
 </script>
-<style>
+<style scoped>
+.age-qualities-modal-container {
+  min-width: 450px;
+}
+
+.custom-select-wrapper {
+  position: relative;
+}
+
+.custom-select-overlay {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 99%;
+  border: transparent;
+  padding: 4px;
+  pointer-events: none;
+  background: white;
+  z-index: 2;
+  height: 92%;
+  text-transform: capitalize;
+}
+
+.custom-select-native {
+  position: relative;
+  background: transparent;
+}
+
+.qualities-toggle-label {
+  margin: 1rem;
+}
+
+.qualities-mod-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 .modal-mask {
   position: fixed;
   z-index: 9998;

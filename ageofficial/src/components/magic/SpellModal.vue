@@ -237,7 +237,7 @@
 
           <div class="row">  
                 <div class="mb-3 col">
-                  <span class="age-input-label" style="min-width: 100px;">Description</span>
+                  <span class="age-input-label spell-label-wide">Description</span>
                   <div>
                     <div class="age-bio-quill">
                     <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
@@ -386,7 +386,10 @@ const selectedOptionDisplay = computed(() => {
   return `${group} (${option})`
 })
 </script>
-<style>
+<style scoped>
+.spell-label-wide {
+  min-width: 100px;
+}
 
 .modal-mask {
   position: fixed;

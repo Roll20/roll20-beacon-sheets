@@ -8,9 +8,9 @@
 
             </div>
             
-            <div class="modal-body" style="display: flex;max-width: fit-content;">
-              <div style="flex:1;min-width: 300px;">
-                <div class="row" style="margin:0">
+            <div class="modal-body inventory-modal-body">
+              <div class="inventory-modal-col">
+                <div class="row age-row">
                   <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Item Name</span>
                     <div>
@@ -18,7 +18,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row age-row">
                   <div class="mb-3 col">
                       <span class="age-input-label" id="basic-addon1">Type</span>
                       <div>
@@ -45,7 +45,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row age-row">
                   <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Cost</span>
                     <div>
@@ -84,8 +84,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="row" style="margin:0">
-                    <span class="age-input-label" style="min-width: 100px;">Description</span>
+                <div class="row age-row">
+                    <span class="age-input-label inventory-label-wide">Description</span>
                     <div>
                       <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
                       modules: {
@@ -107,8 +107,8 @@
                     </div>
                      </div>
               </div>
-              <div v-if="item.type === 'weapon'" style="flex:1;min-width: 300px;">
-                <div class="row" style="margin:0">
+              <div v-if="item.type === 'weapon'" class="inventory-modal-col">
+                <div class="row age-row">
 
                 <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Type</span>
@@ -122,7 +122,7 @@
                         </select>
                 </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row age-row">
 
                   <div class="mb-3 col" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'" >
                     <span class="age-input-label" id="basic-addon1">Weapon Group</span>
@@ -161,7 +161,7 @@
                       </select>
                   </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row age-row">
                   <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Min Str</span>
                     <div>
@@ -175,7 +175,7 @@
                         aria-describedby="basic-addon1" v-model="item.damage">
                   </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row age-row">
                   <div class="mb-3 col" v-if="settings.gameSystem === 'mage' || settings.gameSystem === 'expanse'">
                     <span class="age-input-label" id="basic-addon1">Damage Source</span>
                         <select
@@ -202,7 +202,7 @@
                         </select>
                   </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row age-row">
 
                     <div class="mb-3 col" v-if="item.weaponType === 'Ranged' && settings.gameSystem !== 'mage'">
                         <span class="age-input-label" id="basic-addon1">Short Range</span>
@@ -232,7 +232,7 @@
                     </div>                        
                 </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row age-row">
                   <div class="mb-3 col" v-if="item.weaponType === 'Ranged' && (settings.gameSystem === 'mage' || settings.gameSystem === 'expanse')">
                         <span class="age-input-label" id="basic-addon1">Capacity</span>
                         <div>
@@ -382,6 +382,18 @@
   });
 
   </script>
-  <style>
-  
+  <style scoped>
+  .inventory-modal-body {
+    display: flex;
+    max-width: fit-content;
+  }
+
+  .inventory-modal-col {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .inventory-label-wide {
+    min-width: 100px;
+  }
   </style>

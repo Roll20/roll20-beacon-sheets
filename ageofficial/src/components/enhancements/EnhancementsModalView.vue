@@ -19,7 +19,7 @@
               </div>
         </div>
         <div class="row">  
-            <div class="col" style="min-height: 100px;padding-bottom: 20px;">
+            <div class="col enhancement-details-col">
                 <span class="age-input-label" id="basic-addon1">Details</span>
                 <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
                       modules: {
@@ -114,3 +114,9 @@ const levelUp = () => {
   }
 }
 </script>
+<style scoped>
+.enhancement-details-col {
+  min-height: 100px;
+  padding-bottom: 20px;
+}
+</style>

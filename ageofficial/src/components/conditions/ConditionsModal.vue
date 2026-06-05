@@ -1,18 +1,18 @@
 <template>
     <Transition name="modal">
       <div v-if="show" class="modal-mask">
-          <div class="modal-container age-modal" style="width: 70%;">
+          <div class="modal-container age-modal conditions-modal-container">
             <div class="age-modal-header">
             <slot name="header">default header</slot>
             <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
 
             </div>
   
-              <div class="modal-body" style="padding: 0 0 10px;">                
-                    <div class="accordion" id="accordionExample" style="width: 100%;">
+              <div class="modal-body conditions-modal-body">
+                    <div class="accordion conditions-accordion" id="accordionExample">
                     <div class="accordion-item" v-for="(condition, i) in coreConditions" :key="condition">
-                        <div class="accordion-header" style="display:grid;grid-template-columns: 1fr 40px 1fr 40px 40px;">
-                            <div class="" style="font-size: 1rem; padding:1rem;">
+                        <div class="accordion-header accordion-header-grid">
+                            <div class="accordion-condition-name">
                                 {{ condition.name }}
                             </div>
                             
@@ -27,7 +27,7 @@
                                 </span>
                             </button>
                             
-                            <label class="age-checkbox-toggle" style="margin:1rem;">
+                            <label class="age-checkbox-toggle accordion-toggle-label">
                                 <input type="checkbox"  v-model="condition.enabled" @change="toggleCondition(condition, i)" />
                                 <span class="slider round" ></span>
                             </label>
@@ -39,8 +39,8 @@
                         <div class="accordion-body">
                           <div v-html="condition.description"></div>
                           <div class="age-condition-modifiers">
-                          <h4 style="display: flex;">
-                            <span>Modifiers</span>   
+                          <h4 class="age-flex">
+                            <span>Modifiers</span>
                           </h4>
                           <div v-for="mod in condition.modifiers" :key="mod">
                             {{ mod.modifiedValue }} | {{ mod.modifiedOption }} | {{ mod.conditionalCheck }} {{ mod.conditional }} | {{ mod.penalty }}
@@ -57,8 +57,8 @@
                 </div>
                 <div class="accordion" id="accordionExample" >
                     <div class="accordion-item" v-for="(condition, i) in customStore.customConditions" :key="condition">
-                        <div class="accordion-header" style="display:grid;grid-template-columns: 1fr 40px 1fr 40px 40px;">
-                            <div class="" style="font-size: 1rem; padding:1rem;">
+                        <div class="accordion-header accordion-header-grid">
+                            <div class="accordion-condition-name">
                                 {{ condition.name }}
                             </div>
                             <button type="button" class="age-icon-btn" @click="customStore.showCondition(condition._id)">
@@ -71,7 +71,7 @@
 
                                 </span>
                             </button>
-                            <label class="age-checkbox-toggle" style="margin:1rem;">
+                            <label class="age-checkbox-toggle accordion-toggle-label">
                                 <input type="checkbox"  v-model="condition.enabled" @change="toggleCustomCondition(condition, i)"/>
                                 <span class="slider round" ></span>
                             </label>
@@ -86,7 +86,7 @@
                               <span class="input-group-text" id="basic-addon1">Condition Name</span>
                               <input type="text" class="form-control" placeholder="0" aria-label="Character Name" v-model="condition.name"  aria-describedby="basic-addon1">
                             </div>
-                            <div class="input-group" style="display: grid;grid-template-columns: 1fr 2fr;">
+                            <div class="input-group accordion-description-grid">
                                 <span class="input-group-text">Description</span>
                                 <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
                                   modules: {
@@ -106,14 +106,14 @@
                                   scrollingContainer: true}" v-model:content="condition.description" />
                             </div>
                             <div class="age-quality-modifiers">
-                              <h3 style="display: flex;">
-                                <span>Modifiers</span>                  
-                                <button class="link-btn" @click="mods.addModifier({_id:condition._id,enabled:condition.enabled,type:'Condition'})" 
-                                  style="background: none; font-weight: bold;border:none; font-size: 14px;" v-tippy="{ content: 'Add Modifier' }">
+                              <h3 class="age-flex">
+                                <span>Modifiers</span>
+                                <button class="link-btn" @click="mods.addModifier({_id:condition._id,enabled:condition.enabled,type:'Condition'})"
+                                  v-tippy="{ content: 'Add Modifier' }">
                                   <font-awesome-icon :icon="['fa', 'plus']" />                  
                                 </button>
                               </h3>
-                              <div class="mb-2" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index" style="display:flex;gap:10px;">
+                              <div class="mb-2 mod-row" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index">
                               <BaseModView :mod="mod" :modOptions="['Ability', 'Damage', 'Defense', 'Speed']" />
                             </div>
                   
@@ -183,10 +183,10 @@
                         <div :id="'customConditionCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                           <div v-html="condition.description"></div>
-                          <h4 style="display: flex;">
-                              <span>Modifiers</span>   
+                          <h4 class="age-flex">
+                              <span>Modifiers</span>
                             </h4>
-                          <div class="mb-2" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index" style="display:flex;gap:10px;">
+                          <div class="mb-2 mod-row" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index">
                             {{ mod.option }} {{ mod.modifiedValue }} {{ mod.bonus }} {{ mod.penalty }} {{ mod.roll }}
                           </div>
                           </div>
@@ -270,7 +270,43 @@ const showCondition = (selectedCondition,i) => {
     }
 }
 </script>
-<style>
+<style scoped>
+  .conditions-modal-container {
+    width: 70%;
+  }
+
+  .conditions-modal-body {
+    padding: 0 0 10px;
+  }
+
+  .conditions-accordion {
+    width: 100%;
+  }
+
+  .accordion-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr 40px 40px;
+  }
+
+  .accordion-condition-name {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .accordion-toggle-label {
+    margin: 1rem;
+  }
+
+  .accordion-description-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+  }
+
+  .mod-row {
+    display: flex;
+    gap: 10px;
+  }
+
   .modal-mask {
     position: fixed;
     z-index: 9998;
