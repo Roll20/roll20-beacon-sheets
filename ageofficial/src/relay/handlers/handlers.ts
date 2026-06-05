@@ -2,6 +2,7 @@ import type { InitArgs } from '@roll20-official/beacon-sdk';
 import { initValues, beaconPulse, dispatchRef } from '../relay';
 import type { Dispatch } from '@roll20-official/beacon-sdk';
 import { lightDarkMode } from '@/utility/darkMode';
+import { loadLegacyAbilityScores, loadLegacyCharacterDetails, loadLegacyGroupings } from '@/utility/legacyAdapter';
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.
 export const onInit = ({ character, settings, compendiumDropData }: InitArgs) => {
   initValues.id = character.id;
@@ -9,6 +10,10 @@ export const onInit = ({ character, settings, compendiumDropData }: InitArgs) =>
   initValues.settings = settings;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
   lightDarkMode(initValues.settings.colorTheme);
+  // Log legacy attribute data so we can inspect what's coming in from old sheets
+  loadLegacyAbilityScores(character.attributes as any);
+  loadLegacyCharacterDetails(character.attributes as any);
+  loadLegacyGroupings(character.attributes as any);
 };
 
 // onChange is called when the character data is updated. This is where you will update the sheet with the new data.
