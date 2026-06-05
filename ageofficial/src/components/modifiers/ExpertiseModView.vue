@@ -1,9 +1,8 @@
 <template>
-  <div style="display:flex;gap:10px;width:100%;align-items:center;">
+  <div class="expertise-mod-row">
     <!-- existing focus (prerequisite) | sub-focus label | Bonus(auto +1)/Reroll -->
     <select
-      class="age-atk-select form-select"
-      style="flex:1;"
+      class="age-atk-select form-select expertise-mod-flex"
       data-testid="test-expertise-focus"
       v-model="selectedFocusId"
     >
@@ -12,14 +11,12 @@
     </select>
     <input
       type="text"
-      class="form-control"
-      style="flex:1;"
+      class="form-control expertise-mod-flex"
       placeholder="Sub-focus (e.g. Ghosts)"
       v-model="mod.field"
     />
     <select
-      class="age-atk-select form-select"
-      style="flex:1;"
+      class="age-atk-select form-select expertise-mod-flex"
       data-testid="test-expertise-effect"
       v-model="mod.modifiedOption"
     >
@@ -76,3 +73,14 @@ watch(
   { immediate: true },
 );
 </script>
+<style scoped>
+.expertise-mod-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+.expertise-mod-flex {
+  flex: 1;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-    <div style="display: grid;gap: 10px;grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));width: 100%;">
+    <div class="custom-atk-grid">
     <!-- <div style="display: flex;gap: 10px;width: 100%;flex-wrap: wrap;"> -->
     <div >
         <input type="text"  class="form-control" placeholder="Attack Name"  v-model="mod.name" />
@@ -27,7 +27,7 @@
     <div v-if="mod.weaponType === 'Spell Ranged' || mod.weaponType === 'Ranged'">
         <input type="number"  class="form-control" placeholder="Long Range"  v-model="mod.longRange" />
     </div>
-    <div style="width: 75px;">
+    <div class="custom-atk-damage">
         <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.damage" />
     </div>
                       
@@ -44,3 +44,14 @@ const props = defineProps({
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower']
 const weaponTypes = ['Melee','Natural','Ranged','Spell Melee','Spell Ranged']
 </script>
+<style scoped>
+.custom-atk-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+  width: 100%;
+}
+.custom-atk-damage {
+  width: 75px;
+}
+</style>

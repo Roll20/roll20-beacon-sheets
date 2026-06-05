@@ -7,20 +7,20 @@
                     <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
                 </div>    
                 <div class="modal-body">
-                    <div class="mb-3 col" style="flex-direction: column;padding: 0 2px;">
+                    <div class="mb-3 col age-form-field">
                         <span id="basic-addon1" class="age-input-label">Test Power Cost</span>
                         <div>
                             <input type="number" class="form-control" aria-label="Test Power Cost" v-model="powerTestCost"  aria-describedby="basic-addon1" @change="levelUp">
                         </div>
                         <div class=" input-group">
-                            <label class="age-checkbox-toggle" style="margin:1rem;">
+                            <label class="age-checkbox-toggle age-checkbox-label">
                                 <input type="checkbox"  v-model="focus" />
                                 <span class="slider round" ></span>
                             </label>
                             <span class="age-toggle-label">Power Focus</span>
                         </div>  
                         <div class=" input-group">
-                            <label class="age-checkbox-toggle" style="margin:1rem;">
+                            <label class="age-checkbox-toggle age-checkbox-label">
                                 <input type="checkbox"  v-model="doubleFocus" />
                                 <span class="slider round"></span>
                             </label>
@@ -56,5 +56,5 @@ const manualRollPowerFatigueTest = () => {
     char.rollPowerFatigueTest(powerTestCost.value,focusMod);
 };
 </script>
-<style>
+<style scoped>
 </style>

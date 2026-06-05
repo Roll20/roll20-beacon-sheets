@@ -1,6 +1,6 @@
 <template>
-    <div style="display: flex; flex-direction: column; gap:4px;">
-        <div class="row" style="display: flex; gap:10px">
+    <div class="spell-mod-col">
+        <div class="row age-mod-col">
             <input class="form-control col" type="text" placeholder="Spell Name" v-model="mod.customName" />
             <select
                 class="age-atk-select form-select col"
@@ -13,7 +13,7 @@
             </select>
             <input class="form-control col" type="number" placeholder="0" v-model="mod.variable" />
         </div>
-        <div class="row" style="display: flex; gap:10px">
+        <div class="row age-mod-col">
             <input class="form-control col" type="text" placeholder="Spell Test" v-model="mod.spellTest" />
             <input class="form-control col" type="text" placeholder="1d6" v-model="mod.spellSuccessDamage" />
             <input class="form-control col" type="text" placeholder="1d6" v-model="mod.spellFailDamage" />
@@ -26,3 +26,10 @@ const props = defineProps({
     mod:{ type: Object}
 })
 </script>
+<style scoped>
+.spell-mod-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+</style>

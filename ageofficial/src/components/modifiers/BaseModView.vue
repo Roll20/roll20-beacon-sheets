@@ -1,5 +1,5 @@
 <template>
-    <div style="min-width: 125px;">
+    <div class="base-mod-select">
     <select
       class="age-atk-select form-select"
         data-testid="test-spell-weaponType-input"
@@ -18,8 +18,7 @@
   <ToughnessModView v-if="mod.option === 'Toughness'" :mod="mod" />
 
   <CustomAttackModView v-if="mod.option === 'Custom Attack'" :mod="mod" />
-  <button class="link-btn" @click="removeModifier" 
-                  style="background: none; font-weight: bold;border:none;" v-tippy="{ content: 'Remove Modifier' }">
+  <button class="link-btn" @click="removeModifier" v-tippy="{ content: 'Remove Modifier' }">
                   <font-awesome-icon :icon="['fa', 'minus']" />
                 </button>
 </template>
@@ -43,3 +42,8 @@ const removeModifier = () => {
   modStore.removeModifier(props.mod._id)
 }
 </script>
+<style scoped>
+.base-mod-select {
+  min-width: 125px;
+}
+</style>

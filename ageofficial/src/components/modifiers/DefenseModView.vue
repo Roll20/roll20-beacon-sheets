@@ -1,5 +1,5 @@
 <template>
-    <div class="col" style="display: flex; gap:10px">
+    <div class="col age-mod-col">
         <select
             class="age-atk-select form-select"
             data-testid="test-spell-weaponType-input"
