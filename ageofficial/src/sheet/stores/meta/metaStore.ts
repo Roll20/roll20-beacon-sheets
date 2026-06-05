@@ -1,6 +1,6 @@
-import type { Token } from '@roll20-official/beacon-sdk';
-import { defineStore } from 'pinia';
-import { reactive, ref, type Ref } from 'vue';
+import type { Token } from "@roll20-official/beacon-sdk";
+import { defineStore } from "pinia";
+import { reactive, ref, type Ref } from "vue";
 
 /* Every Character, regardless of sheet, has these meta fields
  * and they must be saved to firebase in this specific way.
@@ -15,12 +15,12 @@ export type MetaHydrate = {
   token: Record<string, any>;
 };
 
-export const useMetaStore = defineStore('meta', () => {
-  const id = ref('');
-  const name = ref('');
-  const avatar = ref('');
-  const bio = ref('');
-  const gmNotes = ref('');
+export const useMetaStore = defineStore("meta", () => {
+  const id = ref("");
+  const name = ref("");
+  const avatar = ref("");
+  const bio = ref("");
+  const gmNotes = ref("");
   const token: Ref<Token> = ref({});
   const campaignId = ref();
   const permissions = reactive({

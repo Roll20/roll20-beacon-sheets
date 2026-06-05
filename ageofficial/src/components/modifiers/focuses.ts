@@ -1,10 +1,10 @@
 export const arcaneFocusNames = new Set([
-  'Arcane',
-  'Arcane Blast',
-  'Arcana',
-  'Arcane Lore',
-  'Shaping',
-  'Sorcery Lore',
+  "Arcane",
+  "Arcane Blast",
+  "Arcana",
+  "Arcane Lore",
+  "Shaping",
+  "Sorcery Lore",
 ]);
 
 export const fage1e = {
@@ -457,40 +457,68 @@ export const bluerose = {
 // name only). All other keys are plain ability focuses shown under the slice's own optgroup.
 type SliceFocusMap = Record<string, string[]>;
 const emptySlice = (): SliceFocusMap => ({
-  Accuracy: [], Communication: [], Constitution: [], Dexterity: [], Fighting: [],
-  Intelligence: [], Perception: [], Strength: [], Willpower: [], Arcana: [], Psychic: [],
+  Accuracy: [],
+  Communication: [],
+  Constitution: [],
+  Dexterity: [],
+  Fighting: [],
+  Intelligence: [],
+  Perception: [],
+  Strength: [],
+  Willpower: [],
+  Arcana: [],
+  Psychic: [],
 });
 export const sliceFocuses: Record<string, SliceFocusMap> = {
   technofantasy: {
     ...emptySlice(),
-    Accuracy: ['Blaster Longarms', 'Blaster Pistols'],
-    Dexterity: ['Advanced Driving', 'Advanced Piloting'],
-    Intelligence: ['Computer Lore', 'Scientific Lore'],
-    Strength: ['Machining'],
-    Arcana: ['Digital', 'Machine'],
+    Accuracy: ["Blaster Longarms", "Blaster Pistols"],
+    Dexterity: ["Advanced Driving", "Advanced Piloting"],
+    Intelligence: ["Computer Lore", "Scientific Lore"],
+    Strength: ["Machining"],
+    Arcana: ["Digital", "Machine"],
   },
   cthulhuMythos: {
     ...emptySlice(),
     // Eldritch Arcana intentionally omitted per ticket 1212542321995877.
-    Arcana: ['Astral', 'Drain', 'Radiant', 'Spatial'],
+    Arcana: ["Astral", "Drain", "Radiant", "Spatial"],
   },
   cyberpunk: {
     ...emptySlice(),
-    Accuracy: ['Virtuality', 'Drone Weaponry'],
-    Dexterity: ['Remote Operation'],
-    Fighting: ['Exoskeleton'],
-    Intelligence: ['Cybernetics', 'Streetwise', 'Synthlife'],
-    Perception: ['Codefinding', 'Survival'],
+    Accuracy: ["Virtuality", "Drone Weaponry"],
+    Dexterity: ["Remote Operation"],
+    Fighting: ["Exoskeleton"],
+    Intelligence: ["Cybernetics", "Streetwise", "Synthlife"],
+    Perception: ["Codefinding", "Survival"],
   },
   threefold: {
     ...emptySlice(),
-    Arcana: ['Death', 'Enchantment', 'Luck', 'Radiant'],
-    Psychic: ['Apportation', 'Astral', 'Dreaming', 'Somatic'],
+    Arcana: ["Death", "Enchantment", "Luck", "Radiant"],
+    Psychic: ["Apportation", "Astral", "Dreaming", "Somatic"],
   },
   powers: {
     ...emptySlice(),
-    Arcana: ['Death', 'Enchantment', 'Geomancy', 'Gravity', 'Radio', 'Transmutation', 'Virtual'],
-    Psychic: ['Apportation', 'Astral', 'Cyberkinesis', 'Dreaming', 'Electronkinesis', 'Nature Empathy', 'Photokinesis', 'Psychic Drain', 'Serendipity', 'Somatic'],
+    Arcana: [
+      "Death",
+      "Enchantment",
+      "Geomancy",
+      "Gravity",
+      "Radio",
+      "Transmutation",
+      "Virtual",
+    ],
+    Psychic: [
+      "Apportation",
+      "Astral",
+      "Cyberkinesis",
+      "Dreaming",
+      "Electronkinesis",
+      "Nature Empathy",
+      "Photokinesis",
+      "Psychic Drain",
+      "Serendipity",
+      "Somatic",
+    ],
   },
 };
 
@@ -558,23 +586,29 @@ export const expanse = {
 // Each genre slice + the settings flag that activates it. Single source of truth
 // shared by every focus picker (QualitiesModal, AbilityModView, AbilityCheckModal, ...).
 export const SLICE_DEFS = [
-  { key: 'technofantasy', label: 'Technofantasy',  flag: 'technofantasy' },
-  { key: 'cthulhuMythos', label: 'Cthulhu Mythos', flag: 'cthulhuMythos' },
-  { key: 'cyberpunk',     label: 'Cyber',          flag: 'cyberpunk' },
-  { key: 'threefold',     label: 'Threefold',      flag: 'threefold' },
-  { key: 'powers',        label: 'Powers',         flag: 'powers' },
+  { key: "technofantasy", label: "Technofantasy", flag: "technofantasy" },
+  { key: "cthulhuMythos", label: "Cthulhu Mythos", flag: "cthulhuMythos" },
+  { key: "cyberpunk", label: "Cyber", flag: "cyberpunk" },
+  { key: "threefold", label: "Threefold", flag: "threefold" },
+  { key: "powers", label: "Powers", flag: "powers" },
 ];
 
 // Base per-ability focus list for a game system.
 export function baseFocusMap(gameSystem?: string): SliceFocusMap {
   switch (gameSystem) {
-    case 'fage1e':    return fage1e;
-    case 'mage':      return mage;
-    case 'blue rose': return bluerose;
-    case 'cthulhu':   return cthulhu;
-    case 'expanse':   return expanse;
-    case 'fage2e':
-    default:          return fage2e;
+    case "fage1e":
+      return fage1e;
+    case "mage":
+      return mage;
+    case "blue rose":
+      return bluerose;
+    case "cthulhu":
+      return cthulhu;
+    case "expanse":
+      return expanse;
+    case "fage2e":
+    default:
+      return fage2e;
   }
 }
 
@@ -582,7 +616,7 @@ export function baseFocusMap(gameSystem?: string): SliceFocusMap {
 // intentionally excluded here -- those feed their own optgroups.
 export function mergeSliceFocuses(
   base: SliceFocusMap,
-  isActive: (sliceKey: string) => boolean,
+  isActive: (sliceKey: string) => boolean
 ): SliceFocusMap {
   const merged: SliceFocusMap = {};
   for (const ability of Object.keys(base)) merged[ability] = [...base[ability]];
@@ -591,7 +625,7 @@ export function mergeSliceFocuses(
     const slice = sliceFocuses[def.key];
     if (!slice) continue;
     for (const ability of Object.keys(slice)) {
-      if (ability === 'Arcana' || ability === 'Psychic') continue;
+      if (ability === "Arcana" || ability === "Psychic") continue;
       if (!slice[ability].length) continue;
       merged[ability] = [...(merged[ability] || []), ...slice[ability]];
     }
@@ -604,7 +638,10 @@ export function mergeSliceFocuses(
 }
 
 // Convenience: base focuses for `gameSystem` merged with whatever slices are on in `flags`.
-export function resolveFocuses(gameSystem: string | undefined, flags: Record<string, any>): SliceFocusMap {
+export function resolveFocuses(
+  gameSystem: string | undefined,
+  flags: Record<string, any>
+): SliceFocusMap {
   return mergeSliceFocuses(baseFocusMap(gameSystem), (key) => {
     const def = SLICE_DEFS.find((d) => d.key === key);
     return !!(def && flags[def.flag]);

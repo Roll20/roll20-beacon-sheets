@@ -1,105 +1,141 @@
-<template>  
+<template>
   <div class="age-content">
-    <div style="padding: 6px;" >
-      <div style="width: 100%;display: flex;justify-content: space-between;padding:5px 0;">
-        <div style="padding: 15px 6px 6px;width: 100%;" v-if="spellStore.spells.length === 0">
-          Your {{ magicLabel }} is empty. 
+    <div class="magic-section-body">
+      <div class="magic-section-header">
+        <div class="magic-empty-msg" v-if="spellStore.spells.length === 0">
+          Your {{ magicLabel }} is empty.
         </div>
-          <div style="display: flex;gap: 5px;">
-            <div class="age-search-input"  v-if="spellStore.spells.length > 0">
-              <input class="form-control " v-model="spellFilter" placeholder="Search by Spell Name" />
-              <button class="age-icon-btn age-search-input-clear-btn" v-if="spellFilter" @click="spellFilter = ''">
-                <font-awesome-icon :icon="['fa', 'circle-xmark']"/>
-              </button>    
+        <div class="magic-controls">
+          <div class="age-search-input" v-if="spellStore.spells.length > 0">
+            <input
+              class="form-control"
+              v-model="spellFilter"
+              placeholder="Search by Spell Name"
+            />
+            <button
+              class="age-icon-btn age-search-input-clear-btn"
+              v-if="spellFilter"
+              @click="spellFilter = ''"
+            >
+              <font-awesome-icon :icon="['fa', 'circle-xmark']" />
+            </button>
           </div>
-          <div class="age-search-select"  v-if="spellStore.spells.length > 0">
-            <select class="form-select" placeholder="Filter by Item Type" v-model="spellSourceFilter">
-                <option value="" disabled hidden>Filter by {{ magicLabel }} Type</option>
-                <option value="" v-if="spellSourceFilter">None</option>
-                <option v-for="mt in magicTypes" :key="mt" :value="mt">{{ mt }}</option>
-              </select>
-          </div>   
+          <div class="age-search-select" v-if="spellStore.spells.length > 0">
+            <select
+              class="form-select"
+              placeholder="Filter by Item Type"
+              v-model="spellSourceFilter"
+            >
+              <option value="" disabled hidden>
+                Filter by {{ magicLabel }} Type
+              </option>
+              <option value="" v-if="spellSourceFilter">None</option>
+              <option v-for="mt in magicTypes" :key="mt" :value="mt">
+                {{ mt }}
+              </option>
+            </select>
           </div>
-            
-          <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;" v-tippy="{ content: 'Add ' + magicLabel }">
-            <font-awesome-icon :icon="['fa', 'circle-plus']" />
-          </button>
         </div>
+
+        <button
+          class="link-btn age-icon-btn magic-add-btn"
+          @click="showModal = true"
+          v-tippy="{ content: 'Add ' + magicLabel }"
+        >
+          <font-awesome-icon :icon="['fa', 'circle-plus']" />
+        </button>
+      </div>
       <div class="accordion">
         <transition-group name="filtered-list" tag="div">
-        <div class="accordion-item" v-for="(spell, index) in filteredSpells" :key="spell._id">
-          <CharacterSpell
+          <div
+            class="accordion-item"
+            v-for="(spell, index) in filteredSpells"
             :key="spell._id"
-            :spell="spell"
-            :index="index"
-            :aim="aim"
-            :aimValue="aimValue"
-            :aimOption="aimOption"
-          />
-        </div>
+          >
+            <CharacterSpell
+              :key="spell._id"
+              :spell="spell"
+              :index="index"
+              :aim="aim"
+              :aimValue="aimValue"
+              :aimOption="aimOption"
+            />
+          </div>
         </transition-group>
-        <div v-if="filteredSpells.length === 0 && spellStore.spells.length > 0" class="no-results">
-            No results found.
-          </div> 
-      </div>                    
+        <div
+          v-if="filteredSpells.length === 0 && spellStore.spells.length > 0"
+          class="no-results"
+        >
+          No results found.
+        </div>
+      </div>
     </div>
   </div>
   <Teleport to="body">
-      <!-- use the modal component, pass in the prop -->
-      <SpellModal :show="showModal" @close="showModal = false;resetSpell()" :spell="spellNew" :mode="'create'" :magicLabel="magicLabel">
-        <template #header>
-          <h3 class="age-modal-details-header">Add {{ magicLabel }}</h3>
-        </template>
-      </SpellModal>
-    </Teleport>
+    <!-- use the modal component, pass in the prop -->
+    <SpellModal
+      :show="showModal"
+      @close="
+        showModal = false;
+        resetSpell();
+      "
+      :spell="spellNew"
+      :mode="'create'"
+      :magicLabel="magicLabel"
+    >
+      <template #header>
+        <h3 class="age-modal-details-header">Add {{ magicLabel }}</h3>
+      </template>
+    </SpellModal>
+  </Teleport>
 </template>
 
 <script setup>
-import { useSpellStore } from '@/sheet/stores/magic/magicStore';
-import CharacterSpell from '@/components/magic/CharacterSpell.vue';
-import SpellModal from './SpellModal.vue';
-import { computed, ref, watch } from 'vue';
-import { fageArcana, magePowers, brArcana } from './magicTypes';
-import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+import { useSpellStore } from "@/sheet/stores/magic/magicStore";
+import CharacterSpell from "@/components/magic/CharacterSpell.vue";
+import SpellModal from "./SpellModal.vue";
+import { computed, ref, watch } from "vue";
+import { fageArcana, magePowers, brArcana } from "./magicTypes";
+import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 const props = defineProps({
   aim: { type: Boolean },
   aimValue: { type: Number },
-  aimOption: String
+  aimOption: String,
 });
-const emit = defineEmits(['update:modelValue'])
-const showModal = ref(false)
+const emit = defineEmits(["update:modelValue"]);
+const showModal = ref(false);
 const settings = useSettingsStore();
-const spellFilter = ref('');
-const spellSourceFilter = ref('');
+const spellFilter = ref("");
+const spellSourceFilter = ref("");
 const spellStore = useSpellStore();
-const debouncedSearchQuery = ref('');
-const debouncedItemSource = ref('');
+const debouncedSearchQuery = ref("");
+const debouncedItemSource = ref("");
 
 const magicTypes = ref();
-switch(settings.gameSystem){
-  case 'fage2e':
+switch (settings.gameSystem) {
+  case "fage2e":
     magicTypes.value = fageArcana;
-  break;
-  case 'mage':
+    break;
+  case "mage":
     magicTypes.value = magePowers;
-  break
-  case 'blue rose':
+    break;
+  case "blue rose":
     magicTypes.value = brArcana;
-  break;
+    break;
 }
-const magicLabel = ref('Arcana');
-switch(settings.gameSystem){
-  case 'mage':
-    magicLabel.value = 'Power';
-  break;
+const magicLabel = ref("Arcana");
+switch (settings.gameSystem) {
+  case "mage":
+    magicLabel.value = "Power";
+    break;
   default:
-    magicLabel.value = 'Arcana';
-  break;
+    magicLabel.value = "Arcana";
+    break;
 }
 // Debounce delay (in milliseconds)
 const debounceDelay = 600;
 let debounceTimer;
-watch([spellFilter,spellSourceFilter], ([newQuery,newSource]) => {
+watch([spellFilter, spellSourceFilter], ([newQuery, newSource]) => {
   // Clear the previous timeout if the user is still typing
   clearTimeout(debounceTimer);
 
@@ -110,58 +146,80 @@ watch([spellFilter,spellSourceFilter], ([newQuery,newSource]) => {
   }, debounceDelay);
 });
 const filteredSpells = computed(() => {
-  return spellStore.spells.filter(spell => {
+  return spellStore.spells.filter((spell) => {
     // Split the search query into words, and check each word against the item name
-    const queryWords = debouncedSearchQuery.value.toLowerCase().split(' ');
+    const queryWords = debouncedSearchQuery.value.toLowerCase().split(" ");
     const spellName = spell.name.toLowerCase();
-    
-    const matchesQuery = queryWords.every(word => spellName.includes(word));
-    const matchesType = !debouncedItemSource.value || spell.arcanaType === debouncedItemSource.value;
+
+    const matchesQuery = queryWords.every((word) => spellName.includes(word));
+    const matchesType =
+      !debouncedItemSource.value ||
+      spell.arcanaType === debouncedItemSource.value;
 
     return matchesQuery && matchesType;
   });
 });
 let spellNew = ref({
-  _id: '',
-  name: '',
-  arcanaType: '',
-  requirements:'',
-  shortDescription: '',
-  description: '',
-  ability:'',
-  spellType:'',
-  spellTypeBonus:0,
-  mpCost:0,
-  castingTime:'',
-  targetNumber:0,
-  spellTest:'',
-  extendable:false,
-  damageHit:'',
-  damageMiss:'',
-  })
-  function resetSpell(){
-    spellNew.value = {
-      _id: '',
-      name: '',
-      arcanaType: '',
-      requirements:'',
-      shortDescription: '',
-      description: '',
-      ability:'',
-      spellType:'',
-      spellTypeBonus:0,
-      mpCost:0,
-      castingTime:'',
-      targetNumber:0,
-      spellTest:'',
-      extendable:false,
-      damageHit:'',
-      damageMiss:'',
-    }
+  _id: "",
+  name: "",
+  arcanaType: "",
+  requirements: "",
+  shortDescription: "",
+  description: "",
+  ability: "",
+  spellType: "",
+  spellTypeBonus: 0,
+  mpCost: 0,
+  castingTime: "",
+  targetNumber: 0,
+  spellTest: "",
+  extendable: false,
+  damageHit: "",
+  damageMiss: "",
+});
+function resetSpell() {
+  spellNew.value = {
+    _id: "",
+    name: "",
+    arcanaType: "",
+    requirements: "",
+    shortDescription: "",
+    description: "",
+    ability: "",
+    spellType: "",
+    spellTypeBonus: 0,
+    mpCost: 0,
+    castingTime: "",
+    targetNumber: 0,
+    spellTest: "",
+    extendable: false,
+    damageHit: "",
+    damageMiss: "",
   };
+}
 </script>
 
 <style scoped lang="scss">
+.magic-section-body {
+  padding: 6px;
+}
+.magic-section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+.magic-empty-msg {
+  padding: 15px 6px 6px;
+  width: 100%;
+}
+.magic-controls {
+  display: flex;
+  gap: 5px;
+}
+.magic-add-btn {
+  font-size: 1.5rem;
+}
 .traits {
   &__body {
   }

@@ -1,13 +1,13 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import type { ComputedRef, Ref } from 'vue';
-import { arrayToObject, objectToArray } from '@/utility/objectify';
-import { v4 as uuidv4 } from 'uuid';
-import sendToChat from '@/utility/sendToChat';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import type { ComputedRef, Ref } from "vue";
+import { arrayToObject, objectToArray } from "@/utility/objectify";
+import { v4 as uuidv4 } from "uuid";
+import sendToChat from "@/utility/sendToChat";
 
 // See "inventoryStore.ts" for an explanation of how to use list/repeating sections
 interface stunt {
-  type: 'combat' | 'class';
+  type: "combat" | "class";
   _id: string;
   name: string;
   description: string;
@@ -19,17 +19,17 @@ export type stuntsHydrate = {
   };
 };
 
-export const usestuntsStore = defineStore('stunts', () => {
+export const usestuntsStore = defineStore("stunts", () => {
   const stunts: Ref<Array<stunt>> = ref([]);
   const stuntsCount: ComputedRef<number> = computed(() => stunts.value.length);
   const addstunt = () => {
     stunts.value.push({
       _id: uuidv4(),
       name: `New Favorite Stunt ${stunts.value.length + 1}`,
-      description: '',
-      type: 'combat',
+      description: "",
+      type: "combat",
     });
-  }
+  };
 
   const removestunt = (_id: string) => {
     const indexToRemove = stunts.value.findIndex((stunt) => stunt._id === _id);

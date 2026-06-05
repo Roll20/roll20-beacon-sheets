@@ -4,7 +4,12 @@
       <div class="modal-container age-modal sp-cost-modal">
         <div class="age-modal-header">
           <h3 class="age-modal-details-header">{{ stuntName }}</h3>
-          <button type="button" class="btn-close" @click="$emit('cancel')" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            @click="$emit('cancel')"
+            aria-label="Close"
+          ></button>
         </div>
         <div class="modal-body">
           <p class="sp-cost-prompt">How many stunt points?</p>
@@ -20,7 +25,9 @@
             </button>
           </div>
           <div class="sp-cost-cancel">
-            <button type="button" class="age-btn-link" @click="$emit('cancel')">Cancel</button>
+            <button type="button" class="age-btn-link" @click="$emit('cancel')">
+              Cancel
+            </button>
           </div>
         </div>
       </div>

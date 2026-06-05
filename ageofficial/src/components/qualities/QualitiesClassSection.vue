@@ -1,14 +1,21 @@
-<template>   
+<template>
   <div class="age-content">
-    <div style="width: 100%;display: flex;justify-content: flex-end;">
-      <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;margin-bottom: -32px;" v-tippy="{ content: 'Add Skill' }">
+    <div class="qualities-class-add-header">
+      <button
+        class="link-btn age-icon-btn qualities-class-add-btn"
+        @click="showModal = true"
+        v-tippy="{ content: 'Add Skill' }"
+      >
         <font-awesome-icon :icon="['fa', 'circle-plus']" />
       </button>
     </div>
-    <div v-for="quality in qualitiesArray" :key="quality" >
+    <div v-for="quality in qualitiesArray" :key="quality">
       <h5 class="mt-3">{{ quality }}</h5>
-      <div class="accordion age-accordion">        
-        <template v-for="(qty, index) in sortedItemsByQuality[quality]" :key="qty._id">
+      <div class="accordion age-accordion">
+        <template
+          v-for="(qty, index) in sortedItemsByQuality[quality]"
+          :key="qty._id"
+        >
           <CharacterQualitiesView
             :type="quality"
             :feature="qty"
@@ -26,7 +33,16 @@
     </div>
   </div>
   <Teleport to="body">
-    <QualitiesModal :show="showModal" @close="showModal = false;resetFeature()" :feature="featureNew" :mode="'create'" :qualityOptions="qualitOptions">
+    <QualitiesModal
+      :show="showModal"
+      @close="
+        showModal = false;
+        resetFeature();
+      "
+      :feature="featureNew"
+      :mode="'create'"
+      :qualityOptions="qualitOptions"
+    >
       <template #header>
         <h3 class="age-modal-details-header">Create Character Quality</h3>
       </template>
@@ -35,26 +51,29 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
-import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-import QualitiesModal from './QualitiesModal.vue';
-import CharacterQualitiesView from './CharacterQualitiesView.vue';
-import ExpertiseRow from './ExpertiseRow.vue';
-import { useModifiersStore } from '@/sheet/stores/modifiers/modifiersStore';
+import { computed, ref } from "vue";
+import { storeToRefs } from "pinia";
+import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
+import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
+import QualitiesModal from "./QualitiesModal.vue";
+import CharacterQualitiesView from "./CharacterQualitiesView.vue";
+import ExpertiseRow from "./ExpertiseRow.vue";
+import { useModifiersStore } from "@/sheet/stores/modifiers/modifiersStore";
 
 // An expertise is an Ability bonus modifier (typically on a Talent) scoped to a focus
 // the character has. Render one row per expertise beneath its parent focus.
 function expertisesForFocus(item) {
-  if (item.type !== 'Ability Focus') return [];
-  const focusName = item.name === 'custom' ? item.customName : item.name;
-  return useModifiersStore().modifiers.filter((m) =>
-    m.enabled !== false &&
-    (m.option === 'Expertise' || m.option === 'Ability Reroll' || m.option === 'Ability') &&
-    m.modifiedOption === 'Bonus' &&
-    m.abilityFocus === focusName &&
-    m.modifiedValue === item.ability,
+  if (item.type !== "Ability Focus") return [];
+  const focusName = item.name === "custom" ? item.customName : item.name;
+  return useModifiersStore().modifiers.filter(
+    (m) =>
+      m.enabled !== false &&
+      (m.option === "Expertise" ||
+        m.option === "Ability Reroll" ||
+        m.option === "Ability") &&
+      m.modifiedOption === "Bonus" &&
+      m.abilityFocus === focusName &&
+      m.modifiedValue === item.ability
   );
 }
 const props = defineProps({
@@ -62,34 +81,54 @@ const props = defineProps({
   aimValue: { type: Number },
 });
 const settings = useSettingsStore();
-const qualitiesArray = ref(['Ancestry & Class','Ability Focus','Favored Stunt']);
-const qualitOptions = ref(['Ability Focus','Ancestry','Class','Favored Stunt', 'Special Feature']);
-if(settings.gameSystem === 'mage'){
-  qualitiesArray.value = ['Ancestry','Ability Focus','Favored Stunt', 'Special Feature'];
-  qualitOptions.value = ['Ancestry','Ability Focus','Favored Stunt', 'Special Feature'];
+const qualitiesArray = ref([
+  "Ancestry & Class",
+  "Ability Focus",
+  "Favored Stunt",
+]);
+const qualitOptions = ref([
+  "Ability Focus",
+  "Ancestry",
+  "Class",
+  "Favored Stunt",
+  "Special Feature",
+]);
+if (settings.gameSystem === "mage") {
+  qualitiesArray.value = [
+    "Ancestry",
+    "Ability Focus",
+    "Favored Stunt",
+    "Special Feature",
+  ];
+  qualitOptions.value = [
+    "Ancestry",
+    "Ability Focus",
+    "Favored Stunt",
+    "Special Feature",
+  ];
 }
-if(settings.gameSystem === 'expanse'){
-  qualitiesArray.value = ['Ability Focus','Favored Stunt','Special Feature'];
-  qualitOptions.value = ['Ability Focus','Favored Stunt', 'Special Feature'];
+if (settings.gameSystem === "expanse") {
+  qualitiesArray.value = ["Ability Focus", "Favored Stunt", "Special Feature"];
+  qualitOptions.value = ["Ability Focus", "Favored Stunt", "Special Feature"];
 }
-const emit = defineEmits(['update:modelValue'])
-const showModal = ref(false)
+const emit = defineEmits(["update:modelValue"]);
+const showModal = ref(false);
 let featureNew = ref({
-  type: '',
-  _id: '',
-  name: '',
-  quality:'',
-  description: '',
-  customName:'',
-  focus:false,
-  doubleFocus:false,
-  qualityLevel:'',
-  qualityNovice:'',
-  qualityExpert:'',
-  qualityMaster:'',
-  roll:'',
-  modifiers:[]
-  })
+  type: "",
+  _id: "",
+  name: "",
+  quality: "",
+  description: "",
+  customName: "",
+  focus: false,
+  doubleFocus: false,
+  qualityLevel: "",
+  qualityNovice: "",
+  qualityExpert: "",
+  qualityMaster: "",
+  roll: "",
+  modifiers: [],
+});
 const item = useItemStore();
 const { items: qualityItems } = storeToRefs(item);
 
@@ -99,13 +138,13 @@ const sortedItemsByQuality = computed(() => {
     qualitiesArray.value.map((quality) => {
       const types = getQuality(quality);
       const filtered = allItems.filter((i) => types.includes(i.type));
-      if (quality === 'Ability Focus') {
+      if (quality === "Ability Focus") {
         filtered.sort((a, b) => {
-          const aAbility = String(a.ability ?? '');
-          const bAbility = String(b.ability ?? '');
+          const aAbility = String(a.ability ?? "");
+          const bAbility = String(b.ability ?? "");
           if (aAbility !== bAbility) return aAbility < bAbility ? -1 : 1;
-          const aName = String(a.name ?? '');
-          const bName = String(b.name ?? '');
+          const aName = String(a.name ?? "");
+          const bName = String(b.name ?? "");
           return aName < bName ? -1 : aName > bName ? 1 : 0;
         });
       }
@@ -114,66 +153,74 @@ const sortedItemsByQuality = computed(() => {
   );
 });
 
-function resetFeature(){
+function resetFeature() {
   featureNew.value = {
-  type: '',
-  _id: '',
-  name: '',
-  quality:'',
-  description: '',
-  customName:'',
-  focus:false,
-  doubleFocus:false,
-  qualityLevel:'',
-  qualityNovice:'',
-  qualityExpert:'',
-  qualityMaster:'',
-  roll:'',
-  modifiers:[]
-  }
-};
-function getItemType(type){
+    type: "",
+    _id: "",
+    name: "",
+    quality: "",
+    description: "",
+    customName: "",
+    focus: false,
+    doubleFocus: false,
+    qualityLevel: "",
+    qualityNovice: "",
+    qualityExpert: "",
+    qualityMaster: "",
+    roll: "",
+    modifiers: [],
+  };
+}
+function getItemType(type) {
   let filteredType = [];
-  switch(type){
-    case 'Favored Stunts':
+  switch (type) {
+    case "Favored Stunts":
       // debugger
-      filteredType.push('Stunt');
-    break;
-    case 'Talent':
-      filteredType.push('Talent');
-    break;
-    case 'Ability Focus':
-      filteredType.push('Ability Focus');
-    break;
-    
-    case 'Class':
-      filteredType.push('Class');
-    break;
-    case 'Ancestry':
-      filteredType.push('Ancestry || Class');
-    break;
-    case 'Ancestry & Class':
-      filteredType.push('Class','Ancestry');
-    break;
-    case 'Specializations':
-      filteredType.push('Specializations');
-    break;
+      filteredType.push("Stunt");
+      break;
+    case "Talent":
+      filteredType.push("Talent");
+      break;
+    case "Ability Focus":
+      filteredType.push("Ability Focus");
+      break;
+
+    case "Class":
+      filteredType.push("Class");
+      break;
+    case "Ancestry":
+      filteredType.push("Ancestry || Class");
+      break;
+    case "Ancestry & Class":
+      filteredType.push("Class", "Ancestry");
+      break;
+    case "Specializations":
+      filteredType.push("Specializations");
+      break;
     default:
-      
-    break;
+      break;
   }
-  return filteredType
+  return filteredType;
 }
 function getQuality(quality) {
-  if (quality === 'Ancestry & Class') {    
-    return ['Ancestry', 'Class'];
+  if (quality === "Ancestry & Class") {
+    return ["Ancestry", "Class"];
   } else {
-    return [quality];  // Return as an array to simplify the filter logic
+    return [quality]; // Return as an array to simplify the filter logic
   }
 }
 </script>
 
 <style scoped lang="scss">
+.qualities-class-add-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.qualities-class-add-btn {
+  font-size: 1.5rem;
+  margin-bottom: -32px;
+}
 .traits {
   &__body {
   }
@@ -198,8 +245,8 @@ function getQuality(quality) {
   }
 }
 .age-talent-add {
-  background: none; 
+  background: none;
   font-weight: bold;
-  border:none;
+  border: none;
 }
 </style>

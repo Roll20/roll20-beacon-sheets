@@ -1,27 +1,41 @@
-<template>   
+<template>
   <div class="age-content">
-    <div style="width: 100%;display: flex;justify-content: flex-end;">
-          <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;margin-bottom: -32px;" v-tippy="{ content: 'Add Expertise' }">
-            <font-awesome-icon :icon="['fa', 'circle-plus']" />
-          </button>
-        </div>
-    <div v-for="quality in qualitiesArray" :key="quality" >
+    <div class="talent-add-header">
+      <button
+        class="link-btn age-icon-btn talent-add-btn"
+        @click="showModal = true"
+        v-tippy="{ content: 'Add Expertise' }"
+      >
+        <font-awesome-icon :icon="['fa', 'circle-plus']" />
+      </button>
+    </div>
+    <div v-for="quality in qualitiesArray" :key="quality">
       <h5 class="mt-3">{{ quality }}</h5>
       <div class="accordion age-accordion">
-        
-      <CharacterQualitiesView
-        v-for="(qty, index) in item.items.filter(item => getQuality(quality).includes(item.type))"
-        :type="quality"
-        :key="qty._id"
-        :feature="qty"
-        :id="qty._id"
-        :index="index"
-      />
+        <CharacterQualitiesView
+          v-for="(qty, index) in item.items.filter((item) =>
+            getQuality(quality).includes(item.type)
+          )"
+          :type="quality"
+          :key="qty._id"
+          :feature="qty"
+          :id="qty._id"
+          :index="index"
+        />
       </div>
     </div>
   </div>
-  <Teleport to="body">    
-    <QualitiesModal :show="showModal" @close="showModal = false;resetFeature()" :feature="featureNew" :mode="'create'" :qualityOptions="qualitiesArray">
+  <Teleport to="body">
+    <QualitiesModal
+      :show="showModal"
+      @close="
+        showModal = false;
+        resetFeature();
+      "
+      :feature="featureNew"
+      :mode="'create'"
+      :qualityOptions="qualitiesArray"
+    >
       <template #header>
         <h3 class="age-modal-details-header">Create Character Expertise</h3>
       </template>
@@ -30,93 +44,93 @@
 </template>
 
 <script setup>
-import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
-import { computed, reactive, ref } from 'vue';
-import QualitiesModal from './QualitiesModal.vue';
-import CharacterQualitiesView from './CharacterQualitiesView.vue';
+import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
+import { computed, reactive, ref } from "vue";
+import QualitiesModal from "./QualitiesModal.vue";
+import CharacterQualitiesView from "./CharacterQualitiesView.vue";
 const props = defineProps({
   aim: { type: Boolean },
   aimValue: { type: Number },
 });
 const qualitiesArray = [
   // 'Ancestry & Class','Ability Focus',
-'Talent','Specialization',
-// 'Favored Stunt'
+  "Talent",
+  "Specialization",
+  // 'Favored Stunt'
 ];
-const emit = defineEmits(['update:modelValue'])
-const showModal = ref(false)
+const emit = defineEmits(["update:modelValue"]);
+const showModal = ref(false);
 let featureNew = ref({
-  type: '',
-  _id: '',
-  name: '',
-  quality:'',
-  description: '',
-  customName:'',
-  focus:false,
-  doubleFocus:false,
-  qualityLevel:'',
-  qualityNovice:'',
-  qualityExpert:'',
-  qualityMaster:'',
-  roll:'',
-  modifiers:[]
-  })
+  type: "",
+  _id: "",
+  name: "",
+  quality: "",
+  description: "",
+  customName: "",
+  focus: false,
+  doubleFocus: false,
+  qualityLevel: "",
+  qualityNovice: "",
+  qualityExpert: "",
+  qualityMaster: "",
+  roll: "",
+  modifiers: [],
+});
 const item = useItemStore();
-function resetFeature(){
+function resetFeature() {
   featureNew.value = {
-  type: '',
-  _id: '',
-  name: '',
-  quality:'',
-  description: '',
-  customName:'',
-  focus:false,
-  doubleFocus:false,
-  qualityLevel:'',
-  qualityNovice:'',
-  qualityExpert:'',
-  qualityMaster:'',
-  roll:'',
-  modifiers:[]
-  }
-};
-function getItemType(type){
+    type: "",
+    _id: "",
+    name: "",
+    quality: "",
+    description: "",
+    customName: "",
+    focus: false,
+    doubleFocus: false,
+    qualityLevel: "",
+    qualityNovice: "",
+    qualityExpert: "",
+    qualityMaster: "",
+    roll: "",
+    modifiers: [],
+  };
+}
+function getItemType(type) {
   let filteredType = [];
-  switch(type){
-    case 'Favored Stunts':
+  switch (type) {
+    case "Favored Stunts":
       // debugger
-      filteredType.push('Stunt');
-    break;
-    case 'Talent':
-      filteredType.push('Talent');
-    break;
-    case 'Ability Focus':
-      filteredType.push('Ability Focus');
-    break;
-    
-    case 'Class':
-      filteredType.push('Class');
-    break;
-    case 'Ancestry':
-      filteredType.push('Ancestry || Class');
-    break;
-    case 'Ancestry & Class':
-      filteredType.push('Class','Ancestry');
-    break;
-    case 'Specializations':
-      filteredType.push('Specializations');
-    break;
+      filteredType.push("Stunt");
+      break;
+    case "Talent":
+      filteredType.push("Talent");
+      break;
+    case "Ability Focus":
+      filteredType.push("Ability Focus");
+      break;
+
+    case "Class":
+      filteredType.push("Class");
+      break;
+    case "Ancestry":
+      filteredType.push("Ancestry || Class");
+      break;
+    case "Ancestry & Class":
+      filteredType.push("Class", "Ancestry");
+      break;
+    case "Specializations":
+      filteredType.push("Specializations");
+      break;
     default:
-      
-    break;
+      break;
   }
-  return filteredType
+  return filteredType;
 }
 function getQuality(quality) {
-  if (quality === 'Ancestry & Class') {    
-    return ['Ancestry', 'Class'];
+  if (quality === "Ancestry & Class") {
+    return ["Ancestry", "Class"];
   } else {
-    return [quality];  // Return as an array to simplify the filter logic
+    return [quality]; // Return as an array to simplify the filter logic
   }
 }
 </script>
@@ -146,8 +160,17 @@ function getQuality(quality) {
   }
 }
 .age-talent-add {
-  background: none; 
+  background: none;
   font-weight: bold;
-  border:none;
+  border: none;
+}
+.talent-add-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.talent-add-btn {
+  font-size: 1.5rem;
+  margin-bottom: -32px;
 }
 </style>
