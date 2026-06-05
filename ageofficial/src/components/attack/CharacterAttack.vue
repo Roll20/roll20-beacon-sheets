@@ -1,7 +1,7 @@
 <template>
       <div class="accordion-header age-combat-accordion-header">
-        <div class="age-combat-icon" style="display: flex;">
-          <div style="position: relative;overflow: hidden;height: 40px;width: 40px;" v-if="attack.weaponType !== 'Natural'">
+        <div class="age-combat-icon age-flex">
+          <div class="atk-icon-frame" v-if="attack.weaponType !== 'Natural'">
           <div class="age-combat-section age-combat-axes-icon" v-if="attack.weaponGroup === 'Axes'"></div>
           <div class="age-combat-section age-combat-blackPowder-icon" v-if="attack.weaponGroup === 'Black Powder'"></div>
           <div class="age-combat-section age-combat-bludgeons-icon" v-if="attack.weaponGroup === 'Bludgeons'"></div>
@@ -335,6 +335,12 @@ const printAttackDetails = (attack) => {
 </script>
 
 <style scoped lang="scss">
+.atk-icon-frame {
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+  width: 40px;
+}
 
 .attack {
   .label {

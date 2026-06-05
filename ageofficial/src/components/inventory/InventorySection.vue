@@ -4,19 +4,19 @@
       
         </div>
     <div class="section__body inventory__body">
-      <div style="margin-top:10px;">
+      <div class="inv-body-top">
         <!-- <span class="inventory__header">Carried Items - </span> -->
         <!-- <span :class="{ overburdened: inventory.isOverburdened }"
           >Slots: {{ inventory.totalEncumbrance }}/{{ inventory.carryCapacity }}</span
         > -->
         
-    <div style="padding: 6px;width: min-content;min-width: 100%;" >
+    <div class="inv-section-body">
       
-      <div style="width: 100%;display: flex;justify-content: space-between;padding:0 0 5px;gap:5px">
-        <div style="padding: 15px 6px 6px;width: 100%;" v-if="inventory.items.length === 0">
+      <div class="inv-section-header">
+        <div class="inv-empty-msg" v-if="inventory.items.length === 0">
           Your Inventory is empty. Add gear and weapons to your character.
         </div>
-        <div style="display: flex;gap: 5px;">
+        <div class="inv-controls">
           <div class="age-search-input"  v-if="inventory.items.length > 0">
               <input class="form-control " v-model="inventoryItemFilter" placeholder="Search by Item Name" />              
               <button class="age-icon-btn age-search-input-clear-btn" v-if="inventoryItemFilter" @click="inventoryItemFilter = ''">
@@ -36,7 +36,7 @@
           </div>     
         </div>
              
-          <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;" v-tippy="{ content: 'Add Equipment' }">
+          <button class="link-btn age-icon-btn inv-add-btn" @click="showModal = true" v-tippy="{ content: 'Add Equipment' }">
             <font-awesome-icon :icon="['fa', 'circle-plus']" />
           </button>
         </div>
@@ -132,6 +132,32 @@ function resetItem(){
 </script>
 
 <style scoped lang="scss">
+.inv-body-top {
+  margin-top: 10px;
+}
+.inv-section-body {
+  padding: 6px;
+  width: min-content;
+  min-width: 100%;
+}
+.inv-section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 5px;
+  gap: 5px;
+}
+.inv-empty-msg {
+  padding: 15px 6px 6px;
+  width: 100%;
+}
+.inv-controls {
+  display: flex;
+  gap: 5px;
+}
+.inv-add-btn {
+  font-size: 1.5rem;
+}
 .inventory {
   &__header {
     font-weight: 600;

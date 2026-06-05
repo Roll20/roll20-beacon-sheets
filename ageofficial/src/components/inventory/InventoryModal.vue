@@ -53,7 +53,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="row" style="margin:0" v-if="isArmor || isShield">
+                <div class="row age-row" v-if="isArmor || isShield">
 
                   <div class="mb-3 col" v-if="isArmor">
                     <span class="age-input-label" id="basic-addon1">Armor Rating</span>

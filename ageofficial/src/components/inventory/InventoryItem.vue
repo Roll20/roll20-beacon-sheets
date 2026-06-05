@@ -8,9 +8,9 @@
       <div class="age-inventory-section age-item-shield-icon" v-if="item.type === 'shield'"></div>
     </div>
     <span class="label">{{ item.name }}</span>
-    <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;">
+    <div class="inv-cell">
           <div class="inventory-item__quantity">
-              <div class="inventory-item__quantity_minus" style="text-align: right;"><button @click="quantityMinus" :disabled="item.quantity === 0" v-if="item.type === 'consumable'">
+              <div class="inventory-item__quantity_minus inv-qty-minus"><button @click="quantityMinus" :disabled="item.quantity === 0" v-if="item.type === 'consumable'">
                 <font-awesome-icon :icon="['fa', 'square-minus']" />
               </button></div>
               <div class="inventory-item__quantity_total">{{ item.quantity }}</div>
@@ -20,8 +20,8 @@
           </div>
         </div>
         
-      <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;"></div>
-      <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;">
+      <div class="inv-cell"></div>
+      <div class="inv-cell">
         <div class="inventory-item__type__toggle">
             <label class="age-checkbox-toggle" v-if="item.type === 'armor' || item.type === 'weapon'  || item.type === 'shield'">
             <input type="checkbox" v-model="item.equipped" @change="handleEquip" />
@@ -139,6 +139,16 @@ const quantityMinus = () => {
 </script>
 
 <style scoped lang="scss">
+.inv-cell {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr;
+  height: 100%;
+}
+.inv-qty-minus {
+  text-align: right;
+}
+
 .inventory-item {
   .label {
     font-weight: 600;

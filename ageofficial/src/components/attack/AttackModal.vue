@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <div class="row">
-                 <div class="col" style="min-height: 100px;padding-bottom: 20px;">
+                 <div class="col atk-description-col">
                   <span class="age-input-label">Description</span>
                     <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
                       modules: {
@@ -202,6 +202,12 @@ const setWeaponGroupAbility = () => {
 const weaponTypes = ['Melee','Natural','Ranged','Spell Melee','Spell Ranged']
 
 </script>
+<style scoped>
+.atk-description-col {
+  min-height: 100px;
+  padding-bottom: 20px;
+}
+</style>
 <style>
 .modal-mask {
   position: fixed;

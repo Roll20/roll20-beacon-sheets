@@ -1,10 +1,10 @@
 <template>
   <div class="age-content">
-    <div style="padding: 15px 6px 6px;width: min-content;min-width: 100%;" v-if="allAttacks.length === 0">
+    <div class="atk-section-body" v-if="allAttacks.length === 0">
       No Attacks Available. To add attacks equip weapons in the Inventory tab.
     </div>
-    <div style="padding: 15px 6px 6px;width: min-content;min-width: 100%;" v-if="allAttacks.length > 0">
-      <div style="width: 100%;display: flex;justify-content: space-between;padding:5px 0;">
+    <div class="atk-section-body" v-if="allAttacks.length > 0">
+      <div class="atk-section-header">
         
           <div class="age-search-input">
             
@@ -38,13 +38,13 @@
             <div class="age-label-side-heading-black">Weapon Groups</div>
             <div class="age-combat-wg">
               <div v-for="(wg, index) in char?.weaponGroups ? JSON.parse(char.weaponGroups).sort(): []" :key="wg" >
-              {{wg}}<span v-if="index != JSON.parse(char.weaponGroups).length - 1" style="margin-right: 5px;">, </span> 
+              {{wg}}<span v-if="index != JSON.parse(char.weaponGroups).length - 1" class="wg-separator">, </span> 
             </div>
             </div>          
         </button>
       </div>
       <div class="age-combat-unarmed">
-        <span style="display: flex;" v-tippy="{ content: (showUnarmed ? 'Hide' : 'Show') + ' Unarmed Attack' }">
+        <span class="age-flex" v-tippy="{ content: (showUnarmed ? 'Hide' : 'Show') + ' Unarmed Attack' }">
           <div class="age-combat-unarmed__toggle"></div>  
           <div class="age-checkbox-toggle">
             <label>
@@ -139,6 +139,20 @@ const filteredAttacks = computed(() => {
 </script>
 
 <style scoped lang="scss">
+.atk-section-body {
+  padding: 15px 6px 6px;
+  width: min-content;
+  min-width: 100%;
+}
+.atk-section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+.wg-separator {
+  margin-right: 5px;
+}
 .traits {
   &__body {
   }
