@@ -2,7 +2,7 @@
     <div class="d-grid" :class="{ fortune: settings.useFortune}">
         <div>
             <div>
-                <div class="d-flex flex-column justify-content-evenly" style="height: 50px;">
+                <div class="d-flex flex-column justify-content-evenly hp-bar-container">
                     <div class="hpmp-container">
                         <div class="hpmp-current">
                             <input class="age-input"
@@ -50,7 +50,10 @@ const bio = useBioStore();
 const char = useCharacterStore();
 const settings = useSettingsStore();
 </script>
-<style>
+<style scoped>
+.hp-bar-container {
+  height: 50px;
+}
 .fortune {
     grid-template-columns: 1fr 30px;
     gap:5px;

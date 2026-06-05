@@ -1,5 +1,5 @@
 <template>
-  <div class="section-card" style="display: block; position: relative;">    
+  <div class="section-card age-section-block">    
     <div class="config-container">
       <button class="link-btn age-icon-btn" @click="char.addMovement()" v-tippy="{ content: 'Add Movement Type' }" v-if="settings.optionalMovements">
         <font-awesome-icon :icon="['fa', 'circle-plus']" />
@@ -47,7 +47,7 @@
         </div>
         <!-- <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + (guard ? guardValue : 0) + (inventory.equippedShield?.defenseMod ? inventory.equippedShield?.defenseMod : 0) + Number(defenseMods) }} -->
           <span class="age-num-value">
-            <input  class="age-input" style="margin-left: 18px;width: 50px;" type="number" v-model="char.peril" min="0" />
+            <input  class="age-input movement-peril-input" type="number" v-model="char.peril" min="0" />
           </span>
         <!-- Additional corner elements -->
         <div class="age-container-content-corner-top-right"></div>
@@ -59,7 +59,7 @@
       </div>
         <!-- <span class="age-num-value">{{ 10 + Number(ability.DexterityBase) + (guard ? guardValue : 0) + (inventory.equippedShield?.defenseMod ? inventory.equippedShield?.defenseMod : 0) + Number(defenseMods) }} -->
           <span class="age-num-value">
-            <input  class="age-input" style="margin-left: 18px;width: 50px;" type="number" v-model="char.daring" min="0" />
+            <input  class="age-input movement-peril-input" type="number" v-model="char.daring" min="0" />
           </span>
         <!-- Additional corner elements -->
         <div class="age-container-content-corner-top-right"></div>
@@ -73,9 +73,9 @@
         <div class="age-custom-movement-entry" v-for="(move, index) in char.customMovements" :key="index">
           <div class="age-custom-movement-entry__inputs">
 
-              <input  style="width: 50px;" type="number" v-model="move.speed" min="0" />
+              <input class="movement-small-input" type="number" v-model="move.speed" min="0" />
   
-            <input   style="width: 80%;" type="text" v-model="move.name" placeholder="Movement Type" />
+            <input class="movement-text-input" type="text" v-model="move.name" placeholder="Movement Type" />
           </div>
           <button class="age-custom-movement-entry__delete delete-icon-btn delete" title="Delete" @click="char.deleteMovement(index)" v-tippy="{ 'content': 'Delete Movement Type' }">
             <font-awesome-icon :icon="['fa', 'trash-alt']" />
@@ -229,3 +229,15 @@ const openSidebar = () => {
   sidebarRef.value?.openSidebar(); // Optional chaining ensures sidebarRef is defined
 };
 </script>
+<style scoped>
+.movement-small-input {
+  width: 50px;
+}
+.movement-text-input {
+  width: 80%;
+}
+.movement-peril-input {
+  margin-left: 18px;
+  width: 50px;
+}
+</style>

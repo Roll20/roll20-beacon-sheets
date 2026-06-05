@@ -1,7 +1,5 @@
 <template>  
-    <div  style="    display: grid;
-    gap: 10px;
-    grid-template-columns: 1fr 1fr 1fr 50px;">
+    <div class="ability-mod-grid">
         <select
                       class="age-atk-select form-select"
                         data-testid="test-spell-weaponType-input"
@@ -57,3 +55,10 @@ const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fight
 // Base focuses for the system, merged with any active genre-slice focuses.
 const filteredFocuses = computed(() => resolveFocuses(settings.gameSystem, settings));
 </script>
+<style scoped>
+.ability-mod-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr 50px;
+}
+</style>

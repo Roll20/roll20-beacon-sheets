@@ -1,6 +1,6 @@
 <template>
     <div v-if="settings.showArcana">
-        <div v-if="settings.userPowerFatigue" tabindex="0" style="position: relative;" @mouseenter="pfHover = true" @mouseleave="pfHover = false">
+        <div v-if="settings.userPowerFatigue" tabindex="0" class="mp-pf-container" @mouseenter="pfHover = true" @mouseleave="pfHover = false">
             <div class="age-pf-cntr">
                 <div class="age-pf-label">{{ powerFatigueLabel }}</div>
                 <div class="age-pf-details">
@@ -21,17 +21,17 @@
                     </div>                    
                 </div>
             </div>
-            <h4 class="age-subsection-header" style="display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: nowrap;">
-                <span style="white-space: nowrap;">
-                    Power Fatigue 
+            <h4 class="age-subsection-header mp-pf-header">
+                <span class="age-nowrap">
+                    Power Fatigue
                 </span>
-                <button class="age-icon-btn"  v-if="pfHover" style="position:absolute; bottom: 0px; right: -15px;" @click="showPFTestModal = true;" v-tippy="{ content: 'Manually roll for Power Fatigue'}">
+                <button class="age-icon-btn mp-pf-dice-btn"  v-if="pfHover" @click="showPFTestModal = true;" v-tippy="{ content: 'Manually roll for Power Fatigue'}">
                     <font-awesome-icon :icon="['fa', 'dice']" />
                 </button>
             </h4>
         </div>
         <div v-else>
-            <div class="d-flex flex-column justify-content-between" style="height: 50px;" v-if="settings.gameSystem !== 'blue rose'">
+            <div class="d-flex flex-column justify-content-between mp-bar-container" v-if="settings.gameSystem !== 'blue rose'">
                 <div class="hpmp-container">
                     <div class="hpmp-current">
                         <input class="age-input"
@@ -53,7 +53,7 @@
                     <div class="progress-bar" :class="{ 'bg-success':(char.magic / char.magicMax)*100 >= 50, 'bg-warning':(char.magic / char.magicMax)*100 < 50, 'bg-danger':(char.magic / char.magicMax)*100 < 25 }" v-bind:style="{ width: (char.magic / char.magicMax)*100 + '%'}"></div>
                 </div>
             </div>  
-            <div class="d-flex flex-column justify-content-between" style="height: 50px; padding: 0 20px;" v-if="settings.gameSystem === 'blue rose'">
+            <div class="d-flex flex-column justify-content-between mp-bar-container mp-br-container" v-if="settings.gameSystem === 'blue rose'">
                 <div class="age-container-content">
                     <button class="age-icon-btn age-reset-btn" v-if="char.stunts > 0" @click="char.resetStunts" v-tippy="{ content: 'Click to reset stunt points to 0'}">
                         <font-awesome-icon :icon="['fa', 'rotate']" />
@@ -122,3 +122,26 @@ const powerFatigueLabel = computed(() => {
 });
 
 </script>
+<style scoped>
+.mp-pf-container {
+  position: relative;
+}
+.mp-pf-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: nowrap;
+}
+.mp-pf-dice-btn {
+  position: absolute;
+  bottom: 0px;
+  right: -15px;
+}
+.mp-bar-container {
+  height: 50px;
+}
+.mp-br-container {
+  padding: 0 20px;
+}
+</style>

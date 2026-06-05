@@ -1,7 +1,7 @@
 <template>   
   <div class="age-content">
-    <div style="width: 100%;display: flex;justify-content: flex-end;">
-          <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;margin-bottom: -32px;" v-tippy="{ content: 'Add Expertise' }">
+    <div class="talent-add-header">
+          <button class="link-btn age-icon-btn talent-add-btn" @click="showModal = true" v-tippy="{ content: 'Add Expertise' }">
             <font-awesome-icon :icon="['fa', 'circle-plus']" />
           </button>
         </div>
@@ -146,8 +146,17 @@ function getQuality(quality) {
   }
 }
 .age-talent-add {
-  background: none; 
+  background: none;
   font-weight: bold;
   border:none;
+}
+.talent-add-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.talent-add-btn {
+  font-size: 1.5rem;
+  margin-bottom: -32px;
 }
 </style>

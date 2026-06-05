@@ -1,11 +1,11 @@
 <template>
     <div class="age-content">
-        <div style="padding: 6px;" >
-            <div style="width: 100%;display: flex;justify-content: space-between;padding:5px 0;">
-                <div style="padding: 15px 6px 6px;width: 100%;">
+        <div class="enh-body-padding">
+            <div class="enh-section-header">
+                <div class="enh-section-body">
                     <span  v-if="enhancementStore.enhancements.length === 0">Your Enhancements is empty. </span>
                 </div>
-                <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;" v-tippy="{ content: 'Add Enhancement' }">
+                <button class="link-btn age-icon-btn enh-add-btn" @click="showModal = true" v-tippy="{ content: 'Add Enhancement' }">
                     <font-awesome-icon :icon="['fa', 'circle-plus']" />
                 </button>
             </div>   
@@ -41,6 +41,7 @@ import { useEnhancementStore } from '@/sheet/stores/enhancements/enhancementsSto
 const showModal = ref(false)
 const enhancementStore = useEnhancementStore();
 
+
 let enhancementNew = ref({
     description: '',
     part: '',
@@ -48,3 +49,21 @@ let enhancementNew = ref({
     _id: '',
 });
 </script>
+<style scoped>
+.enh-body-padding {
+  padding: 6px;
+}
+.enh-section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+.enh-section-body {
+  padding: 15px 6px 6px;
+  width: 100%;
+}
+.enh-add-btn {
+  font-size: 1.5rem;
+}
+</style>

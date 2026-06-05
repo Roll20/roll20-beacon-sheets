@@ -1,7 +1,7 @@
 <template>
     <div class="accordion-header age-enhancement-accordion-header">
-        <div class="" style="font-size: 1rem; padding:0.5rem;">
-            <div class="label" data-testid="test-spell-header" style="flex:1;">{{ enhancement.part }}</div>     
+        <div class="enh-icon-wrapper">
+            <div class="label enh-label-flex" data-testid="test-spell-header">{{ enhancement.part }}</div>
         </div>      
         
         <button type="button" class="config-btn age-icon-btn" @click="handlePrint" v-tippy="{ content: 'Share Enhancement in chat'}">
@@ -63,3 +63,12 @@ const handlePrint = () => {
   enhancementStore.printEnhancement(props.enhancement._id);
 };
 </script>
+<style scoped>
+.enh-icon-wrapper {
+  font-size: 1rem;
+  padding: 0.5rem;
+}
+.enh-label-flex {
+  flex: 1;
+}
+</style>

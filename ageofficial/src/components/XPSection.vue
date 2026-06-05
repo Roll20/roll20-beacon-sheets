@@ -14,7 +14,7 @@
               <div class="modal-body">
                 <div class="section xp">
                   <div class="section__body xp__body">
-                    <div class="row__header" style="font-weight: bold;font-size: 1.25rem;">Level</div>
+                    <div class="row__header">Level</div>
 
                     <div class="xp__table">
                       <div
@@ -63,6 +63,10 @@ const calculatedLevel = computed(
 </script>
 
 <style scoped lang="scss">
+.row__header {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
 .xp {
   // height: 34.5rem;
 

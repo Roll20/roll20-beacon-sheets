@@ -1,5 +1,5 @@
 <template>
-    <div class="section-card" style="display: block; position: relative;">    
+    <div class="section-card age-section-block">    
       <div class="config-container">
         <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
           <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -11,25 +11,25 @@
         <div class="age-actions-section">
           <div class="age-roll-initiative">
             <button class="age-roll-initiative-btn age-btn" @click="rollAbilityInitiative('Dexterity', true)">
-                <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'dice']" /> Roll for Initiative
+                <font-awesome-icon class="age-icon-right" :icon="['fa', 'dice']" /> Roll for Initiative
             </button>
           </div>  
-          <div style="display: grid;grid-template-columns: repeat(3,1fr);gap:5px;padding: 6px 0;">
+          <div class="actions-rest-grid">
             <button class="age-btn" @click="onRest('Breather')">
-              <font-awesome-icon style="margin-right: 5px;" :icon="['fa', 'kit-medical']" />
+              <font-awesome-icon class="age-icon-right" :icon="['fa', 'kit-medical']" />
               <span>
                 Breather
               </span>
             </button>
             <button class="age-btn" @click="onRest('Light Rest')">
-              <font-awesome-icon v-if="settings.gameSystem !== 'expanse'" style="margin-right: 5px;" :icon="['fa', 'hot-tub-person']" />
+              <font-awesome-icon v-if="settings.gameSystem !== 'expanse'" class="age-icon-right" :icon="['fa', 'hot-tub-person']" />
               <div class="age-expanse-lrest" v-else></div>
               <span>
                 Light Rest
               </span>                
             </button>
             <button class="age-btn" @click="onRest('Total Rest')">
-              <font-awesome-icon v-if="settings.gameSystem !== 'expanse'" style="margin-right: 5px;" :icon="['fa', 'bed']" />
+              <font-awesome-icon v-if="settings.gameSystem !== 'expanse'" class="age-icon-right" :icon="['fa', 'bed']" />
               <div class="age-expanse-trest" v-else></div>
               <span>
                 Total Rest
@@ -186,3 +186,11 @@ const openSidebar = () => {
   sidebarRef.value?.openSidebar(); // Optional chaining ensures sidebarRef is defined
 };
 </script>
+<style scoped>
+.actions-rest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  padding: 6px 0;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="section-card" style="display: block; position: relative;">    
+    <div class="section-card age-section-block">    
       <div class="config-container">
     <button type="button" class="config-btn age-icon-btn" @click="openSidebar">
       <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -49,9 +49,9 @@
           <div class="age-container-heading">
             Armor Rating | Penalty
           </div>
-            <div style="display: flex;">
+            <div class="age-flex">
               <span class="age-num-value">{{ armorRatingSet !== null && armorRatingSet !== 0 ? armorRatingSet : armorRatingMod}}</span>
-              <span style="font-size: 20px;">|</span>
+              <span class="defense-separator">|</span>
               <span class="age-num-value">{{ armorPenaltySet !== null && armorPenaltySet !== 0 ? armorPenaltySet : armorPenaltyMod}}</span>
             </div>
             
@@ -228,3 +228,8 @@ const defense = computed(() => {
   return 10 + Number(ability.DexterityBase) + ((props.guard || props.guardOption === 'always') ? props.guardValue : 0) + Number(defenseMods.value) + char.defenseLevelMod;
 });
 </script>
+<style scoped>
+.defense-separator {
+  font-size: 20px;
+}
+</style>
