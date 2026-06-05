@@ -5,11 +5,11 @@
   </transition>
   <main v-if="settings.gameSystem" >
     <div class="system-header">
-            <img v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'" src="/src//assets/logos/fantasyage.png" style="width: 100%;height: auto;margin-left:10px;" alt="Fantasy AGE">
-            <img v-if="settings.gameSystem === 'mage'" src="/src/assets/logos/modernage.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
-            <img v-if="settings.gameSystem === 'blue rose'" src="/src/assets/logos/bluerose.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
-            <img v-if="settings.gameSystem === 'threefold'" src="/src/assets/logos/threefold.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
-            <img v-if="settings.gameSystem === 'expanse'" src="/src/assets/logos/expansewhite.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE">
+            <img v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'" src="/src//assets/logos/fantasyage.png" class="sys-logo sys-logo--full" alt="Fantasy AGE">
+            <img v-if="settings.gameSystem === 'mage'" src="/src/assets/logos/modernage.png" class="sys-logo sys-logo--90" alt="Fantasy AGE">
+            <img v-if="settings.gameSystem === 'blue rose'" src="/src/assets/logos/bluerose.png" class="sys-logo sys-logo--90" alt="Fantasy AGE">
+            <img v-if="settings.gameSystem === 'threefold'" src="/src/assets/logos/threefold.png" class="sys-logo sys-logo--90" alt="Fantasy AGE">
+            <img v-if="settings.gameSystem === 'expanse'" src="/src/assets/logos/expansewhite.png" class="sys-logo sys-logo--90" alt="Fantasy AGE">
             <!-- <img v-if="settings.gameSystem === 'cthulhu'" src="/src/assets/logos/cthulhu.png" style="width: 90%;height: auto;margin-left:10px;" alt="Fantasy AGE"> -->
             <div class="age-header-options">
               <div class="age-header-btn-container">
@@ -51,7 +51,7 @@
                 </div> -->
                 <div class="age-header-btn">
                   <button class="age-btn" @click="showModal = true">
-                    <font-awesome-icon style="padding-right: 5px;" :icon="['fa', 'sheet-plastic']" />
+                    <font-awesome-icon class="header-icon" :icon="['fa', 'sheet-plastic']" />
                       <span>Sheet Settings</span>
                    </button>
                 </div>
@@ -59,7 +59,7 @@
                 <!-- <button style="background: url(https://i.ibb.co/5GtgFDZ/21.png); border: rgba(0, 0, 0, 0.5);color:#1e4e7a" @click="showModal = true"></button> -->
             </div>
             <div class="age-header-menu">
-              <div class="dropdown" style="text-align: right;">
+              <div class="dropdown age-dropdown-right">
                 <ul class="dropdown-menu">
                   <li>
                     <button v-if="settings.whisperRollsGM === 'toggle'" :class="{ active: settings.whisperRollsGMToggle }" class="age-btn" @click="settings.whisperRollsGMToggle = !settings.whisperRollsGMToggle;">
@@ -100,7 +100,7 @@
                   </li>
                   <li>
                     <button class="age-btn" @click="showModal = true">
-                    <font-awesome-icon style="padding-right: 5px;padding-top: 4px;padding-left: 1px;" :icon="['fa', 'sheet-plastic']" />
+                    <font-awesome-icon class="menu-icon" :icon="['fa', 'sheet-plastic']" />
                       <span>Sheet Settings</span>
                    </button>
                   </li>
@@ -209,6 +209,25 @@ loadLegacyGroupings(initValues.character?.attributes);
 </script>
 
 <style scoped lang="scss">
+.sys-logo {
+  height: auto;
+  margin-left: 10px;
+}
+.sys-logo--full { width: 100%; }
+.sys-logo--90   { width: 90%;  }
+
+.header-icon {
+  padding-right: 5px;
+}
+.menu-icon {
+  padding-right: 5px;
+  padding-top: 4px;
+  padding-left: 1px;
+}
+.age-dropdown-right {
+  text-align: right;
+}
+
 /* Fade transition styles */
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s ease;
