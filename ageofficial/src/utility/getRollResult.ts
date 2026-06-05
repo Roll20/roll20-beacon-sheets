@@ -1,6 +1,6 @@
-import { dispatchRef } from '@/relay/relay';
-import type { Dispatch } from '@roll20-official/beacon-sdk';
-import type { DiceComponent } from '@/rolltemplates/rolltemplates';
+import { dispatchRef } from "@/relay/relay";
+import type { Dispatch } from "@roll20-official/beacon-sdk";
+import type { DiceComponent } from "@/rolltemplates/rolltemplates";
 
 type RollResults = {
   total: number;
@@ -9,7 +9,7 @@ type RollResults = {
 // Adds together a series of dice components and outputs the result. Beacon handles the dice rolling to ensure randomness.
 export default async (
   components: Array<DiceComponent>,
-  customDispatch?: Dispatch,
+  customDispatch?: Dispatch
 ): Promise<RollResults> => {
   const dispatch = customDispatch || (dispatchRef.value as Dispatch); // Need a different Relay instance when handling sheet-actions
 
@@ -29,7 +29,7 @@ export default async (
     const rollIndex = parseInt(rollTerm.split(`-`)[1]);
     const component = components[rollIndex];
     component.value = result.results.result;
-    component.dice = result.results.dice
+    component.dice = result.results.dice;
     if (!component.label) {
       component.label = result.results.expression;
     }
@@ -45,14 +45,19 @@ export default async (
       let diceSum = 0;
       if (result.results.rolls) {
         for (const subcomponent of result.results.rolls) {
-          const sum = subcomponent.results.reduce((sum, result) => sum + result, 0);
+          const sum = subcomponent.results.reduce(
+            (sum, result) => sum + result,
+            0
+          );
           diceSum += sum;
           const sublabel = `${subcomponent.dice}d${subcomponent.sides}`;
           rollParts.push({
             sides: subcomponent.sides,
             count: subcomponent.dice,
             value: sum,
-            label: component.label ? `${component.label} [${sublabel}]` : sublabel,
+            label: component.label
+              ? `${component.label} [${sublabel}]`
+              : sublabel,
           });
         }
 
@@ -65,6 +70,9 @@ export default async (
     }
   }
 
-  const total = components.reduce((accum, next) => accum + (next?.value || 0), 0);
+  const total = components.reduce(
+    (accum, next) => accum + (next?.value || 0),
+    0
+  );
   return { total, components };
 };

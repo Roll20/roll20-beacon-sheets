@@ -5,9 +5,9 @@ import {
   type Dispatch,
   type Settings,
   type UpdateArgs,
-} from '@roll20-official/beacon-sdk';
-import { debounce } from 'lodash';
-import type { PiniaPluginContext } from 'pinia';
+} from "@roll20-official/beacon-sdk";
+import { debounce } from "lodash";
+import type { PiniaPluginContext } from "pinia";
 
 import {
   onInit,
@@ -17,12 +17,29 @@ import {
   onTranslationsRequest,
   onDragOver,
   onDropOver,
-} from './handlers/handlers';
-import { reactive, ref, watch, nextTick, type Ref, type App, shallowRef } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
-import { addToStunts } from '@/sheet/stores/character/characterStore';
+} from "./handlers/handlers";
+import {
+  reactive,
+  ref,
+  watch,
+  nextTick,
+  type Ref,
+  type App,
+  shallowRef,
+} from "vue";
+import { v4 as uuidv4 } from "uuid";
+import { addToStunts } from "@/sheet/stores/character/characterStore";
 
-import { getAbilityScores, getBio, getMagicPoints, setMagic, getHealthPoints, setHealth, getStuntPoints, setStunts } from '@/relay/handlers/computed';
+import {
+  getAbilityScores,
+  getBio,
+  getMagicPoints,
+  setMagic,
+  getHealthPoints,
+  setHealth,
+  getStuntPoints,
+  setStunts,
+} from "@/relay/handlers/computed";
 // import { DropArgs } from '@roll20-official/beacon-sdk/lib/types/types/dragAndDrop';
 // import { initRelay } from '@roll20/beacon-sdk';
 
@@ -40,7 +57,7 @@ const relayConfig = {
     onSharedSettingsChange,
     onTranslationsRequest,
     onDragOver,
-    onDropOver
+    onDropOver,
   },
   actions: {
     /*
@@ -63,7 +80,7 @@ const relayConfig = {
         const [originalRoll, originalTitle] = args;
         return addToStunts(props, Number(originalRoll));
       },
-    }
+    },
   },
   computed: {
     // These attributes allow dot notation in macros, and will not show up on token bar attributes
@@ -88,7 +105,7 @@ export type InitValues = {
 
 // Almost everything below here is Boilerplate and you probably want to keep it intact.
 export const initValues: InitValues = reactive({
-  id: '',
+  id: "",
   character: {
     attributes: {},
   } as Character,
@@ -111,9 +128,14 @@ const sheetId = ref(uuidv4());
 This is the function that is called when the character data is updated.
 logMode is a flag that can be used to log the updates to the console. This is useful for debugging.
 */
-const doUpdate = (dispatch: Dispatch, update: Record<string, any>, logMode = false) => {
-  if (logMode) console.info('➡️ ExampleSheet: Updating Firebase');
-  if (logMode) console.dir(`Firebase Update: ${initValues.character.id}`, update);
+const doUpdate = (
+  dispatch: Dispatch,
+  update: Record<string, any>,
+  logMode = false
+) => {
+  if (logMode) console.info("➡️ ExampleSheet: Updating Firebase");
+  if (logMode)
+    console.dir(`Firebase Update: ${initValues.character.id}`, update);
   const character: Record<string, any> = {
     character: {
       id: initValues.character.id,
@@ -134,10 +156,11 @@ This is useful for testing the sheet without having to connect to the server.
 */
 const devRelay = async () =>
   ({
-    update: (...args: any[]) => console.log('devRelay update', args),
-    updateCharacter: (...args: any[]) => console.log('devRelay updateCharacter', args),
+    update: (...args: any[]) => console.log("devRelay update", args),
+    updateCharacter: (...args: any[]) =>
+      console.log("devRelay updateCharacter", args),
     characters: {},
-    updateTokensByCharacter: () => '',
+    updateTokensByCharacter: () => "",
   } as any as Dispatch);
 
 /*
@@ -150,7 +173,7 @@ This is just one way to trigger a re-render, you can implement your own logic to
 */
 export const createRelay = async ({
   devMode = false,
-  primaryStore = 'examplesheetStore',
+  primaryStore = "examplesheetStore",
   logMode = false,
 }) => {
   // @ts-ignore
@@ -178,10 +201,10 @@ export const createRelay = async ({
 
     // Watch for changes from the Beacon SDK, triggered everytime the Beacon Pulse value changes
     watch(beaconPulse, async (newValue, oldValue) => {
-      if (logMode) console.log('❤️ Beacon Pulse', { newValue, oldValue });
+      if (logMode) console.log("❤️ Beacon Pulse", { newValue, oldValue });
       const characterId = initValues.character.id;
       blockUpdate.value = true;
-      if (logMode) console.log('🔒🔴 locking changes');
+      if (logMode) console.log("🔒🔴 locking changes");
       const { attributes, ...profile } = dispatch.characters[characterId];
       if (attributes.updateId === sheetId.value) {
         blockUpdate.value = false;
@@ -189,7 +212,7 @@ export const createRelay = async ({
       }
       store.hydrateStore(attributes, profile);
       await nextTick();
-      if (logMode) console.log('🔓🟢 unlocking changes');
+      if (logMode) console.log("🔓🟢 unlocking changes");
       blockUpdate.value = false;
     });
 
@@ -200,7 +223,7 @@ export const createRelay = async ({
 
   const relayVue = {
     install(app: App) {
-      app.provide('dispatch', dispatch);
+      app.provide("dispatch", dispatch);
     },
   };
 
@@ -209,4 +232,3 @@ export const createRelay = async ({
     relayVue,
   };
 };
-

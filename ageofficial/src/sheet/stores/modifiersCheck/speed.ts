@@ -1,18 +1,18 @@
-import { computed, ref } from 'vue';
-import { useItemStore } from '../character/characterQualitiesStore';
-import { useConditionsStore } from '../conditions/conditionsStore';
-import { useAbilityScoreStore } from '../abilityScores/abilityScoresStore';
-import { useModifiersStore } from '../modifiers/modifiersStore';
+import { computed, ref } from "vue";
+import { useItemStore } from "../character/characterQualitiesStore";
+import { useConditionsStore } from "../conditions/conditionsStore";
+import { useAbilityScoreStore } from "../abilityScores/abilityScoresStore";
+import { useModifiersStore } from "../modifiers/modifiersStore";
 
 // Speed Mod calculation with the item modifiers and speed conditions
 export const speedMod = computed(() => {
-  const store = useItemStore(); 
+  const store = useItemStore();
 
   // Sum up the item modifiers that affect "Defense"
   const qMods = store.items.reduce((armorMod, itm) => {
     if (!itm.modifiers) return armorMod;
     itm.modifiers.forEach((mod: any) => {
-      if (mod.option === 'Speed') {
+      if (mod.option === "Speed") {
         armorMod += Number(mod.variable);
       }
     });
@@ -32,40 +32,42 @@ const speedConditions = (): number => {
   conditions.forEach((con) => {
     if (!con.modifiers) return;
     const ability = useAbilityScoreStore();
-    
+
     // Handle stringified modifiers
-    if (typeof con.modifiers === 'string') {
-      JSON.parse((con.modifiers as string).replace('$__$', '')).forEach((cm: any) => {
-        if (cm.modifiedValue === 'Speed') {
-          if (typeof cm.penalty === 'number') {
-            values.push(-cm.penalty);
-          } else {
-            const pVal = ability[cm.penalty + 'Base']; // Assuming 'ability' is available in the scope
-            values.push(-pVal);
+    if (typeof con.modifiers === "string") {
+      JSON.parse((con.modifiers as string).replace("$__$", "")).forEach(
+        (cm: any) => {
+          if (cm.modifiedValue === "Speed") {
+            if (typeof cm.penalty === "number") {
+              values.push(-cm.penalty);
+            } else {
+              const pVal = ability[cm.penalty + "Base"]; // Assuming 'ability' is available in the scope
+              values.push(-pVal);
+            }
           }
         }
-      });
+      );
     } else {
       const ability = useAbilityScoreStore();
       // Handle array of modifiers
       con.modifiers.forEach((cm: any) => {
-        if (cm.modifiedValue === 'Speed') {
-          if (typeof cm.penalty === 'number') {
+        if (cm.modifiedValue === "Speed") {
+          if (typeof cm.penalty === "number") {
             values.push(-cm.penalty);
           } else {
-            const pVal = ability[cm.penalty+'Base']
-            values.push(-pVal)
+            const pVal = ability[cm.penalty + "Base"];
+            values.push(-pVal);
           }
         }
       });
     }
   });
   const mods = useModifiersStore();
-  mods.modifiers.forEach(mod => {
-    if (mod.option === 'Speed' && mod.enabled){
-      values.push(mod.bonus || mod.penalty || 0)
+  mods.modifiers.forEach((mod) => {
+    if (mod.option === "Speed" && mod.enabled) {
+      values.push(mod.bonus || mod.penalty || 0);
     }
-})
+  });
   // If any modifiers affecting Speed are found, sum them up
   if (values.length > 0) {
     return values.reduce((a, b) => a + b, 0);

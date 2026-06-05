@@ -1,53 +1,75 @@
 <template>
-    <Transition name="modal">
+  <Transition name="modal">
     <div v-if="show" class="modal-mask">
-        <div class="modal-container age-modal">
-          <div class="age-modal-header">
-            <slot name="header">default header</slot>
-            <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
-          </div>
-          <div>
-            <button class="ability-check-btn" @click="rollAbilityCheck(ability, false);$emit('close')">
-              Roll {{ ability }}                
-            </button>
-          </div>
-          <hr />
-          <div v-for="focus in combineObjects(abilityFocusArray)" :key="focus">
-            <button class="ability-check-btn" @click="rollAbilityWithFocus(focus);$emit('close')">
-              {{ focus.customName }}
-              {{ (focus.customName ? focus.customName : focus.name) || focus.focus }} ({{ focus.variable > 0 ? `+${focus.variable}` : focus.variable }})
-            </button>
-          </div>
+      <div class="modal-container age-modal">
+        <div class="age-modal-header">
+          <slot name="header">default header</slot>
+          <button
+            type="button"
+            class="btn-close"
+            @click="$emit('close')"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div>
+          <button
+            class="ability-check-btn"
+            @click="
+              rollAbilityCheck(ability, false);
+              $emit('close');
+            "
+          >
+            Roll {{ ability }}
+          </button>
+        </div>
+        <hr />
+        <div v-for="focus in combineObjects(abilityFocusArray)" :key="focus">
+          <button
+            class="ability-check-btn"
+            @click="
+              rollAbilityWithFocus(focus);
+              $emit('close');
+            "
+          >
+            {{ focus.customName }}
+            {{
+              (focus.customName ? focus.customName : focus.name) || focus.focus
+            }}
+            ({{ focus.variable > 0 ? `+${focus.variable}` : focus.variable }})
+          </button>
+        </div>
       </div>
     </div>
-    </Transition>
+  </Transition>
 </template>
 <script setup>
 const props = defineProps({
   show: Boolean,
   ability: String,
-
-})
-import { computed, ref } from 'vue';
-import { useBioStore } from '@/sheet/stores/bio/bioStore';
-import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
-import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
-import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
-import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
+});
+import { computed, ref } from "vue";
+import { useBioStore } from "@/sheet/stores/bio/bioStore";
+import { useAbilityScoreStore } from "@/sheet/stores/abilityScores/abilityScoresStore";
+import { useAbilityFocusesStore } from "@/sheet/stores/abilityScores/abilityFocusStore";
+import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
+import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 // import { defineEmits } from 'vue';
-import { resolveFocuses } from '../modifiers/focuses';
-import { abilityMods } from '@/sheet/stores/modifiersCheck/abilities';
+import { resolveFocuses } from "../modifiers/focuses";
+import { abilityMods } from "@/sheet/stores/modifiersCheck/abilities";
 
 const { abilityScores, rollAbilityCheck } = useAbilityScoreStore();
 const focus = useAbilityFocusesStore();
 const quality = useItemStore();
-const emit = defineEmits(['rerollCheck']);
-const abilityFocusArray = ref(
-  [...quality.items.filter(foc => foc.ability === props.ability),...abilityMods.value.filter(am => am.ability === props.ability)]
-);
+const emit = defineEmits(["rerollCheck"]);
+const abilityFocusArray = ref([
+  ...quality.items.filter((foc) => foc.ability === props.ability),
+  ...abilityMods.value.filter((am) => am.ability === props.ability),
+]);
 const settings = useSettingsStore();
 // Base focuses for the system, merged with any active genre-slice focuses.
-const filteredFocuses = computed(() => resolveFocuses(settings.gameSystem, settings));
+const filteredFocuses = computed(() =>
+  resolveFocuses(settings.gameSystem, settings)
+);
 // const combinedArray = Object.entries(filteredFocuses).flatMap(([ability, names]) => {
 //     return names.map(name => {
 //         const matchingFocus = abilityFocusArray.value.find(item => item.ability === ability && item.name === name);
@@ -72,30 +94,35 @@ const filteredFocuses = computed(() => resolveFocuses(settings.gameSystem, setti
 //     });
 //   });
 // });
-function focusBonus(obj){
+function focusBonus(obj) {
   if (obj.doubleFocus) {
-      return 4; // Return 4 if doubleFocus is true
-    } else if (obj.focus) {
-      return 2; // Return 2 if only focus is true
-    } else {
-      return 0;
-    }
+    return 4; // Return 4 if doubleFocus is true
+  } else if (obj.focus) {
+    return 2; // Return 2 if only focus is true
+  } else {
+    return 0;
+  }
 }
 const rollAbilityWithFocus = (focus) => {
-  if (quality.items.some(item => 
-    item.modifiers && item.modifiers.some(modifier => 
-        modifier.ability === focus.ability && modifier.abilityFocus === focus.name
+  if (
+    quality.items.some(
+      (item) =>
+        item.modifiers &&
+        item.modifiers.some(
+          (modifier) =>
+            modifier.ability === focus.ability &&
+            modifier.abilityFocus === focus.name
+        )
     )
-)) {
+  ) {
     // Your code here when the condition is true
-    emit('rerollCheck',focus);
-    rollAbilityCheck(props.ability, true, focus.variable,focus)
-} else {
+    emit("rerollCheck", focus);
+    rollAbilityCheck(props.ability, true, focus.variable, focus);
+  } else {
     // Your code here when the condition is false
-    rollAbilityCheck(props.ability, true, focus.variable,focus)
-
-}
-}
+    rollAbilityCheck(props.ability, true, focus.variable, focus);
+  }
+};
 function combineObjects(array) {
   const result = [];
   const abilityWideVariables = {};
@@ -129,12 +156,20 @@ function combineObjects(array) {
         existing.variable += item.doubleFocus ? 4 : 0;
       } else {
         // Create a new object if none exists yet
-        const variable = (item.variable || 0) + (item.focus ? 2 : 0) + (item.doubleFocus ? 4 : 0);
-        result.push({ ability: item.ability, name: item.customName ? item.customName : item.name, variable });
+        const variable =
+          (item.variable || 0) +
+          (item.focus ? 2 : 0) +
+          (item.doubleFocus ? 4 : 0);
+        result.push({
+          ability: item.ability,
+          name: item.customName ? item.customName : item.name,
+          variable,
+        });
       }
     } else if (item.ability && !item.name) {
       // If there is an ability but no name, store the variable for that ability
-      abilityWideVariables[item.ability] = (abilityWideVariables[item.ability] || 0) + item.variable;
+      abilityWideVariables[item.ability] =
+        (abilityWideVariables[item.ability] || 0) + item.variable;
     }
   });
 
@@ -146,8 +181,8 @@ function combineObjects(array) {
   });
 
   result.sort((a, b) => {
-    const aName = String(a.name ?? '');
-    const bName = String(b.name ?? '');
+    const aName = String(a.name ?? "");
+    const bName = String(b.name ?? "");
     return aName < bName ? -1 : aName > bName ? 1 : 0;
   });
 
@@ -157,16 +192,16 @@ function combineObjects(array) {
 <style>
 .ability-check-btn {
   background-color: #ecf6ff;
-    border: 2px solid rgb(30, 78, 122);
-    color: #1e4e7a;
-    border-radius: 8px;
-    font-weight: bold;
-    width: 95%;
-    padding: 6px;
-    font-size: 1.25rem;
-    margin-bottom: 10px;
+  border: 2px solid rgb(30, 78, 122);
+  color: #1e4e7a;
+  border-radius: 8px;
+  font-weight: bold;
+  width: 95%;
+  padding: 6px;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
 }
 .modal-footer-actions {
-  padding-top:10px;
+  padding-top: 10px;
 }
 </style>

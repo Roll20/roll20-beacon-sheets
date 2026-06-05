@@ -1,4 +1,7 @@
-export function parseSpOptions(cost: string | number, availableSP: number): number[] {
+export function parseSpOptions(
+  cost: string | number,
+  availableSP: number
+): number[] {
   const s = String(cost).trim();
   if (!s) return [];
 
