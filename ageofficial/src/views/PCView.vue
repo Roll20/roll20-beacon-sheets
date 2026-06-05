@@ -53,13 +53,13 @@
                             </button>
                         </div>    
                         <div>
-                            <input type="number" v-model="char.xp" style="background: none;border: none;height: 100%;font-weight: bold;width: 90%;color: #000;font-size: 1.5rem;padding:5px 10px;" />
+                            <input type="number" v-model="char.xp" class="pc-xp-input" />
                         </div>
                     </div>
                 </section>  
             
                 <section class="age-combat-skill-section">
-                    <div style="display:flex;gap: 10px;flex-direction: column;">
+                    <div class="pc-combat-col">
                         <CombatTabsView />
 
                         <div class="age-conditions-secondary">
@@ -92,7 +92,7 @@
         <h3 class="age-attack-details-header">Advancement Primary</h3>
         <button type="button" class="btn-close" @click="showSelectPulpyModal = false" aria-label="Close"></button>
         </div>
-        <div style="display: flex;gap:15px;">
+        <div class="pc-pulpy-buttons">
             <button class="age-btn age-pulpy-btn" @click="char.toughnessPrimary = 'defense';showSelectPulpyModal = false">
                 <div class="age-pulpy-defense"></div>
                 <span>Defense</span>
@@ -162,3 +162,24 @@ const checkLevelModifiter = () => {
   }
 };
 </script>
+<style scoped>
+.pc-xp-input {
+  background: none;
+  border: none;
+  height: 100%;
+  font-weight: bold;
+  width: 90%;
+  color: #000;
+  font-size: 1.5rem;
+  padding: 5px 10px;
+}
+.pc-combat-col {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+.pc-pulpy-buttons {
+  display: flex;
+  gap: 15px;
+}
+</style>

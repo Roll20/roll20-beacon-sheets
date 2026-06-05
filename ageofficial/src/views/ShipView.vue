@@ -7,7 +7,7 @@
             <img ref="avatarImg" class="ship-view-avatar" :src="meta.avatar" />
             <div>
                 <h1>{{ meta.name }}</h1>
-                <div style="display: flex; gap:10px; flex-wrap: wrap;" class="age-ship-details">
+                <div class="age-ship-details ship-chip-strip">
                     <div class="age-ship-chip">
                         <span class="age-ship-chip-label">Size</span>
                         <span class="age-ship-chip-value">{{ computedShipSize.size }}</span>
@@ -42,12 +42,12 @@
         </div>
     </div>
 
-    <div style="display: flex; flex-wrap: wrap; gap:15px;">
-        <div class="ship-view-cntr" style="display: flex; flex-wrap: wrap; flex:1;">
-            <div style="flex:1; min-width: 220px;">
+    <div class="ship-columns">
+        <div class="ship-left-col">
+            <div class="ship-actions-col">
 
                 <!-- Combat Actions Card -->
-                <div class="section-card" style="margin-bottom: 15px;">
+                <div class="section-card ship-card-mb">
                     <h4>Actions</h4>
                     <!-- Action Buttons -->
                     <div class="age-ship-actions">
@@ -66,14 +66,14 @@
                         </button>
                     </div>
 
-                    <button class="age-btn" style="width:100%; margin-top:8px;"
+                    <button class="age-btn ship-wide-btn"
                         @click="ship.rollHull()"
                         :disabled="!computedShipSize.hull"
                         v-tippy="{ content: 'Roll hull dice: ' + (computedShipSize.hull || 'set ship length first') }">
                         Roll Hull <span v-if="computedShipSize.hull" class="age-btn-badge">{{ computedShipSize.hull }}</span>
                     </button>
 
-                    <button class="age-btn age-btn--dim" style="width:100%; margin-top:8px;"
+                    <button class="age-btn age-btn--dim ship-wide-btn"
                         @click="ship.resetPdcFiredThisRound()"
                         v-tippy="{ content: 'Clear PDC-fired flag and begin a new combat round' }">
                         New Round
@@ -81,19 +81,19 @@
                 </div>
 
                 <!-- Stunts Card -->
-                <div class="section-card" style="margin-bottom: 15px;">
+                <div class="section-card ship-card-mb">
                     <h4>Stunt Points</h4>
                     <ShipStuntsView />
                 </div>
             </div>
         </div>
 
-        <div class="age-ship-details" style="flex:2;">
+        <div class="age-ship-details ship-right-col">
             <ShipTabsView />
             <!-- Loss Conditions Card — full width below the main columns -->
-    <div class="section-card" style="margin-top: 15px; display: flex; flex-direction: row; gap: 20px;">
-        <div style="flex: 2;">
-            <h4 style="font-size: 14px;">Losses</h4>
+    <div class="section-card ship-losses-card">
+        <div class="ship-losses-normal">
+            <h4 class="ship-section-h4">Losses</h4>
             <div class="age-ship-losses">
                 <div v-for="loss in shipLossTypes" :key="loss.key" class="age-ship-loss-row">
                     <span class="age-ship-loss-label">{{ loss.label }}</span>
@@ -107,8 +107,8 @@
                 </div>
             </div>
         </div>
-        <div style="flex:1;">
-            <h4 style="font-size: 14px;">Serious Losses</h4>
+        <div class="ship-losses-serious">
+            <h4 class="ship-section-h4">Serious Losses</h4>
             <div class="age-ship-serious-losses">
                 <label v-for="sl in seriousLossTypes" :key="sl.key" class="age-checkbox-toggle-row">
                     <input type="checkbox"
@@ -117,7 +117,7 @@
                     <span :class="{ 'age-ship-loss-active': ship.seriousLosses[sl.key] }">{{ sl.label }}</span>
                 </label>
             </div>
-            <button class="age-btn age-btn--dim" style="width:100%; margin-top:8px;"
+            <button class="age-btn age-btn--dim ship-wide-btn"
                 @click="ship.resetAllLosses()"
                 v-tippy="{ content: 'Clear all loss conditions' }">
                 Clear All Losses
@@ -345,6 +345,51 @@ const seriousLossTypes = [
         cursor: pointer;
         font-size: 0.9rem;
         user-select: none;
+    }
+
+    .ship-chip-strip {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .ship-columns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .ship-left-col {
+        display: flex;
+        flex-wrap: wrap;
+        flex: 1;
+    }
+    .ship-actions-col {
+        flex: 1;
+        min-width: 220px;
+    }
+    .ship-card-mb {
+        margin-bottom: 15px;
+    }
+    .ship-wide-btn {
+        width: 100%;
+        margin-top: 8px;
+    }
+    .ship-right-col {
+        flex: 2;
+    }
+    .ship-losses-card {
+        margin-top: 15px;
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+    .ship-losses-normal {
+        flex: 2;
+    }
+    .ship-losses-serious {
+        flex: 1;
+    }
+    .ship-section-h4 {
+        font-size: 14px;
     }
 
     @media (max-width: 600px) {

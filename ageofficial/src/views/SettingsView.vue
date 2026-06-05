@@ -48,37 +48,37 @@
           <!-- // TODO Items unique to genre slices. Technofantasy, Cthulhu Awakens, Cyberpunk, etc. -->
           <div class="row age-modal-row"  v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'mage'">
             <h4>Genre Slices</h4>
-            <div style="display: grid;grid-template-columns: repeat(3,1fr);">
+            <div class="settings-toggle-grid">
               <div class=" input-group" v-if="settings.gameSystem === 'mage'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.cyberpunk" @change="updateGameSystem" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Cyberpunk</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu'">
-              <label class="age-checkbox-toggle" style="margin:1rem;">
+              <label class="age-checkbox-toggle" class="age-checkbox-label">
                   <input type="checkbox"  v-model="settings.cthulhuMythos" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
               <span class="age-toggle-label">Cthulhu Mythos</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-              <label class="age-checkbox-toggle" style="margin:1rem;">
+              <label class="age-checkbox-toggle" class="age-checkbox-label">
                   <input type="checkbox"  v-model="settings.technofantasy" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
               <span class="age-toggle-label">Technofantasy</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'mage'">
-              <label class="age-checkbox-toggle" style="margin:1rem;">
+              <label class="age-checkbox-toggle" class="age-checkbox-label">
                   <input type="checkbox"  v-model="settings.threefold" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
               <span class="age-toggle-label">Threefold</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'mage'">
-              <label class="age-checkbox-toggle" style="margin:1rem;">
+              <label class="age-checkbox-toggle" class="age-checkbox-label">
                   <input type="checkbox"  v-model="settings.powers" @change="updateGameSystem" />
                   <span class="slider round" ></span>
               </label>
@@ -88,51 +88,51 @@
           </div>
           <div class="row age-modal-row">
             <h4>System Options</h4>
-            <div style="display: grid;grid-template-columns: repeat(3,1fr);">
+            <div class="settings-toggle-grid">
               <div class=" input-group" v-if="settings.gameSystem !== 'expanse'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.showArcana" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Display {{ settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose' ? 'Arcana' : 'Powers' }}</span>
               </div>
               <!-- <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.peril" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Use Peril</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.daring" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Use Daring</span>
               </div>                -->
               <div class=" input-group">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.useFortune" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Use Fortune</span>
               </div>      
               <div class=" input-group" v-if="settings.cthulhuMythos">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.showFear" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Show Fear</span>
               </div>        
               <div class=" input-group" v-if="settings.cthulhuMythos">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.showAlienation" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Show Alienation</span>
               </div>   
               <div class=" input-group">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.optionalMovements" />
                     <span class="slider round" ></span>
                 </label>
@@ -140,21 +140,21 @@
               </div>      
               <div class=" input-group">
               <!-- <div class=" input-group" v-if="settings.technofantasy || settings.cyberpunk"> -->
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle" class="age-checkbox-label">
                     <input type="checkbox"  v-model="settings.showCybernetics" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Display Enhancements</span>
               </div>  
                 <div class=" input-group" v-if="settings.gameSystem === 'mage' && settings.showArcana">
-                  <label class="age-checkbox-toggle" style="margin:1rem;">
+                  <label class="age-checkbox-toggle" class="age-checkbox-label">
                       <input type="checkbox"  v-model="settings.userPowerFatigue" />
                       <span class="slider round" ></span>
                   </label>
                   <span class="age-toggle-label">Use Power Fatigue</span>
                 </div>
               <div class=" input-group">
-                  <label class="age-checkbox-toggle" style="margin:1rem;">
+                  <label class="age-checkbox-toggle" class="age-checkbox-label">
                       <input type="checkbox"  v-model="settings.showAfterMastery" />
                       <span class="slider round" ></span>
                   </label>
@@ -257,7 +257,7 @@
               </select>
             </div>
           </div> -->
-          <div style="display: grid;grid-template-columns: 2fr 135px;">
+          <div class="settings-legal-grid">
             <div>
               <p>Fantasy AGE Core Rulebook is ©2023 Green Ronin Publishing, LLC.</p>
               <p>Blue Rose: The AGE Roleplaying Game of Romantic Fantasy is © 2017 Green Ronin Publishing, LLC.</p>
@@ -278,7 +278,7 @@
               class="confirm-btn"
               @click="$emit('close')"
             >OK</button>
-            <a href="https://ko-fi.com/J3J614QOV1" target="_blank" class="myButton"><img style="width: 24px;margin-right: 10px;" src="/src/assets/lynx/kofi_symbol.png" />Support Don on ko-fi</a>
+            <a href="https://ko-fi.com/J3J614QOV1" target="_blank" class="myButton"><img class="kofi-img" src="/src/assets/lynx/kofi_symbol.png" />Support Don on ko-fi</a>
 
           </slot>
         </div>
@@ -412,5 +412,17 @@ const updateExpanseFaction = () => {
 
 .gr-logo {
   height: 150px;
+}
+.settings-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.settings-legal-grid {
+  display: grid;
+  grid-template-columns: 2fr 135px;
+}
+.kofi-img {
+  width: 24px;
+  margin-right: 10px;
 }
 </style>
