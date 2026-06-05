@@ -163,6 +163,7 @@ import { productLineStyle } from '@/utility/productLineStyle';
 import { useCharacterStore } from './sheet/stores/character/characterStore';
 import ShipView from './views/ShipView.vue';
 import { useBioStore } from './sheet/stores/bio/bioStore';
+import { loadLegacyAbilityScores, loadLegacyCharacterDetails, loadLegacyGroupings } from '@/utility/legacyAdapter';
 const showModal = ref(false)
 
 const store = useAgeSheetStore();
@@ -200,6 +201,10 @@ if(!settings.incomeMode) {
       settings.incomeMode = 'recources';
     }
   }
+
+loadLegacyAbilityScores(initValues.character?.attributes);
+loadLegacyCharacterDetails(initValues.character?.attributes);
+loadLegacyGroupings(initValues.character?.attributes);
 
 </script>
 
