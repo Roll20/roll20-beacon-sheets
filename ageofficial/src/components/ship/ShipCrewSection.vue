@@ -4,7 +4,7 @@
 
             <div v-for="role in shipCrewRoles" :key="role.value">
                 <button class="age-ship-crew-roll-btn" @click="onStuntRoll(role)">
-                        {{ role.label }}<font-awesome-icon :icon="['fa', 'dice']" style="margin-left:3px;" />
+                        {{ role.label }}<font-awesome-icon :icon="['fa', 'dice']" class="age-btn-icon" />
                     </button>
                 <!-- <button>
                     <span>{{ role.label }}</span>
@@ -15,15 +15,14 @@
         <h3>
             You have no crew!!
         </h3>
-        <button class="link-btn age-icon-btn" @click="openModal('new','crew')" style="background: none; font-weight: bold;border:none; font-size: 3rem;" v-tippy="{ content: 'Add Crew' }">
+        <button class="link-btn age-icon-btn crew-add-btn" @click="openModal('new','crew')" v-tippy="{ content: 'Add Crew' }">
             <font-awesome-icon :icon="['fa', 'circle-plus']" />
         </button>
     </div>
     <div v-else>
-        <h5 class="mt-3" style="position: relative;">
+        <h5 class="mt-3 age-section-relative">
             Members
-            <button class="link-btn age-icon-btn" @click="openModal('options',null)" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;position: absolute;
-    right: 10px; top: -2px;" v-tippy="{ content: 'Add Crew' }">
+            <button class="link-btn age-icon-btn age-section-action-btn" @click="openModal('options',null)" v-tippy="{ content: 'Add Crew' }">
                 <font-awesome-icon :icon="['fa', 'circle-plus']" />
             </button>
         </h5>
@@ -42,10 +41,9 @@
                 </div>
             </div>
         </div>
-        <h5 class="mt-3" style="position: relative">
+        <h5 class="mt-3 age-section-relative">
             Stunts
-            <button class="link-btn age-icon-btn" @click="openStuntNew()" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;position: absolute;
-    right: 10px; top: -2px;" v-tippy="{ content: 'Add Crew Stunt' }">
+            <button class="link-btn age-icon-btn age-section-action-btn" @click="openStuntNew()" v-tippy="{ content: 'Add Crew Stunt' }">
                 <font-awesome-icon :icon="['fa', 'circle-plus']" />
             </button>
         </h5>
@@ -59,22 +57,22 @@
                         <span>{{ stunt.name }}</span>
                         <span class="age-stunt-role-badge">{{ roleLabel(stunt.role) }}</span>
                     </div>
-                    <div style="display:grid;align-items:center;height:100%;"
+                    <div class="age-cell-center"
                         v-tippy="{ content: ship.shipStunts[stunt.role] < stunt.sp ? 'Not enough stunt points (' + ship.shipStunts[stunt.role] + ' available)' : ship.shipStunts[stunt.role] + ' SP available' }">
                         <button class="age-btn"
                             :disabled="ship.shipStunts[stunt.role] < stunt.sp"
                             :class="{ 'age-btn-disabled': ship.shipStunts[stunt.role] < stunt.sp }"
                             @click="ship.shipStunts[stunt.role] -= stunt.sp">
-                            {{ stunt.sp }} SP <font-awesome-icon :icon="['fa', 'dice']" style="margin-left:3px;" />
+                            {{ stunt.sp }} SP <font-awesome-icon :icon="['fa', 'dice']" class="age-btn-icon" />
                         </button>
                     </div>
-                    <div style="display:grid;align-items:center;height:100%;">
+                    <div class="age-cell-center">
                         <button type="button" class="config-btn age-icon-btn" @click="sendStuntToChat(stunt)"
                             v-tippy="{ content: 'Share ' + stunt.name + ' in chat' }">
                             <font-awesome-icon :icon="['fa', 'comment']" />
                         </button>
                     </div>
-                    <div style="display:grid;align-items:center;height:100%;">
+                    <div class="age-cell-center">
                         <button type="button" class="config-btn age-icon-btn" @click="openStuntEdit(stunt)"
                             v-tippy="{ content: 'Edit ' + stunt.name }">
                             <font-awesome-icon :icon="['fa', 'gear']" />
@@ -110,34 +108,34 @@
                         </div>
                 </button>
                 </div>
-                <div v-if="selectedModalOption === 'stunt'" class="row" style="margin:0">
-                    <div class="mb-3 col-12 col-sm-4" style="flex-direction:column;padding:0 2px;">
+                <div v-if="selectedModalOption === 'stunt'" class="row age-row">
+                    <div class="mb-3 col-12 col-sm-4 age-form-field">
                         <span class="age-input-label">Role</span>
                         <select v-model="stuntEntry.role" class="age-atk-select form-select">
                             <option v-for="r in shipCrewRoles" :key="r.value" :value="r.value">{{ r.label }}</option>
                         </select>
                     </div>
-                    <div class="mb-3 col-12 col-sm-4" style="flex-direction:column;padding:0 2px;">
+                    <div class="mb-3 col-12 col-sm-4 age-form-field">
                         <span class="age-input-label">SP Cost</span>
                         <input type="number" class="form-control" v-model.number="stuntEntry.sp" min="1" />
                     </div>
-                    <div class="mb-3 col-12 col-sm-4" style="flex-direction:column;padding:0 2px;">
+                    <div class="mb-3 col-12 col-sm-4 age-form-field">
                         <span class="age-input-label">Name</span>
                         <input type="text" class="form-control" v-model="stuntEntry.name" />
                     </div>
-                    <div class="mb-5 col-12" style="padding:0 2px;">
+                    <div class="mb-5 col-12 age-form-field">
                         <span class="age-input-label">Description</span>
                         <QuillEditor contentType="html" toolbar="" v-model:content="stuntEntry.description" />
                     </div>
                 </div>
-                <div v-if="selectedModalOption === 'crew' " class="row" style="margin:0">
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction: column;padding: 0 2px;">
+                <div v-if="selectedModalOption === 'crew' " class="row age-row">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span id="basic-addon1" class="age-input-label">Name</span>
                         <div>
                             <input type="text" class="form-control" aria-label="Crew Member Name" v-model="crewMember.name"  aria-describedby="basic-addon1">
                         </div>
                     </div>
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction: column;padding: 0 2px;">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span id="basic-addon1" class="age-input-label">Role Abilities</span>
                         <div>
                             <VueMultiselect
@@ -152,7 +150,7 @@
                                  :limit="2"
                                 :limit-text="limitText"
                                  @update:modelValue="updateSelected"
-                                 style="width: 100%; max-width: 300px;">
+                                 class="crew-multiselect">
                                  <!-- <template #option="props">
                                     <div class="option__desc" style="height:10px; min-height: 0; padding: 0;">
                                         <span class="option__title" style="font-size: 12px; padding:0">
@@ -165,43 +163,43 @@
                         </div>          
                     </div>
                         <div v-for="(ability, ind) of crewMember.ability" :key="ind" class="row">
-                            <div class="mb-3 col-12 col-sm-3" style="flex-direction: column;padding: 0 2px;">
+                            <div class="mb-3 col-12 col-sm-3 age-form-field">
                                 <span id="basic-addon1" class="age-input-label">{{ ability.ability }}</span>
                                 <div>
                                     <input type="number" class="form-control" aria-label="Crew Member Ability Value" v-model="crewMember.ability[ind].value"  aria-describedby="basic-addon1">
                                 </div>
                             </div>
-                            <div class="mb-3 col-5 col-sm-3" style="flex-direction: column;padding: 0 2px;">
-                        <span id="basic-addon1" class="age-input-label" style="margin-left: 10px; white-space: nowrap;">
+                            <div class="mb-3 col-5 col-sm-3 age-form-field">
+                        <span id="basic-addon1" class="age-input-label crew-ability-label">
                             {{ ability.ability }}
                             ({{ ability.focusValue }})
                         </span>
                             <div class="input-group">
-                                <label class="age-checkbox-toggle" style="margin:5px 1rem;">
+                                <label class="age-checkbox-toggle age-checkbox-label">
                                     <input type="checkbox"  v-model="crewMember.ability[ind].focus" />
                                     <span class="slider round" ></span>
                                 </label>
-                                <span class="age-toggle-label" style="white-space: nowrap;">Focus</span>
+                                <span class="age-toggle-label age-nowrap">Focus</span>
                             </div>   
                             </div> 
-                            <div class="mb-3 col-7 col-sm-3" style="flex-direction: column;padding: 0 2px;">
+                            <div class="mb-3 col-7 col-sm-3 age-form-field">
                             <span id="basic-addon1" class="age-input-label">&nbsp;</span>
                             <div class="input-group">
-                                <label class="age-checkbox-toggle" style="margin:5px 1rem;">
+                                <label class="age-checkbox-toggle age-checkbox-label">
                                     <input type="checkbox"  v-model="crewMember.ability[ind].doubleFocus" />
                                     <span class="slider round" ></span>
                                 </label>
-                                <span class="age-toggle-label" style="white-space: nowrap;">Double Focus</span>
+                                <span class="age-toggle-label age-nowrap">Double Focus</span>
                             </div>   
                             </div>
-                            <div class="mb-3 col-7 col-sm-3" style="flex-direction: column;padding: 0 2px;">
+                            <div class="mb-3 col-7 col-sm-3 age-form-field">
                             <span id="basic-addon1" class="age-input-label">Primary Role</span>
                             <div class="input-group">
-                                <label class="age-checkbox-toggle" style="margin:5px 1rem;">
+                                <label class="age-checkbox-toggle age-checkbox-label">
                                     <input type="checkbox"  v-model="crewMember.ability[ind].primary" />
                                     <span class="slider round" ></span>
                                 </label>
-                                <span class="age-toggle-label" style="white-space: nowrap;">Primary Role</span>
+                                <span class="age-toggle-label age-nowrap">Primary Role</span>
                             </div>   
                             </div>
                         </div>
@@ -371,6 +369,20 @@ async function sendStuntToChat(stunt) {
 }
 </script>
 <style scoped lang="scss">
+    .crew-add-btn {
+        font-size: 3rem;
+    }
+
+    .crew-multiselect {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .crew-ability-label {
+        margin-left: 10px;
+        white-space: nowrap;
+    }
+
     .age-no-crew-text {
         display: grid;
         align-items: center;

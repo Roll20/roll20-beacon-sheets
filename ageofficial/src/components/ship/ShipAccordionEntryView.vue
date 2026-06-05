@@ -8,20 +8,20 @@
                 <span v-else-if="weapon.offline" class="age-offline-badge">Offline</span>
             </div>
             <div class="age-ship-weapon-range">{{ weapon.range }}</div>
-            <div style="display:grid;align-items:center;height:100%;">
+            <div class="age-cell-center">
                 <button type="button" class="config-btn age-icon-btn" @click="onRollDamage"
                     :disabled="!weapon.damage || weapon.offline || props.systemOffline"
                     v-tippy="{ content: props.systemOffline ? 'System Offline' : weapon.offline ? 'Weapon Offline' : weapon.damage ? 'Roll ' + weapon.name + ' damage (' + weapon.damage + ')' : 'No damage formula set' }">
                     <font-awesome-icon :icon="['fa', 'dice']" />
                 </button>
             </div>
-            <div style="display:grid;align-items:center;height:100%;">
+            <div class="age-cell-center">
                 <button type="button" class="config-btn age-icon-btn" @click="onPrintDetails"
                     v-tippy="{ content: 'Share ' + weapon.name + ' in chat' }">
                     <font-awesome-icon :icon="['fa', 'comment']" />
                 </button>
             </div>
-            <div style="display:grid;align-items:center;height:100%;">
+            <div class="age-cell-center">
                 <button type="button" class="config-btn age-icon-btn" @click="$emit('edit', weapon)"
                     v-tippy="{ content: 'Edit ' + weapon.name }">
                     <font-awesome-icon :icon="['fa', 'gear']" />

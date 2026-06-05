@@ -1,11 +1,10 @@
 <template>
     <!-- SP point trackers -->
-    <div @mouseenter="spHover = true" @mouseleave="spHover = false"
-        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:5px;">
-        <div v-for="role of ROLES" :key="role.key" style="text-align:center;">
+    <div class="stunts-grid" @mouseenter="spHover = true" @mouseleave="spHover = false">
+        <div v-for="role of ROLES" :key="role.key" class="stunts-role-cell">
             <div class="age-ship-container-content">
-                <div style="display:flex;flex-direction:row;align-items:center;position:relative;">
-                    <div style="flex:1;width:15px;">
+                <div class="stunts-input-row">
+                    <div class="stunts-reset-slot">
                         <button class="age-icon-btn age-reset-btn"
                             v-if="ship.shipStunts[role.key] > 0 && spHover"
                             @click="ship.resetShipStunts(role.key)"
@@ -77,18 +76,18 @@
                 <h3 class="age-details-header">{{ modalMode === 'new' ? 'Add Stunt' : 'Edit Stunt' }}</h3>
             </template>
             <template #body>
-                <div class="row" style="margin:0;">
-                    <div class="mb-3 col-12 col-sm-4" style="flex-direction:column;padding:0 2px;">
+                <div class="row age-row">
+                    <div class="mb-3 col-12 col-sm-4 age-form-field">
                         <span class="age-input-label">Role</span>
                         <select v-model="stuntObj.role" class="age-atk-select form-select">
                             <option v-for="r of ROLES" :key="r.key" :value="r.key">{{ r.name }}</option>
                         </select>
                     </div>
-                    <div class="mb-3 col-12 col-sm-4" style="flex-direction:column;padding:0 2px;">
+                    <div class="mb-3 col-12 col-sm-4 age-form-field">
                         <span class="age-input-label">SP Cost</span>
                         <input type="number" class="form-control" v-model.number="stuntObj.sp" min="1" />
                     </div>
-                    <div class="mb-3 col-12 col-sm-4" style="flex-direction:column;padding:0 2px;">
+                    <div class="mb-3 col-12 col-sm-4 age-form-field">
                         <span class="age-input-label">Name</span>
                         <input type="text" class="form-control" v-model="stuntObj.name" />
                     </div>
@@ -194,6 +193,28 @@ const sendStuntToChat = async (stunt) => {
 </script>
 
 <style scoped>
+.stunts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 5px;
+}
+
+.stunts-role-cell {
+    text-align: center;
+}
+
+.stunts-input-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
+.stunts-reset-slot {
+    flex: 1;
+    width: 15px;
+}
+
 .age-ship-container-content {
     background: #FFF;
     width: fit-content;

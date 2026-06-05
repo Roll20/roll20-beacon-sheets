@@ -1,16 +1,14 @@
 <template>
     <div v-if="ship.weapons.length === 0" class="age-no-content-text">
         <h3>You have no weapons!! Load up!</h3>
-        <button class="link-btn age-icon-btn" @click="openModal('new')"
-            style="background: none; font-weight: bold; border:none; font-size: 3rem;"
+        <button class="link-btn age-icon-btn weapon-add-btn" @click="openModal('new')"
             v-tippy="{ content: 'Add Weapon' }">
             <font-awesome-icon :icon="['fa', 'circle-plus']" />
         </button>
     </div>
 
-    <div v-else style="padding: 15px 0 0; position: relative;">
-        <button class="link-btn age-icon-btn" @click="openModal('new')"
-            style="background: none; font-weight: bold; border:none; font-size: 1.5rem; position: absolute; right: 10px; top: -5px;"
+    <div v-else class="weapons-list-wrapper">
+        <button class="link-btn age-icon-btn age-section-action-btn weapons-add-floating" @click="openModal('new')"
             v-tippy="{ content: 'Add Weapon' }">
             <font-awesome-icon :icon="['fa', 'circle-plus']" />
         </button>
@@ -34,28 +32,28 @@
                 <h3 class="age-details-header">{{ modalMode === 'new' ? 'Add Weapon' : 'Edit Weapon' }}</h3>
             </template>
             <template #body>
-                <div class="row" style="margin:0">
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction: column; padding: 0 2px;">
+                <div class="row age-row">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span class="age-input-label">Name</span>
                         <input type="text" class="form-control" aria-label="Weapon Name" v-model="weaponObj.name" />
                     </div>
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction: column; padding: 0 2px;">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span class="age-input-label">Type</span>
                         <select v-model="weaponObj.type" class="age-atk-select form-select">
                             <option v-for="wt of weaponTypes" :value="wt.value" :key="wt.value">{{ wt.label }}</option>
                         </select>
                     </div>
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction: column; padding: 0 2px;">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span class="age-input-label">Range</span>
                         <select v-model="weaponObj.range" class="age-atk-select form-select">
                             <option v-for="wr of weaponRanges" :value="wr.value" :key="wr.value">{{ wr.label }}</option>
                         </select>
                     </div>
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction: column; padding: 0 2px;">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span class="age-input-label">Damage</span>
                         <input type="text" class="form-control" placeholder="e.g. 3d6" aria-label="Weapon Damage" v-model="weaponObj.damage" />
                     </div>
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction: column; padding: 0 2px;">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span class="age-input-label">Attacks Per Round</span>
                         <input type="number" class="form-control" min="1" aria-label="Attacks Per Round" v-model.number="weaponObj.attacksPerRound" />
                     </div>
@@ -154,6 +152,19 @@ const shipWeaponAttacks = computed(() => {
 </script>
 
 <style scoped>
+    .weapon-add-btn {
+        font-size: 3rem;
+    }
+
+    .weapons-list-wrapper {
+        padding: 15px 0 0;
+        position: relative;
+    }
+
+    .weapons-add-floating {
+        top: -5px;
+    }
+
     .age-no-content-text {
         display: grid;
         align-items: center;

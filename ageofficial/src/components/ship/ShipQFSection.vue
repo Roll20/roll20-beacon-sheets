@@ -2,8 +2,7 @@
     <div class="accordion age-accordion">
         <div v-if="shipStore.qualityFlaws.length === 0" class="age-no-content-text">
             <h3>No qualities or flaws added.</h3>
-            <button class="link-btn age-icon-btn" @click="openNew"
-                style="background: none; font-weight: bold; border: none; font-size: 3rem;"
+            <button class="link-btn age-icon-btn qf-add-btn" @click="openNew"
                 v-tippy="{ content: 'Add Quality/Flaw' }">
                 <font-awesome-icon :icon="['fa', 'circle-plus']" />
             </button>
@@ -26,13 +25,13 @@
                     <span>{{ qf.name }}</span>
                     <span class="age-qf-badge" :class="qf.type">{{ qf.type ? qf.type.charAt(0).toUpperCase() + qf.type.slice(1) : '—' }}</span>
                 </div>
-                <div style="display:grid;align-items:center;grid-template-columns:1fr;height:100%;">
+                <div class="age-cell-center">
                     <button type="button" class="config-btn age-icon-btn" @click="sendQFToChat(qf)"
                         v-tippy="{ content: 'Share ' + qf.name + ' in chat' }">
                         <font-awesome-icon :icon="['fa', 'comment']" />
                     </button>
                 </div>
-                <div style="display:grid;align-items:center;grid-template-columns:1fr;height:100%;">
+                <div class="age-cell-center">
                     <button type="button" class="config-btn age-icon-btn" @click="openEdit(qf)"
                         v-tippy="{ content: 'Edit ' + qf.name }">
                         <font-awesome-icon :icon="['fa', 'gear']" />
@@ -62,12 +61,12 @@
                 <h3 class="age-details-header">{{ modalMode === 'new' ? 'Add Quality/Flaw' : 'Edit Quality/Flaw' }}</h3>
             </template>
             <template #body>
-                <div class="row" style="margin:0">
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction:column;padding:0 2px;">
+                <div class="row age-row">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span class="age-input-label">Name</span>
                         <input type="text" class="form-control" v-model="qfObj.name" aria-label="Quality/Flaw Name" />
                     </div>
-                    <div class="mb-3 col-12 col-sm-6" style="flex-direction:column;padding:0 2px;">
+                    <div class="mb-3 col-12 col-sm-6 age-form-field">
                         <span class="age-input-label">Type</span>
                         <select v-model="qfObj.type" class="age-atk-select form-select">
                             <option value="">— Select —</option>
@@ -160,6 +159,10 @@ async function sendQFToChat(qf) {
 </script>
 
 <style scoped>
+.qf-add-btn {
+    font-size: 3rem;
+}
+
 .age-ship-qf-header {
     display: grid;
     grid-template-columns: 3fr 25px 25px 40px;

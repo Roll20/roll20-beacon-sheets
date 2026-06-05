@@ -9,14 +9,14 @@
                 </div>
                 <div class="modal-body">
                     <div v-if="type === 'shipDetails'">
-                        <div class="row" style="margin:0">
-                            <div class="mb-3 col-6" style="flex-direction: column;padding: 0 2px;">
+                        <div class="row age-row">
+                            <div class="mb-3 col-6 age-form-field">
                                 <span id="basic-addon1" class="age-input-label">Name</span>
                                 <div>
                                     <input type="text" class="form-control" aria-label="Ship Name" v-model="meta.name"  aria-describedby="basic-addon1">
                                 </div>
                             </div>
-                            <div class="mb-3 col-6" v-if="isGM" style="flex-direction: column;padding: 0 2px;">
+                            <div class="mb-3 col-6 age-form-field" v-if="isGM">
                                 <span id="basic-addon1" class="age-input-label">Type</span>
                                 <div>
                                     <select  id="bio.profession" v-model="bio.type" class="age-atk-select form-select">
@@ -28,27 +28,27 @@
                             </div>
                         </div>
                         
-                        <div class="row" style="margin:0">
-                            <div class="mb-3 col-6" style="flex-direction: column;padding: 0 2px;">
+                        <div class="row age-row">
+                            <div class="mb-3 col-6 age-form-field">
                                 <span id="basic-addon1" class="age-input-label">Length (meters)</span>
                                 <div>
                                     <div class="input-with-unit">
                                         <input id="shipLength" type="number" :min="0" class="form-control" aria-label="Ship Length" v-model="ship.length" aria-describedby="basic-addon1">
                                     </div>
                                      <div>
-                                         <span style="margin-right: 6px;">Size: {{ computedShipSize.size }}</span>
-                                         <span style="margin-right: 6px;">Hull: {{ computedShipSize.hull }}</span>
+                                         <span class="ship-stat-label">Size: {{ computedShipSize.size }}</span>
+                                         <span class="ship-stat-label">Hull: {{ computedShipSize.hull }}</span>
                                          <span>Crew: {{ computedShipSize.crewMin }} ({{ computedShipSize.crewAvg }})</span>
                                      </div>
                                 </div>
                             </div>
-                            <div class="mb-3 col-6" style="flex-direction: column;padding: 0 2px;">
+                            <div class="mb-3 col-6 age-form-field">
                                 <span id="basic-addon1" class="age-input-label">Sensors</span>
                                 <div>
                                     <input type="number" class="form-control" aria-label="Ship Sensors" v-model.number="ship.sensorsBase"  aria-describedby="basic-addon1">
                                 </div>
                             </div>
-                            <div class="input-group mb-3" style="flex-direction: column;padding: 0 2px;">
+                            <div class="input-group mb-3 age-form-field">
                             <span id="basic-addon1" class="age-input-label">Drive</span>
                                 <VueMultiselect
                                 v-model="ship.drive"
@@ -60,7 +60,7 @@
                                  :showLabels="false"
                                  :searchable="false"
                                  :optionHeight="10"
-                                 style="width: 100%; max-width: 300px;">
+                                 class="ship-drive-multiselect">
                                  <!-- <template #option="props">
                                     <div class="option__desc" style="height:10px; min-height: 0; padding: 0;">
                                         <span class="option__title" style="font-size: 12px; padding:0">
@@ -102,6 +102,16 @@ import VueMultiselect from 'vue-multiselect'
     ];
     const dropdownOpen = ref(false);
 </script>
+<style scoped>
+.ship-stat-label {
+  margin-right: 6px;
+}
+
+.ship-drive-multiselect {
+  width: 100%;
+  max-width: 300px;
+}
+</style>
 <style>
     .model-cntr {
         min-width: 300px;
