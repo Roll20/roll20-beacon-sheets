@@ -10,9 +10,9 @@
             <div class="age-ability-scores">
               <div v-for="score in abilityScoresArray" :key="score.label" >
                 <div class="mb-3 col">
-                    <span class="age-input-label" id="basic-addon1" style="display: flex;justify-content: space-between;;">
+                    <span class="age-input-label ability-label-row" id="basic-addon1">
                       {{ score.label }}
-                      <label class="age-checkbox-toggle" style="width: 18px;" v-tippy="{content:'Pending Ability Score Upgrade'}">
+                      <label class="age-checkbox-toggle ability-toggle-compact" v-tippy="{content:'Pending Ability Score Upgrade'}">
                         <input type="checkbox"  v-model="score.partialAdvancement" />
                         <span class="slider round" ></span>
                       </label>
@@ -56,3 +56,12 @@ const updateScore = (label, value, type) => {
   useAbilityScoreStore().abilityScores = convertedArray;
 };
 </script>
+<style scoped>
+.ability-label-row {
+  display: flex;
+  justify-content: space-between;
+}
+.ability-toggle-compact {
+  width: 18px;
+}
+</style>

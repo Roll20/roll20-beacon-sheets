@@ -21,7 +21,7 @@
                       ]" 
               :key="condition._id">
           {{ condition.name }}
-          <label class="age-checkbox-toggle" style="margin:1rem;">
+          <label class="age-checkbox-toggle age-checkbox-label">
                                 <input type="checkbox"  v-model="condition.enabled" @change="toggleCondition(condition)" />
                                 <span class="slider round" ></span>
                             </label>

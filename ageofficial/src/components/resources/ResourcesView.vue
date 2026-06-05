@@ -8,7 +8,7 @@
             <div class="age-container-content-corner-top-right"></div>
             <div class="age-container-content-corner-bottom-left"></div>
           </div>
-          <h1 class="age-section-header" style="text-align: center;">
+          <h1 class="age-section-header resources-header">
             Resources
           </h1>
         </div>
@@ -20,3 +20,8 @@ import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 
 const cash = useInventoryStore().cash
 </script>
+<style scoped>
+.resources-header {
+  text-align: center;
+}
+</style>

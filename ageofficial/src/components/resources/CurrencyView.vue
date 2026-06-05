@@ -6,7 +6,7 @@
       <div class="age-currency-container">
                     <div class="age-currency-container__coin">
                       <div class="age-currency-container__coin-gold">
-                        <span style="padding-top:5px;" v-tippy="{ content: '<p>Gold</p><p>1 Gold = 10 Silver Pieces or 100 Copper Pieces</p>' }">
+                        <span class="coin-label" v-tippy="{ content: '<p>Gold</p><p>1 Gold = 10 Silver Pieces or 100 Copper Pieces</p>' }">
                           G
                         </span>
                       </div>
@@ -14,7 +14,7 @@
                     </div>
                     <div class="age-currency-container__coin">
                       <div  class="age-currency-container__coin-silver">
-                        <span style="padding-top:5px;" v-tippy="{ content: '<p>Silver</p><p>1 Silver Piece = 10 Copper Pieces</p>' }">
+                        <span class="coin-label" v-tippy="{ content: '<p>Silver</p><p>1 Silver Piece = 10 Copper Pieces</p>' }">
                           S
                         </span> 
                       </div>
@@ -22,7 +22,7 @@
                     </div>
                     <div class="age-currency-container__coin">
                       <div  class="age-currency-container__coin-copper">
-                        <span style="padding-top:5px;">
+                        <span class="coin-label">
                           C
                         </span> 
                       </div>
@@ -36,3 +36,8 @@ import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 
 const cash = useInventoryStore().cash
 </script>
+<style scoped>
+.coin-label {
+  padding-top: 5px;
+}
+</style>

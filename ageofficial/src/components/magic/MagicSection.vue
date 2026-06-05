@@ -1,11 +1,11 @@
 <template>  
   <div class="age-content">
-    <div style="padding: 6px;" >
-      <div style="width: 100%;display: flex;justify-content: space-between;padding:5px 0;">
-        <div style="padding: 15px 6px 6px;width: 100%;" v-if="spellStore.spells.length === 0">
-          Your {{ magicLabel }} is empty. 
+    <div class="magic-section-body">
+      <div class="magic-section-header">
+        <div class="magic-empty-msg" v-if="spellStore.spells.length === 0">
+          Your {{ magicLabel }} is empty.
         </div>
-          <div style="display: flex;gap: 5px;">
+          <div class="magic-controls">
             <div class="age-search-input"  v-if="spellStore.spells.length > 0">
               <input class="form-control " v-model="spellFilter" placeholder="Search by Spell Name" />
               <button class="age-icon-btn age-search-input-clear-btn" v-if="spellFilter" @click="spellFilter = ''">
@@ -21,7 +21,7 @@
           </div>   
           </div>
             
-          <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;" v-tippy="{ content: 'Add ' + magicLabel }">
+          <button class="link-btn age-icon-btn magic-add-btn" @click="showModal = true" v-tippy="{ content: 'Add ' + magicLabel }">
             <font-awesome-icon :icon="['fa', 'circle-plus']" />
           </button>
         </div>
@@ -162,6 +162,26 @@ let spellNew = ref({
 </script>
 
 <style scoped lang="scss">
+.magic-section-body {
+  padding: 6px;
+}
+.magic-section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+.magic-empty-msg {
+  padding: 15px 6px 6px;
+  width: 100%;
+}
+.magic-controls {
+  display: flex;
+  gap: 5px;
+}
+.magic-add-btn {
+  font-size: 1.5rem;
+}
 .traits {
   &__body {
   }

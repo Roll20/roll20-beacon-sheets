@@ -1,7 +1,7 @@
 <template>
     <div class="accordion-header age-spell-accordion-header">
-        <div class="" style="font-size: 1rem; padding:0.5rem;">
-            <div class="label" data-testid="test-spell-header" style="flex:1;">{{ spell.name }}<br />({{ spell.requirements }})</div>     
+        <div class="spell-icon-wrapper">
+            <div class="label spell-label-flex" data-testid="test-spell-header">{{ spell.name }}<br />({{ spell.requirements }})</div>     
         </div>
         <div>
             <img v-if="spell.arcanaType && settings.gameSystem !== 'blue rose'" :src="'/src/assets/arcana/' + spell.arcanaType.toLowerCase() + '.png'" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
@@ -213,6 +213,13 @@ const selectedAttack = () => {
 </script>
 
 <style scoped lang="scss">
+.spell-icon-wrapper {
+  font-size: 1rem;
+  padding: 0.5rem;
+}
+.spell-label-flex {
+  flex: 1;
+}
 .age-cost-tn-number {
     font-size: 1.25rem;
     font-weight: 500;
