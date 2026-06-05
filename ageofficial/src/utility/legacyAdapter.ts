@@ -1,3 +1,14 @@
+/**
+ * FUTURE FEATURE — Legacy Sheet Migration
+ *
+ * This module is intended to migrate character data from the old Roll20 sheet
+ * format (repeating_* attributes) into the Beacon SDK store. It is not yet
+ * active. All function bodies are currently commented out.
+ *
+ * Do NOT import or call these functions from the live sheet until the migration
+ * logic is fully implemented and tested. Track progress in CLAUDE.md under
+ * "Planned Features".
+ */
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
 import { useCharacterStore } from '@/sheet/stores/character/characterStore';
 import { useBioStore } from '@/sheet/stores/bio/bioStore';

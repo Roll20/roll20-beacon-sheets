@@ -147,21 +147,19 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useAgeSheetStore } from './sheet/stores';
-import BioSection from '@/components/character/BioSection.vue';
 import PCView from './views/PCView.vue';
 import NPCView from './views/NPCView.vue';
 import { initValues } from './relay/relay';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
 import SettingsView from './views/SettingsView.vue';
-import { settingsSheet } from '@/relay/relay';
+
 import SidebarSection from './components/SidebarSection.vue';
 import NewSplashView from './views/NewSplashView.vue';
 import { productLineStyle } from '@/utility/productLineStyle';
-import {legacyCurrency, loadLegacyAbilityScores,loadLegacyCharacterDetails,loadLegacyGroupings} from '@/utility/legacyAdapter';
 import { useCharacterStore } from './sheet/stores/character/characterStore';
 import ShipView from './views/ShipView.vue';
 import { useBioStore } from './sheet/stores/bio/bioStore';
@@ -204,19 +202,6 @@ if(!settings.incomeMode) {
       settings.incomeMode = 'recources';
     }
   }
-function setIncomeModeIfNull() {
-  if(!settings.incomeMode) {
-    if(settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e') {
-      settings.incomeMode = 'currency';
-    } else {
-      settings.incomeMode = 'recources';
-    }
-  }
-}
-setIncomeModeIfNull();
-loadLegacyAbilityScores(initValues.character.attributes);
-loadLegacyCharacterDetails(initValues.character.attributes);
-loadLegacyGroupings(initValues.character.attributes);
 
 </script>
 
