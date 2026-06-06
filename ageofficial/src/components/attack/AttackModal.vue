@@ -80,6 +80,7 @@
                         <span class="age-input-label" id="basic-addon1">Long Range</span>
                         <input type="text" class="form-control" aria-label="Character Name" v-model="attack.longRange"  aria-describedby="basic-addon1">
                     </div>
+										
                     <div class="mb-3 col">
                     <span class="age-input-label" id="basic-addon1">Reload</span>
                         <select
@@ -92,6 +93,31 @@
                             <option value="Major">Major Action</option>
                         </select>
                 </div>
+				<div class="row">
+  <div class="mb-3 col">
+    <span class="age-input-label" id="basic-addon1">Damage Qualities</span>
+    <input
+      type="text"
+      class="form-control"
+      aria-label="Damage Qualities"
+      placeholder="Qualities eg: Damage [[1d6]]"
+      v-model="attack.damageQualities"
+      aria-describedby="basic-addon1"
+    >
+  </div>
+
+  <div class="mb-3 col">
+    <span class="age-input-label" id="basic-addon1">Damage Flaws</span>
+    <input
+      type="text"
+      class="form-control"
+      aria-label="Damage Flaws"
+      placeholder="Flaws eg: Damage [[1d6]]"
+      v-model="attack.damageFlaws"
+      aria-describedby="basic-addon1"
+    >
+  </div>
+</div>
                 </div>
                 <div class="row" v-if="attack.weaponType === 'Spell Ranged'">
                     <div class="mb-3 col">

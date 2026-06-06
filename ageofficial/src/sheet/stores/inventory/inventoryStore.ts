@@ -36,6 +36,8 @@ export type Weapon = Item & {
   shortRange?:number | null;
   longRange?:number | null;
   reload?:string;
+  damageQualities?: string;
+  damageFlaws?: string;
   configurable:boolean
   minStr?: number;
   damageType?:string;
@@ -180,6 +182,8 @@ export const useInventoryStore = defineStore('inventory', () => {
         ability: newItem ? newItem.ability : '',
         weaponGroup: newItem ? newItem.weaponGroup : '',
         weaponGroupAbility:newItem ? newItem.weaponGroupAbility : '',
+		damageQualities: newItem ? newItem.damageQualities : '',
+        damageFlaws: newItem ? newItem.damageFlaws : '',
         shortRange:newItem ? newItem.shortRange : '',
         longRange:newItem ? newItem.longRange : '',
         reload:newItem ? newItem.reload : '',

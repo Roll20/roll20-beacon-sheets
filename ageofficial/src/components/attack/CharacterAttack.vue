@@ -57,6 +57,7 @@
         <button class="age-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           Damage
         </button>
+		
         <!-- {{ totalBonus }} <br /> -->
         <!-- {{ useModifiersStore().getDamageBonus() || 'X'}}
         {{ useModifiersStore().damageMod || 'X'}} -->
