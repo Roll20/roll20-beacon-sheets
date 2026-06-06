@@ -59,10 +59,11 @@
     </div>
   </div>
 </div>
+</div>
 
 <div class="row" style="margin:0">
   <div class="mb-3 col">
-    <span class="age-input-label" id="basic-addon1">Qualities</span>
+    <span class="age-input-label" id="basic-addon1">Item Qualitie </span>
     <input
       type="text"
       class="form-control"
@@ -71,7 +72,7 @@
     >
   </div>
   <div class="mb-3 col">
-    <span class="age-input-label" id="basic-addon1">Flaws</span>
+    <span class="age-input-label" id="basic-addon1">Item Flaws</span>
     <input
       type="text"
       class="form-control"
