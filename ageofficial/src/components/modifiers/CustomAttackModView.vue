@@ -27,11 +27,28 @@
     <div v-if="mod.weaponType === 'Spell Ranged' || mod.weaponType === 'Ranged'">
         <input type="number"  class="form-control" placeholder="Long Range"  v-model="mod.longRange" />
     </div>
-    <div style="width: 75px;">
+    <div>
         <input type="text"  class="form-control" placeholder="1d6"  v-model="mod.damage" />
     </div>
+	<div>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Qualities"
+    v-model="mod.damageQualities"
+  />
+</div>
+<div>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Flaws"
+    v-model="mod.damageFlaws"
+  />
+</div>
                       
     </div>
+   
 </template>
 <script setup>
 import { ref } from 'vue';
@@ -44,3 +61,21 @@ const props = defineProps({
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower']
 const weaponTypes = ['Melee','Natural','Ranged','Spell Melee','Spell Ranged']
 </script>
+
+<style scoped>
+.custom-attack-mod {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  align-items: start;
+}
+
+.custom-attack-mod > div {
+  flex: 1 1 150px;
+}
+
+.custom-attack-mod__damage {
+  flex: 0 0 95px;
+}
+</style>

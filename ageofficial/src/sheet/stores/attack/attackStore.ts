@@ -129,19 +129,28 @@ export const useAttackStore = defineStore('attacks', () => {
     if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
       components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
     }
-    await rollToChat({
-      characterName: useMetaStore().name,
-      title: weapon.name,
-      rollType:'attack',
-      components
-    });
+   await rollToChat({
+  characterName: useMetaStore().name,
+  title: weapon.name,
+  rollType: 'attack',
+  keyValues: {
+    'Damage Qualities': weapon.damageQualities || '',
+    'Damage Flaws': weapon.damageFlaws || '',
+  },
+  components
+});
   };
   const printAttackDetails = async (weapon: any, bonus?:number,focus?:any) => {
     if (!weapon) return;
     await sendToChat({
       title: weapon.name,
       subtitle: weapon.weaponType,
-      traits: ['Weapon Type: ' + weapon.weaponType, 'Weapon Group: ' + weapon.weaponGroup],
+      traits: [
+  'Weapon Type: ' + weapon.weaponType,
+  weapon.weaponGroup ? 'Weapon Group: ' + weapon.weaponGroup : '',
+  weapon.damageQualities ? 'Damage Qualities: ' + weapon.damageQualities : '',
+  weapon.damageFlaws ? 'Damage Flaws: ' + weapon.damageFlaws : '',
+].filter(Boolean),
       description: weapon.description,
     });
   }
@@ -189,18 +198,24 @@ export const useAttackStore = defineStore('attacks', () => {
     components.push(      
       { label: 'Modifier', value: isNaN(modifier.value) ? 0 : modifier.value }, // Ensure modifier is a number
     );
-    await rollToChat({
-      characterName: useMetaStore().name,
-      title: attack.name,
-      rollType:'damage',
-      components
-    });
-  }
+	await rollToChat({
+	characterName: useMetaStore().name,
+	title: attack.name,
+	rollType: 'damage',
+	keyValues: {
+    'Damage Qualities': attack.damageQualities || '',
+    'Damage Flaws': attack.damageFlaws || '',
+  },
+  components
+});
+  };
   const setCurrentAttack = (_id: string) => {
     const attack = attacks.value.find((item) => item._id === _id);
     if (!attack) return;
     selectedAttack = attack;
   };
+
+  
   /*
    * Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id
    * */
