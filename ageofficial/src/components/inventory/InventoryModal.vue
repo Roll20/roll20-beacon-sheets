@@ -45,14 +45,42 @@
                     </div>
                   </div>
                 </div>
-                <div class="row" style="margin:0">
-                  <div class="mb-3 col">
-                    <span class="age-input-label" id="basic-addon1">Cost</span>
-                    <div>
-                      <input type="text" class="form-control" aria-label="Quantity" v-model="item.cost"  aria-describedby="basic-addon1">
-                    </div>
-                  </div>
-                </div>
+                                 <div class="row" style="margin:0">
+  <div class="mb-3 col">
+    <span class="age-input-label" id="basic-addon1">Cost</span>
+    <div>
+      <input
+        type="text"
+        class="form-control"
+        aria-label="Cost"
+        v-model="item.cost"
+        aria-describedby="basic-addon1"
+      >
+    </div>
+  </div>
+</div>
+
+<div class="row" style="margin:0">
+  <div class="mb-3 col">
+    <span class="age-input-label" id="basic-addon1">Qualities</span>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Qualities"
+      v-model="item.qualities"
+    >
+  </div>
+  <div class="mb-3 col">
+    <span class="age-input-label" id="basic-addon1">Flaws</span>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Flaws"
+      v-model="item.flaws"
+    >
+  </div>
+</div>
+
                 <div class="row" style="margin:0" v-if="isArmor || isShield">
 
                   <div class="mb-3 col" v-if="isArmor">

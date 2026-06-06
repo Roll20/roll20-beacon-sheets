@@ -172,7 +172,9 @@ export const useInventoryStore = defineStore('inventory', () => {
       description: newItem ? newItem.description : '',
       type: newItem ? newItem.type : '',
       quantity: newItem ? newItem.quantity : '',
-      cost: newItem.cost || ''
+      cost: newItem.cost || '',
+	  qualities: newItem ? newItem.qualities : '',
+	flaws: newItem ? newItem.flaws : '',
     };
     if(newItem.type === 'weapon'){
       Object.assign(emptyItem,{
@@ -182,9 +184,7 @@ export const useInventoryStore = defineStore('inventory', () => {
         ability: newItem ? newItem.ability : '',
         weaponGroup: newItem ? newItem.weaponGroup : '',
         weaponGroupAbility:newItem ? newItem.weaponGroupAbility : '',
-		damageQualities: newItem ? newItem.damageQualities : '',
-        damageFlaws: newItem ? newItem.damageFlaws : '',
-        shortRange:newItem ? newItem.shortRange : '',
+		shortRange:newItem ? newItem.shortRange : '',
         longRange:newItem ? newItem.longRange : '',
         reload:newItem ? newItem.reload : '',
         minStr: newItem.minStr || 0,
