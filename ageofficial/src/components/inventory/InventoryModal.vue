@@ -204,30 +204,31 @@
                         aria-describedby="basic-addon1" v-model="item.damage">
                   </div>
                 </div>
-				 <div class="mb-3 col">
-    <span class="age-input-label" id="basic-addon1">Damage Qualities</span>
-    <input
-      type="text"
-      class="form-control"
-      placeholder="Qualities"
-      aria-label="Damage Qualities"
-      v-model="item.damageQualities"
-      aria-describedby="basic-addon1"
-    />
-  </div>
+				     <div class="row" style="margin:0">
+                  <div class="mb-3 col">
+                    <span class="age-input-label" id="basic-addon1">Damage Qualities</span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Qualities"
+                      aria-label="Damage Qualities"
+                      v-model="item.damageQualities"
+                      aria-describedby="basic-addon1"
+                    />
+                  </div>
 
-  <div class="mb-3 col">
-    <span class="age-input-label" id="basic-addon1">Damage Flaws</span>
-    <input
-      type="text"
-      class="form-control"
-      placeholder="Flaws"
-      aria-label="Damage Flaws"
-      v-model="item.damageFlaws"
-      aria-describedby="basic-addon1"
-    />
-  </div>
-</div>
+                  <div class="mb-3 col">
+                    <span class="age-input-label" id="basic-addon1">Damage Flaws</span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Flaws"
+                      aria-label="Damage Flaws"
+                      v-model="item.damageFlaws"
+                      aria-describedby="basic-addon1"
+                    />
+                  </div>
+                </div>
                 <div class="row" style="margin:0">
                   <div class="mb-3 col" v-if="settings.gameSystem === 'mage' || settings.gameSystem === 'expanse'">
                     <span class="age-input-label" id="basic-addon1">Damage Source</span>
