@@ -833,6 +833,19 @@ body {
     border-radius: 2px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     transition: all 0.3s ease;
+    & button {
+      margin: 0;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      &.link-btn {
+        padding: 0.25rem;
+        font-weight: bold;
+        font-size: 14px;
+        transition: color 0.2s ease-in-out;
+      }
+    }
     & .age-modal-header,
     .age-modal-details-header {
       display: flex;
