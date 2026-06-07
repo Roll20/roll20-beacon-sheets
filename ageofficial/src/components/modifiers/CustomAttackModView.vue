@@ -61,21 +61,3 @@ const props = defineProps({
 const abilities = ['Accuracy', 'Communication','Constitution','Dexterity','Fighting','Intelligence','Perception','Strength','Willpower']
 const weaponTypes = ['Melee','Natural','Ranged','Spell Melee','Spell Ranged']
 </script>
-
-<style scoped>
-.custom-attack-mod {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: 100%;
-  align-items: start;
-}
-
-.custom-attack-mod > div {
-  flex: 1 1 150px;
-}
-
-.custom-attack-mod__damage {
-  flex: 0 0 95px;
-}
-</style>

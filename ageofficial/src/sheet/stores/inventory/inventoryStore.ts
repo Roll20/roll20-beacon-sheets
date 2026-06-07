@@ -22,6 +22,8 @@ export type Item = {
   description: string;
   quantity: number;
   cost:string;
+  qualities?: string;
+  flaws?: string;
 };
 
 export type Weapon = Item & {
@@ -172,9 +174,9 @@ export const useInventoryStore = defineStore('inventory', () => {
       description: newItem ? newItem.description : '',
       type: newItem ? newItem.type : '',
       quantity: newItem ? newItem.quantity : '',
-      cost: newItem.cost || '',
-	  qualities: newItem ? newItem.qualities : '',
-	flaws: newItem ? newItem.flaws : '',
+      cost: newItem?.cost ?? '',
+      qualities: newItem?.qualities ?? '',
+      flaws: newItem?.flaws ?? '',
     };
     if(newItem.type === 'weapon'){
       Object.assign(emptyItem,{
@@ -187,6 +189,8 @@ export const useInventoryStore = defineStore('inventory', () => {
 		shortRange:newItem ? newItem.shortRange : '',
         longRange:newItem ? newItem.longRange : '',
         reload:newItem ? newItem.reload : '',
+        damageQualities: newItem?.damageQualities ?? '',
+        damageFlaws: newItem?.damageFlaws ?? '',
         minStr: newItem.minStr || 0,
         configurable:true,
       })

@@ -61,7 +61,7 @@
 </div>
 
 
-            <div class="row" style="margin: 0" v-if="item.type !== 'weapon'">
+            <div class="row" style="margin: 0">
   <div class="mb-3 col">
     <span class="age-input-label" id="basic-addon1">Item Qualities</span>
     <input

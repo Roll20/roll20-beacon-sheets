@@ -17,6 +17,8 @@ interface Attack {
   description: string;
   ability:string;
   damage:string;
+  damageQualities?: string;
+  damageFlaws?: string;
   weaponGroup:string;
   weaponGroupAbility:string;
   shortRange:number | null;
@@ -129,16 +131,16 @@ export const useAttackStore = defineStore('attacks', () => {
     if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
       components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
     }
-   await rollToChat({
-  characterName: useMetaStore().name,
-  title: weapon.name,
-  rollType: 'attack',
-  keyValues: {
-    'Damage Qualities': weapon.damageQualities || '',
-    'Damage Flaws': weapon.damageFlaws || '',
-  },
-  components
-});
+    await rollToChat({
+      characterName: useMetaStore().name,
+      title: weapon.name,
+      rollType: 'attack',
+      keyValues: {
+        'Damage Qualities': weapon.damageQualities || '',
+        'Damage Flaws': weapon.damageFlaws || '',
+      },
+      components
+    });
   };
   const printAttackDetails = async (weapon: any, bonus?:number,focus?:any) => {
     if (!weapon) return;
@@ -198,16 +200,16 @@ export const useAttackStore = defineStore('attacks', () => {
     components.push(      
       { label: 'Modifier', value: isNaN(modifier.value) ? 0 : modifier.value }, // Ensure modifier is a number
     );
-	await rollToChat({
-	characterName: useMetaStore().name,
-	title: attack.name,
-	rollType: 'damage',
-	keyValues: {
-    'Damage Qualities': attack.damageQualities || '',
-    'Damage Flaws': attack.damageFlaws || '',
-  },
-  components
-});
+    await rollToChat({
+      characterName: useMetaStore().name,
+      title: attack.name,
+      rollType: 'damage',
+      keyValues: {
+        'Damage Qualities': attack.damageQualities || '',
+        'Damage Flaws': attack.damageFlaws || '',
+      },
+      components
+    });
   };
   const setCurrentAttack = (_id: string) => {
     const attack = attacks.value.find((item) => item._id === _id);
