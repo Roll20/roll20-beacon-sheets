@@ -10,7 +10,7 @@
           <div >
             <div class="row"> 
               <div class="mb-3 col">
-                <span class="age-input-label" id="basic-addon1">{{ magicLabel }} Name</span>
+                <span class="age-input-label" id="basic-addon1">{{ spellTerminology.nameLabel }} </span>
                 <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="spell.name"  aria-describedby="basic-addon1">
               </div>
               <div class="mb-3 col">
@@ -28,11 +28,11 @@
               </div>
               <div class="row">
                 <div v-if="spell.arcanaType === 'custom'" class="mb-3 col">
-                          <span class="age-input-label" id="basic-addon1">{{magicPoints}} Cost</span>
+                          <span class="age-input-label" id="basic-addon1">{{ spellTerminology.pointsLabel }} </span>
                           <input type="number" class="form-control" placeholder="Name" aria-label="Character Name" v-model="spell.mpCost"  aria-describedby="basic-addon1">
                       </div>
                   <div class="mb-3 col">
-                      <span class="age-input-label" id="basic-addon1">{{ magicLabel }} Req.</span>
+                      <span class="age-input-label" id="basic-addon1">{{ spellTerminology.requirementLabel }} </span>
                           <select
                           class="age-atk-select form-select"
                               data-testid="test-spell-weaponType-input"
@@ -89,10 +89,10 @@
                               <option value="Major">Major Action</option>
                           </select>
                   </div>
-                  <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
-                      <span class="age-input-label" id="basic-addon1">Test</span>
-                      <input type="text" class="form-control" placeholder="ex. Strength(Might)" aria-label="Spell Test" v-model="spell.spellTest"  aria-describedby="basic-addon1">
-                  </div>
+                 <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
+  <span class="age-input-label" id="basic-addon1">{{ spellTerminology.testLabel }}</span>
+  <input type="text" class="form-control" placeholder="ex. Strength(Might)" aria-label="Spell Test" v-model="spell.spellTest" aria-describedby="basic-addon1">
+</div>
                   <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
                       <span class="age-input-label" id="basic-addon1">Test</span>
                       <select
@@ -305,7 +305,35 @@ const props = defineProps({
   mode: String,
   magicLabel:String
 })
+const spellTerminology = computed(() => {
+  switch (settings.gameSystem) {
+    case 'fage1e':
+    case 'fage2e':
+    case 'mage':
+      return {
+        nameLabel: 'Spell Name',
+        requirementLabel: 'Arcana Talent Req.',
+        testLabel: 'Resistance Test',
+        pointsLabel: magicPoints.value,
+      };
 
+    case 'threefold':
+      return {
+        nameLabel: 'Spell Name',
+        requirementLabel: 'Arcana Talent Req.',
+        testLabel: 'Resistance Test',
+        pointsLabel: 'Kanna',
+      };
+
+    default:
+      return {
+        nameLabel: `${props.magicLabel} Name`,
+        requirementLabel: `${props.magicLabel} Req.`,
+        testLabel: 'Test',
+        pointsLabel: magicPoints.value,
+      };
+  }
+});
 const settings = useSettingsStore();
 const magicTypes = ref();
 const magicPoints = computed(() => settings.gameSystem === 'mage' ? settings.userPowerFatigue ? 'Power' : 'PP' : 'MP');
