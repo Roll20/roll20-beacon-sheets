@@ -37,7 +37,7 @@
               "
             >
               <span class="age-input-label" id="basic-addon1"
-                >Genre Slice Theme</span
+                >Theme</span
               >
               <select
                 id="char.originFaction"
@@ -96,7 +96,7 @@
               settings.gameSystem === 'mage'
             "
           >
-            <h4>Genre Slices</h4>
+            <h4>Genre Slices & Settings</h4>
             <div class="settings-toggle-grid">
               <div class="input-group" v-if="settings.gameSystem === 'mage'">
                 <label class="age-checkbox-toggle age-checkbox-label">
@@ -431,6 +431,7 @@ import { initValues } from "@/relay/relay";
 import { useCharacterStore } from "@/sheet/stores/character/characterStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 import { productLineStyle } from "@/utility/productLineStyle";
+import { useThemeArgs } from "@/utility/useThemeArgs";
 import { computed } from "vue";
 
 const props = defineProps({
@@ -439,6 +440,7 @@ const props = defineProps({
 
 const settings = useSettingsStore();
 const char = useCharacterStore();
+const themeArgs = useThemeArgs();
 
 if (!settings.theme) {
   settings.theme = "basic";
@@ -455,6 +457,8 @@ const theme = computed(() => {
       return [
         { label: "Basic", value: "basic" },
         { label: "Cyberpunk", value: "cyberpunk" },
+        { label: "Powers", value: "powers" },
+        { label: "Threefold", value: "threefold" },
       ];
     default:
       return null;
@@ -467,34 +471,24 @@ const updateGameSystem = () => {
     case "expanse":
       settings.useFortune = true;
       break;
+    case "mage":
+      settings.useFortune = false;
+      settings.campaignMode = settings.campaignMode || "pulpy";
+      break;
     default:
       settings.useFortune = false;
       break;
   }
-  productLineStyle(settings.gameSystem, colorTheme, {
-    cthulhuMythos: settings.theme === "cthulhuMythos",
-    technofantasy: settings.theme === "technofantasy",
-    cyberpunk: settings.theme === "cyberpunk",
-  });
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
 };
 const updateTheme = () => {
   const colorTheme = initValues.settings.colorTheme;
-  productLineStyle(settings.gameSystem, colorTheme, {
-    cthulhuMythos: settings.theme === "cthulhuMythos",
-    technofantasy: settings.theme === "technofantasy",
-    cyberpunk: settings.theme === "cyberpunk",
-    originFaction: char.originFaction,
-  });
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
 };
 
 const updateExpanseFaction = () => {
   const colorTheme = initValues.settings.colorTheme;
-  productLineStyle(settings.gameSystem, colorTheme, {
-    cthulhuMythos: settings.theme === "cthulhuMythos",
-    technofantasy: settings.theme === "technofantasy",
-    cyberpunk: settings.theme === "cyberpunk",
-    originFaction: char.originFaction,
-  });
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
 };
 </script>
 

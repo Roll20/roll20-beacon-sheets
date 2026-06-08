@@ -225,15 +225,12 @@ const toggleExpand = () => {
 const modalClosed = () => {
   showModal.value = false;
 };
-let toAttackRoll = 0;
-
-const setAttackRoll = () => {
+const attackRollBonus = () => {
   if (useAbilityScoreStore().abilityScores[props.spell.ability]) {
-    toAttackRoll =
-      useAbilityScoreStore().abilityScores[props.spell.ability].base;
+    return useAbilityScoreStore().abilityScores[props.spell.ability].base;
   }
+  return 0;
 };
-setAttackRoll();
 
 function focusBonus() {
   const focusArray = qualitiesStore.items.filter(
@@ -264,7 +261,7 @@ const handlePrint = () => {
   } else {
     spellStore.printSpell(
       props.spell._id,
-      parseInt(toAttackRoll) + focusBonus()
+      attackRollBonus() + focusBonus()
     );
   }
 };
