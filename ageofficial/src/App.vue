@@ -14,22 +14,22 @@
         alt="Fantasy AGE"
       />
       <img
-        v-if="settings.gameSystem === 'mage'"
+        v-if="settings.gameSystem === 'mage' && settings.theme !== 'threefold'"
         src="/src/assets/logos/modernage.png"
         class="sys-logo sys-logo--90"
-        alt="Fantasy AGE"
+        alt="Modern AGE"
+      />
+      <img
+        v-if="settings.gameSystem === 'mage' && settings.theme === 'threefold'"
+        src="/src/assets/logos/threefold.png"
+        class="sys-logo sys-logo--90"
+        alt="Threefold"
       />
       <img
         v-if="settings.gameSystem === 'blue rose'"
         src="/src/assets/logos/bluerose.png"
         class="sys-logo sys-logo--90"
-        alt="Fantasy AGE"
-      />
-      <img
-        v-if="settings.gameSystem === 'threefold'"
-        src="/src/assets/logos/threefold.png"
-        class="sys-logo sys-logo--90"
-        alt="Fantasy AGE"
+        alt="Blue Rose"
       />
       <img
         v-if="settings.gameSystem === 'expanse'"
@@ -206,23 +206,7 @@
         ref="quillEditor"
         contentType="html"
         toolbar=""
-        :options="{
-          modules: {
-            keyboard: {
-              bindings: {
-                enter: {
-                  key: 13, // 'Enter' key
-                  handler: (range, context) => {
-                    // Default behavior of Quill (inserts a single paragraph)
-                    const quill = this.$refs.quillEditor.quill;
-                    quill.formatLine(range.index, 1, 'block', true);
-                  },
-                },
-              },
-            },
-          },
-          scrollingContainer: true,
-        }"
+        :options="{ scrollingContainer: true }"
         v-model:content="meta.bio"
       />
     </SidebarSection>
@@ -243,6 +227,7 @@ import SettingsView from "./views/SettingsView.vue";
 import SidebarSection from "./components/SidebarSection.vue";
 import NewSplashView from "./views/NewSplashView.vue";
 import { productLineStyle } from "@/utility/productLineStyle";
+import { useThemeArgs } from "@/utility/useThemeArgs";
 import { useCharacterStore } from "./sheet/stores/character/characterStore";
 import ShipView from "./views/ShipView.vue";
 import { useBioStore } from "./sheet/stores/bio/bioStore";
@@ -261,13 +246,9 @@ const bio = useBioStore();
 const campaignId = store.meta.campaignId;
 const colorTheme = initValues.settings.colorTheme;
 const isGM = computed(() => meta.permissions.isGM);
+const themeArgs = useThemeArgs();
 if (settings.gameSystem)
-  productLineStyle(settings.gameSystem, colorTheme, {
-    cthulhuMythos: settings.theme === "cthulhuMythos",
-    technofantasy: settings.theme === "technofantasy",
-    cyberpunk: settings.theme === "cyberpunk",
-    originFaction: char.originFaction,
-  });
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
 
 function closeModal() {
   showModal.value = false;
@@ -285,7 +266,7 @@ const openSidebar = () => {
 
 const setTheme = () => {
   const colorTheme = initValues.settings.colorTheme;
-  productLineStyle(settings.gameSystem, colorTheme);
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
 };
 if (!settings.incomeMode) {
   if (settings.gameSystem === "fage1e" || settings.gameSystem === "fage2e") {

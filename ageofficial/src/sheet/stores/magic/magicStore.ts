@@ -137,14 +137,11 @@ export const useSpellStore = defineStore("spells", () => {
     // if (!attack) return;
     // debugger
     const diceRegex = /^(\d+)d(\d+)([+-]\d+)?$/;
-    const hit = spell.damageHit.match(diceRegex);
-    const numberOfDice = parseInt(hit![1]);
-    const sidesOfDice = parseInt(hit![2]);
-    const modifier = hit![3] ? parseInt(hit![3]) : 0;
-    const miss = spell.damageMiss.match(diceRegex);
-    const missNumberOfDice = parseInt(miss![1]);
-    const missSidesOfDice = parseInt(miss![2]);
-    const missModifier = miss![3] ? parseInt(miss![3]) : 0;
+    const hit = spell.damageHit?.match(diceRegex);
+    if (!hit) return;
+    const numberOfDice = parseInt(hit[1]);
+    const sidesOfDice = parseInt(hit[2]);
+    const modifier = hit[3] ? parseInt(hit[3]) : 0;
 
     const components = [
       {
@@ -154,15 +151,6 @@ export const useSpellStore = defineStore("spells", () => {
         alwaysShowInBreakdown: true,
       },
       { label: "Modifier", value: modifier },
-    ];
-    const secondaryComponents = [
-      {
-        label: `Miss Roll`,
-        sides: missNumberOfDice,
-        count: missSidesOfDice,
-        alwaysShowInBreakdown: true,
-      },
-      { label: "Modifier", value: missModifier },
     ];
     await rollToChat({
       characterName: useMetaStore().name,
