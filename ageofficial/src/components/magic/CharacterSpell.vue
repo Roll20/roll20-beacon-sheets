@@ -64,7 +64,7 @@
                 <span>{{ spell.spellType }}</span>
               <span class="age-spell-details__label">Casting Time</span>
                 <span>{{ spell.castingTime + ' Action' }}</span>
-              <span class="age-spell-details__label">{{ magicPoints }} Cost</span>
+              <span class="age-spell-details__label">{{ magicPoints }} </span>
                 <span>{{ spell.mpCost }}</span>
               <span class="age-spell-details__label">Target Number</span>
                 <span>{{ spell.targetNumber }}</span>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore'
 import SpellModal from './SpellModal.vue';
@@ -125,8 +125,7 @@ const props = defineProps({
 
 const expanded = ref(false);
 
-const magicLabel = ref('Arcana');
-const magicPoints = ref('MP');
+
 
 const familiarity = ref(0);
 const familiarityOptions = ref([
@@ -137,20 +136,15 @@ const familiarityOptions = ref([
   { value: 8, label: 'Casually Familiar' },
   { value: 10, label: 'Slightly Familiar' }
 ]);
-switch(settings.gameSystem){
-  case 'mage':
-    magicLabel.value = 'Power';
-    if(settings.userPowerFatigue){
-      magicPoints.value = ' Power Cost';
-    } else {
-      magicPoints.value = 'PP';
-    }
-  break;
-  default:
-    magicLabel.value = 'Arcana';
-    magicPoints.value = 'MP';
-  break;
-}
+const magicLabel = computed(() =>
+  settings.gameSystem === 'mage' ? 'Power' : 'Arcana'
+);
+
+const magicPoints = computed(() => {
+  if (settings.gameSystem !== 'mage') return 'MP';
+
+  return settings.userPowerFatigue ? ' Power Cost' : 'PP';
+});
 const toggleExpand = () => {
   expanded.value = !expanded.value;
 };
