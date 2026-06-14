@@ -63,7 +63,7 @@
               <span class="age-spell-details__label">Spell Type</span>
                 <span>{{ spell.spellType }}</span>
               <span class="age-spell-details__label">Casting Time</span>
-                <span>{{ spell.castingTime + ' Action' }}</span>
+                <span>{{ spell.castingTime }}</span>
               <span class="age-spell-details__label">{{ magicPoints }} </span>
                 <span>{{ spell.mpCost }}</span>
               <span class="age-spell-details__label">Target Number</span>

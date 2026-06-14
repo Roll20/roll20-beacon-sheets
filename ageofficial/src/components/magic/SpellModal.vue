@@ -81,13 +81,18 @@
                   <div class="mb-3 col">
                       <span class="age-input-label" id="basic-addon1">Casting Time</span>
                           <select
-                          class="age-atk-select form-select"
-                              data-testid="test-spell-weaponType-input"
-                              v-model="spell.castingTime"
-                          >
-                              <option value="Minor">Minor Action</option>
-                              <option value="Major">Major Action</option>
-                          </select>
+  class="age-atk-select form-select"
+  data-testid="test-spell-castingTime-input"
+  v-model="spell.castingTime"
+>
+  <option value="Free Action">Free Action</option>
+  <option value="Reaction">Reaction</option>
+  <option value="Minor Action">Minor Action</option>
+  <option value="Major Action">Major Action</option>
+  <option value="1 Minute">1 Minute</option>
+  <option value="4 Hours">4 Hours</option>
+  <option value="12 Hours">12 Hours</option>
+</select>
                   </div>
                  <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
   <span class="age-input-label" id="basic-addon1">{{ spellTerminology.testLabel }}</span>
