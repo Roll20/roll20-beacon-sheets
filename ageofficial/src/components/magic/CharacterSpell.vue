@@ -39,6 +39,7 @@
             <div class="age-spell-damage"></div>
         </button>
         </div>
+		
         
         <button type="button" class="config-btn age-icon-btn" @click="handleSpellDetails" v-tippy="{ content: 'Share '+magicLabel+' in chat'}">
           <font-awesome-icon :icon="['fa', 'comment']" />
@@ -68,6 +69,8 @@
                 <span>{{ spell.mpCost }}</span>
               <span class="age-spell-details__label">Target Number</span>
                 <span>{{ spell.targetNumber }}</span>
+				<span class="age-spell-details__label" v-if="spell.conditions">Conditions</span>
+  <span v-if="spell.conditions">{{ spell.conditions }}</span>
               <span class="age-spell-details__label" v-if="spell.spellTest">Test</span>
                 <span v-if="spell.spellTest">{{  spell.spellTest + ' vs. Spellpower' }}</span>
             </div>

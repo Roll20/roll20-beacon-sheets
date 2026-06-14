@@ -28,6 +28,7 @@ interface Spell {
   targetNumber:number;
   spellTest:string;
   extendable:boolean;
+  conditions?: string;
   damageHit:string;
   damageMiss:string;
   fatigue?:number;
@@ -62,6 +63,7 @@ export const useSpellStore = defineStore('spells', () => {
       spellTest:spell ? spell?.spellTest : '',
       spellResistance:spell ? spell?.spellResistance : '',
       extendable:spell ? spell?.extendable : false,
+	  conditions : spell ? spell?.conditions : '',
       damageHit:spell ? spell?.damageHit : '',
       damageMiss:spell ? spell?.damageMiss : '',
     }
@@ -109,52 +111,50 @@ export const useSpellStore = defineStore('spells', () => {
     const spellResistance = settings.gameSystem === 'blue rose' ? spell.spellTest : 'Spellpower ('+ (10 + Number(ability.WillpowerBase))+')';
     const spellTest = settings.gameSystem === 'blue rose' ? spell.ability + ` (${spell.abilityFocus}) <br /> vs. ${spellResistance}` : '';
     
-    await rollToChat({
-      title: spell.name,
-      subtitle: spell.spellType,
-      characterName: useMetaStore().name,
-      textContent: spellTest,
-      targetNumber:spell.targetNumber + familiarity,
-      components
-    });
+   await rollToChat({
+  title: spell.name,
+  subtitle: spell.spellType,
+  characterName: useMetaStore().name,
+  textContent: spellTest,
+  keyValues: {
+    ...(spell.conditions ? { Conditions: spell.conditions } : {}),
+  },
+  targetNumber: spell.targetNumber + familiarity,
+  components
+});
   };
-  const printSpellDamage = async(spell: any)=> {
-    // const attack = attacks.value.find((item) => item._id === _id);
-    // if (!attack) return;
-// debugger
-    const diceRegex = /^(\d+)d(\d+)([+-]\d+)?$/;
-    const hit = spell.damageHit.match(diceRegex);
-    const numberOfDice = parseInt(hit![1]);
-    const sidesOfDice = parseInt(hit![2])
-    const modifier = hit![3] ? parseInt(hit![3]) : 0;
-    const miss = spell.damageMiss.match(diceRegex);
-    const missNumberOfDice = parseInt(miss![1]);
-    const missSidesOfDice = parseInt(miss![2])
-    const missModifier = miss![3] ? parseInt(miss![3]) : 0;
+const printSpellDamage = async(spell: any)=> {
+  const diceRegex = /^(\d+)d(\d+)([+-]\d+)?$/;
+  const hit = spell.damageHit?.match(diceRegex);
 
-    const components = [
-      { label: `Base Roll`, sides: sidesOfDice, count:numberOfDice, alwaysShowInBreakdown: true },
-      { label: 'Modifier', value: modifier },
-    ];
-    const secondaryComponents = [
-      { label: `Miss Roll`, sides: missNumberOfDice, count:missSidesOfDice, alwaysShowInBreakdown: true },
-      { label: 'Modifier', value: missModifier },
-    ]
-    await rollToChat({
-      characterName: useMetaStore().name,
-      title: spell.name,
-      rollType: 'damage',
-      components
-    });
-  }
-  const printSpellDetails = async (spell: any, arcanaLabel: string) => {
-      await sendToChat({
-        title: spell.name,
-        subtitle: spell.arcanaType,
-        traits: [ arcanaLabel + ' Type: ' + spell.arcanaType],
-        description: spell.description,
-      });
-    }
+  if (!hit) return;
+
+  const components = [
+    { label: `Base Roll`, sides: parseInt(hit[2]), count: parseInt(hit[1]), alwaysShowInBreakdown: true },
+    { label: 'Modifier', value: hit[3] ? parseInt(hit[3]) : 0 },
+  ];
+
+  await rollToChat({
+    characterName: useMetaStore().name,
+    title: spell.name,
+    rollType: 'damage',
+    keyValues: {
+      ...(spell.conditions ? { Conditions: spell.conditions } : {}),
+    },
+    components
+  });
+}
+const printSpellDetails = async (spell: any, arcanaLabel: string) => {
+  await sendToChat({
+    title: spell.name,
+    subtitle: spell.arcanaType,
+    traits: [
+      arcanaLabel + ' Type: ' + spell.arcanaType,
+      spell.conditions ? 'Conditions: ' + spell.conditions : '',
+    ].filter(Boolean),
+    description: spell.description,
+  });
+}
   const setCurrentSpell = (_id: string) => {
     const spell = spells.value.find((item) => item._id === _id);
     if (!spell) return;
