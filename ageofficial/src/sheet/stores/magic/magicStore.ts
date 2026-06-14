@@ -74,7 +74,7 @@ export const useSpellStore = defineStore('spells', () => {
 	  damageQualities: spell ? spell?.damageQualities : '',
     };
 
-    if (spell?.fatigue) {
+    if (spell?.fatigue !== undefined) {
       Object.assign(newSpell, { fatigue: spell.fatigue });
     }
 
