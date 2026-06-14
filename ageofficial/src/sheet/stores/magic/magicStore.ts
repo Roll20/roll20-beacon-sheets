@@ -32,6 +32,7 @@ interface Spell {
   conditions?: string;
   damageHit: string;
   damageMiss: string;
+  damageQualities?: string;
   fatigue?: number;
   resistance?: string;
 }
@@ -70,6 +71,7 @@ export const useSpellStore = defineStore('spells', () => {
       conditions: spell ? spell?.conditions : '',
       damageHit: spell ? spell?.damageHit : '',
       damageMiss: spell ? spell?.damageMiss : '',
+	  damageQualities: spell ? spell?.damageQualities : '',
     };
 
     if (spell?.fatigue) {
@@ -152,6 +154,7 @@ export const useSpellStore = defineStore('spells', () => {
       rollType: 'damage',
       keyValues: {
         ...(damageNote ? { 'Damage Type': damageNote } : {}),
+		...(spell.damageQualities ? { 'Damage Qualities': spell.damageQualities } : {}),
         ...(spell.damageMiss ? { 'Failure Damage': spell.damageMiss } : {}),
         ...(spell.spellTest ? { 'Resistance Test': `${spell.spellTest} vs. ${resistanceTargetLabel} (${resistanceTarget})` } : {}),
         ...(spell.testSuccess ? { 'Successful Result': spell.testSuccess } : {}),
