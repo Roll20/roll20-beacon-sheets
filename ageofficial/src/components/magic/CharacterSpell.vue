@@ -13,31 +13,23 @@
             <span>{{ spell.targetNumber }}</span>
         </div>   -->
         <button type="button" 
-                class="config-btn age-icon-btn" 
-                data-bs-toggle="modal" 
-                data-bs-target="#spellDetailsModal" 
-                data-bs-dismiss="showModal = false" 
-                data-bs-backdrop="static" 
-                v-tippy="{ content: settings.gameSystem === 'blue rose' ? 'Cast '+magicLabel : 'Cast '+magicLabel+' (' + spell.mpCost + ''+magicPoints+')' }"
-                @click="handlePrint"
-                :disabled="(settings.userPowerFatigue ? false : char.magic < spell.mpCost)"
-                :class="{ 'spell-btn-disabled':(settings.userPowerFatigue ? false : char.magic < spell.mpCost)}">
-            <div class="age-spell-cast"></div>
-        </button>
+  class="config-btn age-icon-btn" 
+  v-tippy="{ content: settings.gameSystem === 'blue rose' ? 'Cast ' + magicLabel : 'Cast ' + magicLabel + ' (' + spell.mpCost + '' + magicPoints + ')' }"
+  @click="handlePrint"
+  :disabled="(settings.userPowerFatigue ? false : char.magic < spell.mpCost)"
+  :class="{ 'spell-btn-disabled': (settings.userPowerFatigue ? false : char.magic < spell.mpCost) }">
+  <div class="age-spell-cast"></div>
+</button>
         <div>
-          <button type="button" 
-                class="config-btn age-icon-btn" 
-                v-if="spell.spellType === 'Attack' && spell.damageHit"
-                data-bs-toggle="modal" 
-                data-bs-target="#spellDetailsModal" 
-                data-bs-dismiss="showModal = false" 
-                data-bs-backdrop="static" 
-                v-tippy="{ content: magicLabel+ ' Damage' }"
-                @click="handleDamagePrint"
-                :disabled="(char.magic < spell.mpCost)"
-                :class="{ 'spell-btn-disabled':(char.magic < spell.mpCost)}">
-            <div class="age-spell-damage"></div>
-        </button>
+         <button type="button" 
+  class="config-btn age-icon-btn" 
+  v-if="spell.spellType === 'Attack' && spell.damageHit"
+  v-tippy="{ content: magicLabel + ' Damage' }"
+  @click="handleDamagePrint"
+  :disabled="(settings.userPowerFatigue ? false : char.magic < spell.mpCost)"
+  :class="{ 'spell-btn-disabled': (settings.userPowerFatigue ? false : char.magic < spell.mpCost) }">
+  <div class="age-spell-damage"></div>
+</button>
         </div>
 		
         

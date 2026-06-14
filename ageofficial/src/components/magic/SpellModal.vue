@@ -171,6 +171,28 @@
                         </optgroup>
                       </select> -->
                   <!-- </div> -->
+				  <div class="mb-3 col">
+  <span class="age-input-label" id="basic-addon1">Successful Result</span>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="ex. Effect has ended"
+    aria-label="Successful Result"
+    v-model="spell.testSuccess"
+    aria-describedby="basic-addon1"
+  >
+</div>
+<div class="mb-3 col">
+  <span class="age-input-label" id="basic-addon1">Failure Result</span>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="ex. Take 1d6 damage and -2 Speed"
+    aria-label="Failure Result"
+    v-model="spell.testFailure"
+    aria-describedby="basic-addon1"
+  >
+</div>
                   <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
                       <span class="age-input-label" id="basic-addon1">Resistance</span>
                       <input type="text" class="form-control" placeholder="ex. Willpower(Self-Discipline)" aria-label="Spell Resistance" v-model="spell.spellTest"  aria-describedby="basic-addon1">
