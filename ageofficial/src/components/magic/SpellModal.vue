@@ -197,16 +197,17 @@
                       <span class="age-input-label" id="basic-addon1">Resistance</span>
                       <input type="text" class="form-control" placeholder="ex. Willpower(Self-Discipline)" aria-label="Spell Resistance" v-model="spell.spellTest"  aria-describedby="basic-addon1">
                   </div>
-				    <span class="age-input-label" id="basic-addon1">Conditions</span>
-  <input
-    type="text"
-    class="form-control"
-    placeholder="ex. Prone, Restrained"
-    aria-label="Conditions"
-    v-model="spell.conditions"
-    aria-describedby="basic-addon1"
-  >
-</div>
+                  <div class="mb-3 col">
+                    <span class="age-input-label" id="basic-addon1">Conditions</span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="ex. Prone, Restrained"
+                      aria-label="Conditions"
+                      v-model="spell.conditions"
+                      aria-describedby="basic-addon1"
+                    >
+                  </div>
                   <div class="mb-3 col"  v-if="spell.weaponType === 'ranged' || spell.weaponType === 'melee'">
                       <span class="age-input-label" id="basic-addon1">Weapon Group</span>
                           <select
@@ -260,8 +261,6 @@
                           <span class="age-input-label" id="basic-addon1">Long Range</span>
                           <input type="text" class="form-control" placeholder="Name" aria-label="Character Name" v-model="spell.shortRange"  aria-describedby="basic-addon1">
                       </div>
-					 <div class="mb-3 col">
-
                       <div class="mb-3 col">
                       <span class="age-input-label" id="basic-addon1">Reload</span>
                           <select
