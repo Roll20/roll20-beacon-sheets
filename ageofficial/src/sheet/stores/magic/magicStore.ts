@@ -106,7 +106,7 @@ export const useSpellStore = defineStore('spells', () => {
       components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
     }
 
-    if (settings.gameSystem !== 'blue rose') {
+    if (settings.gameSystem !== 'blue rose' && !settings.userPowerFatigue) {
       spendMP(spell.mpCost);
     }
 
