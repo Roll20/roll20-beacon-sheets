@@ -64,7 +64,7 @@
 				<span class="age-spell-details__label" v-if="spell.conditions">Conditions</span>
   <span v-if="spell.conditions">{{ spell.conditions }}</span>
               <span class="age-spell-details__label" v-if="spell.spellTest">Test</span>
-                <span v-if="spell.spellTest">{{  spell.spellTest + ' vs. Spellpower' }}</span>
+                <span v-if="spell.spellTest">{{ spell.spellTest + ' vs. ' + resistanceTargetLabel }}</span>
             </div>
             </div>
             
@@ -140,6 +140,9 @@ const magicPoints = computed(() => {
 
   return settings.userPowerFatigue ? ' Power Cost' : 'PP';
 });
+const resistanceTargetLabel = computed(() =>
+  settings.gameSystem === 'mage' ? 'Force' : 'Spellpower'
+);
 const toggleExpand = () => {
   expanded.value = !expanded.value;
 };
