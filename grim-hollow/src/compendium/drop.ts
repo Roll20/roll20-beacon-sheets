@@ -3,7 +3,7 @@ import { onDropEquipment } from './dropEquipment';
 import { onDropSpell } from './dropSpell';
 import {
   type Character,
-  type CompendiumResults as DefaultCompendiumResults,
+  type CompendiumResults as DefaultCompendiumResults, type JSONValue,
 } from '@roll20-official/beacon-sdk/lib/types/partials';
 import { dispatchRef } from '@/relay/relay';
 import { onDropFeature } from './dropFeature';
@@ -27,6 +27,7 @@ type Feature = z.infer<typeof FeatureSchema>;
 export type compendiumCategory =
   | 'Spells'
   | 'Features'
+  | 'Other Options and Features'
   | 'Feats'
   | 'Classes'
   | 'Subclasses'
@@ -66,6 +67,12 @@ export type CompendiumPage = {
     'data-List': 'true' | 'false';
     [key: string]: any;
   };
+  children?: [
+    {
+      name: string;
+      properties: Record<string, JSONValue>;
+    }
+  ];
   book: {
     name: string;
     itemId: string;
@@ -92,6 +99,10 @@ pages(name: "${decodeURIComponent(pageName)}") {
     name
     itemId
   }
+  children {
+    name
+    properties
+  }
   category {
     name
   }
@@ -105,6 +116,10 @@ pages {
   book {
     name
     itemId
+  }
+  children {
+    name
+    properties
   }
   category {
     name
@@ -178,6 +193,7 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   Mutations: onDropFeature,
   Heritages: onDropRace,
   Proficiencies: onDropProficiency,
+  'Other Options and Features': onDropFeature,
 };
 export const drag = async (
   { dropData, coordinates }: DropArgs,
@@ -219,18 +235,21 @@ export const drag = async (
 
       if (page.properties.hasOwnProperty('data-payload')) {
         payload = JSON.parse(page.properties['data-payload']);
-        if (category === 'Monsters' && (!payload.token || payload.token.length === 0) && page.properties.Token) {
-          payload.token = page.properties.Token;
-        }
-        if (category === 'Monsters' && payload.token) {
-          payload.token = normalizeTokenUrl(payload.token);
+        if (category === 'Monsters') {
+          const chosenToken = page.properties.Token || page.properties.token || payload.token;
+          if (chosenToken) {
+            payload.token = normalizeTokenUrl(chosenToken);
+          }
         }
       } else if (transformers[category]) {
         const transformer = transformers[category];
         const rawPayload = { name: page.name, book: page.book, properties: page.properties };
         payload = transformer(rawPayload, page.book, page.properties);
-        if (category === 'Monsters' && payload?.token) {
-          payload.token = normalizeTokenUrl(payload.token);
+        if (category === 'Monsters') {
+          const chosenToken = page.properties.Token || page.properties.token || payload?.token;
+          if (chosenToken && payload) {
+            payload.token = normalizeTokenUrl(chosenToken);
+          }
         }
       } else {
         console.error(

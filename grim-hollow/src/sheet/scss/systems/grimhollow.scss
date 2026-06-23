@@ -523,6 +523,20 @@ body {
   }
 }
 
+.companion-sidebar {
+  .roll-modifier,
+  .roll-bonus--positive,
+  .roll-bonus--negative,
+  .dice-pool {
+    color: #ffffff !important;
+  }
+
+  .npc-effects__description,
+  .summary-effects__description {
+    color: #ffffff !important;
+  }
+}
+
 .companions-section {
   .npc-statblock__header--companion {
     padding-bottom: var(--size-gap-small);
