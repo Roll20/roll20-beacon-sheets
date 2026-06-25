@@ -17,6 +17,7 @@ export const transformers: Record<string, Function> = {
   Subraces: transformDnDRace,
   'Species Options': transformDnDRace,
   Monsters: transformDnDMonster,
+  'Other Options and Features': transformDnDFeatureSet,
   Features: transformDnDFeatureSet,
   Feats: transformDnDFeatureSet,
   Backgrounds: transformDnDBackground,
