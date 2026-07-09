@@ -1,0 +1,69 @@
+@import "./vars.scss";
+@import "tailwindcss/index.css";
+@source ".*.{vue,js,ts,jsx,tsx,hbs}";
+
+@theme {
+  --font-space-grotesk: var(--font-space-grotesk);
+  --font-lexend: var(--font-lexend);
+  --font-be-vietnam-pro: var(--font-be-vietnam-pro);
+
+  --color-primary: rgb(var(--hero-color, 249 234 45));
+  --color-primary-container: rgb(var(--hero-color, 249 234 45) / 0.15);
+
+  --color-secondary: rgb(var(--hero-color-secondary, 9 102 174));
+  --color-secondary-container: rgb(var(--hero-color-secondary, 9 102 174) / 0.15);
+  
+  --color-accent: rgb(var(--hero-color-blood, 190 4 20));
+  --color-accent-container: rgb(var(--hero-color-blood, 190 4 20) / 0.15);
+
+  --color-error: #ba1a1a;
+
+  --spacing-margin: 32px;
+  --spacing-gutter: 24px;
+  --spacing-panel-padding: 24px;
+  --spacing-unit: 4px;
+
+  --_primary-fg: contrast-color(var(--color-primary));
+  --_secondary-fg: contrast-color(var(--color-secondary));
+  --_accent-fg: contrast-color(var(--color-accent));
+
+  --color-primary-foreground: var(--_primary-fg);
+  --color-secondary-foreground: var(--_secondary-fg);
+  --color-accent-foreground: var(--_accent-fg);
+
+  --color-primary-disabled: color-mix(in srgb, var(--_primary-fg) 50%, transparent);
+  --color-secondary-disabled: color-mix(in srgb, var(--_secondary-fg) 50%, transparent);
+  --color-accent-disabled: color-mix(in srgb, var(--_accent-fg) 50%, transparent);
+}
+
+@layer utilities {
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .action-shadow {
+    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  }
+  .action-shadow-lg {
+    box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+  }
+  .action-shadow-sm {
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+  }
+  .action-shadow-xs {
+    box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+  }
+  .halftone {
+    background-image: radial-gradient(circle, #000 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: 0.1;
+  }
+  .panel-hover:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0px 0px rgba(0,0,0,1);
+  }
+  .panel-hover:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
+  }
+}
+

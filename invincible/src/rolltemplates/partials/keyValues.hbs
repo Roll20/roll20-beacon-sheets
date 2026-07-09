@@ -1,0 +1,10 @@
+<div class="roll-card-keyvalues">
+  {{#each keyValues}}
+    {{#if this}}
+      <div class="roll-card-keyvalue-row">
+        <span class="roll-card-keyvalue-key">{{@key}}</span>
+        <span class="roll-card-keyvalue-val">{{this}}</span>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>

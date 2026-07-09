@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Power Page Wrapper",
+  "description": "JSON Schema representing a Compendium Page Wrapper for Powers supporting recursive child components.",
+  "type": "object",
+  "required": [
+    "categoryName",
+    "data-payload"
+  ],
+  "properties": {
+    "categoryName": {
+      "type": "string",
+      "const": "Powers"
+    },
+    "data-payload": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "effects": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "disabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "value"
+          ]
+        },
+        "modifiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "boost",
+                  "limit"
+                ]
+              },
+              "description": {
+                "type": "string"
+              },
+              "effects": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "disabled": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "value"
+                ]
+              },
+              "_children": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "isActive": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "type"
+            ]
+          }
+        },
+        "_children": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "data-children": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/reference"
+          },
+          {
+            "$ref": "action-page-schema.json"
+          },
+          {
+            "$ref": "feature-page-schema.json"
+          },
+          {
+            "$ref": "power-page-schema.json"
+          },
+          {
+            "$ref": "gear-page-schema.json"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "reference": {
+      "type": "object",
+      "required": [
+        "categoryName",
+        "pageName"
+      ],
+      "properties": {
+        "categoryName": {
+          "type": "string",
+          "enum": [
+            "Actions",
+            "Features",
+            "Powers",
+            "Gear"
+          ]
+        },
+        "pageName": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

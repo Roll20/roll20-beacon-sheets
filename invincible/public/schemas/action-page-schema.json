@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Action Page Wrapper",
+  "description": "JSON Schema representing a Compendium Page Wrapper for Actions supporting recursive child components.",
+  "type": "object",
+  "required": [
+    "categoryName",
+    "data-payload"
+  ],
+  "properties": {
+    "categoryName": {
+      "type": "string",
+      "const": "Actions"
+    },
+    "data-payload": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "quick",
+            "full"
+          ]
+        },
+        "attributeUsed": {
+          "type": "string",
+          "enum": [
+            "fighting",
+            "strength",
+            "agility",
+            "reason",
+            "intuition",
+            "presence",
+            "-",
+            "varies"
+          ]
+        },
+        "bonus": {
+          "type": "number"
+        },
+        "range": {
+          "type": "string"
+        },
+        "damage": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "specialFeatures": {
+          "type": "string"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "isActive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "range"
+      ]
+    },
+    "data-children": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/reference"
+          },
+          {
+            "$ref": "action-page-schema.json"
+          },
+          {
+            "$ref": "feature-page-schema.json"
+          },
+          {
+            "$ref": "power-page-schema.json"
+          },
+          {
+            "$ref": "gear-page-schema.json"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "reference": {
+      "type": "object",
+      "required": [
+        "categoryName",
+        "pageName"
+      ],
+      "properties": {
+        "categoryName": {
+          "type": "string",
+          "enum": [
+            "Actions",
+            "Features",
+            "Powers",
+            "Gear"
+          ]
+        },
+        "pageName": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
