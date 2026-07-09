@@ -1,0 +1,43 @@
+@use '/src/common/scss/vars';
+
+@use 'scale/ecv';
+@use 'scale/vtt';
+
+
+.sheet {
+  color: var(--primary-color);
+}
+
+select {
+  appearance: base-select;
+
+  &::picker(select) {
+    appearance: base-select;
+    border: 2px solid var(--color-select-border, var(--color-secondary));
+    box-shadow: rgb(0, 0, 0) 4px 4px 0px 0px;
+  }
+
+  &::picker-icon {
+    display: none;
+  }
+
+  & option {
+    padding: 0 5px;
+    &:hover {
+      background-color: var(--color-select-border, var(--color-secondary));
+      color:  var(--color-select-text, var(--color-secondary-foreground));
+    }
+  }
+
+  & hr {
+    width: calc(100% - 10px);
+    border: 0;
+    height: 1px;
+    background-color: #333;
+    margin-left: 5px;
+  }
+
+  & option::checkmark {
+    display: none;
+  }
+}

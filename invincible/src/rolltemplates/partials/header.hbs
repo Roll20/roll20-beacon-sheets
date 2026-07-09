@@ -1,0 +1,24 @@
+<div class="roll-card-header">
+  {{#if characterName}}
+    <div class="roll-card-charname">{{characterName}}</div>
+  {{/if}}
+  {{#if @partial-block}}
+    <div class="flex flex-col items-center">
+      {{> @partial-block }}
+      <div class="flex flex-col items-center">
+        <div class="roll-card-title">{{title}}</div>
+        {{#if subtitle}}
+          <div class="roll-card-subtitle">{{subtitle}}</div>
+        {{/if}}
+      </div>
+    </div>
+  {{else}}
+    <div class="flex flex-col items-center">
+      <div class="roll-card-title">{{title}}</div>
+      {{#if subtitle}}
+        <div class="roll-card-subtitle">{{ capitalize subtitle}}</div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+

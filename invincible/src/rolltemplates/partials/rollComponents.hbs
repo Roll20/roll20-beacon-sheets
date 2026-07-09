@@ -1,0 +1,45 @@
+<div class="flex flex-col space-y-1 text-base font-sans text-gray-700">
+  {{#each components}}
+    {{#if (or (not (isEqual this.value 0)) this.alwaysShowInBreakdown)}}
+      {{#unless this.rolledDice}}
+        <div class="roll-card-component-row">
+          <span class="roll-card-component-row-label">
+            {{#unless @first}}
+              +
+            {{/unless}}
+            {{#if this.label}}
+              {{this.label}}
+            {{else}}
+              {{#if this.sides}}
+                {{this.count}}d{{this.sides}}
+              {{/if}}
+            {{/if}}
+          </span>
+          <span class="roll-card-component-row-val">
+            {{this.value}}
+          </span>
+        </div>
+      {{/unless}}
+    {{/if}}
+  {{/each}}
+  
+  {{#each components}}
+    {{#if (or (not (isEqual this.value 0)) this.alwaysShowInBreakdown)}}
+      {{#if this.rolledDice}}
+        <div class="roll-card-component-die mt-2">
+          <span class="roll-card-component-die-label">
+            {{this.label}}
+          </span>
+          <span class="roll-card-component-die-value">
+            {{#each this.rolledDice}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+          </span>
+        </div>
+      {{/if}}
+    {{/if}}
+  {{/each}}
+  {{#if (canPushRoll components)}}
+    <div>
+      <button data-sheet-action="push_roll" data-args="{{characterId}}" class="block w-full text-center px-3 py-1.5 font-bold uppercase tracking-wider hover:text-(--hero-color-secondary) transition-colors" style="text-decoration: none;">Push Roll</button>
+    </div>
+  {{/if}}
+</div>

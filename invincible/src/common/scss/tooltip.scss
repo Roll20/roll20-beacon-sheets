@@ -1,0 +1,43 @@
+@import 'floating-vue/dist/style.css';
+
+.v-popper--theme-tooltip {
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 1));
+  .v-popper__wrapper {
+    .v-popper__inner {
+      background-color: white;
+      opacity: 1;
+      color: black;
+      border: 2px solid var(--color-secondary);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .v-popper__arrow-container {
+      .v-popper__arrow-outer {
+        border-color: var(--color-secondary);
+      }
+      .v-popper__arrow-inner {
+      }
+    }
+  }
+}
+
+.v-popper--theme-dropdown {
+  .v-popper__inner {}
+
+  .v-popper__arrow-outer {}
+}
+
+.v-popper--theme-sheet {
+  .v-popper__wrapper {
+    .v-popper__inner {
+    }
+
+    .v-popper__arrow-container {
+      .v-popper__arrow-outer {}
+
+      .v-popper__arrow-inner {}
+    }
+  }
+}
