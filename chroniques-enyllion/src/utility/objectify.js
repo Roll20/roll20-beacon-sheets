@@ -32,6 +32,9 @@ export const objectToArray = (object) => {
   objectIds.forEach((key) => {
     if (object[key]) {
       const position = object[key].arrayPosition
+      if (!Number.isInteger(position) || position < 0) {
+        throw new Error(`Tried to arrayify an object, but entry "${key}" has an invalid arrayPosition`)
+      }
       const item = {
         _id: key,
         ...object[key],

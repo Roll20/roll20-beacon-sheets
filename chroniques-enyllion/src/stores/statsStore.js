@@ -16,7 +16,7 @@ export const CARAC_KEYS = ['FO', 'ED', 'DEX', 'CH', 'CON', 'PO', 'PE', 'SF']
 export const CARAC_LABELS = {
   FO: 'Force',
   ED: 'Éducation',
-  DEX: 'Dexterité',
+  DEX: 'Dextérité',
   CH: 'Charisme',
   CON: 'Constitution',
   PO: 'Pouvoir/Chance',

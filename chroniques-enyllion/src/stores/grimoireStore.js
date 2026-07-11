@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { arrayToObject, objectToArray } from '@/utility/objectify.js'
 import { useStatsStore } from '@/stores/statsStore.js'
-import { rollEnyllion, rollDamage, postMessage } from '@/utility/rolls.js'
+import { rollEnyllion, rollDamage, postMessage, escapeHtml } from '@/utility/rolls.js'
 
 /*
  * Onglet Grimoire du PJ : sorts, familiers, relations.
@@ -62,7 +62,7 @@ const grimoireStore = () => {
     }
     return postMessage({
       name: `Invocation — ${fam.name || 'Familier'}`,
-      text: fam.description || 'Le familier est invoqué.'
+      text: escapeHtml(fam.description || 'Le familier est invoqué.')
     })
   }
 

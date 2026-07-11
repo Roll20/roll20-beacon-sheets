@@ -104,8 +104,8 @@ const roll = (descriptor) => skills.rollSkill(descriptor)
           <input class="c-desc" type="text" v-model="c.description" placeholder="Description" />
           <button class="del" title="Supprimer" @click="confirmRemove(() => skills.removeCustomSkill(c._id))">✕</button>
         </div>
-        <button class="add" @click="skills.addCustomSkill">+ Compétence personnalisée</button>
       </template>
+      <button class="add" @click="skills.addCustomSkill">+ Compétence personnalisée</button>
     </section>
   </div>
 </template>

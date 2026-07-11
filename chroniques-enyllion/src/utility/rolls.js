@@ -37,8 +37,17 @@ export const confirmRemove = async (fn) => {
     }
   })
   const q = res?.results ?? res
-  if (q && q.isConfirmed) fn()
+  if (q && q.isConfirmed) return fn()
 }
+
+// Échappe les valeurs contrôlées par l'utilisateur avant interpolation dans du HTML brut.
+export const escapeHtml = (value) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 
 // Noms des effets d'arme (index 0-7), repris de la fiche legacy.
 export const EFFECT_NAMES = [
@@ -110,7 +119,7 @@ export const rollEnyllion = async ({ name, sub = '', carac = 0, description = ''
       resultClass,
       description
     })
-    await dispatch.post({ characterId: initValues.character.id, content, options })
+    await dispatch.post({ characterId: initValues.character?.id, content, options })
   } catch (err) {
     console.error('[Enyllion] rollEnyllion a échoué :', err)
   }
@@ -118,6 +127,8 @@ export const rollEnyllion = async ({ name, sub = '', carac = 0, description = ''
 
 /*
  * Poste un message simple au chat (sans jet), au style des roll templates Enyllion.
+ * `name` et `sub` sont du texte simple (échappés ici). `text` est un emplacement HTML :
+ * l'appelant est responsable d'échapper les valeurs utilisateur qu'il y insère (cf. escapeHtml).
  */
 export const postMessage = async ({ name = '', sub = '', text = '' }) => {
   const dispatch = dispatchRef.value
@@ -126,17 +137,19 @@ export const postMessage = async ({ name = '', sub = '', text = '' }) => {
     return
   }
   const options = consumeWhisper()
-  const perso = initValues.character?.name || ''
+  const perso = escapeHtml(initValues.character?.name || '')
+  const safeName = escapeHtml(name)
+  const safeSub = escapeHtml(sub)
   const content =
     `<div class="enyllion-template">` +
     `<div class="enyllion-template__header">` +
     (perso ? `<div class="enyllion-template__perso">${perso}</div>` : '') +
-    (name ? `<div class="enyllion-template__name">${name}${sub ? ` <span class="enyllion-template__sub">(${sub})</span>` : ''}</div>` : '') +
+    (safeName ? `<div class="enyllion-template__name">${safeName}${safeSub ? ` <span class="enyllion-template__sub">(${safeSub})</span>` : ''}</div>` : '') +
     `</div>` +
     (text ? `<hr class="enyllion-template__sep" /><div class="enyllion-template__line">${text}</div>` : '') +
     `</div>`
   try {
-    await dispatch.post({ characterId: initValues.character.id, content, options })
+    await dispatch.post({ characterId: initValues.character?.id, content, options })
   } catch (err) {
     console.error('[Enyllion] postMessage a échoué :', err)
   }
@@ -204,7 +217,7 @@ export const rollDamage = async (weapon) => {
       baseDamage,
       totalDamage: baseDamage + effDmg
     })
-    await dispatch.post({ characterId: initValues.character.id, content, options })
+    await dispatch.post({ characterId: initValues.character?.id, content, options })
   } catch (err) {
     console.error('[Enyllion] rollDamage a échoué :', err)
   }

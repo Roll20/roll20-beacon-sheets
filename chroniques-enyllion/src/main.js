@@ -5,18 +5,16 @@ import { createRelay } from './relay/relay'
 import App from './App.vue'
 
 /*
-Welcome! If you are new to vue, this is the file that will render the vue app. This vue app is a quickstart guide,
-to help get you started and familiar with the new flow of sheet development with our beacon SDK.
+Point d'entrée de la fiche "Les Chroniques d'Enyllion".
 
-This vue app features one component, App.vue, that renders the entire sheet.
+L'interface est rendue par App.vue et découpée en composants par onglet (PJ, PNJ,
+ennemis...). Les données sont réparties dans plusieurs stores Pinia dédiés
+(stores/statsStore.js, skillsStore.js, grimoireStore.js, inventoryStore.js,
+necromancyStore.js, npcStore.js, enemyStore.js, metaStore.js, uiStore.js...),
+chacun exposant hydrate/dehydrate pour la persistance via le relay Beacon.
 
-There is one custom data store, stores/sheetStore.js, to help detail how you can add what you need for your sheet.
-Also, you can leverage character data already provided for you through the meta data store which is already setup for you in App.vue
-
-The ability to read and write changes to your data is already configured with the beacon relay and you don't have to do any work to set that up.
-
-This quickstart also features an example of how to render a roll template with the new beacon sheets. The roll templates still leverage handlebars with custom css,
-and you can find that example being used in App.vue by sending a trait to the chat.
+Les jets et messages de chat passent par utility/rolls.js et les roll templates
+Handlebars de rollTemplates/.
  */
 
 // Determines if the offline mode dev relay should be used

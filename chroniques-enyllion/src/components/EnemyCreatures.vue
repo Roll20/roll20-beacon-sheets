@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useEnemyStore } from '@/stores/enemyStore.js'
-import { EFFECT_NAMES, postMessage, whisper, confirmRemove } from '@/utility/rolls.js'
+import { EFFECT_NAMES, postMessage, whisper, confirmRemove, escapeHtml } from '@/utility/rolls.js'
 
 // type = 'monster' | 'dragon' | 'demon'
 const props = defineProps({ type: { type: String, required: true }, label: { type: String, required: true } })
@@ -17,8 +17,8 @@ const ENCOUNTER = ['-Choisir-', 'Cathéméral', 'Diurne', 'Nocturne']
 
 // Affiche la fiche de la créature au chat (sans jet).
 const showCreature = (c) => {
-  let text = c.description || ''
-  if (c.image) text += `${text ? '<br/>' : ''}<a href="${c.image}">Image</a>`
+  let text = escapeHtml(c.description || '')
+  if (c.image) text += `${text ? '<br/>' : ''}<a href="${escapeHtml(c.image)}">Image</a>`
   return postMessage({ name: c.name || props.label, text })
 }
 </script>
