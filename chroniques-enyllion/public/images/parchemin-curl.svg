@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="34" viewBox="0 0 200 34" preserveAspectRatio="none">
+  <defs>
+    <!-- Cylindre du rouleau : ombre haute, reflet, retombée -->
+    <linearGradient id="roll" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#7d5230"/>
+      <stop offset="12%" stop-color="#a9794a"/>
+      <stop offset="38%" stop-color="#ecd6a8"/>
+      <stop offset="60%" stop-color="#d3ad77"/>
+      <stop offset="86%" stop-color="#b98f5e"/>
+      <stop offset="100%" stop-color="#9c7547"/>
+    </linearGradient>
+    <!-- Ombre portée du rouleau sur la feuille -->
+    <linearGradient id="shadow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2412" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#3a2412" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="5"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+    </filter>
+  </defs>
+
+  <!-- Ombre du rouleau qui retombe sur le parchemin -->
+  <rect x="0" y="26" width="200" height="8" fill="url(#shadow)"/>
+
+  <!-- Corps du rouleau (bord supérieur légèrement irrégulier = abîmé) -->
+  <path d="M0,3
+           Q 18,0 38,2 T 76,2 T 120,1 T 165,3 T 200,2
+           L 200,27
+           Q 150,30 100,28 T 0,28 Z"
+        fill="url(#roll)" stroke="#5e3c1f" stroke-width="1"/>
+
+  <!-- Grain sur le rouleau -->
+  <path d="M0,3 Q 18,0 38,2 T 76,2 T 120,1 T 165,3 T 200,2 L 200,27 Q 150,30 100,28 T 0,28 Z"
+        filter="url(#grain)"/>
+
+  <!-- Reflet fin -->
+  <path d="M2,13 Q 60,10 110,12 T 198,12" fill="none" stroke="#f6e7c4" stroke-width="1.2" stroke-opacity="0.6"/>
+
+  <!-- Quelques accrocs (entailles sombres sur le bord) -->
+  <path d="M48,2 l3,5 l3,-5" fill="#5e3c1f" fill-opacity="0.5"/>
+  <path d="M132,1 l2,6 l3,-5" fill="#5e3c1f" fill-opacity="0.45"/>
+</svg>
