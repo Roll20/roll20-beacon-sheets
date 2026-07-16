@@ -9,7 +9,7 @@
             <LazyInput v-model="sheet.combat.health" :isNumber="true" :isIncremental="true" :max="modifiedHealthMax" class="text-right pr-4 font-space-grotesk font-black text-3xl leading-none text-blacktext-left bg-transparent border-none focus:outline-none p-0 w-16" />
             <span class="font-space-grotesk font-black text-3xl leading-none text-zinc-500">/</span>
             <ModifiedValueInput
-              :modifiedValue="ruleSets.health_max()"
+              :modifiedValue="healthMaxModified"
               unstyled
               class="font-space-grotesk font-black text-3xl leading-none text-zinc-500 text-right bg-transparent border-none focus:outline-none p-0 w-9"
             />
@@ -50,7 +50,7 @@
             <LazyInput v-model="sheet.combat.resolve" :isNumber="true" :isIncremental="true" :min="0" :max="modifiedResolveMax" class="text-right pr-4 font-space-grotesk font-black text-3xl leading-none text-blacktext-left bg-transparent border-none focus:outline-none p-0 w-16" />
             <span class="font-space-grotesk font-black text-3xl leading-none text-zinc-500">/</span>
             <ModifiedValueInput
-              :modifiedValue="ruleSets.resolve_max()"
+              :modifiedValue="resolveMaxModified"
               unstyled
               class="font-space-grotesk font-black text-3xl leading-none text-zinc-500 text-right bg-transparent border-none focus:outline-none p-0 w-9"
             />
@@ -108,6 +108,9 @@ import { modifiedHealthMax, modifiedResolveMax } from '@/sheet/stores/combat/com
 import InitiativePane from '@/components/InitiativePane.vue';
 
 const sheet = characterStore();
+
+const healthMaxModified = computed(() => ruleSets.health_max());
+const resolveMaxModified = computed(() => ruleSets.resolve_max());
 
 const healthPct = computed(() => {
   const max = modifiedHealthMax.value || 1;

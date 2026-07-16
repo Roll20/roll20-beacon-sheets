@@ -210,6 +210,13 @@ export const createRelay = async ({
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
 
     
+    if (initValues.compendiumDrop && initValues.compendiumDrop.categoryName === 'NPCs') {
+      import('@/relay/handlers/drop').then(({ drag }) => {
+        drag({ coordinates: { left: 0, top: 0 }, dropData: initValues.compendiumDrop! }, dispatch, true, initValues.character);
+      });
+    }
+
+    
     store.$subscribe(() => {
       if (blockUpdate.value === true) return;
       latestLocalUpdateId.value = uuidv4();
@@ -217,6 +224,19 @@ export const createRelay = async ({
       const update = store.dehydrateStore();
       debounceUpdate(dispatch, update);
     });
+
+    
+    watch(() => store.meta?.token, (newToken) => {
+      if (blockUpdate.value === true) return;
+      
+      const characterId = initValues.character.id;
+      if (!characterId || !newToken) return;
+
+      dispatch.updateTokensByCharacter({
+        characterId,
+        token: newToken
+      } as any);
+    }, { deep: true });
 
     
     watch(beaconPulse, async (newValue, oldValue) => {

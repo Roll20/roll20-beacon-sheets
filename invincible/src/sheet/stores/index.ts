@@ -14,6 +14,7 @@ import { featuresStore } from '@/sheet/stores/features/featuresStore';
 import { actionsStore } from '@/sheet/stores/actions/actionsStore';
 import { CharacterDataSchema, SheetHydrateSchema, type SheetHydrate, type CharacterData } from '@/schemas/hydrate/sheet';
 import { gearStore } from './gear/gearStore';
+import { settingsStore } from './settings/settingsStore';
 import { normalizeArrays } from '@/utility/normalizeArrays';
 
 export const characterStore = defineStore('character', () => {
@@ -28,6 +29,7 @@ export const characterStore = defineStore('character', () => {
     features: featuresStore(),
     actions: actionsStore(),
     gear: gearStore(),
+    settings: settingsStore(),
   };
 
   const pageLoading = ref(false);

@@ -17,14 +17,12 @@
 
       
       <span
-        class="text-xs font-black uppercase tracking-wider block leading-none"
-        :class="Number(modifiedValue.value) >= 5 ? 'text-secondary' : 'text-zinc-500'"
+        class="text-xs uppercase tracking-wider block leading-none text-zinc-500"
       >
         {{ showFull ? $t(`score_description.${modifiedValue.description}`) : $t(`score_description.${modifiedValue.description}_short`) }}
       </span>
 
-      
-      <span class="text-xs font-black uppercase text-zinc-400 tracking-wider block leading-none">
+      <span class="text-xs font-black uppercase text-zinc-700 tracking-wider block leading-none">
         {{ showFull ? $t(`abilities.${modifiedValue.key}`) : $t(`abilities.${modifiedValue.key}_short`) }}
       </span>
 

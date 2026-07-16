@@ -168,14 +168,14 @@
                   :components="reputationRollComponents"
                   :solver="actionRollSolver"
                   class="text-xs p-0.5 text-blue-600 hover:text-blue-800 focus:outline-none cursor-pointer"
-                  v-if="Number(ruleSets.reputation().value) > 0"
+                  v-if="Number(reputationModified.value) > 0"
                 >
                   <span class="material-symbols-outlined text-sm">casino</span>
                 </RollButton>
               </div>
               <span class="block text-xs font-black uppercase text-zinc-500 tracking-wider">{{ $t('sheet.reputation') }}</span>
               <ModifiedValueRangebar
-                :modifiedValue="ruleSets.reputation()"
+                :modifiedValue="reputationModified"
                 @update:baseValue="sheet.biography.reputation = String($event)"
               />
             </div>
@@ -198,12 +198,12 @@
             {{ $t('sheet.core_attributes') }}
           </h3>
           <div class="grid grid-cols-3 gap-2 abilities-grid">
-            <AbilityScore :modifiedValue="ruleSets.fighting()" :baseValue="sheet.abilities.fighting" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
-            <AbilityScore :modifiedValue="ruleSets.agility()" :baseValue="sheet.abilities.agility" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
-            <AbilityScore :modifiedValue="ruleSets.strength()" :baseValue="sheet.abilities.strength" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
-            <AbilityScore :modifiedValue="ruleSets.reason()" :baseValue="sheet.abilities.reason" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
-            <AbilityScore :modifiedValue="ruleSets.intuition()" :baseValue="sheet.abilities.intuition" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
-            <AbilityScore :modifiedValue="ruleSets.presence()" :baseValue="sheet.abilities.presence" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
+            <AbilityScore :modifiedValue="fightingModified" :baseValue="sheet.abilities.fighting" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
+            <AbilityScore :modifiedValue="agilityModified" :baseValue="sheet.abilities.agility" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
+            <AbilityScore :modifiedValue="strengthModified" :baseValue="sheet.abilities.strength" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
+            <AbilityScore :modifiedValue="reasonModified" :baseValue="sheet.abilities.reason" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
+            <AbilityScore :modifiedValue="intuitionModified" :baseValue="sheet.abilities.intuition" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
+            <AbilityScore :modifiedValue="presenceModified" :baseValue="sheet.abilities.presence" :characterName="sheet.meta.name" :showFull="showFullAbilities" />
           </div>
         </div>
       </div>
@@ -248,12 +248,20 @@ const meta = metaStore();
 
 const { lg, xl, '2xl': xl2 } = useBreakpoints();
 
+const reputationModified = computed(() => ruleSets.reputation());
+const fightingModified = computed(() => ruleSets.fighting());
+const agilityModified = computed(() => ruleSets.agility());
+const strengthModified = computed(() => ruleSets.strength());
+const reasonModified = computed(() => ruleSets.reason());
+const intuitionModified = computed(() => ruleSets.intuition());
+const presenceModified = computed(() => ruleSets.presence());
+
 const reputationRollComponents = computed(() => {
   const label = t(`sheet.reputation`);
   return calculateRollComponents({
     attributes: [`reputation_roll` as any],
     baseComponents: [
-      { rollFormula: `${ruleSets.reputation().value}d6`, label: 'Base' }
+      { rollFormula: `${reputationModified.value.value}d6`, label: 'Base' }
     ],
   });
 });

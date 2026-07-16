@@ -4,7 +4,7 @@
       {{ $t('sheet.armor') }}
     </span>
     <ModifiedValueInput
-      :modifiedValue="ruleSets.armor()"
+      :modifiedValue="armorModified"
       class="font-space-grotesk font-black text-3xl leading-none text-black mt-1 text-center w-full bg-transparent border-none focus:outline-none p-0"
       unstyled
     />
@@ -12,9 +12,11 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue';
 import { characterStore } from '@/sheet/stores';
 import { ruleSets } from '@/system';
 import ModifiedValueInput from '@/components/ModifiedValueInput.vue';
 
 const sheet = characterStore();
+const armorModified = computed(() => ruleSets.armor());
 </script>

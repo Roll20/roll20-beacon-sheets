@@ -5,30 +5,32 @@
     @close="handleClose"
   >
     <div v-if="editingGear" class="flex flex-col gap-4">
-      
-      <div class="flex flex-col gap-1 text-black">
-        <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
-          {{ $t('sheet.name') }}
-        </label>
-        <LazyInput
-          v-model="editingGear.name"
-          class="w-full border-2 border-black p-2 text-base font-bold focus:outline-none"
-        />
-      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <div class="flex flex-col gap-1 text-black">
+          <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
+            {{ $t('sheet.name') }}
+          </label>
+          <LazyInput
+            v-model="editingGear.name"
+            class="w-full border-2 border-black p-2 text-base font-bold focus:outline-none"
+          />
+        </div>
 
-      
-      <div class="flex flex-col gap-1 text-black">
-        <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
-          Type
-        </label>
-        <select
-          v-model="editingGear.type"
-          class="w-full border-2 border-black p-2 text-base font-bold bg-white focus:outline-none cursor-pointer"
-        >
-          <option value="weapon">Weapon</option>
-          <option value="armor">Armor</option>
-          <option value="other">Other</option>
-        </select>
+        
+        <div class="flex flex-col gap-1 text-black">
+          <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
+            Type
+          </label>
+          <select
+            v-model="editingGear.type"
+            class="w-full border-2 border-black p-2 text-base font-bold bg-white focus:outline-none cursor-pointer"
+          >
+            <option value="weapon">Weapon</option>
+            <option value="armor">Armor</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
       </div>
 
       

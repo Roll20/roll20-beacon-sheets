@@ -68,7 +68,7 @@ const rollInitiative = async () => {
   if (!myCharId) return;
   const dispatch = dispatchRef.value;
   let currentMap = { ...initiativeMap.value };
-  const updatedMap = await rollInitiativeAction(myCharId, currentMap, dispatch);
+  const updatedMap = await rollInitiativeAction(myCharId, currentMap, dispatch, sheet.meta.avatar, sheet.meta.name);
 
   const oldList = ensureArray(currentMap[myCharId]?.initiative);
   const newList = ensureArray(updatedMap[myCharId]?.initiative);

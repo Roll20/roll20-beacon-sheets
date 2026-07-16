@@ -6,6 +6,7 @@ import { reputation_formula } from '@/system/biography/reputation';
 
 export const biographyStore = defineStore('biography', () => {
   const civilianName = ref('');
+  const about = ref('');
   const rank = ref(0);
   const role = ref('');
   const reputation = ref(reputation_formula);
@@ -32,6 +33,7 @@ export const biographyStore = defineStore('biography', () => {
 
   const firebase = {
     civilianName,
+    about,
     rank,
     role,
     reputation,
@@ -50,6 +52,7 @@ export const biographyStore = defineStore('biography', () => {
 
   return {
     civilianName,
+    about,
     rank,
     role,
     reputation,

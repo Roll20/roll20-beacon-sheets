@@ -30,10 +30,14 @@ const props = withDefaults(defineProps<{
   modifiedValue?: ModifiedValue;
   allowAdvancedEditing?: boolean;
   unstyled?: boolean;
+  min?: number;
+  max?: number;
 }>(), {
   modifiedValue: () => ({ value: 0, modifiers: [], baseValue: 0 }),
   allowAdvancedEditing: () => false,
-  unstyled: () => false
+  unstyled: () => false,
+  min: undefined,
+  max: undefined
 });
 
 const emit = defineEmits<{
@@ -140,12 +144,15 @@ const inputValue = computed({
       return;
     }
 
-    const parsedNewValue = Number(newValue);
+    let parsedNewValue = Number(newValue);
     if (isNaN(parsedNewValue)) {
       
       emit('update:baseValue', newValue);
       return;
     }
+
+    if (props.min !== undefined && parsedNewValue < props.min) parsedNewValue = props.min;
+    if (props.max !== undefined && parsedNewValue > props.max) parsedNewValue = props.max;
 
     if (attr) {
       const sheet = characterStore();
@@ -211,17 +218,21 @@ const tooltipInfo = computed(() => {
     return 'No modifiers';
   }
   
-  const hasBase = props.modifiedValue.baseValue ? true : false;
-  const baseContent = hasBase ? `Base: ${props.modifiedValue.baseValue}<br/>` : '';
+  const hasValidBase = props.modifiedValue.baseValue !== undefined && props.modifiedValue.baseValue !== null && props.modifiedValue.baseValue !== '';
+  const isBaseZero = props.modifiedValue.baseValue === 0 || props.modifiedValue.baseValue === '0';
+  
+  let baseContent = '';
+  if (hasValidBase && !isBaseZero) {
+    baseContent = `Base: ${props.modifiedValue.baseValue}<br/>`;
+  }
+
   const content = baseContent +
     props.modifiedValue.modifiers.map(m => {
       let name = m.name;
-      let sign = Number(m.value) >= 0 ? '+' : '';
-      if(!hasBase) {
-        sign = '';
-        name = (name === 'Custom Adjustment') ? 'Base' : name;
+      if (isBaseZero && name === 'Custom Adjustment') {
+        name = 'Base';
       }
-      return `${name}: ${sign}${m.value}`;
+      return `${name}: ${m.value}`;
   }).join('<br/>');
 
   return { content, html: true };

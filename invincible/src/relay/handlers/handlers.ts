@@ -6,12 +6,13 @@ import { ruleSets } from '@/system';
 import { objectToArray, arrayToObject } from '@/utility/objectify';
 import { performCriticalInjuryRoll } from '@/system/injuries/criticalInjuries';
 
-export const onInit = ({ character, settings, compendiumDropData, sharedSettings: initialSharedSettings }: InitArgs) => {
+export const onInit = ({ character, settings, compendiumDropData, sharedSettings: initialSharedSettings }: InitArgs, dispatch: Dispatch) => {
   initValues.id = character.id;
   initValues.character = character;
   initValues.settings = settings;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
   sharedSettings.value = initialSharedSettings ?? {};
+
   logger.log('onInit -> Sheet Relay');
 };
 

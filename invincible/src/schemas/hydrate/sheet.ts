@@ -10,6 +10,7 @@ import { BiographyHydrateSchema } from "./biography";
 import { FeaturesHydrateSchema } from "./features";
 import { ActionsHydrateSchema } from "./actions";
 import { GearHydrateSchema } from "./gear";
+import { SettingsHydrateSchema } from "./settings";
 
 export const AttributesHydrateSchema = z.object({
   sample: SampleHydrateSchema.optional(),
@@ -21,6 +22,7 @@ export const AttributesHydrateSchema = z.object({
   features: FeaturesHydrateSchema.optional(),
   actions: ActionsHydrateSchema.optional(),
   gear: GearHydrateSchema.optional(),
+  settings: SettingsHydrateSchema.optional(),
 });
 
 export type AttributesHydrate = z.infer<typeof AttributesHydrateSchema>;

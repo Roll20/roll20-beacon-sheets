@@ -5,29 +5,31 @@
     @close="handleClose"
   >
     <div v-if="editingFeature" class="flex flex-col gap-4">
-      
-      <div class="flex flex-col gap-1 text-black">
-        <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
-          {{ $t('sheet.name') }}
-        </label>
-        <LazyInput
-          v-model="editingFeature.name"
-          class="w-full border-2 border-black p-2 text-base font-bold focus:outline-none"
-        />
-      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <div class="flex flex-col gap-1 text-black">
+          <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
+            {{ $t('sheet.name') }}
+          </label>
+          <LazyInput
+            v-model="editingFeature.name"
+            class="w-full border-2 border-black p-2 text-base font-bold focus:outline-none"
+          />
+        </div>
 
-      
-      <div class="flex flex-col gap-1 text-black">
-        <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
-          {{ $t('sheet.type') }}
-        </label>
-        <select
-          v-model="editingFeature.type"
-          class="w-full border-2 border-black p-2 text-base font-bold bg-white focus:outline-none cursor-pointer"
-        >
-          <option value="talent">{{ $t('sheet.talent') }}</option>
-          <option value="drawback">{{ $t('sheet.drawback') }}</option>
-        </select>
+        
+        <div class="flex flex-col gap-1 text-black">
+          <label class="font-space-grotesk font-black uppercase text-sm text-zinc-500">
+            {{ $t('sheet.type') }}
+          </label>
+          <select
+            v-model="editingFeature.type"
+            class="w-full border-2 border-black p-2 text-base font-bold bg-white focus:outline-none cursor-pointer"
+          >
+            <option value="talent">{{ $t('sheet.talent') }}</option>
+            <option value="drawback">{{ $t('sheet.drawback') }}</option>
+          </select>
+        </div>
       </div>
 
       
