@@ -92,6 +92,7 @@ const activeNpcTab = computed(() => (tabVisible(ui.npcTab) ? ui.npcTab : 'princi
   <!-- ====== Mode NORMAL : la feuille du type choisi ====== -->
   <div v-else class="enyllion-sheet sheet-root">
     <header class="sheet-header">
+    
       <span class="sheet-title">Les Chroniques d'Enyllion</span>
       <img class="sheet-logo" src="/images/logo_enyllion.png" alt="Enyllion" />
       <button class="gear" :class="{ open: showSettings }" title="Paramètres" @click="showSettings = !showSettings">⚙</button>
