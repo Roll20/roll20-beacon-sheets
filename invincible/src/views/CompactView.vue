@@ -202,10 +202,10 @@
           <RollButton
             :characterName="sheet.meta.name"
             :title="`${attr.label} Roll`"
-            :components="[{ rollFormula: `${sheet.abilities[attr.key]}d6`, label: attr.label }]"
+            :components="[{ rollFormula: `${abilitiesModified[attr.key].value.value}d6`, label: attr.label }]"
             :solver="actionRollSolver"
             class="inline cursor-pointer hover:text-primary transition-colors group"
-          ><span class="whitespace-nowrap"><span class="text-zinc-500 mr-1">{{ abilityRank(sheet.abilities[attr.key]) }} </span><strong class="font-space-grotesk font-black uppercase group-hover:text-primary transition-colors">{{ attr.label }}</strong> {{ sheet.abilities[attr.key] }}</span></RollButton>
+          ><span class="whitespace-nowrap"><span class="text-zinc-500 mr-1">{{ abilityRank(abilitiesModified[attr.key].value.value) }} </span><strong class="font-space-grotesk font-black uppercase group-hover:text-primary transition-colors">{{ attr.label }}</strong> {{ abilitiesModified[attr.key].value.value }}</span></RollButton>
           <span v-if="index < abilityList.length - 1" class="text-zinc-400">, </span>
         </template>
       </div>
