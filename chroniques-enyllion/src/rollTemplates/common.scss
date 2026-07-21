@@ -1,0 +1,79 @@
+.quickstart-template {
+  display: block;
+  max-width: 100%;
+  background-color: white;
+  color: black;
+  border-radius: 0.25rem;
+
+  &__trait {
+    display: grid;
+    grid-template-columns: auto;
+    gap: 0.5rem;
+    padding: 1rem;
+
+    &__name {
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+  }
+}
+
+/* Roll template des jets de caractéristiques (Enyllion) */
+.enyllion-template {
+  display: block;
+  max-width: 100%;
+  background: #1c1c1c;
+  color: #f0f0f0;
+  border: 1px solid #d8b56b;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+
+  &__perso {
+    font-weight: 700;
+    color: #d8b56b;
+    font-variant: small-caps;
+    font-size: 1.05rem;
+  }
+  &__name {
+    font-size: 0.9rem;
+    color: #cfcfcf;
+  }
+  &__sub {
+    color: #9a9a9a;
+    font-size: 0.8rem;
+  }
+  &__desc {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: #cfcfcf;
+    font-style: italic;
+  }
+  &__sep {
+    border: none;
+    border-top: 1px solid #3a3a3a;
+    margin: 0.4rem 0;
+  }
+  &__line {
+    font-size: 0.9rem;
+  }
+  &__result {
+    margin-top: 0.4rem;
+    font-weight: 700;
+    font-size: 1rem;
+
+    &--crit {
+      color: #2ecc71;
+    }
+    &--success {
+      color: #58d68d;
+    }
+    &--fail {
+      color: #e67e22;
+    }
+    &--critfail {
+      color: #e74c3c;
+    }
+  }
+}
