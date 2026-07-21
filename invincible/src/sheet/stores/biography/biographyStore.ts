@@ -31,6 +31,9 @@ export const biographyStore = defineStore('biography', () => {
     relationships: '',
   });
 
+  const special = ref('');
+  const drawbacks = ref('');
+
   const firebase = {
     civilianName,
     about,
@@ -44,7 +47,9 @@ export const biographyStore = defineStore('biography', () => {
     resources,
     avatarColors,
     appearance,
-    disableBloodOverlay
+    disableBloodOverlay,
+    special,
+    drawbacks
   };
 
   const dehydrate = (): BiographyHydrate => genericDehydrate(firebase, BiographyHydrateSchema);
@@ -64,6 +69,8 @@ export const biographyStore = defineStore('biography', () => {
     avatarColors,
     appearance,
     disableBloodOverlay,
+    special,
+    drawbacks,
     firebase,
     dehydrate,
     hydrate,

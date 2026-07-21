@@ -20,13 +20,16 @@ export const applyNpcDrop = async (resolvedNode: any, dispatch: Dispatch) => {
   
   if (validation.success) {
     const data = validation.data;
+
+    store.settings.mode = 'compact';
+    
     if (data.name !== undefined) store.meta.name = data.name;
     
     const avatar = data.avatar || data.token;
     const token = data.token || data.avatar;
     
     if (avatar !== undefined) store.meta.avatar = avatar;
-    if (token !== undefined) store.meta.token = token;
+    if (token !== undefined) store.meta.token.imgsrc = token;
     
     if (data.about !== undefined) store.biography.about = data.about;
     if (data.civilianName !== undefined) store.biography.civilianName = data.civilianName;

@@ -230,7 +230,7 @@ export const drag = async (
 
   try {
     if (page.properties.hasOwnProperty('data-payload')) {
-      if (category === 'NPCs') {
+      if (category === 'NPCs' || category === 'Dramatis Personae') {
         const isWrapper = typeof page.properties['data-payload'] === 'object' && page.properties['data-payload'] !== null && 'data-payload' in page.properties['data-payload'];
         
         let inputToValidate: any;

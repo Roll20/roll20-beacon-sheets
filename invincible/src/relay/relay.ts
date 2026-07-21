@@ -210,7 +210,7 @@ export const createRelay = async ({
     store.setPermissions(initValues.settings.owned, initValues.settings.gm);
 
     
-    if (initValues.compendiumDrop && initValues.compendiumDrop.categoryName === 'NPCs') {
+    if (initValues.compendiumDrop && (initValues.compendiumDrop.categoryName === 'NPCs' || initValues.compendiumDrop.categoryName === 'Dramatis Personae')) {
       import('@/relay/handlers/drop').then(({ drag }) => {
         drag({ coordinates: { left: 0, top: 0 }, dropData: initValues.compendiumDrop! }, dispatch, true, initValues.character);
       });
