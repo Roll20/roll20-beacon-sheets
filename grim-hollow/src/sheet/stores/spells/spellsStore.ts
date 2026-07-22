@@ -403,6 +403,8 @@ export const useSpellsStore = defineStore('spells', () => {
     const level = classes.reduce((acc, cls) => {
       const type = cls.spellcasting;
       if (type !== 'none' && type !== 'pact' && config.casterTypes[type] && cls.level > 0) {
+        if (type === 'half') return acc + Math.ceil(cls.level / 2);
+        if (type === 'third') return acc + Math.floor(cls.level / 3);
         return acc + cls.level * (config.casterTypes[type].multiclassMultiplier || 1);
       }
       return acc;

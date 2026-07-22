@@ -16,7 +16,7 @@
     </StyledBox>  
     <div class="list">
       <div v-if="store.activeConditions.length > 0" class="conditions-section__grid">
-        <div v-for="key in store.activeConditions" :key="key" class="condition-pill" v-tooltip="{ content: t(`descriptions.conditions.${key}`), html: true }">
+        <div v-for="key in store.activeConditions" :key="key" class="condition-pill" v-tooltip="{ theme: 'condition', content: t(`descriptions.conditions.${key}`), html: true }">
           <span>{{ t(`titles.condition.${key}`) }}</span>
           <SvgIcon icon="delete" @click="store.toggleCondition(key)" />
         </div>

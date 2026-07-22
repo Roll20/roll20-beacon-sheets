@@ -168,6 +168,26 @@ describe('useCombatStore', () => {
       expect(store.getSpeed('walk').value.final).toBe(40);
     });
 
+    it('should reduce speed by 5 feet per exhaustion level', () => {
+      const store = useCombatStore();
+      store.exhaustion = 2;
+
+      const speed = store.getSpeed('walk').value;
+
+      expect(speed.final).toBe(20);
+      expect(speed.modifiers).toContainEqual({
+        name: 'titles.exhaustion',
+        value: -10,
+      });
+    });
+
+    it('should not reduce speed below 0 from exhaustion', () => {
+      const store = useCombatStore();
+      store.exhaustion = 6;
+
+      expect(store.getSpeed('walk').value.final).toBe(0);
+    });
+
     it('should not allow adding to speed if base is 0', () => {
       const store = useCombatStore();
       const effectsStore = useEffectsStore();
