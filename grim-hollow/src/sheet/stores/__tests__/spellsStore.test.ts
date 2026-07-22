@@ -524,6 +524,16 @@ describe('spellsStore', () => {
       expect(slots.standard[0]).toBe(2);
     });
 
+    it('should return no slots when multiclass caster level rounds to zero', () => {
+      const store = useSpellsStore();
+      const progressionStore = useProgressionStore();
+
+      progressionStore.updateClass({ name: 'Eldritch Knight', level: 2, spellcasting: 'third' });
+      progressionStore.updateClass({ name: 'Arcane Trickster', level: 2, spellcasting: 'third' });
+
+      expect(store.getSlots.standard).toEqual(Array(config.spellLevels.length - 1).fill(0));
+    });
+
     it('should calculate slots for Pact Magic', () => {
       const store = useSpellsStore();
       const progressionStore = useProgressionStore();

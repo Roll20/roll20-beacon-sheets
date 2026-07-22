@@ -439,7 +439,10 @@ export const useSpellsStore = defineStore('spells', () => {
         }, Array(config.spellLevels.length).fill(0));
       } else {
         const level = getMulticlassCasterLevel(spellcasterClasses);
-        availableSlots = config.casterMulticlassing[level - 1];
+        availableSlots =
+          level <= 0
+            ? Array(config.spellLevels.length - 1).fill(0)
+            : config.casterMulticlassing[level - 1];
       }
     } else {
       const caster = spellcasterClasses[0];
