@@ -6,6 +6,7 @@ import { reputation_formula } from '@/system/biography/reputation';
 
 export const biographyStore = defineStore('biography', () => {
   const civilianName = ref('');
+  const about = ref('');
   const rank = ref(0);
   const role = ref('');
   const reputation = ref(reputation_formula);
@@ -30,26 +31,12 @@ export const biographyStore = defineStore('biography', () => {
     relationships: '',
   });
 
+  const special = ref('');
+  const drawbacks = ref('');
+
   const firebase = {
     civilianName,
-    rank,
-    role,
-    reputation,
-    karma,
-    personalDossier,
-    activeTeam,
-    gearClass,
-    resources,
-    avatarColors,
-    appearance,
-    disableBloodOverlay
-  };
-
-  const dehydrate = (): BiographyHydrate => genericDehydrate(firebase, BiographyHydrateSchema);
-  const hydrate = (snapshot: BiographyHydrate) => genericHydrate(snapshot, firebase, BiographyHydrateSchema);
-
-  return {
-    civilianName,
+    about,
     rank,
     role,
     reputation,
@@ -61,6 +48,29 @@ export const biographyStore = defineStore('biography', () => {
     avatarColors,
     appearance,
     disableBloodOverlay,
+    special,
+    drawbacks
+  };
+
+  const dehydrate = (): BiographyHydrate => genericDehydrate(firebase, BiographyHydrateSchema);
+  const hydrate = (snapshot: BiographyHydrate) => genericHydrate(snapshot, firebase, BiographyHydrateSchema);
+
+  return {
+    civilianName,
+    about,
+    rank,
+    role,
+    reputation,
+    karma,
+    personalDossier,
+    activeTeam,
+    gearClass,
+    resources,
+    avatarColors,
+    appearance,
+    disableBloodOverlay,
+    special,
+    drawbacks,
     firebase,
     dehydrate,
     hydrate,

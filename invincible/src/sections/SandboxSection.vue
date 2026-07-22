@@ -45,6 +45,28 @@
           <EffectEditor v-model="sheet.sample.effects" />
           
           <div class="pt-4 border-t border-zinc-200">
+            <h4 class="font-space-grotesk font-black text-sm uppercase tracking-wider text-zinc-500 mb-2">Sheet Mode</h4>
+            <div class="flex gap-2">
+              <button
+                @click="sheet.settings.mode = 'normal'"
+                type="button"
+                class="flex-1 h-10 border-2 border-black font-space-grotesk font-black uppercase text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer focus:outline-none"
+                :class="sheet.settings.mode === 'normal' ? 'bg-black text-white' : 'bg-white text-black hover:bg-zinc-100'"
+              >
+                Normal
+              </button>
+              <button
+                @click="sheet.settings.mode = 'compact'"
+                type="button"
+                class="flex-1 h-10 border-2 border-black font-space-grotesk font-black uppercase text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer focus:outline-none"
+                :class="sheet.settings.mode === 'compact' ? 'bg-black text-white' : 'bg-white text-black hover:bg-zinc-100'"
+              >
+                Compact
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-zinc-200">
             <h4 class="font-space-grotesk font-black text-sm uppercase tracking-wider text-zinc-500 mb-2">Debug Actions</h4>
             <div class="flex flex-col gap-2">
               <button

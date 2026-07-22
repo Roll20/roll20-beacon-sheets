@@ -1,6 +1,8 @@
 export interface InitiativeEntry {
   timestamp: number;
   initiative: number[];
+  avatar?: string;
+  name?: string;
 }
 
 export type InitiativeMap = Record<string, InitiativeEntry>;
@@ -25,7 +27,9 @@ export function isEarlier(a: RollInfo, b: RollInfo): boolean {
 export async function rollInitiativeAction(
   myCharId: string,
   currentInitiativeMap: InitiativeMap,
-  dispatch: any
+  dispatch: any,
+  avatar?: string,
+  name?: string
 ): Promise<InitiativeMap> {
   const initMap = { ...currentInitiativeMap };
   const takenValues = new Set<number>();
@@ -78,7 +82,9 @@ export async function rollInitiativeAction(
 
   initMap[myCharId] = {
     timestamp: Date.now(),
-    initiative: currentList
+    initiative: currentList,
+    avatar: avatar || currentInitData.avatar,
+    name: name || currentInitData.name
   };
 
   return initMap;
@@ -89,7 +95,7 @@ export function clearInitiativeAction(
   currentInitiativeMap: InitiativeMap
 ): InitiativeMap {
   const initMap = { ...currentInitiativeMap };
-  initMap[myCharId] = null as any;
+  delete initMap[myCharId];
   return initMap;
 }
 
@@ -205,7 +211,9 @@ export async function resolveDuplicatesAction(
   if (changed) {
     initMap[myCharId] = {
       timestamp: myTimestamp, 
-      initiative: myList
+      initiative: myList,
+      avatar: myData.avatar,
+      name: myData.name
     };
   }
 

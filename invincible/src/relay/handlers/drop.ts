@@ -1,12 +1,15 @@
 import {
   type Dispatch,
   type CompendiumDragDropData,
-  type DragCoordinates
+  type DragCoordinates,
+  type Character
 } from '@roll20-official/beacon-sdk';
 import { validateEntry, applyCompendiumData } from '@/utility/compendiumDrop';
+import { applyNpcDrop } from '@/utility/applyNpcDrop';
 import type { CompendiumCategory } from '@/schemas/compendium';
-import { dispatchRef } from '@/relay/relay';
+import { dispatchRef, initValues } from '@/relay/relay';
 import { compendium } from '@/schemas/compendium';
+import { NpcPayloadSchema } from '@/schemas/hydrate/npc';
 
 export type DropArgs = {
   coordinates: DragCoordinates;
@@ -140,7 +143,11 @@ export const resolveDropData = async (node: any, dispatch: Dispatch): Promise<an
     const page = String(node.pageName);
     const resolvedPage = await fetchCompendiumPage(page, dispatch, cat);
     if (resolvedPage) {
-      return resolveDropData(resolvedPage, dispatch);
+      const resolved = await resolveDropData(resolvedPage, dispatch);
+      if (node.activeModifiers) {
+        resolved.activeModifiers = node.activeModifiers;
+      }
+      return resolved;
     }
     console.warn(`[compendiumDrop] Could not resolve reference to page "${page}" in category "${cat}"`);
     return null;
@@ -178,10 +185,29 @@ export const resolveDropData = async (node: any, dispatch: Dispatch): Promise<an
   };
 };
 
+export const setToken = async ({ characterId, payload, dispatch }: { characterId: string; payload: Record<string, any>; dispatch: Dispatch }) => {
+  const result = NpcPayloadSchema.safeParse(payload);
+  if (!result.success) {
+    console.error('Invalid monster data', result.error);
+    return;
+  }
+  
+  await dispatch.updateTokensByCharacter({
+    characterId: characterId,
+    token: {
+      name: result.data.name,
+      imgsrc: result.data.token || result.data.avatar, 
+      width: 70,
+      height: 70,
+    }
+  });
+}
+
 export const drag = async (
-  { dropData }: DropArgs,
+  { dropData, coordinates }: DropArgs,
   dispatch?: Dispatch,
   isNewSheet = false,
+  character?: Character,
 ) => {
   const { pageName, expansionId } = dropData;
   const category = dropData.categoryName as CompendiumCategory | string;
@@ -202,50 +228,63 @@ export const drag = async (
   const page = pages[correctPageIndex];
   console.log('Dropping page', page);
 
-  const handler = compendium.find((entry) => entry.category === category);
-  if (handler) {
-    try {
-      if (page.properties.hasOwnProperty('data-payload')) {
-        if (category === 'Monsters') {
-          
+  try {
+    if (page.properties.hasOwnProperty('data-payload')) {
+      if (category === 'NPCs' || category === 'Dramatis Personae') {
+        const isWrapper = typeof page.properties['data-payload'] === 'object' && page.properties['data-payload'] !== null && 'data-payload' in page.properties['data-payload'];
+        
+        let inputToValidate: any;
+        if (isWrapper) {
+          inputToValidate = await resolveDropData(page.properties['data-payload'], actualDispatch);
         } else {
-          const isWrapper = typeof page.properties['data-payload'] === 'object' && page.properties['data-payload'] !== null && 'data-payload' in page.properties['data-payload'];
-          
-          let inputToValidate: any;
-          if (isWrapper) {
-            inputToValidate = await resolveDropData(page.properties['data-payload'], actualDispatch);
-          } else {
-            inputToValidate = await resolveDropData(page, actualDispatch);
-          }
+          inputToValidate = await resolveDropData(page, actualDispatch);
+        }
+        await applyNpcDrop(inputToValidate, actualDispatch);
+        
+        if (isNewSheet) {
+          await new Promise((resolve) => setTimeout(resolve, 2000)); 
+          const payloadToTokenize = inputToValidate['data-payload'] || {};
+          await setToken({ characterId: character?.id || initValues.id || 'id', payload: payloadToTokenize, dispatch: actualDispatch });
+        }
+        return; 
+      }
+      
+      const handler = compendium.find((entry) => entry.category === category);
+      if (handler) {
+        const isWrapper = typeof page.properties['data-payload'] === 'object' && page.properties['data-payload'] !== null && 'data-payload' in page.properties['data-payload'];
+        
+        let inputToValidate: any;
+        if (isWrapper) {
+          inputToValidate = await resolveDropData(page.properties['data-payload'], actualDispatch);
+        } else {
+          inputToValidate = await resolveDropData(page, actualDispatch);
+        }
 
-          const validation = validateEntry(inputToValidate, handler.schema);
-          if (validation.success) {
-            if (handler.onApply) {
-              await handler.onApply(validation.data.node?.data ?? validation.data);
-            } else {
-              const rawTarget = handler.target;
-              const resolvedTarget = typeof rawTarget === 'function' ? rawTarget() : rawTarget;
-              applyCompendiumData(validation.data, resolvedTarget);
-            }
+        const validation = validateEntry(inputToValidate, handler.schema);
+        if (validation.success) {
+          if (handler.onApply) {
+            await handler.onApply(validation.data.node?.data ?? validation.data);
           } else {
-            console.error(`Validation failed for category "${category}": ${validation.error}`);
+            const rawTarget = handler.target;
+            const resolvedTarget = typeof rawTarget === 'function' ? rawTarget() : rawTarget;
+            applyCompendiumData(validation.data, resolvedTarget);
           }
+        } else {
+          console.error(`Validation failed for category "${category}": ${validation.error}`);
         }
       } else {
-        console.error(
-          `Item has no payload.`,
-        );
-        return;
+        console.error(`No handler found for category: "${category}".`);
       }
-
-      if (isNewSheet) {
-        await new Promise((resolve) => setTimeout(resolve, 2000)); 
-        
-      }
-    } catch (e) {
-      console.error('Failed to parse data-payload', e);
+    } else {
+      console.error(`Item has no payload.`);
+      return;
     }
-  } else {
-    console.error(`No handler found for category: "${category}".`);
+
+    if (isNewSheet) {
+      await new Promise((resolve) => setTimeout(resolve, 2000)); 
+      
+    }
+  } catch (e) {
+    console.error('Failed to parse data-payload', e);
   }
 };

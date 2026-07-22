@@ -18,6 +18,9 @@ export const AvatarColorsSchema = z.object({
 
 export const BiographyHydrateSchema = z.object({
   civilianName: flexibleString,
+  special: flexibleString.default(''),
+  drawbacks: flexibleString.default(''),
+  about: flexibleString.default(''),
   rank: flexibleNumber.default(0),
   role: flexibleString,
   reputation: flexibleString,

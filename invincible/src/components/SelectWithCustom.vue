@@ -2,12 +2,12 @@
   <div class="select-with-custom relative inline-block w-full text-sm font-lexend">
     
     <span
-      v-if="!isFocused"
-      @click="startEdit"
+      @click="!isFocused && startEdit()"
       aria-hidden="true"
-      :class="computedSpanClass"
+      :class="[computedSpanClass, isFocused ? 'text-transparent border-transparent select-none' : '']"
+      :style="isFocused ? { color: 'transparent', borderColor: 'transparent', backgroundColor: 'transparent' } : {}"
     >
-      {{ displayLabel }}
+      {{ displayLabel || '&nbsp;' }}
     </span>
 
     
@@ -18,10 +18,11 @@
       @change="onSelectChange"
       @focus="onSelectFocus"
       @blur="onSelectBlur"
+      class="absolute inset-0 w-full h-full"
       :class="[
         isFocused
-          ? (selectClass || 'w-full border-2 border-black rounded p-1 font-bold text-black bg-white focus:outline-none focus:ring-0 cursor-pointer')
-          : 'absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10'
+          ? (selectClass || 'border-2 border-black rounded p-1 font-bold text-black bg-white focus:outline-none focus:ring-0 cursor-pointer')
+          : 'opacity-0 cursor-pointer z-10'
       ]"
     >
       
@@ -58,10 +59,11 @@
       @focus="onCustomInputFocus"
       @blur="onCustomInputBlur"
       placeholder="Enter custom value..."
+      class="absolute inset-0 w-full h-full"
       :class="[
         isFocused
-          ? (inputClass || 'w-full border-2 border-black rounded p-1 font-bold text-black bg-white focus:outline-none')
-          : 'absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10'
+          ? (inputClass || 'border-2 border-black rounded p-1 font-bold text-black bg-white focus:outline-none')
+          : 'opacity-0 cursor-pointer z-10'
       ]"
     />
   </div>

@@ -4,7 +4,7 @@
       {{ $t('sheet.slugfest_dmg') }}
     </span>
     <ModifiedValueInput
-      :modifiedValue="ruleSets.slugfest_damage()"
+      :modifiedValue="slugfestDamageModified"
       class="font-space-grotesk font-black text-3xl leading-none text-black mt-1 text-center w-full bg-transparent border-none focus:outline-none p-0"
       unstyled
     />
@@ -36,8 +36,9 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 const fighting = computed(() => ruleSets.fighting().value || 0);
+const slugfestDamageModified = computed(() => ruleSets.slugfest_damage());
 const slugfestDamage = computed(() => { 
-  const dmg = ruleSets.slugfest_damage();
+  const dmg = slugfestDamageModified.value;
   if(dmg.error) return 0;
   return Number(dmg.value) || 0;
 });

@@ -15,7 +15,7 @@
       @input="onInput"
       @blur="commit"
       :placeholder="placeholder"
-      class="w-full resize-none bg-transparent focus:outline-none block overflow-hidden text-sm font-lexend leading-relaxed font-bold text-black"
+      class="w-full resize-none bg-transparent focus:outline-none block overflow-hidden text-sm font-lexend leading-relaxed text-black"
       v-bind="filteredAttrs"
       spellcheck="false"
     />
