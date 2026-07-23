@@ -99,13 +99,10 @@
                   </div>
 
                   
-                  <div v-if="power.modifiers && power.modifiers.length > 0" class="border-t border-zinc-200 pt-2 space-y-2 text-left">
-                    <span class="font-black uppercase tracking-wider text-xs text-zinc-500 block">
-                      Modifiers Detail
-                    </span>
+                  <div v-if="power.modifiers && power.modifiers.filter(m => m.isActive !== false).length > 0" class="border-t border-zinc-200 pt-2 space-y-2 text-left">
                     <div class="space-y-2">
                       <div
-                        v-for="mod in power.modifiers"
+                        v-for="mod in power.modifiers.filter(m => m.isActive !== false)"
                         :key="mod._id"
                         class="p-2.5 border border-zinc-300 bg-zinc-50/50 rounded flex flex-col gap-1.5 transition-opacity duration-200"
                         :class="{ 'opacity-50 bg-zinc-100/30': mod.isActive === false }"
