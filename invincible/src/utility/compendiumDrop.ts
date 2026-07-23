@@ -72,6 +72,13 @@ export function transformPageToWrapper(page: any): any {
     payload.type = originalCategoryName === 'Talents' ? 'talent' : 'drawback';
   }
 
+  if (payload && typeof payload === 'object') {
+    const tokenUrl = properties.Token || properties.token;
+    if (tokenUrl && !payload.token) {
+      payload.token = tokenUrl;
+    }
+  }
+
   let rawChildren = properties['data-children'] || [];
   if (typeof rawChildren === 'string') {
     try {

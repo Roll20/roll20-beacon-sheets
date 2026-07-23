@@ -4,7 +4,7 @@ import { validateEntry, applyCompendiumData } from '@/utility/compendiumDrop';
 import { compendium } from '@/schemas/compendium';
 import { NpcPayloadSchema } from '@/schemas/hydrate/npc';
 
-export const applyNpcDrop = async (resolvedNode: any, dispatch: Dispatch) => {
+export const applyNpcDrop = async (resolvedNode: any, dispatch: Dispatch, type: string = 'compact') => {
   const store = characterStore();
 
   
@@ -12,7 +12,7 @@ export const applyNpcDrop = async (resolvedNode: any, dispatch: Dispatch) => {
   store.features.list = [];
   store.actions.list = [];
   store.gear.list = [];
-  store.settings.mode = 'compact';
+  store.settings.mode = type;
 
   
   const payload = resolvedNode['data-payload'] || {};
@@ -21,7 +21,7 @@ export const applyNpcDrop = async (resolvedNode: any, dispatch: Dispatch) => {
   if (validation.success) {
     const data = validation.data;
 
-    store.settings.mode = 'compact';
+    store.settings.mode = type;
     
     if (data.name !== undefined) store.meta.name = data.name;
     
