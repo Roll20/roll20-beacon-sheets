@@ -14,6 +14,13 @@ export const NpcPayloadSchema = z.object({
   appearance: flexibleString.optional(),
   avatar: flexibleString.optional(),
   token: flexibleString.optional(),
+  personalDossier: z.object({
+    occupation: flexibleString.optional(),
+    personality: flexibleString.optional(),
+    drive: flexibleString.optional(),
+    flaw: flexibleString.optional(),
+    relationships: flexibleString.optional(),
+  }).passthrough().optional(),
   abilities: z.record(z.string(), z.any()).optional(),
   combat: z.record(z.string(), z.any()).optional(),
 }).passthrough();
