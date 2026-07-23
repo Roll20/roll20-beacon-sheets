@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [generateEffectPathsPlugin(), generateSvgSpritesPlugin(), tailwindcss(), vue(), svgLoader()],
   base:
     mode === "production"
-      ? `/${process.env.VITE_SHEET_PATH ?? ''}/${process.env.VITE_SHEET_SHORT_NAME ?? ''}/`
+      ? "https://raw.githubusercontent.com/Roll20/roll20-beacon-sheets/refs/heads/main/invincible/src/"
       : "/",
   build: {
     target: 'esnext',
