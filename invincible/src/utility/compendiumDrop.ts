@@ -54,7 +54,11 @@ export function transformPageToWrapper(page: any): any {
 
   const properties = page.properties || page;
 
-  const categoryName = properties.Category || properties.category || page.categoryName || page.Category || '';
+  let categoryName = properties.Category || properties.category || page.categoryName || page.Category || '';
+  const originalCategoryName = categoryName;
+  if (categoryName === 'Talents' || categoryName === 'Drawbacks') {
+    categoryName = 'Features';
+  }
   let payload = properties['data-payload'] !== undefined ? properties['data-payload'] : page['data-payload'];
   if (typeof payload === 'string') {
     try {
@@ -64,7 +68,11 @@ export function transformPageToWrapper(page: any): any {
     }
   }
 
-  let rawChildren = page.children || properties['data-children'] || [];
+  if (payload && typeof payload === 'object' && (originalCategoryName === 'Talents' || originalCategoryName === 'Drawbacks')) {
+    payload.type = originalCategoryName === 'Talents' ? 'talent' : 'drawback';
+  }
+
+  let rawChildren = properties['data-children'] || [];
   if (typeof rawChildren === 'string') {
     try {
       rawChildren = JSON.parse(rawChildren);
@@ -95,7 +103,10 @@ export function transformPageToWrapper(page: any): any {
 }
 
 function validateNode(node: any, defaultSchema: ZodSchema): { success: true; node: any } | { success: false; error: string } {
-  const categoryName = node.categoryName || '';
+  let categoryName = node.categoryName || '';
+  if (categoryName === 'Talents' || categoryName === 'Drawbacks') {
+    categoryName = 'Features';
+  }
 
   let schema = defaultSchema;
   let target = null;

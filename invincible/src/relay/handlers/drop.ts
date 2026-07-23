@@ -163,10 +163,16 @@ export const resolveDropData = async (node: any, dispatch: Dispatch): Promise<an
       // 
     }
   }
-  const categoryName = properties.Category || properties.category || node.categoryName || node.Category || '';
+  let categoryName = properties.Category || properties.category || node.categoryName || node.Category || '';
+  if (categoryName === 'Talents' || categoryName === 'Drawbacks') {
+    if (payload && typeof payload === 'object') {
+      payload.type = categoryName === 'Talents' ? 'talent' : 'drawback';
+    }
+    categoryName = 'Features';
+  }
 
   
-  let rawChildren = node.children || properties['data-children'] || [];
+  let rawChildren = properties['data-children'] || [];
   if (typeof rawChildren === 'string') {
     try {
       rawChildren = JSON.parse(rawChildren);
@@ -244,6 +250,13 @@ export const drag = async (
         console.warn('Failed to parse data-payload string as JSON', e);
       }
     }
+
+    let originalCategory = page.properties.Category || category;
+    if (originalCategory === 'Talents' || originalCategory === 'Drawbacks') {
+      if (pagePayload && typeof pagePayload === 'object') {
+        pagePayload.type = originalCategory === 'Talents' ? 'talent' : 'drawback';
+      }
+    }
     page.properties['data-payload'] = pagePayload;
 
     let pageChildren = page.properties['data-children'];
@@ -278,7 +291,11 @@ export const drag = async (
         return; 
       }
       
-      const handler = compendium.find((entry) => entry.category === category);
+      let mappedCategory = category;
+      if (mappedCategory === 'Talents' || mappedCategory === 'Drawbacks') {
+        mappedCategory = 'Features';
+      }
+      const handler = compendium.find((entry) => entry.category === mappedCategory);
       if (handler) {
         const isWrapper = typeof page.properties['data-payload'] === 'object' && page.properties['data-payload'] !== null && 'data-payload' in page.properties['data-payload'];
         
