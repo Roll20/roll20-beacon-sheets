@@ -10,7 +10,11 @@ export const applyNpcDrop = async (resolvedNode: any, dispatch: Dispatch, type: 
   
   store.powers.list = [];
   store.features.list = [];
-  store.actions.list = [];
+  if (type === 'normal') {
+    store.actions.list = store.actions.list.filter((a: any) => a.isDefault);
+  } else {
+    store.actions.list = [];
+  }
   store.gear.list = [];
   store.settings.mode = type;
 
