@@ -387,8 +387,8 @@
             <div class="flex gap-2 items-start">
               <span class="mt-0.5 shrink-0 font-bold text-zinc-500">✻</span>
               <div class="min-w-0 leading-relaxed text-zinc-700">
-                <strong class="font-space-grotesk font-black text-black">{{ power.name }}:</strong>
-                <span v-if="power.description"> {{ power.description }}</span>
+                <strong class="font-space-grotesk font-black text-black mr-1">{{ power.name }}:</strong>
+                <div v-if="power.description" class="prose prose-sm max-w-none prose-zinc prose-p:inline inline" v-html="DOMPurify.sanitize(md.render(power.description))"></div>
               </div>
             </div>
             
