@@ -81,13 +81,18 @@
                   <div class="mb-3 col">
                       <span class="age-input-label" id="basic-addon1">Casting Time</span>
                           <select
-                          class="age-atk-select form-select"
-                              data-testid="test-spell-weaponType-input"
-                              v-model="spell.castingTime"
-                          >
-                              <option value="Minor">Minor Action</option>
-                              <option value="Major">Major Action</option>
-                          </select>
+  class="age-atk-select form-select"
+  data-testid="test-spell-castingTime-input"
+  v-model="spell.castingTime"
+>
+  <option value="Free Action">Free Action</option>
+  <option value="Reaction">Reaction</option>
+  <option value="Minor Action">Minor Action</option>
+  <option value="Major Action">Major Action</option>
+  <option value="1 Minute">1 Minute</option>
+  <option value="4 Hours">4 Hours</option>
+  <option value="12 Hours">12 Hours</option>
+</select>
                   </div>
                  <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
   <span class="age-input-label" id="basic-addon1">{{ spellTerminology.testLabel }}</span>
@@ -166,9 +171,42 @@
                         </optgroup>
                       </select> -->
                   <!-- </div> -->
+				  <div class="mb-3 col">
+  <span class="age-input-label" id="basic-addon1">Successful Result</span>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="ex. Effect has ended"
+    aria-label="Successful Result"
+    v-model="spell.testSuccess"
+    aria-describedby="basic-addon1"
+  >
+</div>
+<div class="mb-3 col">
+  <span class="age-input-label" id="basic-addon1">Failure Result</span>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="ex. Take 1d6 damage and -2 Speed"
+    aria-label="Failure Result"
+    v-model="spell.testFailure"
+    aria-describedby="basic-addon1"
+  >
+</div>
                   <div class="mb-3 col" v-if="settings.gameSystem === 'blue rose'">
                       <span class="age-input-label" id="basic-addon1">Resistance</span>
                       <input type="text" class="form-control" placeholder="ex. Willpower(Self-Discipline)" aria-label="Spell Resistance" v-model="spell.spellTest"  aria-describedby="basic-addon1">
+                  </div>
+                  <div class="mb-3 col">
+                    <span class="age-input-label" id="basic-addon1">Conditions</span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="ex. Prone, Restrained"
+                      aria-label="Conditions"
+                      v-model="spell.conditions"
+                      aria-describedby="basic-addon1"
+                    >
                   </div>
                   <div class="mb-3 col"  v-if="spell.weaponType === 'ranged' || spell.weaponType === 'melee'">
                       <span class="age-input-label" id="basic-addon1">Weapon Group</span>
@@ -203,6 +241,17 @@
                       <input type="text" class="form-control" placeholder="ex. 1d6" aria-label="Damage (Failure)" :id="`damage-${spell._id}`"
                       v-model="spell.damageMiss"  aria-describedby="basic-addon1">
                   </div>                  
+				  <div class="mb-3 col" v-if="spell.spellType === 'Attack'">
+  <span class="age-input-label" id="basic-addon1">Damage Qualities</span>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="ex. Penetrating"
+    aria-label="Damage Qualities"
+    v-model="spell.damageQualities"
+    aria-describedby="basic-addon1"
+  >
+</div>
                   <div v-if="spell.weaponType === 'ranged'">
                       <div class="mb-3 col">
                           <span class="age-input-label" id="basic-addon1">Short Range</span>

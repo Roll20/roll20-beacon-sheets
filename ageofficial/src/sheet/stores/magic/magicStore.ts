@@ -11,27 +11,30 @@ import { useAbilityScoreStore } from '../abilityScores/abilityScoresStore';
 import { useCharacterStore } from '../character/characterStore';
 import { powerFatiguePenalty } from '@/utility/arcanaPower';
 
-// See "inventoryStore.ts" for an explanation of how to use list/repeating sections
 interface Spell {
   _id: string;
   name: string;
   arcanaType: string;
-  requirements:string;
+  requirements: string;
   shortDescription: string;
   description: string;
-  ability:string;
-  abilityFocus?:string;
-  spellType:string;
-  spellTypeBonus:number;
-  mpCost:number;
-  castingTime:string;
-  targetNumber:number;
-  spellTest:string;
-  extendable:boolean;
-  damageHit:string;
-  damageMiss:string;
-  fatigue?:number;
-  resistance?:string;
+  ability: string;
+  abilityFocus?: string;
+  spellType: string;
+  spellTypeBonus: number;
+  mpCost: number;
+  castingTime: string;
+  targetNumber: number;
+  spellTest: string;
+  testSuccess?: string;
+  testFailure?: string;
+  extendable: boolean;
+  conditions?: string;
+  damageHit: string;
+  damageMiss: string;
+  damageQualities?: string;
+  fatigue?: number;
+  resistance?: string;
 }
 
 export type SpellsHydrate = {
@@ -43,133 +46,148 @@ export type SpellsHydrate = {
 export const useSpellStore = defineStore('spells', () => {
   const spells: Ref<Array<Spell>> = ref([]);
   const spellsCount: ComputedRef<number> = computed(() => spells.value.length);
-  let selectedSpell = {}
-  const addSpell = (spell?:any) => {
+  let selectedSpell = {};
+
+  const addSpell = (spell?: any) => {
     const newSpell = {
       _id: uuidv4(),
       name: spell ? spell?.name : '',
       arcanaType: spell ? spell?.arcanaType : '',
-      requirements:spell ? spell?.requirements : '',
+      requirements: spell ? spell?.requirements : '',
       shortDescription: spell ? spell?.shortDescription : '',
       description: spell ? spell?.description : '',
-      ability:spell ? spell?.ability : '',
-      abilityFocus:spell ? spell?.abilityFocus : '',
-      spellType:spell ? spell?.spellType : '',
-      spellTypeBonus:spell ? spell?.spellTypeBonus : 0,
-      mpCost:spell ? spell?.mpCost : 0,
-      castingTime:spell ? spell?.castingTime : '',
-      targetNumber:spell ? spell?.targetNumber : 0,
-      spellTest:spell ? spell?.spellTest : '',
-      spellResistance:spell ? spell?.spellResistance : '',
-      extendable:spell ? spell?.extendable : false,
-      damageHit:spell ? spell?.damageHit : '',
-      damageMiss:spell ? spell?.damageMiss : '',
-    }
-    if(spell.fatigue){
+      ability: spell ? spell?.ability : '',
+      abilityFocus: spell ? spell?.abilityFocus : '',
+      spellType: spell ? spell?.spellType : '',
+      spellTypeBonus: spell ? spell?.spellTypeBonus : 0,
+      mpCost: spell ? spell?.mpCost : 0,
+      castingTime: spell ? spell?.castingTime : '',
+      targetNumber: spell ? spell?.targetNumber : 0,
+      spellTest: spell ? spell?.spellTest : '',
+      testSuccess: spell ? spell?.testSuccess : '',
+      testFailure: spell ? spell?.testFailure : '',
+      spellResistance: spell ? spell?.spellResistance : '',
+      extendable: spell ? spell?.extendable : false,
+      conditions: spell ? spell?.conditions : '',
+      damageHit: spell ? spell?.damageHit : '',
+      damageMiss: spell ? spell?.damageMiss : '',
+	  damageQualities: spell ? spell?.damageQualities : '',
+    };
+
+    if (spell?.fatigue !== undefined) {
       Object.assign(newSpell, { fatigue: spell.fatigue });
     }
+
     spells.value.push(newSpell);
-  }
+  };
+
   const removeSpell = (_id: string) => {
     const indexToRemove = spells.value.findIndex((spells) => spells._id === _id);
     if (indexToRemove >= 0) spells.value.splice(indexToRemove, 1);
   };
 
-  const printSpell = async (_id: string, bonus?:number, familiarity:number = 0) => {
+  const printSpell = async (_id: string, bonus?: number, familiarity: number = 0) => {
     const settings = useSettingsStore();
     const spell = spells.value.find((item) => item._id === _id);
     if (!spell) return;
-    const modifier = ref(0);
 
-    const components:any[] = [
-      { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
+    const components: any[] = [
+      { label: `Base Roll`, sides: 6, count: 3, alwaysShowInBreakdown: true },
       { label: spell.ability, value: Number(bonus) },
     ];
-    const aim = useSettingsStore().aim
-    if(useSettingsStore().aim){
+
+    if (useSettingsStore().aim) {
       components.push(
-        { label: 'Aim', value: useSettingsStore().aimValue  }
-      )  
+        { label: 'Aim', value: useSettingsStore().aimValue }
+      );
     }
-    if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
+
+    if (powerFatiguePenalty.value > 0 && settings.userPowerFatigue) {
       components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
     }
-    // if (familiarity) {
-    //   components.push(
-    //     { label: 'Familiarity', value: familiarity },
-    //   );
-    // }
-    // components.push(      
-    //   { label: 'Modifier', value: modifier.value },
-    // );
-    if (settings.gameSystem !== 'blue rose') {
+
+    if (settings.gameSystem !== 'blue rose' && !settings.userPowerFatigue) {
       spendMP(spell.mpCost);
     }
+
     const ability = useAbilityScoreStore();
-    const spellResistance = settings.gameSystem === 'blue rose' ? spell.spellTest : 'Spellpower ('+ (10 + Number(ability.WillpowerBase))+')';
-    const spellTest = settings.gameSystem === 'blue rose' ? spell.ability + ` (${spell.abilityFocus}) <br /> vs. ${spellResistance}` : '';
-    
+    const spellResistance = settings.gameSystem === 'blue rose'
+      ? spell.spellTest
+      : 'Spellpower (' + (10 + Number(ability.WillpowerBase)) + ')';
+    const spellTest = settings.gameSystem === 'blue rose'
+      ? spell.ability + ` (${spell.abilityFocus}) <br /> vs. ${spellResistance}`
+      : '';
+
     await rollToChat({
       title: spell.name,
       subtitle: spell.spellType,
       characterName: useMetaStore().name,
       textContent: spellTest,
-      targetNumber:spell.targetNumber + familiarity,
+      keyValues: {
+        ...(spell.conditions ? { Conditions: spell.conditions } : {}),
+      },
+      targetNumber: spell.targetNumber + familiarity,
       components
     });
   };
-  const printSpellDamage = async(spell: any)=> {
-    // const attack = attacks.value.find((item) => item._id === _id);
-    // if (!attack) return;
-// debugger
-    const diceRegex = /^(\d+)d(\d+)([+-]\d+)?$/;
-    const hit = spell.damageHit.match(diceRegex);
-    const numberOfDice = parseInt(hit![1]);
-    const sidesOfDice = parseInt(hit![2])
-    const modifier = hit![3] ? parseInt(hit![3]) : 0;
-    const miss = spell.damageMiss.match(diceRegex);
-    const missNumberOfDice = parseInt(miss![1]);
-    const missSidesOfDice = parseInt(miss![2])
-    const missModifier = miss![3] ? parseInt(miss![3]) : 0;
+
+  const printSpellDamage = async (spell: any) => {
+    const diceRegex = /^\s*(?:\[\[)?(\d+)d(\d+)([+-]\d+)?(?:\]\])?(?:\s+(.+))?\s*$/;
+    const hit = spell.damageHit?.match(diceRegex);
+
+    if (!hit) return;
+
+    const settings = useSettingsStore();
+    const ability = useAbilityScoreStore();
+    const resistanceTargetLabel = settings.gameSystem === 'mage' ? 'Force' : 'Spellpower';
+    const resistanceTarget = 10 + Number(ability.WillpowerBase);
+    const damageNote = hit[4] || '';
 
     const components = [
-      { label: `Base Roll`, sides: sidesOfDice, count:numberOfDice, alwaysShowInBreakdown: true },
-      { label: 'Modifier', value: modifier },
+      { label: `Base Roll`, sides: parseInt(hit[2]), count: parseInt(hit[1]), alwaysShowInBreakdown: true },
+      { label: 'Modifier', value: hit[3] ? parseInt(hit[3]) : 0 },
     ];
-    const secondaryComponents = [
-      { label: `Miss Roll`, sides: missNumberOfDice, count:missSidesOfDice, alwaysShowInBreakdown: true },
-      { label: 'Modifier', value: missModifier },
-    ]
+
     await rollToChat({
       characterName: useMetaStore().name,
       title: spell.name,
       rollType: 'damage',
+      keyValues: {
+        ...(damageNote ? { 'Damage Type': damageNote } : {}),
+		...(spell.damageQualities ? { 'Damage Qualities': spell.damageQualities } : {}),
+        ...(spell.damageMiss ? { 'Failure Damage': spell.damageMiss } : {}),
+        ...(spell.spellTest ? { 'Resistance Test': `${spell.spellTest} vs. ${resistanceTargetLabel} (${resistanceTarget})` } : {}),
+        ...(spell.testSuccess ? { 'Successful Result': spell.testSuccess } : {}),
+        ...(spell.testFailure ? { 'Failure Result': spell.testFailure } : {}),
+        ...(spell.conditions ? { Conditions: spell.conditions } : {}),
+      },
       components
     });
-  }
+  };
+
   const printSpellDetails = async (spell: any, arcanaLabel: string) => {
-      await sendToChat({
-        title: spell.name,
-        subtitle: spell.arcanaType,
-        traits: [ arcanaLabel + ' Type: ' + spell.arcanaType],
-        description: spell.description,
-      });
-    }
+    await sendToChat({
+      title: spell.name,
+      subtitle: spell.arcanaType,
+      traits: [
+        arcanaLabel + ' Type: ' + spell.arcanaType,
+        spell.conditions ? 'Conditions: ' + spell.conditions : '',
+      ].filter(Boolean),
+      description: spell.description,
+    });
+  };
+
   const setCurrentSpell = (_id: string) => {
     const spell = spells.value.find((item) => item._id === _id);
     if (!spell) return;
     selectedSpell = spell;
   };
 
-  const spendMP = (mp:number) => {
-    const char = useCharacterStore()
-    // char.magic = char.magic - mp;
+  const spendMP = (mp: number) => {
+    const char = useCharacterStore();
     char.magic -= mp;
-  }
+  };
 
-  /*
-   * Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id
-   * */
   const dehydrate = () => {
     return {
       spells: {
@@ -178,12 +196,10 @@ export const useSpellStore = defineStore('spells', () => {
     };
   };
 
-  /*
-   * Since the items array is coming is an object, we convert it back into an array before saving here.
-   * */
   const hydrate = (hydrateStore: SpellsHydrate) => {
     spells.value = objectToArray(hydrateStore.spells?.spells) || spells.value;
   };
+
   return {
     spells,
     spellsCount,
