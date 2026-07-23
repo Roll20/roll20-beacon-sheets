@@ -292,19 +292,19 @@
             <h4 class="font-space-grotesk font-black uppercase text-xs tracking-widest text-zinc-500 mb-1">Quick Actions</h4>
             <div class="leading-relaxed text-sm text-zinc-700">
               <template v-for="(action, index) in quickActions" :key="action._id">
-                <RollButton
-                  v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'"
-                  :characterName="sheet.meta.name"
-                  :title="action.name"
-                  :isQuery="action.attributeUsed === 'varies'"
-                  :components="action._components"
-                  :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
-                  class="cursor-pointer hover:text-primary transition-colors group inline"
-                  v-tooltip="getActionTooltip(action)"
-                >
-                  <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
-                  <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
-                </RollButton>
+                <span v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'" class="inline-block" v-tooltip="getActionTooltip(action)">
+                  <RollButton
+                    :characterName="sheet.meta.name"
+                    :title="action.name"
+                    :isQuery="action.attributeUsed === 'varies'"
+                    :components="action._components"
+                    :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
+                    class="cursor-pointer hover:text-primary transition-colors group inline"
+                  >
+                    <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
+                    <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
+                  </RollButton>
+                </span>
                 <span
                   v-else
                   v-tooltip="editMode ? 'Edit' : getActionTooltip(action)"
@@ -322,19 +322,19 @@
             <h4 class="font-space-grotesk font-black uppercase text-xs tracking-widest text-zinc-500 mb-1">Full Actions</h4>
             <div class="leading-relaxed text-sm text-zinc-700">
               <template v-for="(action, index) in fullActions" :key="action._id">
-                <RollButton
-                  v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'"
-                  :characterName="sheet.meta.name"
-                  :title="action.name"
-                  :isQuery="action.attributeUsed === 'varies'"
-                  :components="action._components"
-                  :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
-                  class="cursor-pointer hover:text-primary transition-colors group inline"
-                  v-tooltip="getActionTooltip(action)"
-                >
-                  <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
-                  <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
-                </RollButton>
+                <span v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'" class="inline-block" v-tooltip="getActionTooltip(action)">
+                  <RollButton
+                    :characterName="sheet.meta.name"
+                    :title="action.name"
+                    :isQuery="action.attributeUsed === 'varies'"
+                    :components="action._components"
+                    :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
+                    class="cursor-pointer hover:text-primary transition-colors group inline"
+                  >
+                    <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
+                    <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
+                  </RollButton>
+                </span>
                 <span
                   v-else
                   v-tooltip="editMode ? 'Edit' : getActionTooltip(action)"
