@@ -171,6 +171,13 @@ export const resolveDropData = async (node: any, dispatch: Dispatch): Promise<an
     categoryName = 'Features';
   }
 
+  if (payload && typeof payload === 'object') {
+    const tokenUrl = properties.Token || properties.token;
+    if (tokenUrl && !payload.token) {
+      payload.token = tokenUrl;
+    }
+  }
+
   
   let rawChildren = properties['data-children'] || [];
   if (typeof rawChildren === 'string') {
@@ -257,6 +264,13 @@ export const drag = async (
         pagePayload.type = originalCategory === 'Talents' ? 'talent' : 'drawback';
       }
     }
+
+    if (pagePayload && typeof pagePayload === 'object') {
+      const tokenUrl = page.properties.Token || page.properties.token;
+      if (tokenUrl && !pagePayload.token) {
+        pagePayload.token = tokenUrl;
+      }
+    }
     page.properties['data-payload'] = pagePayload;
 
     let pageChildren = page.properties['data-children'];
@@ -281,7 +295,9 @@ export const drag = async (
         } else {
           inputToValidate = await resolveDropData(page, actualDispatch);
         }
-        await applyNpcDrop(inputToValidate, actualDispatch);
+
+        const type = category === 'NPCs' ? 'compact' : 'normal';
+        await applyNpcDrop(inputToValidate, actualDispatch, type);
         
         if (isNewSheet) {
           await new Promise((resolve) => setTimeout(resolve, 2000)); 
