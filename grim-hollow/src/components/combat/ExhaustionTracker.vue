@@ -12,15 +12,12 @@
         </div>
       </div>
     </StyledBox>
-    <div class="section__body">
+    <div class="section__body" v-if="combat.exhaustion > 0">
       <div class="list">
-        <template
-          v-for="level in 6"
-          :key="level"
-          
-        >
-          <div class="exhaustion-level" v-if="combat.exhaustion >= level"><strong>{{ level }}:</strong><span>{{ t(`descriptions.exhaustion-levels.${level}`) }}</span></div>
-        </template>
+        <div class="exhaustion-level">
+          <strong>{{ combat.exhaustion }}:</strong>
+          <span>{{ t(`descriptions.exhaustion-levels.${combat.exhaustion}`) }}</span>
+        </div>
       </div>
     </div>
   </div> 

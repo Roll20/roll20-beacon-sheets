@@ -12,6 +12,7 @@ import {
 import { useAbilitiesStore } from '@/sheet/stores/abilities/abilitiesStore';
 import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useEffectsStore, type Effect } from '@/sheet/stores/modifiers/modifiersStore';
+import { useCombatStore } from '@/sheet/stores/combat/combatStore';
 import { config } from '@/config';
 
 vi.mock('vue-i18n', () => ({
@@ -256,6 +257,43 @@ describe('Roll Utility Integration', () => {
 
       expect(content.parameters.total).toBe(13);
       expect(content.parameters.title).toBe('Attack Roll');
+    });
+
+    it('should subtract 2 from player D20 Tests per exhaustion level', async () => {
+      useCombatStore().exhaustion = 2;
+      const args: D20RollArgs = {
+        rollName: 'Attack Roll',
+        subtitle: 'Longsword',
+        bonuses: [{ label: 'Strength', value: 3 }],
+        customDispatch: mockDispatch as any,
+      };
+
+      await performD20Roll(args);
+
+      const content = JSON.parse(mockDispatch.post.mock.lastCall?.[0].content);
+      expect(content.parameters.total).toBe(9);
+      expect(content.parameters.components).toContainEqual(
+        expect.objectContaining({ label: 'Exhaustion', value: -4 }),
+      );
+    });
+
+    it('should not apply player exhaustion to rolls with an NPC effects source', async () => {
+      useCombatStore().exhaustion = 2;
+      const args: D20RollArgs = {
+        rollName: 'NPC Attack',
+        subtitle: 'Claw',
+        bonuses: [{ label: 'Strength', value: 3 }],
+        effectsSource: [],
+        customDispatch: mockDispatch as any,
+      };
+
+      await performD20Roll(args);
+
+      const content = JSON.parse(mockDispatch.post.mock.lastCall?.[0].content);
+      expect(content.parameters.total).toBe(13);
+      expect(content.parameters.components).not.toContainEqual(
+        expect.objectContaining({ label: 'Exhaustion' }),
+      );
     });
 
     it('should return crit-success when d20 rolls 20', async () => {

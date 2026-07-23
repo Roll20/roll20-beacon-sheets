@@ -464,6 +464,38 @@ body {
     }
   }
 }
+.v-popper--theme-condition {
+  font-family: var(--font-family-primary);
+  .v-popper__inner {
+    max-width: 420px;
+    background: white;
+    color: black;
+    font-family: var(--font-family-primary);
+    font-size: var(--size-font-medium);
+  }
+  .v-popper__arrow-outer {
+    border-color: white;
+  }
+  .condition-tooltip {
+    line-height: 1.35;
+    text-align: left;
+    p {
+      margin: 0 0 var(--size-gap-small);
+    }
+    ul {
+      display: grid;
+      gap: var(--size-gap-xsmall);
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+    li {
+      margin: 0;
+    }
+    strong {
+      font-weight: var(--weight-bold);
+    }
+  }
+}
 .v-popper--theme-dropdown {
   display: inline-block;
   .v-popper__inner {

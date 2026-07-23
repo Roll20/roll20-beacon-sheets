@@ -13,12 +13,14 @@ import { useI18n } from 'vue-i18n';
 import { useAbilitiesStore } from '@/sheet/stores/abilities/abilitiesStore';
 import { useEquipmentStore } from '@/sheet/stores/equipment/equipmentStore';
 import { useEffectsStore } from '@/sheet/stores/modifiers/modifiersStore';
+import { useBiographyStore } from '@/sheet/stores/biography/biographyStore';
 import { effectKeys } from '@/effects.config';
 import SvgIcon from '../shared/SvgIcon.vue';
 
 const { t } = useI18n();
 const abilitiesStore = useAbilitiesStore();
 const equipmentStore = useEquipmentStore();
+const biographyStore = useBiographyStore();
 
 const strengthAbility = computed(() =>
   abilitiesStore.abilities.find((a) => a.label === 'strength'),
@@ -30,7 +32,25 @@ const strengthScore = computed(() => {
 
 const totalWeight = computed(() => equipmentStore.getTotalWeight);
 
-const maxWeight = computed(() => strengthScore.value * 15 * useEffectsStore().getModifiedValue(1, effectKeys['carry-capacity']).value.final);
+const sizeMultiplier = computed(() => {
+  const multipliers: Record<string, number> = {
+    tiny: 0.5,
+    small: 1,
+    medium: 1,
+    large: 2,
+    huge: 4,
+    gargantuan: 8,
+  };
+
+  return multipliers[biographyStore.size.toLowerCase()] ?? 1;
+});
+
+const maxWeight = computed(() =>
+  strengthScore.value
+  * 15
+  * sizeMultiplier.value
+  * useEffectsStore().getModifiedValue(1, effectKeys['carry-capacity']).value.final,
+);
 
 const status = computed(() => {
   if (totalWeight.value > maxWeight.value) return 'encumbered';
