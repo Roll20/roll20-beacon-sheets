@@ -155,7 +155,14 @@ export const resolveDropData = async (node: any, dispatch: Dispatch): Promise<an
 
   
   const properties = node.properties || node;
-  const payload = properties['data-payload'] !== undefined ? properties['data-payload'] : node['data-payload'];
+  let payload = properties['data-payload'] !== undefined ? properties['data-payload'] : node['data-payload'];
+  if (typeof payload === 'string') {
+    try {
+      payload = JSON.parse(payload);
+    } catch {
+      // 
+    }
+  }
   const categoryName = properties.Category || properties.category || node.categoryName || node.Category || '';
 
   
@@ -227,6 +234,28 @@ export const drag = async (
 
   const page = pages[correctPageIndex];
   console.log('Dropping page', page);
+
+  if (page?.properties) {
+    let pagePayload = page.properties['data-payload'];
+    if (typeof pagePayload === 'string') {
+      try {
+        pagePayload = JSON.parse(pagePayload);
+      } catch (e) {
+        console.warn('Failed to parse data-payload string as JSON', e);
+      }
+    }
+    page.properties['data-payload'] = pagePayload;
+
+    let pageChildren = page.properties['data-children'];
+    if (typeof pageChildren === 'string') {
+      try {
+        pageChildren = JSON.parse(pageChildren);
+      } catch (e) {
+        console.warn('Failed to parse data-children string as JSON', e);
+      }
+    }
+    page.properties['data-children'] = pageChildren;
+  }
 
   try {
     if (page.properties.hasOwnProperty('data-payload')) {

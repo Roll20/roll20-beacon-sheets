@@ -55,9 +55,23 @@ export function transformPageToWrapper(page: any): any {
   const properties = page.properties || page;
 
   const categoryName = properties.Category || properties.category || page.categoryName || page.Category || '';
-  const payload = properties['data-payload'] !== undefined ? properties['data-payload'] : page['data-payload'];
+  let payload = properties['data-payload'] !== undefined ? properties['data-payload'] : page['data-payload'];
+  if (typeof payload === 'string') {
+    try {
+      payload = JSON.parse(payload);
+    } catch {
+      // ignore
+    }
+  }
 
-  const rawChildren = page.children || properties['data-children'] || [];
+  let rawChildren = page.children || properties['data-children'] || [];
+  if (typeof rawChildren === 'string') {
+    try {
+      rawChildren = JSON.parse(rawChildren);
+    } catch {
+      rawChildren = [];
+    }
+  }
   const children: any[] = [];
 
   if (Array.isArray(rawChildren)) {
