@@ -236,7 +236,7 @@ export const createRelay = async ({
 
       dispatch.updateTokensByCharacter({
         characterId,
-        token: newToken
+        token: JSON.parse(JSON.stringify(newToken))
       } as any);
     }, { deep: true });
 
