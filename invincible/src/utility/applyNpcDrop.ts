@@ -42,6 +42,14 @@ export const applyNpcDrop = async (resolvedNode: any, dispatch: Dispatch, type: 
     if (data.rank !== undefined) store.biography.rank = Number(data.rank) || 0;
     if (data.appearance !== undefined) store.biography.appearance = data.appearance;
 
+    if (data.personalDossier) {
+      if (data.personalDossier.occupation !== undefined) store.biography.personalDossier.occupation = data.personalDossier.occupation;
+      if (data.personalDossier.personality !== undefined) store.biography.personalDossier.personality = data.personalDossier.personality;
+      if (data.personalDossier.drive !== undefined) store.biography.personalDossier.drive = data.personalDossier.drive;
+      if (data.personalDossier.flaw !== undefined) store.biography.personalDossier.flaw = data.personalDossier.flaw;
+      if (data.personalDossier.relationships !== undefined) store.biography.personalDossier.relationships = data.personalDossier.relationships;
+    }
+
     if (data.abilities) {
       for (const [key, value] of Object.entries(data.abilities)) {
         if (key in store.abilities) {
