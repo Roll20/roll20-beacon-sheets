@@ -1,33 +1,68 @@
 <template>
   <Transition name="modal">
-  <div v-if="show" class="modal-mask">
-    <div class="modal-container age-modal">
+    <div v-if="show" class="modal-mask">
+      <div class="modal-container age-modal">
         <div class="age-modal-header">
           <slot name="header">default header</slot>
-          <button type="button" class="btn-close" aria-label="Close" @click="$emit('close')"></button>
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            @click="$emit('close')"
+          ></button>
         </div>
-        <div class="container age-modal-container">     
+        <div class="container age-modal-container">
           <div class="row age-modal-row">
             <div class="mb-3 col">
-              <span class="age-input-label" id="basic-addon1">Game System</span>      
-              <select  id="settings.gameSystem" v-model="settings.gameSystem" class="age-select form-select" @change="updateGameSystem">
+              <span class="age-input-label" id="basic-addon1">Game System</span>
+              <select
+                id="settings.gameSystem"
+                v-model="settings.gameSystem"
+                class="age-select form-select"
+                @change="updateGameSystem"
+              >
                 <option value="fage2e">Fantasy AGE 2e</option>
                 <option value="mage">Modern AGE</option>
                 <option value="blue rose">Blue Rose</option>
                 <option value="expanse">Expanse</option>
                 <!-- <option value="cthulhu">Cthulhu Awakens</option> -->
                 <!-- <option value="threefold">Threefold</option> -->
-              </select>            
-            </div> 
-            <div class="mb-3 col" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'mage'">
-              <span class="age-input-label" id="basic-addon1">Genre Slice Theme</span>      
-              <select  id="char.originFaction" v-model="settings.theme" class="age-select form-select" @change="updateTheme">
-                <option v-for="thm in theme" :key="thm.value" :value="thm.value" class="capitalize">{{ thm.label }}</option>
               </select>
-            </div>      
+            </div>
+            <div
+              class="mb-3 col"
+              v-if="
+                settings.gameSystem === 'fage2e' ||
+                settings.gameSystem === 'mage'
+              "
+            >
+              <span class="age-input-label" id="basic-addon1"
+                >Theme</span
+              >
+              <select
+                id="char.originFaction"
+                v-model="settings.theme"
+                class="age-select form-select"
+                @change="updateTheme"
+              >
+                <option
+                  v-for="thm in theme"
+                  :key="thm.value"
+                  :value="thm.value"
+                  class="capitalize"
+                >
+                  {{ thm.label }}
+                </option>
+              </select>
+            </div>
             <div class="mb-3 col" v-if="settings.gameSystem === 'expanse'">
-              <span class="age-input-label" id="basic-addon1">Origin</span>      
-              <select  id="char.originFaction" v-model="char.originFaction" class="age-select form-select" @change="updateExpanseFaction">
+              <span class="age-input-label" id="basic-addon1">Origin</span>
+              <select
+                id="char.originFaction"
+                v-model="char.originFaction"
+                class="age-select form-select"
+                @change="updateExpanseFaction"
+              >
                 <option value="">None</option>
                 <option value="earth">Earth</option>
                 <option value="mars">Mars</option>
@@ -37,118 +72,191 @@
               </select>
             </div>
             <div class="mb-3 col" v-if="settings.gameSystem === 'mage'">
-              <span class="age-input-label" id="basic-addon1">Campaign Mode</span>      
-              <select  id="settings.campaignMode" v-model="settings.campaignMode" class="age-select form-select">
+              <span class="age-input-label" id="basic-addon1"
+                >Campaign Mode</span
+              >
+              <select
+                id="settings.campaignMode"
+                v-model="settings.campaignMode"
+                class="age-select form-select"
+              >
                 <option value="cinematic">Cinematic</option>
                 <option value="pulpy">Pulpy</option>
                 <option value="gritty">Gritty</option>
               </select>
-            </div>       
+            </div>
           </div>
           <!-- // TODO Items unique to genre slices. Technofantasy, Cthulhu Awakens, Cyberpunk, etc. -->
-          <!-- <div class="row age-modal-row"  v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu' || settings.gameSystem === 'mage'">
-            <h4>Genre Slices</h4>
-            <div style="display: grid;grid-template-columns: repeat(2,1fr);">
-              <div class=" input-group" v-if="settings.gameSystem === 'mage'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.cyberpunk" @change="updateGameSystem" />
-                    <span class="slider round" ></span>
+          <div
+            class="row age-modal-row"
+            v-if="
+              settings.gameSystem === 'fage1e' ||
+              settings.gameSystem === 'fage2e' ||
+              settings.gameSystem === 'cthulhu' ||
+              settings.gameSystem === 'mage'
+            "
+          >
+            <h4>Genre Slices & Settings</h4>
+            <div class="settings-toggle-grid">
+              <div class="input-group" v-if="settings.gameSystem === 'mage'">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input
+                    type="checkbox"
+                    v-model="settings.cyberpunk"
+                    @change="updateGameSystem"
+                  />
+                  <span class="slider round"></span>
                 </label>
-                <span class="age-toggle-label">Use Cyberpunk</span>
+                <span class="age-toggle-label">Cyberpunk</span>
               </div>
-              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'cthulhu'">
-              <label class="age-checkbox-toggle" style="margin:1rem;">
-                  <input type="checkbox"  v-model="settings.cthulhuMythos" @change="updateGameSystem" />
-                  <span class="slider round" ></span>
-              </label>
-              <span class="age-toggle-label">Use Cthulhu Mythos</span>
+              <div
+                class="input-group"
+                v-if="
+                  settings.gameSystem === 'fage1e' ||
+                  settings.gameSystem === 'fage2e' ||
+                  settings.gameSystem === 'cthulhu'
+                "
+              >
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input
+                    type="checkbox"
+                    v-model="settings.cthulhuMythos"
+                    @change="updateGameSystem"
+                  />
+                  <span class="slider round"></span>
+                </label>
+                <span class="age-toggle-label">Cthulhu Mythos</span>
               </div>
-              <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-              <label class="age-checkbox-toggle" style="margin:1rem;">
-                  <input type="checkbox"  v-model="settings.technofantasy" @change="updateGameSystem" />
-                  <span class="slider round" ></span>
-              </label>
-              <span class="age-toggle-label">Use Technofantasy</span>
+              <div
+                class="input-group"
+                v-if="
+                  settings.gameSystem === 'fage1e' ||
+                  settings.gameSystem === 'fage2e'
+                "
+              >
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input
+                    type="checkbox"
+                    v-model="settings.technofantasy"
+                    @change="updateGameSystem"
+                  />
+                  <span class="slider round"></span>
+                </label>
+                <span class="age-toggle-label">Technofantasy</span>
+              </div>
+              <div class="input-group" v-if="settings.gameSystem === 'mage'">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input
+                    type="checkbox"
+                    v-model="settings.threefold"
+                    @change="updateGameSystem"
+                  />
+                  <span class="slider round"></span>
+                </label>
+                <span class="age-toggle-label">Threefold</span>
+              </div>
+              <div class="input-group" v-if="settings.gameSystem === 'mage'">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input
+                    type="checkbox"
+                    v-model="settings.powers"
+                    @change="updateGameSystem"
+                  />
+                  <span class="slider round"></span>
+                </label>
+                <span class="age-toggle-label">Powers</span>
               </div>
             </div>
-          </div> -->
+          </div>
           <div class="row age-modal-row">
             <h4>System Options</h4>
-            <div style="display: grid;grid-template-columns: repeat(3,1fr);">
-              <div class=" input-group" v-if="settings.gameSystem !== 'expanse'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.showArcana" />
-                    <span class="slider round" ></span>
+            <div class="settings-toggle-grid">
+              <div class="input-group" v-if="settings.gameSystem !== 'expanse'">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.showArcana" />
+                  <span class="slider round"></span>
                 </label>
-                <span class="age-toggle-label">Display {{ settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose' ? 'Arcana' : 'Powers' }}</span>
+                <span class="age-toggle-label"
+                  >Display
+                  {{
+                    settings.gameSystem === "fage1e" ||
+                    settings.gameSystem === "fage2e" ||
+                    settings.gameSystem === "blue rose"
+                      ? "Arcana"
+                      : "Powers"
+                  }}</span
+                >
               </div>
               <!-- <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle age-checkbox-label">
                     <input type="checkbox"  v-model="settings.peril" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Use Peril</span>
               </div>
               <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
+                <label class="age-checkbox-toggle age-checkbox-label">
                     <input type="checkbox"  v-model="settings.daring" />
                     <span class="slider round" ></span>
                 </label>
                 <span class="age-toggle-label">Use Daring</span>
               </div>                -->
-              <div class=" input-group">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.useFortune" />
-                    <span class="slider round" ></span>
+              <div class="input-group">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.useFortune" />
+                  <span class="slider round"></span>
                 </label>
                 <span class="age-toggle-label">Use Fortune</span>
-              </div>      
-              <div class=" input-group" v-if="settings.cthulhuMythos">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.showFear" />
-                    <span class="slider round" ></span>
+              </div>
+              <div class="input-group" v-if="settings.cthulhuMythos">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.showFear" />
+                  <span class="slider round"></span>
                 </label>
                 <span class="age-toggle-label">Show Fear</span>
-              </div>        
-              <div class=" input-group" v-if="settings.cthulhuMythos">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.showAlienation" />
-                    <span class="slider round" ></span>
+              </div>
+              <div class="input-group" v-if="settings.cthulhuMythos">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.showAlienation" />
+                  <span class="slider round"></span>
                 </label>
                 <span class="age-toggle-label">Show Alienation</span>
-              </div>   
-              <div class=" input-group">
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.optionalMovements" />
-                    <span class="slider round" ></span>
+              </div>
+              <div class="input-group">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.optionalMovements" />
+                  <span class="slider round"></span>
                 </label>
                 <span class="age-toggle-label">Movement Types</span>
-              </div>      
-              <div class=" input-group">
-              <!-- <div class=" input-group" v-if="settings.technofantasy || settings.cyberpunk"> -->
-                <label class="age-checkbox-toggle" style="margin:1rem;">
-                    <input type="checkbox"  v-model="settings.showCybernetics" />
-                    <span class="slider round" ></span>
+              </div>
+              <div class="input-group">
+                <!-- <div class=" input-group" v-if="settings.technofantasy || settings.cyberpunk"> -->
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.showCybernetics" />
+                  <span class="slider round"></span>
                 </label>
                 <span class="age-toggle-label">Display Enhancements</span>
-              </div>  
-                <div class=" input-group" v-if="settings.gameSystem === 'mage' && settings.showArcana">
-                  <label class="age-checkbox-toggle" style="margin:1rem;">
-                      <input type="checkbox"  v-model="settings.userPowerFatigue" />
-                      <span class="slider round" ></span>
-                  </label>
-                  <span class="age-toggle-label">Use Power Fatigue</span>
-                </div>
-              <div class=" input-group">
-                  <label class="age-checkbox-toggle" style="margin:1rem;">
-                      <input type="checkbox"  v-model="settings.showAfterMastery" />
-                      <span class="slider round" ></span>
-                  </label>
-                  <span class="age-toggle-label">Show After Mastery</span>
-                </div>       
+              </div>
+              <div
+                class="input-group"
+                v-if="settings.gameSystem === 'mage' && settings.showArcana"
+              >
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.userPowerFatigue" />
+                  <span class="slider round"></span>
+                </label>
+                <span class="age-toggle-label">Use Power Fatigue</span>
+              </div>
+              <div class="input-group">
+                <label class="age-checkbox-toggle age-checkbox-label">
+                  <input type="checkbox" v-model="settings.showAfterMastery" />
+                  <span class="slider round"></span>
+                </label>
+                <span class="age-toggle-label">Show After Mastery</span>
+              </div>
             </div>
-          </div>  
-          
+          </div>
+
           <!-- <div class="row age-modal-row">
 
             <div class=" input-groupcol">
@@ -179,52 +287,83 @@
               </select>
             </div>
           </div>     -->
-                  
+
           <div class="row age-modal-row">
             <div class="col">
-                <span class="age-input-label" id="basic-addon1">Aim Options</span>
-                <select  id="settings.aimToggle" v-model="settings.aimToggle" class="age-select form-select">
-                  <option value="never">Never use Aim</option>
-                  <option value="toggle">Toggle</option>
-                  <!-- <option value="prompt">Prompt for Aim</option> -->
-                  <option value="always">Always use Aim</option>
-                </select>    
+              <span class="age-input-label" id="basic-addon1">Aim Options</span>
+              <select
+                id="settings.aimToggle"
+                v-model="settings.aimToggle"
+                class="age-select form-select"
+              >
+                <option value="never">Never use Aim</option>
+                <option value="toggle">Toggle</option>
+                <!-- <option value="prompt">Prompt for Aim</option> -->
+                <option value="always">Always use Aim</option>
+              </select>
             </div>
-              <div class="col-2">
-                <span class="age-input-label" id="basic-addon1">Aim Value</span>
-                <input type="number" class="form-control" placeholder="0" aria-label="Aim Value" v-model="settings.aimValue"  aria-describedby="basic-addon1">
-              </div>
-              
+            <div class="col-2">
+              <span class="age-input-label" id="basic-addon1">Aim Value</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="0"
+                aria-label="Aim Value"
+                v-model="settings.aimValue"
+                aria-describedby="basic-addon1"
+              />
+            </div>
+
             <div class="col">
-                <span class="age-input-label" id="basic-addon1">Guard Options</span>
-                <select  id="settings.guardToggle" v-model="settings.guardToggle" class="age-select form-select">
-                  <option value="never">Never use Guard</option>
-                  <option value="toggle">Toggle</option>
-                  <option value="always">Always use Guard</option>
-                </select>
-              </div>
-              <div class="col-2">
-                <span class="age-input-label" id="basic-addon1">Guard Value</span>
-                <input type="number" class="form-control" placeholder="0" aria-label="Guard Value" v-model="settings.guardValue"  aria-describedby="basic-addon1">
-              </div>
-              
-          </div>      
+              <span class="age-input-label" id="basic-addon1"
+                >Guard Options</span
+              >
+              <select
+                id="settings.guardToggle"
+                v-model="settings.guardToggle"
+                class="age-select form-select"
+              >
+                <option value="never">Never use Guard</option>
+                <option value="toggle">Toggle</option>
+                <option value="always">Always use Guard</option>
+              </select>
+            </div>
+            <div class="col-2">
+              <span class="age-input-label" id="basic-addon1">Guard Value</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="0"
+                aria-label="Guard Value"
+                v-model="settings.guardValue"
+                aria-describedby="basic-addon1"
+              />
+            </div>
+          </div>
           <div class="row age-modal-row">
             <div class="col">
               <span class="age-input-label" id="basic-addon1">Show XP</span>
-              <select  id="settings.showXP" v-model="settings.showXP" class="age-select form-select">
+              <select
+                id="settings.showXP"
+                v-model="settings.showXP"
+                class="age-select form-select"
+              >
                 <option :value="true">Show</option>
                 <option :value="false">Hide</option>
               </select>
             </div>
             <div class="col">
               <span class="age-input-label" id="basic-addon1">Income Mode</span>
-              <select  id="settings.showXP" v-model="settings.incomeMode" class="age-select form-select">
+              <select
+                id="settings.showXP"
+                v-model="settings.incomeMode"
+                class="age-select form-select"
+              >
                 <option :value="'currency'">Currency</option>
                 <option :value="'recources'">Recources</option>
               </select>
             </div>
-            </div>      
+          </div>
           <!-- <div class="row age-modal-row">
             <div class=" input-groupcol">
               <span class="age-input-label" id="basic-addon1">Add Tiebreaker to Initiative Rolls</span>
@@ -243,114 +382,138 @@
               </select>
             </div>
           </div> -->
-          <div style="display: grid;grid-template-columns: 2fr 135px;">
+          <div class="settings-legal-grid">
             <div>
-              <p>Fantasy AGE Core Rulebook is ©2023 Green Ronin Publishing, LLC.</p>
-              <p>Blue Rose: The AGE Roleplaying Game of Romantic Fantasy is © 2017 Green Ronin Publishing, LLC.</p>
-              <p>Modern AGE Basic Rulebook is © 2018 Green Ronin Publishing, LLC.</p>
-              <p>The Expanse Transport Union Edition Core Rulebook is ©2025 Green Ronin Publishing, LLC.</p>
-              <p>Beacon SDK AGE System Sheet created by Don White/Web Lynx ©2024</p>
-
+              <p>
+                Fantasy AGE Core Rulebook is ©2023 Green Ronin Publishing, LLC.
+              </p>
+              <p>
+                Blue Rose: The AGE Roleplaying Game of Romantic Fantasy is ©
+                2017 Green Ronin Publishing, LLC.
+              </p>
+              <p>
+                Modern AGE Basic Rulebook is © 2018 Green Ronin Publishing, LLC.
+              </p>
+              <p>
+                The Expanse Transport Union Edition Core Rulebook is ©2025 Green
+                Ronin Publishing, LLC.
+              </p>
+              <p>
+                Beacon SDK AGE System Sheet created by Don White/Web Lynx ©2024
+              </p>
             </div>
             <div>
               <img src="/src/assets/logos/roninlogo.png" class="gr-logo" />
             </div>
           </div>
-          
         </div>
         <div class="modal-footer-actions">
           <slot name="footer">
-            <button
-              class="confirm-btn"
-              @click="$emit('close')"
-            >OK</button>
-            <a href="https://ko-fi.com/J3J614QOV1" target="_blank" class="myButton"><img style="width: 24px;margin-right: 10px;" src="/src/assets/lynx/kofi_symbol.png" />Support Don on ko-fi</a>
-
+            <button class="confirm-btn" @click="$emit('close')">OK</button>
+            <a
+              href="https://ko-fi.com/J3J614QOV1"
+              target="_blank"
+              class="myButton"
+              ><img
+                class="kofi-img"
+                src="/src/assets/lynx/kofi_symbol.png"
+              />Support Don on ko-fi</a
+            >
           </slot>
         </div>
+      </div>
     </div>
-  </div>
   </Transition>
 </template>
 
 <script setup>
-import { initValues } from '@/relay/relay';
-import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-import { productLineStyle } from '@/utility/productLineStyle';
-import { computed } from 'vue';
+import { initValues } from "@/relay/relay";
+import { useCharacterStore } from "@/sheet/stores/character/characterStore";
+import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
+import { productLineStyle } from "@/utility/productLineStyle";
+import { useThemeArgs } from "@/utility/useThemeArgs";
+import { computed } from "vue";
 
 const props = defineProps({
-  show: Boolean
-})
+  show: Boolean,
+});
 
 const settings = useSettingsStore();
 const char = useCharacterStore();
+const themeArgs = useThemeArgs();
 
-if(!settings.theme){
-  settings.theme = 'basic';
+if (!settings.theme) {
+  settings.theme = "basic";
 }
-console.log('SettingsView settings.theme',settings.theme);
 const theme = computed(() => {
-  switch(settings.gameSystem) {
-    case 'fage2e':
-      return [{ label:'Basic', value: 'basic'},{ label:'Cthulhu Mythos', value:'cthulhuMythos'},{ label:'Technofantasy', value: 'technofantasy'}];
-    case 'mage':
-      return [{ label:'Basic', value: 'basic'},{ label:'Cyberpunk', value:'cyberpunk'}];
+  switch (settings.gameSystem) {
+    case "fage2e":
+      return [
+        { label: "Basic", value: "basic" },
+        { label: "Cthulhu Mythos", value: "cthulhuMythos" },
+        { label: "Technofantasy", value: "technofantasy" },
+      ];
+    case "mage":
+      return [
+        { label: "Basic", value: "basic" },
+        { label: "Cyberpunk", value: "cyberpunk" },
+        { label: "Powers", value: "powers" },
+        { label: "Threefold", value: "threefold" },
+      ];
     default:
-      return null;    
+      return null;
   }
-})
+});
 
 const updateGameSystem = () => {
   const colorTheme = initValues.settings.colorTheme;
-  switch(settings.gameSystem) {
-    case 'expanse':
+  switch (settings.gameSystem) {
+    case "expanse":
       settings.useFortune = true;
-    break;
+      break;
+    case "mage":
+      settings.useFortune = false;
+      settings.campaignMode = settings.campaignMode || "pulpy";
+      break;
     default:
       settings.useFortune = false;
-    break;
+      break;
   }
-  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.theme === 'cthulhuMythos',technofantasy:settings.theme === 'technofantasy',cyberpunk:settings.theme === 'cyberpunk'});
-}
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
+};
 const updateTheme = () => {
   const colorTheme = initValues.settings.colorTheme;
-  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.theme === 'cthulhuMythos',technofantasy:settings.theme === 'technofantasy',cyberpunk:settings.theme === 'cyberpunk', originFaction:char.originFaction});
-
-}
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
+};
 
 const updateExpanseFaction = () => {
   const colorTheme = initValues.settings.colorTheme;
-  productLineStyle(settings.gameSystem,colorTheme,{cthulhuMythos:settings.theme === 'cthulhuMythos',technofantasy:settings.theme === 'technofantasy',cyberpunk:settings.theme === 'cyberpunk', originFaction:char.originFaction});
-
-}
-
-
+  productLineStyle(settings.gameSystem, colorTheme, themeArgs.value);
+};
 </script>
 
 <style lang="scss" scoped>
-@use '../common/scss/vars.scss';
+@use "../common/scss/vars.scss";
 .myButton {
-	background-color:#595959;
-	border-radius:6px;
-	border:1px solid #383838;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:15px;
-	font-weight:bold;
-	padding:5px 20px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #2c2c2c;
+  background-color: #595959;
+  border-radius: 6px;
+  border: 1px solid #383838;
+  display: inline-block;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 5px 20px;
+  text-decoration: none;
+  text-shadow: 0px 1px 0px #2c2c2c;
 }
 .myButton:hover {
-	background-color:#6d6d6d;
+  background-color: #6d6d6d;
 }
 .myButton:active {
-	position:relative;
-	top:1px;
+  position: relative;
+  top: 1px;
 }
 .settings {
   &__main {
@@ -381,7 +544,7 @@ const updateExpanseFaction = () => {
 
 .big-button {
   border: none;
- color: var(--examplesheet-contrast-font-color);
+  color: var(--examplesheet-contrast-font-color);
   padding: 1rem 2rem;
   background-color: var(--examplesheet-button-background-color);
   font-family: var(--examplesheet-font-family);
@@ -399,5 +562,17 @@ const updateExpanseFaction = () => {
 
 .gr-logo {
   height: 150px;
+}
+.settings-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.settings-legal-grid {
+  display: grid;
+  grid-template-columns: 2fr 135px;
+}
+.kofi-img {
+  width: 24px;
+  margin-right: 10px;
 }
 </style>

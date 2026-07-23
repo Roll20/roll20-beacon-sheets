@@ -1,21 +1,21 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import jp from 'jsonpath';
-import { useMetaStore, type MetaHydrate } from '@/sheet/stores/meta/metaStore';
-import { useCharacterStore } from '@/sheet/stores/character/characterStore';
-import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
-import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import { v4 as uuidv4 } from 'uuid';
-import { useBioStore } from '@/sheet/stores/bio/bioStore';
-import { useAttackStore } from './attack/attackStore';
-import { useSettingsStore } from './settings/settingsStore';
-import { useSpellStore } from './magic/magicStore';
-import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
-import { useConditionsStore } from './conditions/conditionsStore';
-import { useCustomConditionsStore } from './conditions/customConditionsStore';
-import { useModifiersStore } from './modifiers/modifiersStore';
-import { useEnhancementStore } from './enhancements/enhancementsStore';
-import { useShipStore } from './character/shipStore';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import jp from "jsonpath";
+import { useMetaStore, type MetaHydrate } from "@/sheet/stores/meta/metaStore";
+import { useCharacterStore } from "@/sheet/stores/character/characterStore";
+import { useAbilityScoreStore } from "@/sheet/stores/abilityScores/abilityScoresStore";
+import { useInventoryStore } from "@/sheet/stores/inventory/inventoryStore";
+import { v4 as uuidv4 } from "uuid";
+import { useBioStore } from "@/sheet/stores/bio/bioStore";
+import { useAttackStore } from "./attack/attackStore";
+import { useSettingsStore } from "./settings/settingsStore";
+import { useSpellStore } from "./magic/magicStore";
+import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
+import { useConditionsStore } from "./conditions/conditionsStore";
+import { useCustomConditionsStore } from "./conditions/customConditionsStore";
+import { useModifiersStore } from "./modifiers/modifiersStore";
+import { useEnhancementStore } from "./enhancements/enhancementsStore";
+import { useShipStore } from "./character/shipStore";
 
 /*
  * This is the master store for the entire character sheet.
@@ -24,7 +24,7 @@ import { useShipStore } from './character/shipStore';
  * We are listening to changes in this object in other to trigger Dehydrates.
  * Most of this does not need to be changed if you're using Vue.
  * */
-export const useAgeSheetStore = defineStore('examplesheetStore', () => {
+export const useAgeSheetStore = defineStore("examplesheetStore", () => {
   // List all the stores individually.
   const stores = {
     meta: useMetaStore(),
@@ -36,7 +36,7 @@ export const useAgeSheetStore = defineStore('examplesheetStore', () => {
     spells: useSpellStore(),
     settings: useSettingsStore(),
     quality: useItemStore(),
-    conditions:useConditionsStore(),
+    conditions: useConditionsStore(),
     customConditions: useCustomConditionsStore(),
     modifiers: useModifiersStore(),
     enhancements: useEnhancementStore(),
@@ -59,7 +59,7 @@ export const useAgeSheetStore = defineStore('examplesheetStore', () => {
 
   const doAction = (path: string, payload: Record<string, any>) => {
     const func = jp.value(stores, path);
-    if (typeof func === 'function') func(payload, stores);
+    if (typeof func === "function") func(payload, stores);
   };
 
   // Loops through all the stores and runs their Dehydrate.
@@ -71,7 +71,7 @@ export const useAgeSheetStore = defineStore('examplesheetStore', () => {
     const storeKeys = Object.keys(stores) as (keyof typeof stores)[];
     storeKeys.forEach((key) => {
       //if (key === "rolls") return;
-      if (key === 'meta') {
+      if (key === "meta") {
         const { name, bio, gmNotes, avatar } = stores.meta.dehydrate();
         character.name = name;
         character.bio = bio;

@@ -1,3 +1,6 @@
+# Git worktrees
+.worktrees/
+
 # Logs
 logs
 *.log
@@ -28,5 +31,7 @@ coverage
 *.sw?
 
 public/*
-
+docs/*
 CLAUDE.md
+
+graphify-out/*

@@ -1,0 +1,65 @@
+// src/sheet/scss/utilities.scss
+// Utility classes that replace common inline style patterns from early development.
+
+.age-form-field {
+  display: flex;
+  flex-direction: column;
+  padding: 0 2px;
+}
+
+.age-row {
+  margin: 0;
+}
+
+.age-cell-center {
+  display: grid;
+  align-items: center;
+  height: 100%;
+}
+
+.age-btn-icon {
+  margin-left: 3px;
+}
+
+.age-nowrap {
+  white-space: nowrap;
+}
+
+.age-section-relative {
+  position: relative;
+}
+
+.age-checkbox-label {
+  margin: 5px 1rem;
+}
+
+.age-modal-row {
+  margin: 0;
+}
+
+.age-section-action-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  position: absolute;
+  right: 10px;
+  top: -2px;
+}
+
+.age-flex {
+  display: flex;
+}
+
+.age-mod-col {
+  display: flex;
+  gap: 10px;
+}
+
+.age-section-block {
+  display: block;
+  position: relative;
+}
+
+.age-icon-right {
+  margin-right: 5px;
+}

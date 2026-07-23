@@ -1,123 +1,216 @@
 <template>
-    <Transition name="modal">
-      <div v-if="show" class="modal-mask">
-          <div class="modal-container age-modal" style="width: 70%;">
-            <div class="age-modal-header">
-            <slot name="header">default header</slot>
-            <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
+  <Transition name="modal">
+    <div v-if="show" class="modal-mask">
+      <div class="modal-container age-modal conditions-modal-container">
+        <div class="age-modal-header">
+          <slot name="header">default header</slot>
+          <button
+            type="button"
+            class="btn-close"
+            @click="$emit('close')"
+            aria-label="Close"
+          ></button>
+        </div>
 
-            </div>
-  
-              <div class="modal-body" style="padding: 0 0 10px;">                
-                    <div class="accordion" id="accordionExample" style="width: 100%;">
-                    <div class="accordion-item" v-for="(condition, i) in coreConditions" :key="condition">
-                        <div class="accordion-header" style="display:grid;grid-template-columns: 1fr 40px 1fr 40px 40px;">
-                            <div class="" style="font-size: 1rem; padding:1rem;">
-                                {{ condition.name }}
-                            </div>
-                            
-                              <button type="button" class="age-icon-btn" @click="showCondition(condition,i);condition.show = !condition.show">
-                                <span v-if="condition.show">
-                                  <font-awesome-icon :icon="['fa', 'eye']" />                              
-
-                                </span>
-                                <span v-if="!condition.show">
-                                  <font-awesome-icon :icon="['fa', 'eye-slash']" />                              
-
-                                </span>
-                            </button>
-                            
-                            <label class="age-checkbox-toggle" style="margin:1rem;">
-                                <input type="checkbox"  v-model="condition.enabled" @change="toggleCondition(condition, i)" />
-                                <span class="slider round" ></span>
-                            </label>
-                            
-                              <div></div>
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#conditionCollapse' + i"  aria-expanded="true" aria-controls="collapseOne"></button>
-                        </div>
-                        <div :id="'conditionCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                          <div v-html="condition.description"></div>
-                          <div class="age-condition-modifiers">
-                          <h4 style="display: flex;">
-                            <span>Modifiers</span>   
-                          </h4>
-                          <div v-for="mod in condition.modifiers" :key="mod">
-                            {{ mod.modifiedValue }} | {{ mod.modifiedOption }} | {{ mod.conditionalCheck }} {{ mod.conditional }} | {{ mod.penalty }}
-                          </div>
-                        <!-- {{ condition.modifiers }} -->
-
-                        </div>
-                        </div>
-                        
-                        <!-- {{ condition.modifiers }} -->
-
-                        </div>
-                    </div>                    
+        <div class="modal-body conditions-modal-body">
+          <div class="accordion conditions-accordion" id="accordionExample">
+            <div
+              class="accordion-item"
+              v-for="(condition, i) in coreConditions"
+              :key="condition"
+            >
+              <div class="accordion-header accordion-header-grid">
+                <div class="accordion-condition-name">
+                  {{ condition.name }}
                 </div>
-                <div class="accordion" id="accordionExample" >
-                    <div class="accordion-item" v-for="(condition, i) in customStore.customConditions" :key="condition">
-                        <div class="accordion-header" style="display:grid;grid-template-columns: 1fr 40px 1fr 40px 40px;">
-                            <div class="" style="font-size: 1rem; padding:1rem;">
-                                {{ condition.name }}
-                            </div>
-                            <button type="button" class="age-icon-btn" @click="customStore.showCondition(condition._id)">
-                                <span v-if="condition.show">
-                                  <font-awesome-icon :icon="['fa', 'eye']" />                              
 
-                                </span>
-                                <span v-if="!condition.show">
-                                  <font-awesome-icon :icon="['fa', 'eye-slash']" />                              
+                <button
+                  type="button"
+                  class="age-icon-btn"
+                  @click="
+                    showCondition(condition, i);
+                    condition.show = !condition.show;
+                  "
+                >
+                  <span v-if="condition.show">
+                    <font-awesome-icon :icon="['fa', 'eye']" />
+                  </span>
+                  <span v-if="!condition.show">
+                    <font-awesome-icon :icon="['fa', 'eye-slash']" />
+                  </span>
+                </button>
 
-                                </span>
-                            </button>
-                            <label class="age-checkbox-toggle" style="margin:1rem;">
-                                <input type="checkbox"  v-model="condition.enabled" @change="toggleCustomCondition(condition, i)"/>
-                                <span class="slider round" ></span>
-                            </label>
-                            <button type="button" class="age-icon-btn" data-bs-toggle="collapse" :data-bs-target="'#conditionEditCollapse' + i"  aria-expanded="true" aria-controls="collapseOne">
-                              <font-awesome-icon :icon="['fa', 'pen']" />                              
-                            </button>
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#customConditionCollapse' + i"  aria-expanded="true" aria-controls="collapseOne"></button>
-                        </div>
-                        <div :id="'conditionEditCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
-                          <div class="accordion-body">
-                            <div class="input-group mb-3">
-                              <span class="input-group-text" id="basic-addon1">Condition Name</span>
-                              <input type="text" class="form-control" placeholder="0" aria-label="Character Name" v-model="condition.name"  aria-describedby="basic-addon1">
-                            </div>
-                            <div class="input-group" style="display: grid;grid-template-columns: 1fr 2fr;">
-                                <span class="input-group-text">Description</span>
-                                <QuillEditor ref="quillEditor" contentType="html" toolbar="" :options="{
-                                  modules: {
-                                    keyboard: {
-                                        bindings: {
-                                            enter: {
-                                                key: 13, // 'Enter' key
-                                                handler: (range, context) => {
-                                                // Default behavior of Quill (inserts a single paragraph)
-                                                const quill = this.$refs.quillEditor.quill;
-                                                quill.formatLine(range.index, 1, 'block', true);
-                                                },
-                                            },
-                                        },
-                                    },
-                                  },
-                                  scrollingContainer: true}" v-model:content="condition.description" />
-                            </div>
-                            <div class="age-quality-modifiers">
-                              <h3 style="display: flex;">
-                                <span>Modifiers</span>                  
-                                <button class="link-btn" @click="mods.addModifier({_id:condition._id,enabled:condition.enabled,type:'Condition'})" 
-                                  style="background: none; font-weight: bold;border:none; font-size: 14px;" v-tippy="{ content: 'Add Modifier' }">
-                                  <font-awesome-icon :icon="['fa', 'plus']" />                  
-                                </button>
-                              </h3>
-                              <div class="mb-2" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index" style="display:flex;gap:10px;">
-                              <BaseModView :mod="mod" :modOptions="['Ability', 'Damage', 'Defense', 'Speed']" />
-                            </div>
-                  
-                  <!-- <div v-for="(mod,index) in condition.modifiers" :key="mod" style="display:flex;gap:10px;">
+                <label class="age-checkbox-toggle accordion-toggle-label">
+                  <input
+                    type="checkbox"
+                    v-model="condition.enabled"
+                    @change="toggleCondition(condition, i)"
+                  />
+                  <span class="slider round"></span>
+                </label>
+
+                <div></div>
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#conditionCollapse' + i"
+                  aria-expanded="true"
+                  aria-controls="collapseOne"
+                ></button>
+              </div>
+              <div
+                :id="'conditionCollapse' + i"
+                class="accordion-collapse collapsed collapse"
+                data-bs-parent="#accordionExample"
+              >
+                <div class="accordion-body">
+                  <div v-html="condition.description"></div>
+                  <div class="age-condition-modifiers">
+                    <h4 class="age-flex">
+                      <span>Modifiers</span>
+                    </h4>
+                    <div v-for="mod in condition.modifiers" :key="mod">
+                      {{ mod.modifiedValue }} | {{ mod.modifiedOption }} |
+                      {{ mod.conditionalCheck }} {{ mod.conditional }} |
+                      {{ mod.penalty }}
+                    </div>
+                    <!-- {{ condition.modifiers }} -->
+                  </div>
+                </div>
+
+                <!-- {{ condition.modifiers }} -->
+              </div>
+            </div>
+          </div>
+          <div class="accordion" id="accordionExample">
+            <div
+              class="accordion-item"
+              v-for="(condition, i) in customStore.customConditions"
+              :key="condition"
+            >
+              <div class="accordion-header accordion-header-grid">
+                <div class="accordion-condition-name">
+                  {{ condition.name }}
+                </div>
+                <button
+                  type="button"
+                  class="age-icon-btn"
+                  @click="customStore.showCondition(condition._id)"
+                >
+                  <span v-if="condition.show">
+                    <font-awesome-icon :icon="['fa', 'eye']" />
+                  </span>
+                  <span v-if="!condition.show">
+                    <font-awesome-icon :icon="['fa', 'eye-slash']" />
+                  </span>
+                </button>
+                <label class="age-checkbox-toggle accordion-toggle-label">
+                  <input
+                    type="checkbox"
+                    v-model="condition.enabled"
+                    @change="toggleCustomCondition(condition, i)"
+                  />
+                  <span class="slider round"></span>
+                </label>
+                <button
+                  type="button"
+                  class="age-icon-btn"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#conditionEditCollapse' + i"
+                  aria-expanded="true"
+                  aria-controls="collapseOne"
+                >
+                  <font-awesome-icon :icon="['fa', 'pen']" />
+                </button>
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#customConditionCollapse' + i"
+                  aria-expanded="true"
+                  aria-controls="collapseOne"
+                ></button>
+              </div>
+              <div
+                :id="'conditionEditCollapse' + i"
+                class="accordion-collapse collapsed collapse"
+                data-bs-parent="#accordionExample"
+              >
+                <div class="accordion-body">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"
+                      >Condition Name</span
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="0"
+                      aria-label="Character Name"
+                      v-model="condition.name"
+                      aria-describedby="basic-addon1"
+                    />
+                  </div>
+                  <div class="input-group accordion-description-grid">
+                    <span class="input-group-text">Description</span>
+                    <QuillEditor
+                      ref="quillEditor"
+                      contentType="html"
+                      toolbar=""
+                      :options="{
+                        modules: {
+                          keyboard: {
+                            bindings: {
+                              enter: {
+                                key: 13, // 'Enter' key
+                                handler: (range, context) => {
+                                  // Default behavior of Quill (inserts a single paragraph)
+                                  const quill = this.$refs.quillEditor.quill;
+                                  quill.formatLine(
+                                    range.index,
+                                    1,
+                                    'block',
+                                    true
+                                  );
+                                },
+                              },
+                            },
+                          },
+                        },
+                        scrollingContainer: true,
+                      }"
+                      v-model:content="condition.description"
+                    />
+                  </div>
+                  <div class="age-quality-modifiers">
+                    <h3 class="age-flex">
+                      <span>Modifiers</span>
+                      <button
+                        class="link-btn"
+                        @click="
+                          mods.addModifier({
+                            _id: condition._id,
+                            enabled: condition.enabled,
+                            type: 'Condition',
+                          })
+                        "
+                        v-tippy="{ content: 'Add Modifier' }"
+                      >
+                        <font-awesome-icon :icon="['fa', 'plus']" />
+                      </button>
+                    </h3>
+                    <div
+                      class="mb-2 mod-row"
+                      v-for="(mod, index) in mods.parentItems(condition._id)"
+                      :key="index"
+                    >
+                      <BaseModView
+                        :mod="mod"
+                        :modOptions="['Ability', 'Damage', 'Defense', 'Speed']"
+                      />
+                    </div>
+
+                    <!-- <div v-for="(mod,index) in condition.modifiers" :key="mod" style="display:flex;gap:10px;">
                     <div>
                       <select
                         class="age-atk-select form-select"
@@ -173,142 +266,186 @@
                     <font-awesome-icon :icon="['fa', 'minus']" />
                   </button>
                   </div> -->
-
-                </div>
-                            <button class="delete-btn delete" title="Delete" @click="customStore.removeCondition(condition._id)">
-                                ✕ Delete Condition
-                            </button>
-                          </div>  
-                        </div>
-                        <div :id="'customConditionCollapse'+ i" class="accordion-collapse collapsed collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                          <div v-html="condition.description"></div>
-                          <h4 style="display: flex;">
-                              <span>Modifiers</span>   
-                            </h4>
-                          <div class="mb-2" v-for="(mod,index) in mods.parentItems(condition._id)" :key="index" style="display:flex;gap:10px;">
-                            {{ mod.option }} {{ mod.modifiedValue }} {{ mod.bonus }} {{ mod.penalty }} {{ mod.roll }}
-                          </div>
-                          </div>
-                        </div>
-                    </div>                    
+                  </div>
+                  <button
+                    class="delete-btn delete"
+                    title="Delete"
+                    @click="customStore.removeCondition(condition._id)"
+                  >
+                    ✕ Delete Condition
+                  </button>
                 </div>
               </div>
-          
-  
-          <div class="modal-footer-actions">
-            <slot name="footer">              
-              <button
-                class="confirm-btn"
-                @click="$emit('close')"
+              <div
+                :id="'customConditionCollapse' + i"
+                class="accordion-collapse collapsed collapse"
+                data-bs-parent="#accordionExample"
               >
-                OK
-              </button>
-              <button class="btn" @click="customStore.addCondition()">Add custom</button>
-            </slot>
+                <div class="accordion-body">
+                  <div v-html="condition.description"></div>
+                  <h4 class="age-flex">
+                    <span>Modifiers</span>
+                  </h4>
+                  <div
+                    class="mb-2 mod-row"
+                    v-for="(mod, index) in mods.parentItems(condition._id)"
+                    :key="index"
+                  >
+                    {{ mod.option }} {{ mod.modifiedValue }} {{ mod.bonus }}
+                    {{ mod.penalty }} {{ mod.roll }}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="modal-footer-actions">
+          <slot name="footer">
+            <button class="confirm-btn" @click="$emit('close')">OK</button>
+            <button class="btn" @click="customStore.addCondition()">
+              Add custom
+            </button>
+          </slot>
+        </div>
       </div>
-    </Transition>
+    </div>
+  </Transition>
 </template>
 <script setup>
-import { useConditionsStore } from '@/sheet/stores/conditions/conditionsStore';
-import { useCustomConditionsStore } from '@/sheet/stores/conditions/customConditionsStore';
-import AbilityModView from '@/components/modifiers/AbilityModView.vue';
-import {useModifiersStore} from '@/sheet/stores/modifiers/modifiersStore'
-import BaseModView from '@/components/modifiers/BaseModView.vue';
+import { useConditionsStore } from "@/sheet/stores/conditions/conditionsStore";
+import { useCustomConditionsStore } from "@/sheet/stores/conditions/customConditionsStore";
+import AbilityModView from "@/components/modifiers/AbilityModView.vue";
+import { useModifiersStore } from "@/sheet/stores/modifiers/modifiersStore";
+import BaseModView from "@/components/modifiers/BaseModView.vue";
 const props = defineProps({
   show: Boolean,
-})
-import { basicConditions } from './basicConditions';
-import { ref } from 'vue';
+});
+import { basicConditions } from "./basicConditions";
+import { ref } from "vue";
 
-const coreConditions = ref(basicConditions)
+const coreConditions = ref(basicConditions);
 const conditionsStore = useConditionsStore();
 const customStore = useCustomConditionsStore();
 const mods = useModifiersStore();
 
 const loadConditions = () => {
-    if(conditionsStore.conditions.length > 0){
-        conditionsStore.conditions.forEach((condition)=>{
-            const i = basicConditions.findIndex(bc => bc.name === condition.name)
-            if(i >= 0){
-                basicConditions[i].enabled = true;
-                Object.assign(basicConditions[i],{
-                    _id:condition._id
-                })
-            }
-        })
-    }
-}
-loadConditions()
-const toggleCondition = (selectedCondition,i) => {
-    const conditionsStore = useConditionsStore();
-    if(selectedCondition.enabled){
-        const addedCondition = conditionsStore.addCondition(selectedCondition);
-        Object.assign(basicConditions[i],{
-            _id:addedCondition._id
-        })
-    } else {
-        conditionsStore.removeCondition(selectedCondition._id)
-    }
-}
-const toggleCustomCondition = (selectedCondition,i) => {
-  mods.toggleMod(selectedCondition._id,selectedCondition.enabled);
-  if(selectedCondition.enabled)selectedCondition.show = selectedCondition.enabled;
-  
-}
-const showCondition = (selectedCondition,i) => {
-    const conditionsStore = useConditionsStore();
-    if(!selectedCondition.show){
-        const addedCondition = conditionsStore.addCondition(selectedCondition);
-        Object.assign(basicConditions[i],{
-            _id:addedCondition._id
-        })
-    } else {
-        conditionsStore.removeCondition(selectedCondition._id)
-    }
-}
+  if (conditionsStore.conditions.length > 0) {
+    conditionsStore.conditions.forEach((condition) => {
+      const i = basicConditions.findIndex((bc) => bc.name === condition.name);
+      if (i >= 0) {
+        basicConditions[i].enabled = true;
+        Object.assign(basicConditions[i], {
+          _id: condition._id,
+        });
+      }
+    });
+  }
+};
+loadConditions();
+const toggleCondition = (selectedCondition, i) => {
+  const conditionsStore = useConditionsStore();
+  if (selectedCondition.enabled) {
+    const addedCondition = conditionsStore.addCondition(selectedCondition);
+    Object.assign(basicConditions[i], {
+      _id: addedCondition._id,
+    });
+  } else {
+    conditionsStore.removeCondition(selectedCondition._id);
+  }
+};
+const toggleCustomCondition = (selectedCondition, i) => {
+  mods.toggleMod(selectedCondition._id, selectedCondition.enabled);
+  if (selectedCondition.enabled)
+    selectedCondition.show = selectedCondition.enabled;
+};
+const showCondition = (selectedCondition, i) => {
+  const conditionsStore = useConditionsStore();
+  if (!selectedCondition.show) {
+    const addedCondition = conditionsStore.addCondition(selectedCondition);
+    Object.assign(basicConditions[i], {
+      _id: addedCondition._id,
+    });
+  } else {
+    conditionsStore.removeCondition(selectedCondition._id);
+  }
+};
 </script>
-<style>
-  .modal-mask {
-    position: fixed;
-    z-index: 9998;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    transition: opacity 0.3s ease;
-  }
-  
-  .modal-container {
-    min-width: 300px;
-    width: 100%;
-    max-width: 50%;
-    margin: auto;
-    padding: 20px 30px;
-    background-color: #fff;
-    border-radius: 2px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-    transition: all 0.3s ease;
-  }
-  
-  .modal-header h3 {
-    margin-top: 0;
-    color: #42b983;
-  }
-  
-  .modal-body {
-    margin: 20px 0;
-  }
-  
-  .modal-default-button {
-    float: right;
-  }
-  
-  /*
+<style scoped>
+.conditions-modal-container {
+  width: 70%;
+}
+
+.conditions-modal-body {
+  padding: 0 0 10px;
+}
+
+.conditions-accordion {
+  width: 100%;
+}
+
+.accordion-header-grid {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr 40px 40px;
+}
+
+.accordion-condition-name {
+  font-size: 1rem;
+  padding: 1rem;
+}
+
+.accordion-toggle-label {
+  margin: 1rem;
+}
+
+.accordion-description-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.mod-row {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  transition: opacity 0.3s ease;
+}
+
+.modal-container {
+  min-width: 300px;
+  width: 100%;
+  max-width: 50%;
+  margin: auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all 0.3s ease;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+/*
    * The following styles are auto-applied to elements with
    * transition="modal" when their visibility is toggled
    * by Vue.js.
@@ -316,21 +453,21 @@ const showCondition = (selectedCondition,i) => {
    * You can easily play with the modal transition by editing
    * these styles.
    */
-  
-  .modal-enter-from {
-    opacity: 0;
-  }
-  
-  .modal-leave-to {
-    opacity: 0;
-  }
-  
-  .modal-enter-from .modal-container,
-  .modal-leave-to .modal-container {
-    -webkit-transform: scale(1.1);
-    transform: scale(1.1);
-  }
-  .age-atk-select {
-      height: auto;
-  }
-  </style>
+
+.modal-enter-from {
+  opacity: 0;
+}
+
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+.age-atk-select {
+  height: auto;
+}
+</style>
