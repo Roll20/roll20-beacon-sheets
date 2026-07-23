@@ -10,6 +10,7 @@ import type { CompendiumCategory } from '@/schemas/compendium';
 import { dispatchRef, initValues } from '@/relay/relay';
 import { compendium } from '@/schemas/compendium';
 import { NpcPayloadSchema } from '@/schemas/hydrate/npc';
+import { characterStore } from '@/sheet/stores';
 
 export type DropArgs = {
   coordinates: DragCoordinates;
@@ -231,7 +232,15 @@ export const drag = async (
 ) => {
   const { pageName, expansionId } = dropData;
   const category = dropData.categoryName as CompendiumCategory | string;
-  const request = createPageRequest(category, pageName);
+  
+  const store = characterStore();
+  const isNpc = category === 'NPCs' || category === 'Dramatis Personae';
+  if (isNpc) {
+    store.pageLoading = true;
+  }
+  
+  try {
+    const request = createPageRequest(category, pageName);
 
   const actualDispatch = dispatch ?? dispatchRef.value;
   const response: CompendiumResults = await actualDispatch.compendiumRequest({ query: request });
@@ -348,5 +357,12 @@ export const drag = async (
     }
   } catch (e) {
     console.error('Failed to parse data-payload', e);
+  }
+  } catch (e) {
+    console.error('Failed during drag process', e);
+  } finally {
+    if (isNpc) {
+      store.pageLoading = false;
+    }
   }
 };
