@@ -75,6 +75,7 @@ export function loadLegacyAbilityScores(attributes: { [key: string]: string }) {
       }
     }
   });
+  console.log({ LegacyAbilities: legacyAbilities });
 }
 
 export function loadLegacyCharacterDetails(attributes: { [key: string]: any }) {
@@ -96,6 +97,7 @@ export function loadLegacyCharacterDetails(attributes: { [key: string]: any }) {
     eyes: attributes?.eyes,
     hair: attributes?.hair,
   };
+  console.log({ LegacyRawAttributes: attributes, LegacyInfo: legacyChar });
   //Primary Details
   // char.levelSet(parseInt(attributes?.level, 0));
   // char.magic = Number(attributes?.magic);
@@ -153,9 +155,11 @@ export function loadLegacyGroupings(attributes: { [key: string]: any }) {
   // if(grouped.money){
   // legacyCurrency(grouped.money)
   // }
+  console.log({ LegacyGroupings: grouped });
 }
 
 export const legacyCurrency = (money: any) => {
+  console.log({ LegacyMoney: money });
   // const inventory = useInventoryStore();
   // money.forEach(m => {
   //     switch(m.moneyname){

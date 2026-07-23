@@ -14,6 +14,7 @@ export const onInit = ({
   initValues.settings = settings;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
   lightDarkMode(initValues.settings.colorTheme);
+  console.log("onInit -> Example Sheet Relay", character);
 };
 
 // onChange is called when the character data is updated. This is where you will update the sheet with the new data.
@@ -62,6 +63,7 @@ export const onDropOver = async (e: any) => {
         console.error("Compendium request returned errors:", response.errors);
         return;
       }
+      console.log("Compendium Entry Found:", response.data);
       const result = await applyCompendiumDrop(response);
       if (result.store === null) {
         console.warn("Compendium drop not handled:", result.reason, response);
