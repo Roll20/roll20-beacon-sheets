@@ -43,9 +43,7 @@
           </p>
 
           
-          <p v-if="!editMode && sheet.biography.about" class="text-xs text-zinc-600 mb-3 leading-normal whitespace-pre-wrap">
-            {{ sheet.biography.about }}
-          </p>
+          <div v-if="!editMode && sheet.biography.about" class="text-xs text-zinc-600 mb-3 leading-normal prose prose-sm max-w-none prose-zinc prose-p:my-1" v-html="DOMPurify.sanitize(md.render(sheet.biography.about))"></div>
 
           
           <div v-if="!editMode" class="flex flex-wrap gap-x-4 gap-y-1 leading-relaxed text-zinc-800">
@@ -73,11 +71,9 @@
             </div>
             <div class="flex items-start gap-2 mb-2">
               <strong class="font-space-grotesk font-black uppercase shrink-0 w-24 mt-1.5">About</strong>
-              <LazyTextarea
-                v-model="sheet.biography.about"
-                class="flex-1 bg-zinc-50 border border-zinc-300 p-2 focus-within:border-black transition-colors text-sm min-h-[60px] font-normal"
-                placeholder="Character summary..."
-              />
+              <div class="flex-1 min-w-0 bg-white">
+                <MarkdownEditor v-model="sheet.biography.about" height="150px" />
+              </div>
             </div>
             <div class="flex items-center gap-2">
           <strong class="font-space-grotesk font-black uppercase shrink-0 w-24">Role</strong>
@@ -362,14 +358,13 @@
         <div v-if="editMode || sheet.powers.powerSourceDescription" class="mb-3">
           <div v-if="editMode">
             <h3 class="font-space-grotesk font-black uppercase text-sm tracking-widest mb-1">Power Source</h3>
-            <LazyTextarea
-              v-model="sheet.powers.powerSourceDescription"
-              class="w-full bg-zinc-50 border border-zinc-300 p-2 focus-within:border-black transition-colors text-sm min-h-[60px]"
-            />
+            <div class="bg-white">
+              <MarkdownEditor v-model="sheet.powers.powerSourceDescription" height="120px" />
+            </div>
           </div>
           <div v-else class="text-sm text-zinc-700 leading-relaxed">
-            <strong class="font-space-grotesk font-black uppercase">POWER SOURCE: </strong>
-            <span>{{ sheet.powers.powerSourceDescription }}</span>
+            <strong class="font-space-grotesk font-black uppercase mb-1 block">POWER SOURCE: </strong>
+            <div class="prose prose-sm max-w-none prose-zinc prose-p:my-1" v-html="DOMPurify.sanitize(md.render(sheet.powers.powerSourceDescription))"></div>
           </div>
         </div>
 
