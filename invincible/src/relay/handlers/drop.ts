@@ -10,6 +10,7 @@ import type { CompendiumCategory } from '@/schemas/compendium';
 import { dispatchRef, initValues } from '@/relay/relay';
 import { compendium } from '@/schemas/compendium';
 import { NpcPayloadSchema } from '@/schemas/hydrate/npc';
+import { characterStore } from '@/sheet/stores';
 
 export type DropArgs = {
   coordinates: DragCoordinates;
@@ -155,11 +156,31 @@ export const resolveDropData = async (node: any, dispatch: Dispatch): Promise<an
 
   
   const properties = node.properties || node;
-  const payload = properties['data-payload'] !== undefined ? properties['data-payload'] : node['data-payload'];
-  const categoryName = properties.Category || properties.category || node.categoryName || node.Category || '';
+  let payload = properties['data-payload'] !== undefined ? properties['data-payload'] : node['data-payload'];
+  if (typeof payload === 'string') {
+    try {
+      payload = JSON.parse(payload);
+    } catch {
+      // 
+    }
+  }
+  let categoryName = properties.Category || properties.category || node.categoryName || node.Category || '';
+  if (categoryName === 'Talents' || categoryName === 'Drawbacks') {
+    if (payload && typeof payload === 'object') {
+      payload.type = categoryName === 'Talents' ? 'talent' : 'drawback';
+    }
+    categoryName = 'Features';
+  }
+
+  if (payload && typeof payload === 'object') {
+    const tokenUrl = properties.Token || properties.token;
+    if (tokenUrl && !payload.token) {
+      payload.token = tokenUrl;
+    }
+  }
 
   
-  let rawChildren = node.children || properties['data-children'] || [];
+  let rawChildren = properties['data-children'] || [];
   if (typeof rawChildren === 'string') {
     try {
       rawChildren = JSON.parse(rawChildren);
@@ -211,7 +232,15 @@ export const drag = async (
 ) => {
   const { pageName, expansionId } = dropData;
   const category = dropData.categoryName as CompendiumCategory | string;
-  const request = createPageRequest(category, pageName);
+  
+  const store = characterStore();
+  const isNpc = category === 'NPCs' || category === 'Dramatis Personae';
+  if (isNpc) {
+    store.pageLoading = true;
+  }
+  
+  try {
+    const request = createPageRequest(category, pageName);
 
   const actualDispatch = dispatch ?? dispatchRef.value;
   const response: CompendiumResults = await actualDispatch.compendiumRequest({ query: request });
@@ -228,6 +257,42 @@ export const drag = async (
   const page = pages[correctPageIndex];
   console.log('Dropping page', page);
 
+  if (page?.properties) {
+    let pagePayload = page.properties['data-payload'];
+    if (typeof pagePayload === 'string') {
+      try {
+        pagePayload = JSON.parse(pagePayload);
+      } catch (e) {
+        console.warn('Failed to parse data-payload string as JSON', e);
+      }
+    }
+
+    let originalCategory = page.properties.Category || category;
+    if (originalCategory === 'Talents' || originalCategory === 'Drawbacks') {
+      if (pagePayload && typeof pagePayload === 'object') {
+        pagePayload.type = originalCategory === 'Talents' ? 'talent' : 'drawback';
+      }
+    }
+
+    if (pagePayload && typeof pagePayload === 'object') {
+      const tokenUrl = page.properties.Token || page.properties.token;
+      if (tokenUrl && !pagePayload.token) {
+        pagePayload.token = tokenUrl;
+      }
+    }
+    page.properties['data-payload'] = pagePayload;
+
+    let pageChildren = page.properties['data-children'];
+    if (typeof pageChildren === 'string') {
+      try {
+        pageChildren = JSON.parse(pageChildren);
+      } catch (e) {
+        console.warn('Failed to parse data-children string as JSON', e);
+      }
+    }
+    page.properties['data-children'] = pageChildren;
+  }
+
   try {
     if (page.properties.hasOwnProperty('data-payload')) {
       if (category === 'NPCs' || category === 'Dramatis Personae') {
@@ -239,7 +304,9 @@ export const drag = async (
         } else {
           inputToValidate = await resolveDropData(page, actualDispatch);
         }
-        await applyNpcDrop(inputToValidate, actualDispatch);
+
+        const type = category === 'NPCs' ? 'compact' : 'normal';
+        await applyNpcDrop(inputToValidate, actualDispatch, type);
         
         if (isNewSheet) {
           await new Promise((resolve) => setTimeout(resolve, 2000)); 
@@ -249,7 +316,11 @@ export const drag = async (
         return; 
       }
       
-      const handler = compendium.find((entry) => entry.category === category);
+      let mappedCategory = category;
+      if (mappedCategory === 'Talents' || mappedCategory === 'Drawbacks') {
+        mappedCategory = 'Features';
+      }
+      const handler = compendium.find((entry) => entry.category === mappedCategory);
       if (handler) {
         const isWrapper = typeof page.properties['data-payload'] === 'object' && page.properties['data-payload'] !== null && 'data-payload' in page.properties['data-payload'];
         
@@ -286,5 +357,12 @@ export const drag = async (
     }
   } catch (e) {
     console.error('Failed to parse data-payload', e);
+  }
+  } catch (e) {
+    console.error('Failed during drag process', e);
+  } finally {
+    if (isNpc) {
+      store.pageLoading = false;
+    }
   }
 };

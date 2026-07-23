@@ -43,9 +43,7 @@
           </p>
 
           
-          <p v-if="!editMode && sheet.biography.about" class="text-xs text-zinc-600 mb-3 leading-normal whitespace-pre-wrap">
-            {{ sheet.biography.about }}
-          </p>
+          <div v-if="!editMode && sheet.biography.about" class="text-xs text-zinc-600 mb-3 leading-normal prose prose-sm max-w-none prose-zinc prose-p:my-1" v-html="DOMPurify.sanitize(md.render(sheet.biography.about))"></div>
 
           
           <div v-if="!editMode" class="flex flex-wrap gap-x-4 gap-y-1 leading-relaxed text-zinc-800">
@@ -73,11 +71,9 @@
             </div>
             <div class="flex items-start gap-2 mb-2">
               <strong class="font-space-grotesk font-black uppercase shrink-0 w-24 mt-1.5">About</strong>
-              <LazyTextarea
-                v-model="sheet.biography.about"
-                class="flex-1 bg-zinc-50 border border-zinc-300 p-2 focus-within:border-black transition-colors text-sm min-h-[60px] font-normal"
-                placeholder="Character summary..."
-              />
+              <div class="flex-1 min-w-0 bg-white">
+                <MarkdownEditor v-model="sheet.biography.about" height="150px" />
+              </div>
             </div>
             <div class="flex items-center gap-2">
           <strong class="font-space-grotesk font-black uppercase shrink-0 w-24">Role</strong>
@@ -296,19 +292,19 @@
             <h4 class="font-space-grotesk font-black uppercase text-xs tracking-widest text-zinc-500 mb-1">Quick Actions</h4>
             <div class="leading-relaxed text-sm text-zinc-700">
               <template v-for="(action, index) in quickActions" :key="action._id">
-                <RollButton
-                  v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'"
-                  :characterName="sheet.meta.name"
-                  :title="action.name"
-                  :isQuery="action.attributeUsed === 'varies'"
-                  :components="action._components"
-                  :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
-                  class="cursor-pointer hover:text-primary transition-colors group inline"
-                  v-tooltip="getActionTooltip(action)"
-                >
-                  <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
-                  <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
-                </RollButton>
+                <span v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'" class="inline-block" v-tooltip="getActionTooltip(action)">
+                  <RollButton
+                    :characterName="sheet.meta.name"
+                    :title="action.name"
+                    :isQuery="action.attributeUsed === 'varies'"
+                    :components="action._components"
+                    :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
+                    class="cursor-pointer hover:text-primary transition-colors group inline"
+                  >
+                    <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
+                    <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
+                  </RollButton>
+                </span>
                 <span
                   v-else
                   v-tooltip="editMode ? 'Edit' : getActionTooltip(action)"
@@ -326,19 +322,19 @@
             <h4 class="font-space-grotesk font-black uppercase text-xs tracking-widest text-zinc-500 mb-1">Full Actions</h4>
             <div class="leading-relaxed text-sm text-zinc-700">
               <template v-for="(action, index) in fullActions" :key="action._id">
-                <RollButton
-                  v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'"
-                  :characterName="sheet.meta.name"
-                  :title="action.name"
-                  :isQuery="action.attributeUsed === 'varies'"
-                  :components="action._components"
-                  :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
-                  class="cursor-pointer hover:text-primary transition-colors group inline"
-                  v-tooltip="getActionTooltip(action)"
-                >
-                  <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
-                  <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
-                </RollButton>
+                <span v-if="!editMode && action.attributeUsed && action.attributeUsed !== '-'" class="inline-block" v-tooltip="getActionTooltip(action)">
+                  <RollButton
+                    :characterName="sheet.meta.name"
+                    :title="action.name"
+                    :isQuery="action.attributeUsed === 'varies'"
+                    :components="action._components"
+                    :solver="action.damage ? actionDamageRollSolver : actionRollSolver"
+                    class="cursor-pointer hover:text-primary transition-colors group inline"
+                  >
+                    <strong class="uppercase text-black group-hover:text-primary transition-colors text-sm font-black">{{ action.name }}</strong>
+                    <span v-if="action.bonus || action.damage" class="text-zinc-500 text-sm ml-0.5 whitespace-nowrap group-hover:text-primary transition-colors">(<span v-if="action.bonus">bonus +{{ action.bonus }}</span><span v-if="action.bonus && action.damage">, </span><span v-if="action.damage">damage {{ action.damage }}</span>)</span>
+                  </RollButton>
+                </span>
                 <span
                   v-else
                   v-tooltip="editMode ? 'Edit' : getActionTooltip(action)"
@@ -362,14 +358,13 @@
         <div v-if="editMode || sheet.powers.powerSourceDescription" class="mb-3">
           <div v-if="editMode">
             <h3 class="font-space-grotesk font-black uppercase text-sm tracking-widest mb-1">Power Source</h3>
-            <LazyTextarea
-              v-model="sheet.powers.powerSourceDescription"
-              class="w-full bg-zinc-50 border border-zinc-300 p-2 focus-within:border-black transition-colors text-sm min-h-[60px]"
-            />
+            <div class="bg-white">
+              <MarkdownEditor v-model="sheet.powers.powerSourceDescription" height="120px" />
+            </div>
           </div>
           <div v-else class="text-sm text-zinc-700 leading-relaxed">
-            <strong class="font-space-grotesk font-black uppercase">POWER SOURCE: </strong>
-            <span>{{ sheet.powers.powerSourceDescription }}</span>
+            <strong class="font-space-grotesk font-black uppercase mb-1 block">POWER SOURCE: </strong>
+            <div class="prose prose-sm max-w-none prose-zinc prose-p:my-1" v-html="DOMPurify.sanitize(md.render(sheet.powers.powerSourceDescription))"></div>
           </div>
         </div>
 
@@ -392,8 +387,8 @@
             <div class="flex gap-2 items-start">
               <span class="mt-0.5 shrink-0 font-bold text-zinc-500">✻</span>
               <div class="min-w-0 leading-relaxed text-zinc-700">
-                <strong class="font-space-grotesk font-black text-black">{{ power.name }}:</strong>
-                <span v-if="power.description"> {{ power.description }}</span>
+                <strong class="font-space-grotesk font-black text-black mr-1">{{ power.name }}:</strong>
+                <div v-if="power.description" class="prose prose-sm max-w-none prose-zinc prose-p:inline inline" v-html="DOMPurify.sanitize(md.render(power.description))"></div>
               </div>
             </div>
             

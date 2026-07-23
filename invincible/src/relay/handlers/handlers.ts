@@ -31,7 +31,9 @@ export const onSharedSettingsChange = (args?: SharedSettingsChangeArgs) => {
 
 export const onTranslationsRequest = () => ({});
 
-export const onDragOver = drag;
+export const onDragOver = () => {};
+
+export const onDropOver = drag;
 
 const applyChange = (oldValue: number, newValue: string | number): number => {
   const valStr = String(newValue).trim();

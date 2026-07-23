@@ -1,32 +1,40 @@
 <template>
-  <div class="grid min-h-screen items-center relative z-10">
-    <div class="flex flex-col items-center -mt-20">
-      <ComicTitle class="mb-4" text="Sheet Type" />
-      <ComicPanel class="w-full max-w-sm">
-        <div class="flex flex-col gap-4 py-2">
-          <button
-            type="button"
-            @click="setMode('normal')"
-            class="px-4 py-3 font-space-grotesk font-bold text-lg uppercase transition-colors border-2 border-black flex items-center justify-center gap-2"
-            :class="currentMode === 'normal' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-y-[-2px] translate-x-[-2px]' : 'bg-white text-black hover:bg-zinc-100'"
-          >
-            <span v-if="currentMode === 'normal'" class="material-symbols-outlined text-lg">check_circle</span>
-            Full Sheet
-          </button>
-          <button
-            type="button"
-            @click="setMode('compact')"
-            class="px-4 py-3 font-space-grotesk font-bold text-lg uppercase transition-colors border-2 border-black flex items-center justify-center gap-2"
-            :class="currentMode === 'compact' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-y-[-2px] translate-x-[-2px]' : 'bg-white text-black hover:bg-zinc-100'"
-          >
-            <span v-if="currentMode === 'compact'" class="material-symbols-outlined text-lg">check_circle</span>
-            Compact Mode
-          </button>
+  <div>
+    <div class="grid min-h-screen items-center relative z-10">
+      <div class="flex flex-col items-center -mt-20">
+        <div v-if="store.pageLoading" class="flex flex-col items-center justify-center bg-white border-2 border-black p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div class="w-12 h-12 border-4 border-zinc-200 border-t-black rounded-full animate-spin mb-4"></div>
+          <p class="font-space-grotesk font-black uppercase text-lg tracking-widest text-black">Fetching character data...</p>
         </div>
-      </ComicPanel>
+        <template v-else>
+          <ComicTitle class="mb-4" text="Sheet Type" />
+          <ComicPanel class="w-full max-w-sm">
+            <div class="flex flex-col gap-4 py-2">
+              <button
+                type="button"
+                @click="setMode('normal')"
+                class="px-4 py-3 font-space-grotesk font-bold text-lg uppercase transition-colors border-2 border-black flex items-center justify-center gap-2"
+                :class="currentMode === 'normal' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-y-[-2px] translate-x-[-2px]' : 'bg-white text-black hover:bg-zinc-100'"
+              >
+                <span v-if="currentMode === 'normal'" class="material-symbols-outlined text-lg">check_circle</span>
+                Full Sheet
+              </button>
+              <button
+                type="button"
+                @click="setMode('compact')"
+                class="px-4 py-3 font-space-grotesk font-bold text-lg uppercase transition-colors border-2 border-black flex items-center justify-center gap-2"
+                :class="currentMode === 'compact' ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-y-[-2px] translate-x-[-2px]' : 'bg-white text-black hover:bg-zinc-100'"
+              >
+                <span v-if="currentMode === 'compact'" class="material-symbols-outlined text-lg">check_circle</span>
+                Compact Mode
+              </button>
+            </div>
+          </ComicPanel>
+        </template>
+      </div>
     </div>
+    <div class="background fixed z-1 top-0 left-0 w-full h-full object-cover pointer-events-none"></div>
   </div>
-  <div class="background fixed z-1 top-0 left-0 w-full h-full object-cover pointer-events-none"></div>
 </template>
 
 <script lang="ts" setup>

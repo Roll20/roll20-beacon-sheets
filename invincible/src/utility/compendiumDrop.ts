@@ -54,10 +54,39 @@ export function transformPageToWrapper(page: any): any {
 
   const properties = page.properties || page;
 
-  const categoryName = properties.Category || properties.category || page.categoryName || page.Category || '';
-  const payload = properties['data-payload'] !== undefined ? properties['data-payload'] : page['data-payload'];
+  let categoryName = properties.Category || properties.category || page.categoryName || page.Category || '';
+  const originalCategoryName = categoryName;
+  if (categoryName === 'Talents' || categoryName === 'Drawbacks') {
+    categoryName = 'Features';
+  }
+  let payload = properties['data-payload'] !== undefined ? properties['data-payload'] : page['data-payload'];
+  if (typeof payload === 'string') {
+    try {
+      payload = JSON.parse(payload);
+    } catch {
+      // ignore
+    }
+  }
 
-  const rawChildren = page.children || properties['data-children'] || [];
+  if (payload && typeof payload === 'object' && (originalCategoryName === 'Talents' || originalCategoryName === 'Drawbacks')) {
+    payload.type = originalCategoryName === 'Talents' ? 'talent' : 'drawback';
+  }
+
+  if (payload && typeof payload === 'object') {
+    const tokenUrl = properties.Token || properties.token;
+    if (tokenUrl && !payload.token) {
+      payload.token = tokenUrl;
+    }
+  }
+
+  let rawChildren = properties['data-children'] || [];
+  if (typeof rawChildren === 'string') {
+    try {
+      rawChildren = JSON.parse(rawChildren);
+    } catch {
+      rawChildren = [];
+    }
+  }
   const children: any[] = [];
 
   if (Array.isArray(rawChildren)) {
@@ -81,7 +110,10 @@ export function transformPageToWrapper(page: any): any {
 }
 
 function validateNode(node: any, defaultSchema: ZodSchema): { success: true; node: any } | { success: false; error: string } {
-  const categoryName = node.categoryName || '';
+  let categoryName = node.categoryName || '';
+  if (categoryName === 'Talents' || categoryName === 'Drawbacks') {
+    categoryName = 'Features';
+  }
 
   let schema = defaultSchema;
   let target = null;

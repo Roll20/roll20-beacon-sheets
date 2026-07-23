@@ -16,6 +16,7 @@ import {
   onSharedSettingsChange,
   onTranslationsRequest,
   onDragOver,
+  onDropOver,
   setHealth,
   setResolve,
 } from './handlers/handlers';
@@ -33,6 +34,7 @@ const relayConfig = {
     onSharedSettingsChange,
     onTranslationsRequest,
     onDragOver,
+    onDropOver,
   },
   actions: {
     push_roll: {
@@ -234,7 +236,7 @@ export const createRelay = async ({
 
       dispatch.updateTokensByCharacter({
         characterId,
-        token: newToken
+        token: JSON.parse(JSON.stringify(newToken))
       } as any);
     }, { deep: true });
 
