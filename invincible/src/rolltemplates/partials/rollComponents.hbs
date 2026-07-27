@@ -37,7 +37,7 @@
       {{/if}}
     {{/if}}
   {{/each}}
-  {{#if (canPushRoll components)}}
+  {{#if (and (not hidePushRoll) (canPushRoll components))}}
     <div>
       <button data-sheet-action="push_roll" data-args="{{characterId}}" class="block w-full text-center px-3 py-1.5 font-bold uppercase tracking-wider hover:text-(--hero-color-secondary) transition-colors" style="text-decoration: none;">Push Roll</button>
     </div>

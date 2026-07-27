@@ -187,6 +187,7 @@ export const combatStore = defineStore('combat', () => {
           characterName,
           components: resolvedComponents,
           description: selectedInjury.description || '',
+          hidePushRoll: true,
         },
       });
 
