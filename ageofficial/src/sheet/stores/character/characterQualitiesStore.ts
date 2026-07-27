@@ -94,6 +94,8 @@ export const useItemStore = defineStore("quality", () => {
         Object.assign(newMod, {
           name: mod.name,
           damage: mod.damage,
+		  damageQualities: mod.damageQualities,
+		  damageFlaws: mod.damageFlaws,
           weaponType: mod.weaponType,
           weaponGroupAbility: mod.weaponGroupAbility,
         });

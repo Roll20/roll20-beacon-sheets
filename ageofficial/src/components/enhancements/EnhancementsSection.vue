@@ -77,7 +77,7 @@ let enhancementNew = ref({
   padding: 15px 6px 6px;
   width: 100%;
 }
-.enh-add-btn {
+button.enh-add-btn {
   font-size: 1.5rem;
 }
 </style>

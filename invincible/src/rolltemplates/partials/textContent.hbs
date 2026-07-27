@@ -1,0 +1,9 @@
+<div class="roll-card-textcontent">
+  {{#if (isArray textContent)}}
+    {{#each textContent}}
+      <p class="mb-2 last:mb-0">{{{this}}}</p>
+    {{/each}}
+  {{else}}
+    {{{textContent}}}
+  {{/if}}
+</div>

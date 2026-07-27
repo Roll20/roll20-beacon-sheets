@@ -1,5 +1,5 @@
 <template>
-  <div class="view-container">
+  <div class="view-container companion-sidebar">
     <div class="sidebar-controls">
       <label>
         {{ $t('actions.edit-mode') }}

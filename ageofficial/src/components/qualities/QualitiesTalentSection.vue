@@ -169,7 +169,7 @@ function getQuality(quality) {
   display: flex;
   justify-content: flex-end;
 }
-.talent-add-btn {
+button.talent-add-btn {
   font-size: 1.5rem;
   margin-bottom: -32px;
 }

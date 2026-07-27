@@ -99,7 +99,7 @@ export const useSettingsStore = defineStore("settings", () => {
         aimToggle: aimToggle.value,
         aimValue: aimValue.value,
         aim: aim.value,
-        guardT: guard.value,
+        guard: guard.value,
         guardToggle: guardToggle.value,
         guardValue: guardValue.value,
         rerollStunt: rerollStunt.value,
@@ -131,28 +131,29 @@ export const useSettingsStore = defineStore("settings", () => {
 
   const hydrate = (hydrateStore: SettingsHydrate) => {
     encumbrancePenalty.value =
-      hydrateStore.settings.encumbrancePenalty || encumbrancePenalty.value;
+      hydrateStore.settings.encumbrancePenalty ?? encumbrancePenalty.value;
     gameSystem.value = hydrateStore.settings.gameSystem || gameSystem.value;
     campaignMode.value =
       hydrateStore.settings.campaignMode || campaignMode.value;
     color.value = hydrateStore.settings.color || color.value;
-    nameInRoll.value = hydrateStore.settings.nameInRoll || nameInRoll.value;
+    nameInRoll.value =
+      hydrateStore.settings.nameInRoll ?? nameInRoll.value;
     whisperRollsGM.value =
       hydrateStore.settings.whisperRollsGM || whisperRollsGM.value;
     whisperRollsGMToggle.value =
-      hydrateStore.settings.whisperRollsGMToggle || whisperRollsGMToggle.value;
+      hydrateStore.settings.whisperRollsGMToggle ?? whisperRollsGMToggle.value;
     aimToggle.value = hydrateStore.settings.aimToggle || aimToggle.value;
-    aimValue.value = hydrateStore.settings.aimValue || aimValue.value;
-    aim.value = hydrateStore.settings.aim || aim.value;
-    guard.value = hydrateStore.settings.guard || guard.value;
+    aimValue.value = hydrateStore.settings.aimValue ?? aimValue.value;
+    aim.value = hydrateStore.settings.aim ?? aim.value;
+    guard.value = hydrateStore.settings.guard ?? guard.value;
     guardToggle.value = hydrateStore.settings.guardToggle || guardToggle.value;
-    guardValue.value = hydrateStore.settings.guardValue || guardValue.value;
+    guardValue.value = hydrateStore.settings.guardValue ?? guardValue.value;
     rerollStunt.value = hydrateStore.settings.rerollStunt || rerollStunt.value;
-    reroll.value = hydrateStore.settings.reroll || reroll.value;
+    reroll.value = hydrateStore.settings.reroll ?? reroll.value;
     initiativeTiebreaker.value =
-      hydrateStore.settings.initiativeTiebreaker || initiativeTiebreaker.value;
+      hydrateStore.settings.initiativeTiebreaker ?? initiativeTiebreaker.value;
     armorPenalty.value =
-      hydrateStore.settings.armorPenalty || armorPenalty.value;
+      hydrateStore.settings.armorPenalty ?? armorPenalty.value;
     sheetView.value = hydrateStore.settings.sheetView ?? sheetView.value;
     showXP.value = hydrateStore.settings.showXP ?? showXP.value;
     cthulhuMythos.value =

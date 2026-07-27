@@ -14,6 +14,7 @@ import { getDiceFromExpression } from './getDiceFromExpression';
 import type { NpcAction, NpcSpell } from '@/sheet/stores/npc/npcStore';
 import type { Spell } from '@/sheet/stores/spells/spellsStore';
 import type { Action } from '@/sheet/stores/actions/actionsStore';
+import { useCombatStore } from '@/sheet/stores/combat/combatStore';
 
 export type LabeledBonus = {
   label: string;
@@ -42,11 +43,27 @@ export type D20RollArgs = {
   avatar?: string;
 };
 
+const getExhaustionBonus = (args: D20RollArgs): LabeledBonus | undefined => {
+  if (args.effectsSource || args.isCompanion) return undefined;
+
+  const exhaustionLevel = useCombatStore().exhaustion;
+  if (exhaustionLevel <= 0) return undefined;
+
+  return {
+    label: 'Exhaustion',
+    value: exhaustionLevel * -2,
+  };
+};
+
 export function getD20RollBreakdown(args: D20RollArgs) {
   const { bonuses, rollBonusKeys = [], effectsSource } = args;
   const effectsStore = useEffectsStore();
 
-  const baseComponents: LabeledBonus[] = bonuses.filter((bonus) => bonus.value !== 0);
+  const exhaustionBonus = getExhaustionBonus(args);
+  const baseComponents: LabeledBonus[] = [
+    ...bonuses,
+    ...(exhaustionBonus ? [exhaustionBonus] : []),
+  ].filter((bonus) => bonus.value !== 0);
 
   const allEffects = effectsSource ?? effectsStore.effects;
   const isActiveCheck = effectsSource
@@ -87,7 +104,8 @@ export const performD20Roll = async (
   } = args;
 
   const effectsStore = useEffectsStore();
-  const bonusComponents = bonuses
+  const exhaustionBonus = getExhaustionBonus(args);
+  const bonusComponents = [...bonuses, ...(exhaustionBonus ? [exhaustionBonus] : [])]
     .filter((bonus) => bonus.value !== 0)
     .map((bonus) => ({
       label: bonus.label,

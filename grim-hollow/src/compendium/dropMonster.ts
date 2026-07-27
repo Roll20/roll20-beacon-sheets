@@ -5,6 +5,8 @@ import { NpcSchema } from '@/schemas/npc';
 import { type Npc, useNpcStore } from '@/sheet/stores/npc/npcStore';
 import { onDropSpell } from './dropSpell';
 import { type Dispatch } from '@roll20-official/beacon-sdk';
+import { dispatchRef, initValues } from '@/relay/relay';
+import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 
 const getMonsterSize = (source: string = 'medium'): number => {
   const sizes = config.sizes;
@@ -54,6 +56,8 @@ export const onDropMonster = async ({
   effects,
   spells,
   isNewSheet,
+  dispatch,
+  character,
 }: DropContext) => {
 
   const npcs = useNpcStore();
@@ -99,15 +103,41 @@ export const onDropMonster = async ({
     result.data.effects = collectedEffects;
   }
 
-  result.data.isDefault = isNewSheet ? true : false;
-  result.data.isCompanion = isNewSheet ? false : true;
-  result.data.isCollapsed =  isNewSheet ? false : true;
+  const isNPCModeActive = isNewSheet || npcs.isNpc;
 
-  if(isNewSheet) npcs.npcs = [];
+  if (isNPCModeActive) {
+    result.data.isDefault = true;
+    result.data.isCompanion = false;
+    result.data.isCollapsed = false;
 
-  if(isNewSheet) npcs.isNpc = true;
+    if (isNewSheet) {
+      npcs.npcs = [];
+    } else {
+      npcs.npcs = npcs.npcs.filter((n) => !(n.isDefault && !n.isCompanion));
+    }
+    npcs.isNpc = true;
+
+    const meta = useMetaStore();
+    meta.name = result.data.name;
+    if (result.data.token) {
+      meta.avatar = result.data.token;
+    }
+  } else {
+    result.data.isDefault = false;
+    result.data.isCompanion = true;
+    result.data.isCollapsed = true;
+  }
+
   npcs.isEditMode = false;
-  const id = npcs.updateNpc(null,  result.data as Partial<Npc>);
+  const id = npcs.updateNpc(null, result.data as Partial<Npc>);
+
+  if (isNPCModeActive && !isNewSheet) {
+    const actualCharacterId = character?.id || initValues.character?.id;
+    const actualDispatch = dispatch || dispatchRef.value;
+    if (actualCharacterId && actualDispatch) {
+      await setToken({ characterId: actualCharacterId, payload, dispatch: actualDispatch });
+    }
+  }
 
   if(spells) {
     console.log("Dropping spells for monster", spells);

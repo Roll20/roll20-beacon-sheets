@@ -19,6 +19,9 @@ const tooltipConfig = {
     info: {
       '$extend': 'tooltip',
     },
+    condition: {
+      '$extend': 'tooltip',
+    },
   },
 }
 

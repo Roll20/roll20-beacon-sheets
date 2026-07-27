@@ -1,0 +1,14 @@
+{{#> wrapper type="roll" keyValues=keyValues }}
+  {{#> header characterName=(or characterName ../characterName) title=(or title ../title) subtitle=(or subtitle ../subtitle)}}
+  {{/ header}}
+
+  <div class="roll-card-body flex justify-center py-4">
+    <div class="text-center flex flex-col items-center justify-center">
+      <svg viewBox="0 0 160 70" class="w-full max-w-[200px] h-20" style="filter: drop-shadow(4px 4px 0px rgba(0,0,0,1));" xmlns="http://www.w3.org/2000/svg">
+        <text x="50%" y="52" text-anchor="middle" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-size="54" fill="rgb({{heroColor}})" stroke="#000000" stroke-width="8" stroke-linejoin="miter" paint-order="stroke fill">
+          {{total}}
+        </text>
+      </svg>
+    </div>
+  </div>
+{{/ wrapper}}

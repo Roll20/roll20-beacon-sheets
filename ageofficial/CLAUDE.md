@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Roll20 Beacon SDK character sheet for the AGE (Adventure Game Engine) system, supporting multiple product lines: Fantasy AGE (1e/2e), Modern AGE, Blue Rose, The Expanse, and Threefold. It is built with Vue 3, TypeScript, Pinia, and Vite, and runs embedded in Roll20's VTT via the Beacon SDK.
+This is a Roll20 Beacon SDK character sheet for the AGE (Adventure Game Engine) system, supporting multiple product lines: Fantasy AGE (1e/2e), Modern AGE, Blue Rose, and The Expanse. It is built with Vue 3, TypeScript, Pinia, and Vite, and runs embedded in Roll20's VTT via the Beacon SDK.
+
+**Threefold** is not a standalone game system — it is a genre-slice toggle (`settings.threefold: boolean`) that activates under Modern AGE alongside other slices (Cyberpunk, Cthulhu Mythos, Technofantasy, Powers). Enabling it switches the theme to teal (`--theme-primary: #00637c`) and swaps in the Threefold logo. The toggle is gated to `gameSystem === 'mage'` in `SettingsView.vue`.
 
 ## Commands
 
@@ -70,7 +72,7 @@ Sub-stores:
 
 `productLineStyle(gameSystem, lightDark, args?)` applies CSS classes and CSS custom properties (`--theme-primary`, `--theme-secondary`) to `document.body` based on the active game system. Game-specific SCSS lives in `src/sheet/scss/product/` (e.g., `fage.scss`, `expanse.scss`, `mage.scss`).
 
-Supported game systems: `fage1e`, `fage2e`, `mage`, `blue rose`, `expanse`, `threefold`. The Expanse additionally themes by `originFaction` (earth/mars/belters/transportUnion).
+Supported game systems: `fage1e`, `fage2e`, `mage`, `blue rose`, `expanse`. The Expanse additionally themes by `originFaction` (earth/mars/belters/transportUnion). `threefold` is never a `gameSystem` value — see the project overview note above.
 
 ### SCSS Structure (`src/sheet/scss/`)
 

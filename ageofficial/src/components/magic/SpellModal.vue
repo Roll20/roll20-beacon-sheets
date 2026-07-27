@@ -309,47 +309,7 @@
                   aria-describedby="basic-addon1"
                 />
               </div>
-              <div v-if="spell.weaponType === 'ranged'">
-                <div class="mb-3 col">
-                  <span class="age-input-label" id="basic-addon1"
-                    >Short Range</span
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Name"
-                    aria-label="Character Name"
-                    v-model="spell.shortRange"
-                    aria-describedby="basic-addon1"
-                  />
-                </div>
-                <div class="mb-3 col">
-                  <span class="age-input-label" id="basic-addon1"
-                    >Long Range</span
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Name"
-                    aria-label="Character Name"
-                    v-model="spell.shortRange"
-                    aria-describedby="basic-addon1"
-                  />
-                </div>
-                <div class="mb-3 col">
-                  <span class="age-input-label" id="basic-addon1">Reload</span>
-                  <select
-                    class="age-atk-select form-select"
-                    data-testid="test-spell-weaponType-input"
-                    :id="`weaponType-${spell._id}`"
-                    v-model="spell.reload"
-                  >
-                    <option value="minor">Minor Action</option>
-                    <option value="ranged">Major Action</option>
-                  </select>
-                </div>
-              </div>
-              <div v-if="spell.weaponType === 'spell ranged'">
+<div v-if="spell.weaponType === 'spell ranged'">
                 <div class="mb-3 col">
                   <span class="age-input-label" id="basic-addon1">Range</span>
                   <input
@@ -437,7 +397,7 @@
 <script setup>
 import { useSpellStore } from "@/sheet/stores/magic/magicStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
-import { brArcana, fageArcana, magePowers } from "./magicTypes";
+import { brArcana, fageArcana, magePowers, magePsychicPowers } from "./magicTypes";
 import { computed, ref } from "vue";
 import { bluerose, cthulhu, fage1e, fage2e, mage } from "../modifiers/focuses";
 
@@ -449,7 +409,6 @@ const props = defineProps({
 });
 
 const settings = useSettingsStore();
-const magicTypes = ref();
 const magicPoints = computed(() =>
   settings.gameSystem === "mage"
     ? settings.userPowerFatigue
@@ -457,17 +416,21 @@ const magicPoints = computed(() =>
       : "PP"
     : "MP"
 );
-switch (settings.gameSystem) {
-  case "fage2e":
-    magicTypes.value = fageArcana;
-    break;
-  case "mage":
-    magicTypes.value = magePowers;
-    break;
-  case "blue rose":
-    magicTypes.value = brArcana;
-    break;
-}
+const magicTypes = computed(() => {
+  switch (settings.gameSystem) {
+    case "fage1e":
+    case "fage2e":
+      return fageArcana;
+    case "mage":
+      return settings.threefold
+        ? [...new Set([...magePowers, ...magePsychicPowers])].sort()
+        : magePowers;
+    case "blue rose":
+      return brArcana;
+    default:
+      return [];
+  }
+});
 const selected = ref(
   props.spell.ability
     ? `${props.spell.ability} (${props.spell.abilityFocus})`
@@ -519,7 +482,7 @@ const setArcanaAbility = () => {
     case "Dreaming":
     case "Electrokinesis":
     case "Empathy":
-    case "Exrtasensory Perception":
+    case "Extrasensory Perception (ESP)":
     case "Nature Empathy":
     case "Photokinesis":
     case "Psychic Drain":

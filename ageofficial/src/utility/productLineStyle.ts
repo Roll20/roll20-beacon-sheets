@@ -51,6 +51,26 @@ export function productLineStyle(
           "--theme-secondary",
           "#fef8fb"
         );
+      } else if (args?.threefold) {
+        document.body.classList.add("threefold");
+        document.documentElement.style.setProperty(
+          "--theme-primary",
+          "#00637c"
+        );
+        document.documentElement.style.setProperty(
+          "--theme-secondary",
+          "#fef8fb"
+        );
+      } else if (args?.powers) {
+        document.body.classList.add("powers");
+        document.documentElement.style.setProperty(
+          "--theme-primary",
+          "#b01020"
+        );
+        document.documentElement.style.setProperty(
+          "--theme-secondary",
+          "#fff5f6"
+        );
       } else {
         document.documentElement.style.setProperty(
           "--theme-primary",
