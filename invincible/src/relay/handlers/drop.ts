@@ -6,6 +6,7 @@ import {
 } from '@roll20-official/beacon-sdk';
 import { validateEntry, applyCompendiumData } from '@/utility/compendiumDrop';
 import { applyNpcDrop } from '@/utility/applyNpcDrop';
+import { applyInjuryDrop } from '@/utility/applyInjuryDrop';
 import type { CompendiumCategory } from '@/schemas/compendium';
 import { dispatchRef, initValues } from '@/relay/relay';
 import { compendium } from '@/schemas/compendium';
@@ -294,6 +295,11 @@ export const drag = async (
   }
 
   try {
+    if (category === 'Critical Injuries') {
+      applyInjuryDrop(page.name);
+      return;
+    }
+
     if (page.properties.hasOwnProperty('data-payload')) {
       if (category === 'NPCs' || category === 'Dramatis Personae') {
         const isWrapper = typeof page.properties['data-payload'] === 'object' && page.properties['data-payload'] !== null && 'data-payload' in page.properties['data-payload'];
