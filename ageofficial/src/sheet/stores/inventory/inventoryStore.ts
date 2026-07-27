@@ -169,7 +169,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     const settings = useSettingsStore();
     const emptyItem: Item = {
       _id: uuidv4(),
-      slots: 1,
+      slots: newItem?.slots ?? 1,
       name: newItem ? newItem.name : '',
       description: newItem ? newItem.description : '',
       type: newItem ? newItem.type : '',

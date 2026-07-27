@@ -63,3 +63,16 @@
 .age-icon-right {
   margin-right: 5px;
 }
+
+.age-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+
+.age-stack-gap-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

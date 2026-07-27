@@ -198,6 +198,8 @@
     </SettingsView>
   </Teleport>
 
+  <CompendiumDropHandler />
+
   <!-- Character Notes -->
   <Teleport to="body">
     <SidebarSection ref="sidebarRef" :className="'age-notes'">
@@ -223,7 +225,6 @@ import { initValues } from "./relay/relay";
 import { useMetaStore } from "@/sheet/stores/meta/metaStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 import SettingsView from "./views/SettingsView.vue";
-
 import SidebarSection from "./components/SidebarSection.vue";
 import NewSplashView from "./views/NewSplashView.vue";
 import { productLineStyle } from "@/utility/productLineStyle";
@@ -231,6 +232,7 @@ import { useThemeArgs } from "@/utility/useThemeArgs";
 import { useCharacterStore } from "./sheet/stores/character/characterStore";
 import ShipView from "./views/ShipView.vue";
 import { useBioStore } from "./sheet/stores/bio/bioStore";
+import CompendiumDropHandler from "./components/CompendiumDropHandler.vue";
 import {
   loadLegacyAbilityScores,
   loadLegacyCharacterDetails,
