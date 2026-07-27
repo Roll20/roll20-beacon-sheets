@@ -8,5 +8,6 @@
   "instructions": "Official Invincible Character Sheet by Free League",
   "legacy": false,
   "tags": "",
-  "requestedsize": "1080x810"
+  "requestedsize": "1080x810",
+  "printable": true
 }
