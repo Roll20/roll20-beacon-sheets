@@ -2,6 +2,7 @@ import type { InitArgs } from "@roll20-official/beacon-sdk";
 import { initValues, beaconPulse, dispatchRef } from "../relay";
 import type { Dispatch } from "@roll20-official/beacon-sdk";
 import { lightDarkMode } from "@/utility/darkMode";
+import { applyCompendiumDrop } from "@/utility/compendiumDrop";
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.
 export const onInit = ({
   character,
@@ -13,6 +14,7 @@ export const onInit = ({
   initValues.settings = settings;
   initValues.compendiumDrop = compendiumDropData ? compendiumDropData : null;
   lightDarkMode(initValues.settings.colorTheme);
+  console.log("onInit -> Example Sheet Relay", character);
 };
 
 // onChange is called when the character data is updated. This is where you will update the sheet with the new data.
@@ -38,32 +40,10 @@ export const onDragOver = (e: any) => {
   // console.log(e);
 };
 export const onDropOver = async (e: any) => {
-  const sampleData = {
-    type: "dropOver",
-    coordinates: {
-      left: 567.40625,
-      top: 340.40625,
-    },
-    dropData: {
-      pageName: "Criminal",
-      categoryName: "Backgrounds",
-      expansionId: 33335,
-    },
-  };
-  const dispatch = dispatchRef.value as Dispatch; // Need a different Relay instance when handling sheet-actions
-
-  // const dp = dispatch.compendiumRequest({ query: 'DD 5th Edition SRD'}) ;Promise<{
-  //   data: Object
-  //   errors: Array<Error>
-  //   extensions: Record<string, any>
-  // }>
-  // console.log(dp)
+  const dispatch = dispatchRef.value as Dispatch;
   dispatch
     .compendiumRequest({
-      query:
-        `pages(name: "` +
-        e.dropData.pageName +
-        `") {
+      query: `pages(name: "${e.dropData.pageName}") {
   name
   content
   properties
@@ -78,14 +58,16 @@ export const onDropOver = async (e: any) => {
   }
 }`,
     })
-    .then((response) => {
-      // if (response.success) {
-      // console.log(response);
-      // console.log("Compendium Entry Found:", response.data);
-      // Handle the data (e.g., update character sheet or display information)
-      // } else {
-      //     console.error("Compendium request failed", response.error);
-      // }
+    .then(async (response: any) => {
+      if (response?.errors?.length) {
+        console.error("Compendium request returned errors:", response.errors);
+        return;
+      }
+      console.log("Compendium Entry Found:", response.data);
+      const result = await applyCompendiumDrop(response);
+      if (result.store === null) {
+        console.warn("Compendium drop not handled:", result.reason, response);
+      }
     })
     .catch((error) => {
       console.error("Compendium request error:", error);
