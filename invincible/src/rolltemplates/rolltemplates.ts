@@ -112,6 +112,7 @@ export type RollParameters = CommonParameters & {
   resultType?: 'crit-success' | 'crit-fail';
   totalSuccesses?: number;
   totalDamage?: number;
+  hidePushRoll?: boolean;
 };
 
 export type RollToChatTemplate = {

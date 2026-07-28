@@ -25,6 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { logger } from '@/utility/logger';
 import { total } from '@/system/sample/total';
 import { ruleSets } from '@/system';
+import { drag } from './handlers/drop';
 
 const relayConfig = {
   handlers: {
@@ -213,9 +214,7 @@ export const createRelay = async ({
 
     
     if (initValues.compendiumDrop && (initValues.compendiumDrop.categoryName === 'NPCs' || initValues.compendiumDrop.categoryName === 'Dramatis Personae')) {
-      import('@/relay/handlers/drop').then(({ drag }) => {
-        drag({ coordinates: { left: 0, top: 0 }, dropData: initValues.compendiumDrop! }, dispatch, true, initValues.character);
-      });
+      drag({ coordinates: { left: 0, top: 0 }, dropData: initValues.compendiumDrop! }, dispatch, true, initValues.character);
     }
 
     
