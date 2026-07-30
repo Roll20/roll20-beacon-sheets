@@ -99,6 +99,7 @@ export type CommonParameters = {
   heroColorSecondary?: string;
   heroColorBlood?: string;
   total?: number | string;
+  trackerValue?: number | string;
 };
 
 export type SendToChatTemplate = {
