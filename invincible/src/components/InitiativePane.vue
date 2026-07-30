@@ -86,7 +86,8 @@ const rollInitiative = async () => {
         characterName: sheet.meta.name,
         title: t('sheet.initiative'),
         rollTemplate: 'numberOnly',
-        total: rolledValue
+        total: rolledValue,
+        trackerValue: rolledValue
       }, dispatch);
     } catch (err) {
       console.error('[initiative] Failed to send initiative roll to chat:', err);
