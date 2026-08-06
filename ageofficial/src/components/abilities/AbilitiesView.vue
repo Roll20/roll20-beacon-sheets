@@ -131,7 +131,7 @@
   </Teleport>
 </template>
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useBioStore } from "@/sheet/stores/bio/bioStore";
 import { useAbilityScoreStore } from "@/sheet/stores/abilityScores/abilityScoresStore";
 import AbilitiesModal from "@/components/abilities/AbilitiesModal.vue";
@@ -142,7 +142,7 @@ import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
 import SidebarSection from "@/components/SidebarSection.vue";
 import { abilityMods } from "@/sheet/stores/modifiersCheck/abilities";
 import { abilities } from "./abilities";
-const { abilityScores, rollAbilityCheck } = useAbilityScoreStore();
+const { rollAbilityCheck } = useAbilityScoreStore();
 const abilitiesInfo = abilities;
 // const abilityScoresArray = ref(
 //   Object.entries(abilityScores).map(([label, abilityScore]) => ({ ...abilityScore, label })),
@@ -152,28 +152,24 @@ const showModal = ref(false);
 const showRerollModal = ref(false);
 const showAbilityCheckModal = ref(false);
 const selectedAbility = ref("");
-const abilityScoresArray = ref([]);
 const settings = useSettingsStore();
 const focus = useAbilityFocusesStore();
 const quality = useItemStore();
 const abilityMod = abilityMods;
-// Function to generate the abilityScoresArray
-function generateAbilityScoresArray() {
-  return Object.entries(useAbilityScoreStore().abilityScores).map(
+
+// Computed so external updates (e.g. legacy import) reflect immediately,
+// instead of a one-time snapshot refreshed only on modal close.
+const abilityScoresArray = computed(() =>
+  Object.entries(useAbilityScoreStore().abilityScores).map(
     ([label, abilityScore]) => ({
       ...abilityScore,
       label,
     })
-  );
-}
+  )
+);
 
-// Initialize the abilityScoresArray
-abilityScoresArray.value = generateAbilityScoresArray();
-
-// Function to handle modal close and refresh abilityScoresArray
 function closeModal() {
   showModal.value = false;
-  abilityScoresArray.value = generateAbilityScoresArray();
 }
 function closeCheckModal() {
   showAbilityCheckModal.value = false;
