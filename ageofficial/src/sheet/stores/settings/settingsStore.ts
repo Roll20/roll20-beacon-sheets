@@ -45,6 +45,7 @@ export type SettingsHydrate = {
     incomeMode: string;
     showAfterMastery?: boolean;
     theme?: string;
+    allowImport?: boolean;
   };
 };
 
@@ -85,6 +86,7 @@ export const useSettingsStore = defineStore("settings", () => {
   const incomeMode = ref("");
   const showAfterMastery = ref(false);
   const theme = ref("basic");
+  const allowImport = ref(false);
 
   const dehydrate = () => {
     return {
@@ -125,6 +127,7 @@ export const useSettingsStore = defineStore("settings", () => {
         incomeMode: incomeMode.value,
         showAfterMastery: showAfterMastery.value,
         theme: theme.value,
+        allowImport: allowImport.value,
       },
     };
   };
@@ -180,6 +183,7 @@ export const useSettingsStore = defineStore("settings", () => {
     showAfterMastery.value =
       hydrateStore.settings.showAfterMastery ?? showAfterMastery.value;
     theme.value = hydrateStore.settings.theme || theme.value;
+    allowImport.value = hydrateStore.settings.allowImport ?? allowImport.value;
   };
 
   return {
@@ -218,6 +222,7 @@ export const useSettingsStore = defineStore("settings", () => {
     optionalMovements,
     showAfterMastery,
     theme,
+    allowImport,
     incomeMode,
     dehydrate,
     hydrate,
