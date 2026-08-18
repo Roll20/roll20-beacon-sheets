@@ -85,6 +85,19 @@
                 <option value="gritty">Gritty</option>
               </select>
             </div>
+            <div class="mb-3 col age-import-toggle-cell">
+              <label class="age-checkbox-toggle age-checkbox-label">
+                <input
+                  id="settings-allow-import"
+                  type="checkbox"
+                  v-model="settings.allowImport"
+                />
+                <span class="slider round"></span>
+              </label>
+              <label class="age-toggle-label" for="settings-allow-import"
+                >Allow Import</label
+              >
+            </div>
           </div>
           <!-- // TODO Items unique to genre slices. Technofantasy, Cthulhu Awakens, Cyberpunk, etc. -->
           <div
@@ -494,6 +507,14 @@ const updateExpanseFaction = () => {
 
 <style lang="scss" scoped>
 @use "../common/scss/vars.scss";
+/* Toggle sits in the Game System row; align it to the row floor (level with the
+   bottom of the select boxes), toggle first then black label. */
+.age-import-toggle-cell {
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  gap: 8px;
+}
 .myButton {
   background-color: #595959;
   border-radius: 6px;
