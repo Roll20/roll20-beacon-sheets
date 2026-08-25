@@ -1,0 +1,452 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clockpunkstudios.com/cypher-contract/cypher-character.schema.json",
+  "title": "Cypher Character",
+  "description": "Canonical Cypher character document, schemaVersion 2. Contract between Cypher Tools (exporter), the Roll20 Beacon sheet (importer), and the compendium build (drag-drop payloads). v2 adopts the Cypher Tools (MCG) counter-proposal of 2026-08-24 — rationale per field cites section numbers of 2026-08-24-response-v2/cypher-tools-format-gap-audit.md; the acceptance decision record is handoff/2026-08-24-v2-acceptance.md. Conventions from v1 are preserved throughout: additionalProperties false everywhere, every field required, an absent value is an explicit \"\", [], or null rather than an omitted key. See docs/rules-verification.md for book-verified rule values.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "kind", "name", "sentence", "tier", "effort", "xp", "storyXp",
+    "resourcePoints", "rank", "advancement", "pools", "recovery", "wounds", "shield",
+    "armor", "armorModifiers", "cypherLimit", "genre", "subgenre",
+    "skills", "abilities", "attacks", "equipment", "cyphers", "artifacts",
+    "powerShifts", "currencies", "arcs",
+    "background", "notes", "portraitUrl"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "kind": { "const": "cypher-character" },
+    "name": { "type": "string", "minLength": 1 },
+
+    "sentence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["descriptor", "secondDescriptor", "type", "focus", "secondFocus", "species"],
+      "properties": {
+        "descriptor": { "type": "string" },
+        "secondDescriptor": {
+          "type": "string",
+          "description": "ADDED (§3.12). The book allows a character to take two descriptors (\"you instead gain the benefit of two descriptors\" — your own rules-verification.md). v1 could only hold one, forcing exporters to join them into a single string."
+        },
+        "type": {
+          "type": "string",
+          "description": "NOTE (§6.7), no shape change: in the real-world genre there are no book types at all — the player enters a free-text profession (\"Paramedic\", \"Investigative Journalist\") and it occupies this slot. An importer must not validate `type` against a known list."
+        },
+        "focus": { "type": "string" },
+        "secondFocus": {
+          "type": "string",
+          "description": "ADDED (§6.1). The superhero Living God type grants a Second Focus ability, and the character then has two. Without this field the two are joined into `focus` as \"Masters Weaponry and Explores\", which reads as one focus with an odd name. Rare — exactly one of our 55 types grants it — but the cost is one string and the failure without it is silent. \"\" when the character has one focus."
+        },
+        "species": { "type": "string", "description": "Cypher Tools tracks species first-class; see §6 question 1 re: reconciling the Bross fixture." }
+      }
+    },
+
+    "tier": { "type": "integer", "minimum": 1 },
+    "effort": { "type": "integer", "minimum": 1, "description": "No maximum (amended from the MCG draft's 6 at acceptance — handoff/2026-08-24-v2-acceptance.md §2): 6 is the cap via normal advancement, but abilities (e.g. Superheroics) can raise the Effort limit above it. Importers must not reject or clamp values above 6. Mirrors the unbounded `tier` precedent." },
+    "xp": { "type": "integer", "minimum": 0 },
+    "storyXp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "ADDED (§3.15). A second, separately-tracked XP pool. v1 had one `xp`, which forced the Foundry export to sum the two into a single number and lose the distinction. 0 when the game doesn't use it."
+    },
+    "resourcePoints": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "ADDED (§3.15). \"RP\" — a progression counter, deliberately NOT a currency. 0 when unused."
+    },
+    "rank": {
+      "anyOf": [{ "type": "integer", "minimum": 1, "maximum": 5 }, { "type": "null" }],
+      "description": "ADDED (§3.14). Superhero rank 1–5; gates which origin abilities a character may take. null outside the superhero genre."
+    },
+
+    "advancement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stats", "effort", "edge", "skill", "other"],
+      "description": "UNCHANGED. Maps 1:1 to Cypher Tools' five advancement slots. Note §4.10: tier 7+ characters currently export all-false because we stop recording purchases past tier 6 — ours to fix, not a schema problem.",
+      "properties": {
+        "stats": { "type": "boolean" },
+        "effort": { "type": "boolean" },
+        "edge": { "type": "boolean" },
+        "skill": { "type": "boolean" },
+        "other": { "type": "boolean" }
+      }
+    },
+
+    "pools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["might", "speed", "intellect"],
+      "properties": {
+        "might": { "$ref": "#/$defs/pool" },
+        "speed": { "$ref": "#/$defs/pool" },
+        "intellect": { "$ref": "#/$defs/pool" }
+      }
+    },
+
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bonus", "slots"],
+      "description": "CHANGED (§2.4) — this is our highest-priority ask, and the one place v1 is narrower than the book rather than narrower than our model.",
+      "properties": {
+        "bonus": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "UNCHANGED. Points added to the 1d6 recovery roll; defaults to tier."
+        },
+        "slots": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/recoverySlot" },
+          "description": "REPLACES v1's `used` object of exactly four booleans. Order is significant — position determines rest duration, and the book's \"+2 if the one-action recovery is taken as your last action\" depends on it. A default character has exactly four slots in the order action, tenMinutes, oneHour, tenHours, which is v1's shape expressed as an array. Why the change: (a) five separate abilities grant EXTRA one-action recoveries — Healing (one per shift, unbounded), Untamed Recovery, Mind Surge, Machine Not Flesh — so a character with two Healing shifts has six slots and v1 can carry four; (b) Push on Through REPLACES the ten-minute recovery with a second one-action recovery, so for those characters v1's `used.tenMinutes` silently mislabels a one-action slot. Both are expressible here without special cases."
+        }
+      }
+    },
+
+    "wounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minor", "moderate", "major"],
+      "properties": {
+        "minor": { "$ref": "#/$defs/woundTier" },
+        "moderate": { "$ref": "#/$defs/woundTier" },
+        "major": { "$ref": "#/$defs/woundTier" }
+      }
+    },
+
+    "shield": {
+      "anyOf": [{ "$ref": "#/$defs/shield" }, { "type": "null" }],
+      "description": "ADDED (§3.7). A shield tracks its own wounds — \"A shield can take three minor wounds, two moderate wounds, and one major wound\" (quoted in your own rules-verification.md, where it is noted as out of scope for v1). Maxima are per-character because abilities modify them (Shield Master raises moderate to 3). null when the character carries no shield."
+    },
+
+    "armor": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "RETAINED, but see §3.22 — we believe this field is inherited from the Foundry `cyphersystem` system (1e-shaped) rather than from the 2e book, and we will send 0 for essentially every character. Evidence: the official 2e form-fillable sheet has no numeric Armor field (only a free-text Armor_and_Modifiers box plus armor-proficiency checkboxes), our builder hardcodes 0, and no PC-facing ability in the Character Rulebook grants a numeric Armor bonus. Left in place rather than removed so any 1e-shaped consumer keeps working; `armorModifiers` below is where the real information lives. Worth deciding whether it survives to v3."
+    },
+    "armorModifiers": {
+      "type": "string",
+      "description": "ADDED (§3.22). The free-text armor box as it appears on the 2e sheet — the field that actually records a character's armor. \"\" when empty."
+    },
+
+    "cypherLimit": { "type": "integer", "minimum": 0 },
+
+    "genre": {
+      "type": "string",
+      "description": "ADDED (§3.13). e.g. \"fantasy\", \"scifi\", \"superhero\", \"real_world\". Drives cypher naming and equipment lists, and tells an importer which optional systems are in play. \"\" when unset."
+    },
+    "subgenre": {
+      "type": "string",
+      "description": "ADDED (§3.13). e.g. \"Dungeon Fantasy\". \"\" when unset."
+    },
+
+    "skills": { "type": "array", "items": { "$ref": "#/$defs/skill" } },
+    "abilities": { "type": "array", "items": { "$ref": "#/$defs/ability" } },
+    "attacks": { "type": "array", "items": { "$ref": "#/$defs/attack" } },
+    "equipment": { "type": "array", "items": { "$ref": "#/$defs/equipment" } },
+    "cyphers": { "type": "array", "items": { "$ref": "#/$defs/cypher" } },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "powerShifts": { "type": "array", "items": { "$ref": "#/$defs/powerShift" } },
+    "currencies": { "type": "array", "items": { "$ref": "#/$defs/currency" } },
+    "arcs": { "type": "array", "items": { "$ref": "#/$defs/arc" } },
+
+    "background": { "type": "string" },
+    "notes": { "type": "string" },
+    "portraitUrl": {
+      "type": "string",
+      "description": "ADDED (§3.20). A fetchable URL for the character's portrait, or \"\" when there is none. Cypher Tools already serves portrait URLs to unauthenticated clients via its share-link endpoint, so this is an established path rather than a new exposure. Consumers should treat it as optional and degrade gracefully — it is served by the application rather than a CDN."
+    }
+  },
+
+  "$defs": {
+    "pool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current", "max", "edge"],
+      "properties": {
+        "current": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 },
+        "edge": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "woundTier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current", "max"],
+      "properties": {
+        "current": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "shield": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minor", "moderate", "major"],
+      "description": "ADDED (§3.7). Book default 3 / 2 / 1; maxima are per-character because abilities modify them.",
+      "properties": {
+        "minor": { "$ref": "#/$defs/woundTier" },
+        "moderate": { "$ref": "#/$defs/woundTier" },
+        "major": { "$ref": "#/$defs/woundTier" }
+      }
+    },
+    "recoverySlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "used", "note"],
+      "description": "ADDED (§2.4). One box on the recovery track.",
+      "properties": {
+        "kind": {
+          "enum": ["action", "tenMinutes", "oneHour", "tenHours"],
+          "description": "The rest duration this slot requires. A character may have more than one slot of the same kind — that is exactly how extra one-action recoveries and Push on Through are represented."
+        },
+        "used": { "type": "boolean" },
+        "note": {
+          "type": "string",
+          "description": "Why this slot exists beyond the standard four, or any restriction on it — e.g. \"Healing power shift\", or \"Mind Surge: Intellect Pool only\". \"\" for the four standard slots."
+        }
+      }
+    },
+
+    "poolName": { "enum": ["might", "speed", "intellect"] },
+    "skillRating": { "enum": ["inability", "practiced", "trained", "specialized", "expert"] },
+    "weaponRange": {
+      "enum": ["immediate", "short", "long", "veryLong", "special"],
+      "description": "ADDED (§3.2)."
+    },
+
+    "skill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "rating", "pool", "asset", "isProficiency", "source", "description"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "rating": { "$ref": "#/$defs/skillRating" },
+        "pool": { "anyOf": [{ "$ref": "#/$defs/poolName" }, { "type": "null" }] },
+        "asset": {
+          "enum": [0, 1, 2],
+          "description": "ADDED (§3.5). Assets ease a task like training does but stack under different rules, so they cannot be folded into `rating`. v1 had no home for this and our Foundry export smuggles it into description text as \"Asset: x2.\". 0 when none."
+        },
+        "isProficiency": {
+          "type": "boolean",
+          "description": "ADDED (§3.6). True for type/focus-granted weapon and armor proficiencies (\"Freely Use All Weapons\", \"Freely Use Light And Medium Armor\"). These are NOT trainable via advancement and should not render with a rating badge. In bross-drikess.json they appear as ordinary \"practiced\" skills, so a v1 importer will offer to advance them."
+        },
+        "source": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+
+    "ability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "cost", "pools", "enabler", "activation", "source", "description"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "cost": {
+          "description": "UNCHANGED from v1. null = no cost. variable: true means the cost is set in play (points MUST be null, plus MUST be false).",
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["points", "plus", "variable"],
+              "properties": {
+                "points": { "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }] },
+                "plus": { "type": "boolean" },
+                "variable": { "type": "boolean" }
+              },
+              "oneOf": [
+                { "properties": { "variable": { "const": false }, "points": { "type": "integer" } } },
+                { "properties": { "variable": { "const": true }, "points": { "type": "null" }, "plus": { "const": false } } }
+              ]
+            },
+            { "type": "null" }
+          ]
+        },
+        "pools": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/poolName" },
+          "uniqueItems": true,
+          "maxItems": 3
+        },
+        "enabler": {
+          "type": "boolean",
+          "description": "UNCHANGED, and derivable from `activation` — kept so consumers that only need the binary distinction don't have to parse a string."
+        },
+        "activation": {
+          "type": "string",
+          "description": "ADDED (§3.1). The ability's activation as printed, verbatim. `enabler` answers \"is this an enabler\" but discards WHEN IN THE ROUND the ability fires, which is what a VTT sheet needs for initiative-order UI. Across our 663-row catalog: \"Enabler\" (344), \"Action\" (143), \"Action to initiate\" (54), \"Last action\" (31), \"First action\" (8), plus ~25 long-form variants — e.g. \"Action when in your normal form; enabler when using Beast Form\", \"Ten minutes to prepare a cypher as a spell; action to cast a cypher as a spell\", \"First action, action, or Last action\". Deliberately a string and not an enum: the long-form tail is irreducible. \"\" when the source gives none."
+        },
+        "source": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+
+    "attack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "pool", "weaponClass", "damage", "skillRating", "range", "modifier", "notes"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "pool": { "$ref": "#/$defs/poolName" },
+        "weaponClass": { "anyOf": [{ "enum": ["light", "medium", "heavy"] }, { "type": "null" }] },
+        "damage": { "type": "integer", "minimum": 0 },
+        "skillRating": { "$ref": "#/$defs/skillRating" },
+        "range": {
+          "anyOf": [{ "$ref": "#/$defs/weaponRange" }, { "type": "null" }],
+          "description": "ADDED (§3.2). Note our EXISTING Foundry export already carries this as system.basic.range, so v1 is a regression against what Roll20 users get today by importing the Foundry file. null when unspecified (treat as immediate)."
+        },
+        "modifier": {
+          "anyOf": [{ "$ref": "#/$defs/attackModifier" }, { "type": "null" }],
+          "description": "ADDED (§3.3). A standing ease/hinder on this attack. Also already in the Foundry export as system.basic.steps + modifier. null when the attack is unmodified."
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "attackModifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps", "direction"],
+      "properties": {
+        "steps": { "type": "integer", "minimum": 1 },
+        "direction": { "enum": ["eased", "hindered"] }
+      }
+    },
+
+    "equipment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "level", "quantity", "notes"],
+      "description": "UNCHANGED. Note (§2.3) that Cypher Tools stores equipment as free text, one item per line, so we will send level: null — the level 1 / quantity 1 values in bross-drikess.json are an artifact of our Foundry renderer, not character data.",
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "level": { "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }] },
+        "quantity": { "type": "integer", "minimum": 0 },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "cypher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "displayName", "level", "cypherKind", "power", "activated", "description"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "displayName": {
+          "type": "string",
+          "description": "ADDED (§3.10). Genre-specific alias, when it differs from the canonical name — the catalog renames some cyphers per genre. \"\" when the same as `name`."
+        },
+        "level": { "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }] },
+        "cypherKind": {
+          "anyOf": [{ "enum": ["cypher", "manifest"] }, { "type": "null" }],
+          "description": "ADDED (§3.10). Manifest cyphers are worn or wielded rather than one-shot, so this is a behavioral difference and not a label — 98 of our 189 catalog cyphers are manifest. Named `cypherKind` rather than `kind` to avoid colliding with the drop payload's `kind`."
+        },
+        "power": {
+          "anyOf": [{ "enum": ["low", "medium", "high", "advanced", "ultra", "nonstandard"] }, { "type": "null" }],
+          "description": "ADDED (§3.10). Power tier. null is legitimate and common — 73 of our 189 catalog cyphers carry no power icon."
+        },
+        "activated": {
+          "type": "boolean",
+          "description": "ADDED (§3.10). Whether the cypher is currently in use."
+        },
+        "description": { "type": "string" }
+      }
+    },
+
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "level", "depletion", "form", "description"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "level": {
+          "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }],
+          "description": "UNCHANGED and correct as-is: an artifact on a character has a rolled integer level. The book's roll formula (\"1d6 + 3\") stays a catalog concern on the exporter's side."
+        },
+        "depletion": {
+          "description": "CHANGED (§2.1). One addition: the \"automatic\" sentinel, for artifacts that deplete on use. This is NOT the same as null — null means an artifact never depletes, and conflating the two is a correctness bug rather than a lost detail. Also stating explicitly what v1 left ambiguous: `chance` means depletion occurs on a roll of 1 through `chance`, which is what makes the book's ranged forms (\"1-3 in 1d6\") representable. Note the book writes d100 as \"1d00\"; `die` keeps the \"1d100\" spelling and exporters map it. Two further kinds of depletion text — the \"(check each ...)\" trigger clause (25 of the book's 72 artifacts) and the \"upon depletion, ...\" consequence (19) — are deliberately NOT structured here; Cypher Tools does not model artifacts yet, so we would rather see how they are used before fixing a shape, and they can live in `description` meanwhile. Flagged in §2.1 so the loss is a known decision rather than an oversight.",
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["chance", "die"],
+              "properties": {
+                "chance": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Depletion occurs on a roll of 1 through `chance` — this reading makes the book's ranged forms (\"1-3 in 1d6\", 5 rows) representable. v1 left it ambiguous; stating it explicitly here."
+                },
+                "die": { "enum": ["1d6", "1d10", "1d20", "1d100"] }
+              }
+            },
+            { "const": "automatic" },
+            { "type": "null" }
+          ]
+        },
+        "form": {
+          "type": "string",
+          "description": "ADDED (§2.1). Populated on every one of the book's 72 artifacts and often the most evocative text on the row (\"Beaded necklace set with closed eye symbol or jewel\"). \"\" when none."
+        },
+        "description": { "type": "string" }
+      }
+    },
+
+    "powerShift": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "shifts", "description"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "shifts": { "type": "integer", "minimum": 1 },
+        "description": { "type": "string" }
+      }
+    },
+    "currency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "amount"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "amount": { "type": "number", "minimum": 0 }
+      }
+    },
+    "arcStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "completed"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "completed": { "type": "boolean" }
+      }
+    },
+    "arc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "steps"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/arcStep" } }
+      }
+    },
+
+    "dropPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contractVersion", "kind", "item"],
+      "description": "contractVersion bumps in lockstep with schemaVersion, per your README.",
+      "properties": {
+        "contractVersion": { "const": 2 },
+        "kind": { "enum": ["skill", "ability", "equipment", "cypher", "artifact", "arc"] },
+        "item": { "type": "object" }
+      },
+      "oneOf": [
+        { "properties": { "kind": { "const": "skill" }, "item": { "$ref": "#/$defs/skill" } } },
+        { "properties": { "kind": { "const": "ability" }, "item": { "$ref": "#/$defs/ability" } } },
+        { "properties": { "kind": { "const": "equipment" }, "item": { "$ref": "#/$defs/equipment" } } },
+        { "properties": { "kind": { "const": "cypher" }, "item": { "$ref": "#/$defs/cypher" } } },
+        { "properties": { "kind": { "const": "artifact" }, "item": { "$ref": "#/$defs/artifact" } } },
+        { "properties": { "kind": { "const": "arc" }, "item": { "$ref": "#/$defs/arc" } } }
+      ]
+    }
+  }
+}

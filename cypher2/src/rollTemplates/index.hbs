@@ -1,0 +1,52 @@
+{{#if statRoll}}
+<div class="cypher-roll">
+  <div class="cypher-roll__stat">{{statRoll.stat}}</div>
+  <div class="cypher-roll__die">{{statRoll.die}}</div>
+  <div class="cypher-roll__beats">Beats difficulty {{statRoll.beats}}</div>
+  {{#if statRoll.special}}
+  <div class="cypher-roll__special">{{statRoll.special.label}}</div>
+  {{/if}}
+</div>
+{{/if}}
+{{#if guidedRoll}}
+<div class="cypher-roll">
+  <div class="cypher-roll__stat">{{guidedRoll.stat}}</div>
+  {{#if guidedRoll.auto}}
+  <div class="cypher-roll__die cypher-roll__die--auto">Auto</div>
+  {{else}}
+  <div class="cypher-roll__die">{{guidedRoll.die}}</div>
+  {{/if}}
+  <div class="cypher-roll__verdict{{#if guidedRoll.tone}} cypher-roll__verdict--{{guidedRoll.tone}}{{/if}}">{{guidedRoll.verdict}}</div>
+  <div class="cypher-roll__detail">{{guidedRoll.eases}}</div>
+  <div class="cypher-roll__detail">{{guidedRoll.spend}}</div>
+  {{#if guidedRoll.special}}
+  <div class="cypher-roll__special">{{guidedRoll.special.label}}</div>
+  {{/if}}
+</div>
+{{/if}}
+{{#if recoveryRoll}}
+<div class="cypher-roll">
+  <div class="cypher-roll__stat">{{recoveryRoll.title}}</div>
+  <div class="cypher-roll__die">{{recoveryRoll.total}}</div>
+  <div class="cypher-roll__detail">{{recoveryRoll.breakdown}}</div>
+  <div class="cypher-roll__wounds">
+    <div><b>10 min:</b> Remove <em>all</em> minor wounds</div>
+    <div><b>1 hr:</b> Remove one moderate wound or <em>all</em> minor wounds</div>
+    <div><b>10 hrs:</b> Remove <em>all</em> moderate wounds and, with a successful difficulty 6 Might task, remove one major wound; in place of removing one moderate wound, you can remove all minor wounds</div>
+  </div>
+</div>
+{{/if}}
+{{#if itemCard}}
+<div class="cypher-item">
+  <div class="cypher-item__title">{{itemCard.title}}</div>
+  {{#if itemCard.fields}}
+  <div class="cypher-item__fields">{{itemCard.fields}}</div>
+  {{/if}}
+  {{#if itemCard.source}}
+  <div class="cypher-item__source">{{itemCard.source}}</div>
+  {{/if}}
+  {{#if itemCard.prose}}
+  <div class="cypher-item__prose">{{itemCard.prose}}</div>
+  {{/if}}
+</div>
+{{/if}}
