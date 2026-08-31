@@ -134,21 +134,29 @@ const meta = useMetaStore();
 const bio = useBioStore();
 const char = useCharacterStore();
 const showModal = ref(false);
-const originFactionImg = computed(() => {
-  switch (char.originFaction) {
-    case "earth":
-      return "src/assets/factions/earther.png";
-    case "mars":
-      return "src/assets/factions/martian.png";
-    case "belters":
-      return "src/assets/factions/belter-black.png";
-    case "transportUnion":
-      return "src/assets/factions/transportUnion.png";
-    case "outers":
-      return "";
-  }
-  return "";
+// Resolve faction icons through Vite so they work in the built/hosted sheet.
+// A raw "src/assets/factions/x.png" path only resolves under the dev server;
+// import.meta.glob emits the bundled, base-prefixed URL for each file.
+const factionIconUrls = import.meta.glob("../../assets/factions/*.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
 });
+const factionIconMap = Object.fromEntries(
+  Object.entries(factionIconUrls).map(([path, url]) => [
+    path.split("/").pop(),
+    url,
+  ])
+);
+const FACTION_ICON_FILES = {
+  earth: "earther.png",
+  mars: "martian.png",
+  belters: "belter-black.png",
+  transportUnion: "transportUnion.png",
+};
+const originFactionImg = computed(
+  () => factionIconMap[FACTION_ICON_FILES[char.originFaction]] || ""
+);
 const originFactionLabel = computed(() => {
   switch (char.originFaction) {
     case "earth":

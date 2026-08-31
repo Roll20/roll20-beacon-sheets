@@ -393,7 +393,44 @@ export const legacyInventory = (inventory: Array<Record<string, any>>) => {
  * Legacy attacks imply possession of the weapon (a "Longsword" attack means the
  * character owns a longsword), so each `attack-list` row becomes an inventory
  * weapon. A `range` marks it ranged.
+ *
+ * The legacy `attack-list` row carries no weapon group, so infer one from the
+ * weapon name. This is a best-effort keyword match against the Fantasy AGE /
+ * Blue Rose weapon groups (the systems the legacy Roll20 AGE sheet covers);
+ * unmatched names are left blank so the group is chosen manually. Order is
+ * specific-before-generic (e.g. "shortsword" -> Light Blades before the generic
+ * "sword" -> Heavy Blades).
  */
+const WEAPON_GROUP_KEYWORDS: Array<{ group: string; match: RegExp }> = [
+  { group: "Bows", match: /crossbow|longbow|shortbow|\bbow\b/i },
+  { group: "Black Powder", match: /musket|arquebus|blunderbuss|matchlock|flintlock|pistol/i },
+  { group: "Slings", match: /\bsling/i },
+  { group: "Lances", match: /lance/i },
+  { group: "Spears", match: /spear|javelin|trident|harpoon/i },
+  { group: "Polearms", match: /halberd|glaive|poleaxe|pole ?arm|\bpike\b|guisarme|bardiche|naginata/i },
+  { group: "Staves", match: /quarterstaff|staff|staves|\bstave\b|\brod\b/i },
+  { group: "Axes", match: /axe|hatchet|tomahawk/i },
+  { group: "Bludgeons", match: /warhammer|morning ?star|mace|\bclub\b|hammer|\bmaul\b|flail|cudgel|bludgeon/i },
+  { group: "Dueling", match: /rapier|\bepee\b|sabre|saber|\bfoil\b/i },
+  { group: "Light Blades", match: /dagger|knife|dirk|stiletto|shortsword|short sword|\bkris\b|\bshiv\b/i },
+  { group: "Heavy Blades", match: /greatsword|great sword|longsword|long sword|broadsword|bastard sword|claymore|scimitar|falchion|katana|sword|blade/i },
+  { group: "Brawling", match: /unarmed|\bfist|punch|brawl|gauntlet|\bkick/i },
+];
+const RANGED_GROUPS = new Set(["Bows", "Black Powder", "Slings"]);
+const ACCURACY_GROUPS = new Set(["Black Powder", "Bows", "Brawling", "Dueling", "Light Blades", "Slings", "Staves"]);
+const FIGHTING_GROUPS = new Set(["Axes", "Bludgeons", "Heavy Blades", "Lances", "Polearms", "Spears"]);
+const inferWeaponGroup = (name: string): string => {
+  if (!name) return "";
+  const found = WEAPON_GROUP_KEYWORDS.find((w) => w.match.test(name));
+  return found ? found.group : "";
+};
+/* Group -> ability, matching AttackModal's setWeaponGroupAbility(). */
+const weaponGroupAbilityFor = (group: string): string => {
+  if (ACCURACY_GROUPS.has(group)) return "Accuracy";
+  if (FIGHTING_GROUPS.has(group)) return "Fighting";
+  return "";
+};
+
 /* Range may be "26", "16 yards", or "4 / 6" (short / long). */
 const parseRange = (raw: any): { shortRange: number | null; longRange: number | null } => {
   const nums = raw ? String(raw).match(/\d+/g) : null;
@@ -407,12 +444,20 @@ const parseRange = (raw: any): { shortRange: number | null; longRange: number | 
 export const legacyAttackWeapons = (attacks: Array<Record<string, any>>) => {
   if (!attacks?.length) return;
   const inventory = useInventoryStore();
+  // Group inference targets the Fantasy AGE / Blue Rose weapon groups; skip it
+  // for other systems (Modern AGE, Expanse) whose groups these names don't map.
+  const gameSystem = useSettingsStore().gameSystem;
+  const inferGroups =
+    gameSystem === "fage1e" || gameSystem === "fage2e" || gameSystem === "blue rose";
   attacks.forEach((atk) => {
     if (!atk["attack-name"]) return;
+    const weaponGroup = inferGroups ? inferWeaponGroup(atk["attack-name"]) : "";
     const { shortRange, longRange } = parseRange(atk.range);
     // Legacy rows use placeholder ranges like "0" or "-" for melee weapons;
     // both are truthy strings, so classify from the parsed short range instead.
-    const ranged = shortRange != null && shortRange > 0;
+    // An inferred ranged group (e.g. a bow with no recorded range) also counts.
+    const ranged =
+      (shortRange != null && shortRange > 0) || RANGED_GROUPS.has(weaponGroup);
     inventory.addItem({
       name: atk["attack-name"],
       description: "",
@@ -420,7 +465,8 @@ export const legacyAttackWeapons = (attacks: Array<Record<string, any>>) => {
       quantity: 1,
       damage: atk["attack-damage"] || "",
       weaponType: ranged ? "Ranged" : "Melee",
-      weaponGroupAbility: "",
+      weaponGroup,
+      weaponGroupAbility: weaponGroupAbilityFor(weaponGroup),
       shortRange,
       longRange,
       reload: atk.reload || "",

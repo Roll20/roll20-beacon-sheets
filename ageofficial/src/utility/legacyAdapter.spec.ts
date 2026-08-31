@@ -160,6 +160,12 @@ describe("importLegacyCharacter (flat legacy format)", () => {
     expect(weapons.map((w) => w.name)).toEqual(
       expect.arrayContaining(["Battle Axe1", "Rage Battle Axe 1"])
     );
+    // Weapon group inferred from the name (legacy rows carry no group), with
+    // its paired ability.
+    const battleAxe = weapons.find((w) => w.name === "Battle Axe1") as any;
+    expect(battleAxe?.weaponGroup).toBe("Axes");
+    expect(battleAxe?.weaponGroupAbility).toBe("Fighting");
+    expect(battleAxe?.weaponType).toBe("Melee");
 
     // Money (GP/CP correctly mapped).
     expect(inventory.cash.gold).toBe(6);
@@ -195,10 +201,14 @@ describe("importLegacyCharacter (flat legacy format)", () => {
     // Reversed money row: amount "G" is the code, name "10" is the number.
     expect(inventory.cash.gold).toBe(10);
 
-    // Ranged attack → weapon with parsed range.
+    // Ranged attack → weapon with parsed range; group inferred as Bows, ranged
+    // with the Accuracy ability.
     const crossbow = inventory.items.find((i) => i.name === "Crossbow") as any;
     expect(crossbow?.type).toBe("weapon");
     expect(crossbow?.shortRange).toBe(30);
+    expect(crossbow?.weaponGroup).toBe("Bows");
+    expect(crossbow?.weaponType).toBe("Ranged");
+    expect(crossbow?.weaponGroupAbility).toBe("Accuracy");
   });
 
   it("overwrite clears the previous character first", () => {
