@@ -1,0 +1,1130 @@
+/* Cypher sheet base styles. Every color/spacing decision is a custom property
+   so genre themes (spec ④) can restyle without layout changes. */
+@import 'tailwindcss';
+/* Fonts + wordmark, inlined as data: URIs. GENERATED — see scripts/build-embedded-css.mjs
+   and the ddd-brb note there for why nothing may be referenced by URL. */
+@import './embedded.css';
+/* Docs mention class names as prose; don't let the scanner turn them into utilities. */
+@source not "../../README.md";
+@source not "../../docs";
+
+/* ===========================================================================
+   TOKENS. A skin is variable redefinition and NOTHING else — there is not one
+   selector below :root/[data-theme] in this file that names a theme (enforced by
+   src/assets/__tests__/tokens.test.js).
+
+   Three families: --cy-* colour, --cy-geo-* geometry, --cy-font-* type.
+   Every colour was SAMPLED from MCG's source art in Cypher/ — render, crop the
+   region, take the modal colour — except where a measured contrast failure forced
+   a documented deviation. See spec sections 3.3/3.4.
+   =========================================================================== */
+
+/* -- BASE -- "Cypher 2-Character Sheets default.pdf" p1. ------------------- */
+:root,
+[data-theme='base'] {
+  --cy-bg: #f4e7e1;
+  --cy-surface: #ffefe8;
+  --cy-field: #ffffff;
+  --cy-ink: #32312f;
+  --cy-muted: #6d5d58;
+  --cy-accent: #732928;
+  --cy-accent-contrast: #ffffff;
+  --cy-accent-soft: #ddb7ab;
+  --cy-band: #ffddc2;
+  --cy-warn: #a12727;
+  /* DEVIATION (spec amendment 1): the sampled rule colour is the accent-soft
+     #ddb7ab, which measures 1.84:1 on the field and 1.64:1 on the surface — under
+     the 3:1 UI-boundary floor, which would put EVERY border in this skin below the
+     bar the spec sets. Darkened along the same hue: 3.60:1 / 3.22:1. */
+  --cy-border: #b07a68;
+  --cy-overlay: rgb(50 41 40 / 0.55);
+  /* Stacking. One layer for every dialog — the roller and the shell-hosted modals
+     share it (ddd-6hx); nothing else on the sheet positions above the sticky chrome. */
+  --cy-z-modal: 20;
+
+  --cy-geo-corner: 4px;
+  --cy-geo-panel-clip: none;
+  --cy-geo-panel-shadow: none;
+  --cy-geo-pip: 50%;             /* border-radius; circle */
+  --cy-geo-pip-clip: none;
+  --cy-geo-rule: 1px;
+  --cy-geo-banner-clip: none;
+  --cy-geo-banner-radius: 0 8px 8px 0;
+  --cy-geo-banner-tracking: 0.06em;
+  /* Chips are ~0.62rem in FONT SIZE, rendering ~0.95rem tall; a banner-scale 9px
+     cut takes about half of that and reads as a printing error rather than a
+     shape. Separate tokens, deliberately — do not collapse these back together. */
+  --cy-geo-chip-clip: none;
+  --cy-geo-chip-radius: 3px;
+
+  --cy-font-body: 'Fira Sans', 'Segoe UI', system-ui, sans-serif;
+  --cy-font-cond: 'Fira Sans Condensed', 'Fira Sans', system-ui, sans-serif;
+  /* 700, not the mockup's 600: only 400 and 700 are embedded, and a synthesised
+     600 is a fake weight (spec section 10). */
+  --cy-font-weight-banner: 700;
+
+  /* Spacing is shared by every skin, deliberately not themed. */
+  --cy-gap: 0.6rem;
+  --cy-pad: 0.5rem;
+}
+
+/* -- FANTASY -- "Cypher 2 Fantasy.png".
+   DEVIATION (spec 3.3): the printed sheet banners in ochre, which is 3.65:1 on
+   white — under AA both as text and as a fill carrying white text. Banner fill is
+   the deep brown sampled from the same sheet (10.00:1 on parchment) and ochre
+   demotes to accent-soft: rules, borders and large display only. This skin does
+   not colour-match its source, by design. ------------------------------------ */
+[data-theme='fantasy'] {
+  --cy-bg: #e8cba4;
+  --cy-surface: #fdf1e3;
+  --cy-field: #fffdf8;
+  --cy-ink: #2b1c0c;
+  --cy-muted: #6f5636;
+  --cy-accent: #59320c;
+  --cy-accent-contrast: #fdf1e3;
+  --cy-accent-soft: #c7701a;     /* never carries small text */
+  --cy-band: #f3c48b;
+  --cy-warn: #8f2d12;
+  --cy-border: #c7701a;          /* 3.59 on field / 3.28 on surface — passes as-is */
+  --cy-overlay: rgb(43 28 12 / 0.6);
+
+  /* hand-cut edges: asymmetric radii, zero raster art */
+  --cy-geo-corner: 10px 3px 9px 4px;
+  --cy-geo-panel-clip: none;
+  --cy-geo-panel-shadow: 0 1px 0 0 rgb(199 112 26 / 0.55);
+  --cy-geo-pip: 0;
+  --cy-geo-pip-clip: polygon(
+    30% 0%, 70% 0%, 100% 30%, 100% 70%,
+    70% 100%, 30% 100%, 0% 70%, 0% 30%
+  );                             /* octagon */
+  --cy-geo-rule: 2px;
+  --cy-geo-banner-clip: none;
+  --cy-geo-banner-radius: 3px 10px 3px 10px;
+  --cy-geo-banner-tracking: 0.12em;
+  --cy-geo-chip-clip: none;
+  --cy-geo-chip-radius: 2px 7px 2px 7px;
+}
+
+/* -- SCI-FI -- "Cypher 2 SF.png". Cyan is a rule/glow colour ONLY, never text.
+   PANEL CHAMFER DROPPED (spec amendment 3): clip-path deletes the border along the
+   cut AND removes box-shadow entirely, so a chamfered panel cannot carry this
+   skin's own "1px + cyan ring". The chamfer now lives on banners, chips, pips and
+   buttons — shapes with no border to lose — and panels keep a real border plus the
+   ring. --cy-geo-corner rises from 0 to 4px since it is no longer clipped instead.
+   Measured by render; the approved mockup has the same defect. ---------------- */
+[data-theme='scifi'] {
+  --cy-bg: #cbe4f4;
+  --cy-surface: #eaf6fb;
+  --cy-field: #ffffff;
+  --cy-ink: #0d1b2e;
+  --cy-muted: #4a6076;
+  --cy-accent: #1d4b96;
+  --cy-accent-contrast: #ffffff;
+  --cy-accent-soft: #62bff4;     /* never text */
+  --cy-band: #cfe8f5;
+  --cy-warn: #a3162e;
+  --cy-border: #4370b0;          /* 5.02 on field / 4.56 on surface */
+  --cy-overlay: rgb(13 27 46 / 0.6);
+
+  --cy-geo-corner: 4px;
+  --cy-geo-panel-clip: none;
+  --cy-geo-panel-shadow: 0 0 0 1px rgb(98 191 244 / 0.55);   /* the cyan ring */
+  --cy-geo-pip: 0;
+  /* Corner-cut square, NOT a shear. A sheared pip reads as torn rather than
+     engineered, and at 1rem loses too much fill to scan filled-vs-empty. */
+  --cy-geo-pip-clip: polygon(28% 0, 100% 0, 100% 72%, 72% 100%, 0 100%, 0 28%);
+  --cy-geo-rule: 1px;
+  --cy-geo-banner-clip: polygon(0 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+  --cy-geo-banner-radius: 0;
+  --cy-geo-banner-tracking: 0.16em;
+  --cy-geo-chip-clip: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  --cy-geo-chip-radius: 0;
+}
+
+/* Tailwind namespace bridge. `inline` makes utilities emit var(--cy-*) directly,
+   so a [data-theme] subtree redefining --cy-* re-skins every utility (spec ④).
+   Components use ONLY these semantic utilities — never the default palette. */
+@theme inline {
+  --color-bg: var(--cy-bg);
+  --color-surface: var(--cy-surface);
+  --color-field: var(--cy-field);
+  --color-band: var(--cy-band);
+  --color-ink: var(--cy-ink);
+  --color-muted: var(--cy-muted);
+  --color-accent: var(--cy-accent);
+  --color-accent-contrast: var(--cy-accent-contrast);
+  --color-warn: var(--cy-warn);
+  --color-border: var(--cy-border);
+  --color-overlay: var(--cy-overlay);
+  --font-sheet: var(--cy-font-body);
+  --font-cond: var(--cy-font-cond);
+  --radius-sheet: var(--cy-geo-corner);
+  --spacing-sheet: var(--cy-gap);
+}
+/* --cy-accent-soft is deliberately NOT bridged: it must never be reachable as a
+   text-colour utility (spec 3.3 — it never carries small text). The only places it
+   fills a background are BEM rules in this file. */
+
+/* Preflight reconciliation: the sheet leaves these element families native-styled;
+   v4 preflight zeroes their UA chrome (margin/padding/border/font). `revert` rolls
+   back to UA defaults. Lives in @layer components so it BEATS preflight (base) but
+   LOSES to utilities — a migrated component's utility classes must win — while
+   un-layered BEM rules continue to out-rank all of it. */
+@layer components {
+  html { line-height: revert; }
+  input, select, textarea, button {
+    margin: revert; padding: revert; border: revert; border-radius: revert;
+    background-color: revert; color: revert; font: revert;
+  }
+  ::file-selector-button {
+    margin: revert; padding: revert; border: revert; border-radius: revert;
+    background-color: revert; color: revert; font: revert; appearance: revert;
+  }
+  ::placeholder { color: revert; opacity: revert; }
+  p { margin: revert; }
+  h3 { margin: revert; font-size: revert; font-weight: revert; }
+}
+
+/* ===========================================================================
+   PRIMITIVES — theme-blind. Every value resolves to a token.
+   Un-layered on purpose: these are the sheet's base look and must out-rank the
+   preflight-reconciliation block in @layer components, which reverts UA chrome on
+   inputs and buttons. (Verified in a real build, not assumed.)
+   =========================================================================== */
+.panel {
+  background: var(--cy-surface);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  clip-path: var(--cy-geo-panel-clip);
+  box-shadow: var(--cy-geo-panel-shadow);
+  padding: var(--cy-pad);
+  min-width: 0;
+}
+
+/* A section label as the printed sheet draws it: an accent-filled tab of condensed
+   caps. In stack mode these are the ONLY navigation the sheet has, so every one of
+   the seven segment panels (and the pinned rail's own panels) must carry one — do
+   not demote them to plain headings. */
+.banner {
+  display: inline-block;
+  width: fit-content;
+  margin: 0 0 0.4rem 0;
+  padding: 0.3rem 0.85rem 0.3rem 0.55rem;
+  background: var(--cy-accent);
+  color: var(--cy-accent-contrast);
+  font-family: var(--cy-font-cond);
+  font-size: 0.7rem;
+  font-weight: var(--cy-font-weight-banner);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--cy-geo-banner-tracking);
+  border-radius: var(--cy-geo-banner-radius);
+  clip-path: var(--cy-geo-banner-clip);
+}
+.banner--warn { background: var(--cy-warn); }
+
+.field {
+  width: 100%;
+  min-width: 0;
+  padding: 0.25rem 0.4rem;
+  background: var(--cy-field);
+  color: var(--cy-ink);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  font: inherit;
+}
+/* The preflight-reconciliation block sets `::placeholder { color: revert }`, which
+   styles the pseudo-element DIRECTLY — so .field's own `color` never reaches it.
+   Needs its own un-layered rule or placeholders stay UA grey in every skin.
+
+   ddd-2g8 walkthrough: plain --cy-muted read as imported data ("Species
+   (optional)" vs a real species). Italic makes the distinction CATEGORICAL, and
+   the colour mixes muted 45% into the field so every skin derives its own
+   lighter grey — a hardcoded grey would only suit one skin. NOT opacity: that
+   also fades the italic's weight and composites over whatever sits behind. */
+.field::placeholder {
+  color: color-mix(in srgb, var(--cy-muted) 45%, var(--cy-field));
+  font-style: italic;
+  opacity: 1;
+}
+/* Inset, because a clipped element (chips, pips) discards an outside outline. */
+.field:focus-visible { outline: 2px solid var(--cy-accent); outline-offset: -2px; }
+
+/* The button-side counterpart of .field. The preflight-reconciliation block above
+   REVERTS UA chrome onto `button`, so a button renders bare unless some rule skins
+   it back — and making that opt-in per component is how seven buttons across
+   ImportExportPanel and ArcSteps reached the sandbox unstyled (ddd-001 walkthrough,
+   skins item 9). skin-coverage.test.js now requires every button in a panel or the
+   modal to carry this class or have its own deliberate rule.
+
+   `color` is set explicitly where .roller__buttons button leaves it reverted: a
+   shared primitive cannot assume the UA default reads correctly against every skin's
+   --cy-surface. The 1.5rem floors are WCAG 2.2 SC 2.5.8, the same minimum this bead
+   put on .header__settings and .item-list__add; `min-*` only raises the floor, so the
+   padding below still sets the resting size of the worded buttons. */
+.btn {
+  padding: 0.3rem 0.7rem;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  background: var(--cy-surface);
+  color: var(--cy-ink);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  font: inherit;
+  cursor: pointer;
+}
+.btn:focus-visible { outline: 2px solid var(--cy-accent); outline-offset: -2px; }
+/* Destructive variant. Same two properties the armed row delete repaints
+   (.item-list__delete--armed), so "this cannot be undone" reads the same way
+   everywhere. Single class after .btn: wins on source order, inherits the rest. */
+.btn--warn { color: var(--cy-warn); border-color: var(--cy-warn); }
+
+.microlabel {
+  font-family: var(--cy-font-cond);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cy-muted);
+}
+
+.cypher-sheet {
+  /* Reflow on the SHEET's own width, not the viewport's — a Roll20 side panel
+     resizes independently of the window (same finding as the DDD sheet). Size
+     queries evaluate against the CONTENT box, so this padding subtracts: a 280px
+     panel queries at 280 - 2*9.6 = 260.8px = 16.3rem, a 480px panel at 28.8rem.
+
+     RollerModal (position:fixed) stays inside this element. container-type applies
+     style + size containment and an independent formatting context, NOT layout
+     containment, so it does not become a containing block for fixed descendants
+     (CSS Conditional 5; verified in Chromium and by WPT
+     no-layout-containment-fixedpos). An earlier draft claimed otherwise. */
+  container: sheet / inline-size;
+  font-family: var(--cy-font-body);
+  /* The mockup's type scale. `rem` sizes are root-relative and do NOT shift with
+     this — but `em`, `font: inherit` controls and every unitless line-height do, and
+     without it the sheet reads a size larger than the approved mockup throughout. */
+  font-size: 0.875rem;
+  color: var(--cy-ink);
+  background: var(--cy-bg);
+  padding: var(--cy-gap);
+  display: grid;
+  gap: var(--cy-gap);
+  min-width: 0;
+}
+
+/* --- Play strip ---
+   ⚠️ min-width:0 on every direct grid item of .cypher-sheet is LOAD-BEARING (the
+   ddd-2bv class: grid min-content propagation). A grid item defaults to
+   min-width:auto, so it cannot shrink below its own min-content — and because all
+   three items share one column, the WIDEST min-content wins for all of them. In
+   stack mode the pinned rail and clusters hold every segment panel and every
+   width:100% control in them, so without this the play strip is dragged to 271px
+   inside a 260.8px content box and the whole sheet overflows at 280px. Measured,
+   not guessed: removing it reproduces exactly that. */
+.play-strip { display: grid; gap: var(--cy-gap); min-width: 0; }
+/* The pinned rail (spec ⑦ §4.1, amended by the owner 2026-08-23): the single
+   Damage & Recovery vitals panel (ddd-2g8 variant A — wounds/shield/recovery
+   columns). Visible at every width and behind no switch — the segmented controls
+   never hide any of it. The armor and cypher-limit scalars it used to hold are
+   gone (ddd-2g8): armorModifiers is edited in Gear, cypherLimit in Cyphers.
+
+   TWO elements carry this class. The rail is a TREATMENT, not one contiguous region:
+   Notes & Background gets the same always-visible treatment but sits LAST, after the
+   clusters, so the class rides both and source order alone puts each where it goes.
+   Nothing here may become position- or order-dependent (no :first-child, no nth-child)
+   without splitting the class first — the shared rule is the whole point. */
+.pinned-rail { display: grid; gap: var(--cy-gap); min-width: 0; }
+.clusters { display: grid; gap: var(--cy-gap); min-width: 0; }
+/* Same reason, one level down: in stack mode .cluster__panels becomes a grid and the
+   segment panels are its items, so each must be allowed below its min-content. */
+.cluster { display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.cluster__panels { min-width: 0; }
+.cluster__panel { min-width: 0; }
+
+/* --- Identity ---
+   The printed sheet stacks the character sentence one field per line, with a
+   microlabel above and the grammatical role below, joined by IS A / WHO bars. */
+.header { display: grid; gap: 0.15rem; }
+/* The wordmark rides beside the name field rather than owning a row of its own: at
+   11rem centred it cost ~88px of height to say something the sheet already says. `end`
+   sits its baseline on the input's, so the name row's margin-bottom moves up to this
+   wrapper — with align-items:end a margin on the flex item would push the mark down by
+   exactly that much. It hides below 27rem (see the stack block near the end of the file),
+   which also drops its role="img"/aria-label from the a11y tree there; deliberate, since
+   announcing a logo nobody can see is worse than staying quiet on a sheet that is
+   self-evidently a Cypher sheet. */
+.header__nameplate {
+  display: flex;
+  align-items: end;
+  gap: var(--cy-gap);
+  margin-bottom: 0.4rem;
+}
+.header__row--name { flex: 1 1 auto; margin-bottom: 0; }
+.header__settings {
+  flex: 0 0 auto;
+  align-self: end;
+  background: none;
+  color: var(--cy-accent);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  cursor: pointer;
+  /* WCAG 2.2 SC 2.5.8 (Target Size Minimum): the settings cog is the ONLY route to
+     settings and import/export below 27rem, where the segmented controls are hidden,
+     so its hit target must clear 24x24px. The preflight-reconciliation block above (`font: revert`
+     on `button`) restores Chromium's default control font (13.3333px Arial) here, not
+     the sheet's 0.875rem type — and this rule's own padding is fixed rem, not em, so it
+     doesn't scale with that font. Net result without a floor: ~24.4x21.8px, ~2.2px
+     short on height only (ddd-001 Task 7, browser-only — jsdom computes no layout and
+     never saw it). An explicit minimum is deterministic; `font: inherit` would only
+     trade one unmeasured type-scale dependency for another. `rem` is root-relative, so
+     1.5rem is exactly 24px regardless of .cypher-sheet's own font-size. */
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  display: inline-grid;
+  place-items: center;
+  padding: 0.15rem 0.45rem;
+}
+.header__mark {
+  display: block;
+  flex: none;
+  /* 2:1 native, so 5rem reads 80x40 — within a few px of the label+input stack beside it. */
+  width: 5rem;
+  aspect-ratio: 2 / 1;
+  margin: 0;
+  background-image: var(--cy-wordmark);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.header__sentence { display: grid; gap: 0.15rem; }
+/* Each group is a bar over its own fields. Single-column here, so the default is the
+   printed stack; the two @container blocks near the bottom of this file widen it. The
+   bar spans whatever columns its group has, which is the whole reason the groups exist
+   — it keeps the reflow to grid-template-columns and off :has()/nth-child. */
+.header__group { display: grid; gap: 0.15rem; min-width: 0; }
+.header__row { display: grid; gap: 0.15rem; margin-bottom: 0.4rem; min-width: 0; }
+.header__row-foot { display: flex; justify-content: space-between; gap: 0.5rem; }
+/* Joiner bars carry --cy-ink, NOT --cy-accent (spec amendment 2): accent-on-soft
+   measures 3.05:1 in fantasy and 4.11:1 in scifi, violating 3.3's own rule that
+   accent-soft never carries small text. Ink-on-soft is 7.08 / 4.52 / 8.47. Fantasy's
+   4.52:1 is the tightest pair on the sheet — do not lighten --cy-accent-soft or raise
+   this font-size without re-measuring. */
+.header__who {
+  display: block;
+  /* Spans its group's columns, so the bar stays full-width over the fields it joins no
+     matter how many columns the group has. In the single-column stack `1 / -1` is just
+     column 1 — which is why this needs no combinator and no @container override, and why
+     tokens.test.js's descendant-rule allowlist stays untouched. */
+  grid-column: 1 / -1;
+  margin: 0.35rem 0;
+  padding: 0.1rem 0;
+  background: var(--cy-accent-soft);
+  color: var(--cy-ink);
+  border-radius: var(--cy-geo-corner);
+  font-family: var(--cy-font-cond);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.header__name { font-size: 1.05rem; font-weight: 700; }
+.header__numbers { display: flex; flex-wrap: wrap; gap: var(--cy-gap); }
+/* A real wrap floor (ddd-5vb audit): eight labels now share this row, and with
+   `flex-basis: 0; min-width: 0` nothing ever wraps — just above the 27rem
+   stack threshold every field compressed to ~40px. The floor is MIN-WIDTH, not
+   flex-basis: a narrow-width container query turns this row into a COLUMN, and
+   in column direction flex-basis is the MAIN axis — a rem basis mints that
+   many pixels of label HEIGHT (the capture.mjs caption-inflation trap),
+   while min-width is inert there. */
+.header__numbers label { display: grid; gap: 0.1rem; flex: 1 1 0; min-width: 4.5rem; }
+/* Content-proportional widths. These are caps, not fixed widths — every one still
+   shrinks below its cap, so narrow behaviour is unchanged. */
+.header__name { max-width: 26rem; }
+.header__descriptor, .header__species, .header__type, .header__focus { max-width: 18rem; }
+.header__numbers .field { max-width: 6rem; }
+/* Genre/subgenre are the numbers row's only TEXT fields (ddd-5vb) — 6rem
+   truncates real subgenres ("Dungeon Fantasy"). The wider cap must outrank the
+   6rem rule above, which is two-class, hence the sanctioned descendant form
+   (tokens.test.js). */
+.header__numbers .header__genre, .header__numbers .header__subgenre { max-width: 10rem; }
+/* The text pair claims a double grow share and a higher wrap floor: with all
+   eight labels on one line ("Street-Level" at ~786px content) an equal split
+   clips the value while every numeric neighbour has room to spare. grow +
+   min-width only — NO basis, same column-direction reason as above. Two-class
+   for the same specificity reason as the caps. */
+.header__numbers .header__label--wide { flex-grow: 2; min-width: 7rem; }
+/* The import-only second descriptor/focus (ddd-5vb): joined into the sentence
+   display under its primary's field — the input edits the primary only (owner
+   ruling; no new inputs). */
+.header__second { font-size: 0.65rem; font-style: italic; color: var(--cy-muted); }
+
+/* --- Pools --- */
+.pools-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--cy-gap); }
+.pool-card__head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.25rem; margin-bottom: 0.3rem;
+}
+.pool-card__name {
+  margin: 0;
+  font-family: var(--cy-font-cond);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+/* One die-face design element, two homes: the pool cards' d20 and the recovery
+   column's d6 (ddd-5v9) share the rule so they can never drift apart. */
+.pool-card__roll,
+.recovery__roll {
+  padding: 0.2rem 0.45rem;
+  background: var(--cy-accent);
+  color: var(--cy-accent-contrast);
+  border: var(--cy-geo-rule) solid var(--cy-accent);
+  border-radius: var(--cy-geo-corner);
+  clip-path: var(--cy-geo-banner-clip);
+  font: inherit;
+  font-family: var(--cy-font-cond);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.pool-card__roll:focus-visible,
+.recovery__roll:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: -3px; }
+/* WCAG 2.5.8: the d6 is the ONLY recovery-roll target, so it gets the same
+   1.5rem floor as .btn (ddd-5v9 audit P2). Deliberately NOT on the shared rule
+   above: the pool d20 shares the defect but sits on an accepted surface —
+   resizing it is ddd-v3yj's call, not this bead's. */
+.recovery__roll { min-width: 1.5rem; min-height: 1.5rem; }
+/* The printed sheet gives a pool TWO fields (Pool, Edge); this sheet has three
+   (Current, Max, Edge). Three numeric inputs do not fit a 147px card at 480px — they
+   render two-digit values clipped to "1(" — so the row wraps to 2+1 instead. The
+   basis is what forces the wrap, and flex-shrink MUST be 0: a flex item shrinks
+   before it wraps, so with shrink:1 all three still squeeze onto one line at 39px and
+   clip silently — which no overflow assertion can see, because the clipping happens
+   INSIDE the input. Measured at 480px: 39.3px available vs 42px needed. */
+.pool-card__fields { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.pool-card__fields label { display: grid; gap: 0.1rem; min-width: 0; flex: 1 0 2.8rem; }
+
+/* --- Vitals panel (ddd-2g8 variant A, owner-picked) ---
+   ONE "Damage & Recovery" panel: wounds / shield / recovery as rule-divided
+   columns, one pencil owning edit mode for the whole cluster. Play view is
+   labels + pips only — maxima, shield add/remove and the bonus are edit-mode.
+   Columns are FLEX, not grid: the shield column comes and goes (null shield,
+   edit mode) and a fixed grid template would misplace recovery when it does. */
+.vitals__head { display: flex; justify-content: space-between; align-items: center; }
+/* Icon-only pencil toggle: the fill IS the mode indicator (aria-pressed carries
+   it for the screen reader). */
+.vitals__edit--active { background: var(--cy-accent); color: var(--cy-accent-contrast); }
+.vitals__cols { display: flex; flex-wrap: wrap; }
+.vitals__col { flex: 1 1 13rem; min-width: 0; padding: 0.3rem 0.85rem 0.2rem 0.85rem; }
+/* Modifier classes, not compounds (`.shield.vitals__col`) — the specificity
+   policy allows single-class rules only. The rule sits on the columns
+   THEMSELVES, not a sibling combinator: wounds and shield share WoundsTrack's
+   display:contents wrapper, so shield and recovery are not DOM-adjacent and
+   `+` cannot reach across. */
+.vitals__col--flush { padding-left: 0.25rem; }
+.vitals__col--rule { border-left: var(--cy-geo-rule) solid var(--cy-border); }
+/* h4 keeps its UA margin (the preflight reconciliation only reverts h3). */
+.vitals__col-head { margin: 0 0 0.35rem 0; }
+
+/* --- Wounds ---
+   Both wrap declarations are load-bearing (ddd-2bv): .wounds__pips lets a long pip run
+   reflow inside the row (the 280px layout, where Stone Body sets minor.max=8), and
+   .wounds__tier's wrap is the outer safety valve for maxima high enough that even a
+   wrapped pip run, the label and the max input can't share one line. Do not flatten.
+   WoundsTrack.test.js regex-matches both selectors at line start with exactly one
+   space before the brace — do not reformat these two rules. */
+.wounds__tier {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;
+  padding: 0.3rem 0.25rem; margin-bottom: 0.25rem; border-radius: var(--cy-geo-corner);
+}
+.wounds__pips { display: flex; flex-wrap: wrap; gap: 0.25rem; min-width: 0; }
+.wounds__tier--moderate { background: var(--cy-band); }
+.wounds__label {
+  flex: 0 0 4.2rem;
+  /* Right-aligned so every tier's pips share one left edge (variant A). */
+  text-align: right;
+  font-family: var(--cy-font-cond);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.wounds__max { flex: 0 0 3rem; }
+/* ddd-0xq: the wound-type label doubles as a disclosure button for the tier's
+   book rule text. Button reset keeps .wounds__label's shared metrics (same
+   element carries both classes, so the label's font/alignment rules apply);
+   the basis widens to fit the caret without letting it wrap to its own line. */
+.wounds__label--toggle {
+  flex-basis: 5rem;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.wounds__label--toggle:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: 2px; }
+.wounds__caret { margin-left: 0.25rem; }
+/* The revealed rule text, a sibling BELOW the tier row. Margins tuck it under
+   its own tracker before the next tier's row. */
+.wounds__note {
+  margin: -0.1rem 0 0.3rem;
+  padding: 0 0.25rem;
+  font-size: 0.66rem;
+  line-height: 1.3;
+  color: var(--cy-muted);
+}
+.wound-pip {
+  width: 1.05rem; height: 1.05rem; padding: 0;
+  background: var(--cy-field);
+  border: 2px solid var(--cy-warn);
+  border-radius: var(--cy-geo-pip);
+  clip-path: var(--cy-geo-pip-clip);
+  cursor: pointer;
+}
+.wound-pip--filled { background: var(--cy-warn); }
+.wound-pip:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: -4px; }
+
+/* --- Shield (ddd-2g8) ---
+   The shield column reuses .wounds__tier / .wounds__pips / .wound-pip wholesale —
+   same shape, same wrap rules. Only the header and add/remove affordances are its
+   own; both add and remove exist only in edit mode. */
+.shield__add { display: block; margin-top: 0.25rem; }
+.shield__head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.shield__remove { padding: 0.15rem 0.45rem; }
+/* Armed state: same two properties as .item-list__delete--armed, so "this cannot
+   be undone" reads the same way everywhere. */
+.shield__remove--armed { color: var(--cy-warn); border-color: var(--cy-warn); }
+
+/* --- Recovery ---
+   The recovery column. Its header (.recovery__label) is the shared column-head
+   microlabel carrying the live roll expression — the accent lozenge retired with
+   variant A. */
+/* Head row (ddd-5v9): column head + the d6 die face. The label's col-head
+   margin moves to the row so the pair centers as one unit (source order beats
+   the .vitals__col-head rule — the ddd-93d lesson, used deliberately here). */
+.recovery__head { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.35rem; }
+.recovery__label { margin: 0; }
+.recovery__body { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.5rem; }
+.recovery__steps { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: start; }
+/* By CLASS, not `label` (ddd-2g8): in edit mode the step wrapper is a span — a
+   label may hold only one labelable control and edit mode adds three. */
+.recovery__step { display: grid; justify-items: center; gap: 0.15rem; }
+/* The visible why-this-box-exists note (was tooltip-only; a title attr never
+   surfaces on touch). */
+.recovery__note {
+  max-width: 6rem;
+  font-size: 0.6rem;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--cy-muted);
+}
+/* Edit mode (ddd-2g8): per-slot kind select + note input + remove, and the
+   add-slot affordance at the end of the run. */
+.recovery__kind { max-width: 5.5rem; }
+.recovery__note-input { max-width: 6.5rem; }
+.recovery__slot-remove { padding: 0.15rem 0.45rem; }
+/* The last slot cannot be removed (contract minItems: 1) — and a disabled button
+   must LOOK disabled, not merely be inert (the ModalShell ✕ class of bug). */
+.recovery__slot-remove:disabled { color: var(--cy-muted); border-color: var(--cy-border); cursor: default; }
+.recovery__slot-add { align-self: center; }
+/* A checkbox styled as a pip. appearance:none is essential — the UA control otherwise
+   paints over every token. Kept a checkbox, not a button, because RecoveryBlock.test.js
+   drives it with setValue(); the class sits on the input so no descendant rule is
+   needed. Unlike the select in Task 8 this loses no affordance: the checked fill IS
+   the state indication. */
+.recovery__pip {
+  width: 1.05rem; height: 1.05rem; margin: 0; padding: 0;
+  appearance: none;
+  background: var(--cy-field);
+  border: 2px solid var(--cy-warn);
+  border-radius: var(--cy-geo-pip);
+  clip-path: var(--cy-geo-pip-clip);
+  cursor: pointer;
+}
+.recovery__pip:checked { background: var(--cy-warn); }
+.recovery__pip:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: -4px; }
+.recovery__bonus { display: grid; gap: 0.1rem; flex: 0 0 4rem; }
+/* The healing explainer (ddd-5v9): reference copy, muted like the slot notes
+   but full-width under the track. */
+.recovery__heal-note { margin: 0.4rem 0 0; font-size: 0.65rem; line-height: 1.35; color: var(--cy-muted); }
+
+/* --- Clusters & segment panels ---
+   SegmentedControl styling lives in utilities in SegmentedControl.vue (the ddd-tmp
+   prove-out). The BEM names remain in the template as test/JS hooks; do not re-add
+   styling rules for them here — an un-layered rule would silently out-rank the
+   template's utilities.
+
+   The rule below is a sanctioned child-combinator exception to the specificity policy
+   (spec §7): stack mode has to override it, and has to be overridable by a selector of
+   EQUAL specificity later in the file. See the @container block at the bottom and read
+   the warning there before touching either. */
+.cluster__panels > [data-segment]:not([data-active]) { display: none; }
+
+/* --- Item lists --- */
+.item-list { margin-bottom: var(--cy-gap); }
+.item-list__head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+/* Band scale, right edge — a `+` sized to the banner beside it, not a full-width
+   worded button stranded at the far side of a wide panel (spec ⑦ §4.4 item 3). */
+.item-list__add {
+  flex: 0 0 auto;
+  /* WCAG 2.2 SC 2.5.8 (Target Size Minimum), same floor and same reasoning as
+     .header__settings above: this control was shrunk to band scale in this bead and
+     landed at ~22.4x22.2px, below the 24px minimum. `min-*` only raises the floor, so
+     the padding below is untouched. rem is root-relative, so 1.5rem is exactly 24px
+     regardless of .cypher-sheet's own font-size. */
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 0.4rem;
+  line-height: 1.4;
+  background: transparent;
+  color: var(--cy-accent);
+  border: var(--cy-geo-rule) solid var(--cy-accent);
+  border-radius: var(--cy-geo-chip-radius);
+  font-family: var(--cy-font-cond);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.item-list__rows { list-style: none; margin: 0; padding: 0; }
+.item-list__row {
+  display: flex; gap: 0.5rem; align-items: flex-start;
+  padding: 0.4rem 0;
+  border-top: var(--cy-geo-rule) solid var(--cy-border);
+}
+/* The mockup's first row has no rule above it — the banner already separates it. */
+.item-list__row:first-child { border-top: none; }
+.item-list__fields { display: flex; flex-wrap: wrap; gap: 0.5rem; flex: 1; min-width: 0; }
+.item-list__fields input, .item-list__fields select { min-width: 0; }
+.item-list__fields .row-name { flex: 1 1 9rem; }
+.item-list__fields textarea { width: 100%; }
+/* --- Read-optimized rows (spec ⑦ §4.2) ---
+   A WRAPPING FLEX ROW, not a grid, and that is a deliberate deviation from §4.2's
+   wording (recorded as D2 in the plan): summary cells collapse per row, so the cell
+   count varies, and a grid cannot reflow a variable count onto a second line — at
+   280px inside a cluster panel it overflows instead. What §4.2 is actually asking for
+   — no panel-level column flow, columns supplied by the cluster layout — is
+   done in main.css's container-query block, not here. */
+.item-list__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+.summary-name { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+/* --cy-ink, NOT --cy-muted. A summary cell carries DATA (a rating, a level, a
+   depletion), and --cy-muted is the exact token .microlabel uses — the same fault
+   spec §4.4 item 4 named when the tab strip read at field-label contrast. The name
+   still leads on weight, and the condensed uppercase face keeps the hierarchy without
+   spending contrast on it. */
+.summary-cell {
+  font-family: var(--cy-font-cond);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cy-ink);
+}
+/* The disclosure toggle (item-contents spec §6 D3): the summary LINE is the control,
+   so this is a <button> wearing .item-list__summary's layout. The reset is explicit
+   because the preflight-reconciliation block in @layer components REVERTS UA chrome
+   onto every button — without it the row grows a grey bevel and a centred serif face.
+   Source order does the rest: this single-class rule sits after .item-list__summary,
+   so equal specificity resolves in its favour. */
+.item-list__summary--toggle {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.item-list__summary--toggle:focus-visible {
+  outline: 2px solid var(--cy-accent);
+  outline-offset: 2px;
+}
+.item-list__caret {
+  flex: 0 0 auto;
+  color: var(--cy-accent);
+  /* Not the .summary-cell 0.72rem: this is the row's only visible affordance, and at
+     that size in a condensed face it reads as a speck rather than a control. */
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+/* The expansion (item-contents spec §6). flex-basis 100% drops it onto its own line
+   inside the row's flex box; only read-mode rows wrap, so the fallback inline-editor
+   layout is untouched. `p { margin: revert }` in the preflight block puts UA margins
+   back on paragraphs, hence the explicit 0. */
+.item-list__row--read { flex-wrap: wrap; }
+.item-list__body { flex: 0 0 100%; min-width: 0; padding: 0.1rem 0 0.15rem 0.85rem; }
+.item-list__body-source {
+  margin: 0;
+  font-family: var(--cy-font-cond);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cy-muted);
+}
+/* pre-wrap: descriptions are multi-paragraph textareas, and collapsing them here would
+   reproduce on the sheet the exact unreadability this feature exists to fix. */
+.item-list__body-prose {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--cy-ink);
+}
+
+/* The (i) and the 💬 — one rule, two controls, because they are the same chip in the
+   same place and a second copy is a second thing to keep in step. Chip geometry and
+   the same WCAG 2.2 SC 2.5.8 24px floor .item-list__add and .header__settings carry:
+   (i) is the ONLY route to a row's fields and 💬 is the only route to the chat card,
+   so both must be tappable at 280px. rem is root-relative, so 1.5rem is exactly 24px
+   regardless of .cypher-sheet's own font-size. */
+.item-list__edit,
+.item-list__chat,
+.item-list__roll {
+  flex: 0 0 auto;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 0.4rem;
+  background: transparent;
+  color: var(--cy-accent);
+  border: var(--cy-geo-rule) solid var(--cy-accent);
+  border-radius: var(--cy-geo-chip-radius);
+  font-family: var(--cy-font-cond);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.item-list__edit:focus-visible,
+.item-list__chat:focus-visible,
+.item-list__roll:focus-visible { outline: 2px solid var(--cy-accent); outline-offset: -2px; }
+/* The editor's footer: delete on the left, Done on the right, wrapping at 280px. */
+.item-list__editor-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: var(--cy-gap);
+}
+/* Armed state. .btn is a single class defined earlier in the file, so this single
+   class wins on source order for the two properties it names, and inherits the rest. */
+.item-list__delete--armed { color: var(--cy-warn); border-color: var(--cy-warn); }
+/* The empty region IS the affordance (spec ⑦ §4.4 item 5). */
+.item-list__empty-add {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.5rem;
+  background: transparent;
+  color: var(--cy-muted);
+  border: var(--cy-geo-rule) dashed var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  font-family: var(--cy-font-cond);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.item-list__remove {
+  flex: 0 0 auto;
+  background: none;
+  color: var(--cy-muted);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  cursor: pointer;
+}
+.row-desc { width: 100%; font-size: 0.85rem; }
+
+/* The two segments that hold more than one list column their lists whenever their
+   cluster cell is wide enough, and stack them when it is not. No @container needed:
+   auto-fit already answers "does another track fit?", and keying it to the SHEET's
+   width would be the wrong question now that a cluster occupies half of it.
+   `minmax(min(22rem, 100%), 1fr)` not `minmax(22rem, 1fr)`: a grid track does not
+   shrink below its min, so the bare 22rem form OVERFLOWS a 260.8px content box at
+   280px — the ddd-2bv damage pattern with a different cause.
+   `> *` zeroes the .item-list margin that `gap` replaces and applies the min-width: 0
+   guard; both are properties of the CHILDREN, so a single class cannot express them. */
+.gear-segment, .advancement-segment {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  gap: var(--cy-gap);
+  align-items: start;
+}
+.gear-segment > *, .advancement-segment > * { min-width: 0; margin-bottom: 0; }
+/* The panel-level armor box (ddd-2g8). Full row, not a grid track of its own —
+   auto-fit would otherwise hand a lone text field a 22rem column beside Equipment. */
+.gear-segment__armor { grid-column: 1 / -1; display: grid; gap: 0.1rem; }
+/* The relocated cypherLimit editor (ddd-2g8), below the Cyphers list per the
+   owner's walkthrough call. */
+.cyphers-segment__limit { display: grid; gap: 0.1rem; max-width: 5rem; margin-top: 0.5rem; }
+
+/* A rating select styled as the printed sheet's chip. Chips use --cy-geo-chip-*
+   rather than the banner tokens — a banner-scale 9px cut takes about half a chip's
+   rendered height and reads as a printing error.
+
+   appearance:none removes the UA arrow, which will not fit and would break the clip —
+   so the chip must say "editable" some other way, or it reads as static text. The
+   caret is drawn as a background gradient (no extra element, no icon font), and the
+   focus ring is INSET because clip-path discards an outside outline. */
+.row-rating {
+  appearance: none;
+  padding: 0.1rem 1.1rem 0.1rem 0.5rem;
+  background-color: var(--cy-accent);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--cy-accent-contrast) 50%),
+    linear-gradient(135deg, var(--cy-accent-contrast) 50%, transparent 50%);
+  background-position: right 0.5rem top 55%, right 0.29rem top 55%;
+  background-size: 0.22rem 0.22rem, 0.22rem 0.22rem;
+  background-repeat: no-repeat;
+  color: var(--cy-accent-contrast);
+  border: var(--cy-geo-rule) solid var(--cy-accent);
+  border-radius: var(--cy-geo-chip-radius);
+  clip-path: var(--cy-geo-chip-clip);
+  font-family: var(--cy-font-cond);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.row-rating:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: -3px; }
+
+.import__alert { border: var(--cy-geo-rule) solid var(--cy-warn); color: var(--cy-warn); border-radius: var(--cy-geo-corner); padding: 0.5rem; margin: 0.5rem 0; }
+.import__confirm { border: var(--cy-geo-rule) solid var(--cy-accent); border-radius: var(--cy-geo-corner); padding: 0.5rem; margin: 0.5rem 0; }
+/* .export__alert carries .import__alert too — same treatment by design, so it
+   needs no rule of its own. Transient copy feedback reads as quiet status
+   until it's a failure, which escalates to the warn colour. */
+.export__copy-status { font-size: 0.85rem; color: var(--cy-muted); margin: 0.5rem 0; }
+.export__copy-status--error { color: var(--cy-warn); }
+/* Breathing room between the file picker and the paste box (owner walkthrough).
+   1rem = 16px; the spacing tokens (--cy-gap 0.6rem / --cy-pad 0.5rem) are both
+   tighter than the separation these two alternative entry points need. */
+.import__file { margin-bottom: 1rem; }
+.import__paste { width: 100%; }
+.notes-block__field { display: grid; gap: 0.15rem; margin-bottom: var(--cy-gap); }
+.advancement__row { display: flex; gap: 0.4rem; align-items: baseline; cursor: pointer; }
+.arc-steps { display: grid; gap: 0.25rem; }
+.arc-steps__step { display: flex; gap: 0.35rem; align-items: center; }
+.arc-steps__name { flex: 1 1 auto; min-width: 0; }
+.ability-cost { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+.cost-points { flex: 0 0 4rem; }
+.cost-pools { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: baseline; }
+
+.settings__row { display: grid; gap: 0.15rem; margin-bottom: 0.5rem; }
+.settings__hint { font-size: 0.78rem; color: var(--cy-muted); margin: 0 0 0.75rem; }
+.settings__toggle { display: flex; gap: var(--cy-gap); align-items: baseline; cursor: pointer; }
+
+/* --- Guided roller modal (spec ③) ---
+   The overlay, panel, header and dialog contract are ModalShell's (.modal*, below);
+   only the roller's body styling lives here (ddd-6hx). */
+.roller__form { display: grid; gap: var(--cy-gap); }
+.roller__pool { margin: 0; font-size: 0.85rem; color: var(--cy-muted); }
+.roller__field { display: flex; flex-direction: column; gap: 0.25rem; }
+.roller__label { font-size: 0.75rem; color: var(--cy-muted); }
+.roller__show-all { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+.roller__steppers { display: flex; flex-wrap: wrap; gap: var(--cy-gap); }
+.roller__steppers > .roller__field { flex: 1 1 8rem; min-width: 0; }
+.roller__stepper { display: flex; align-items: center; gap: 0.5rem; }
+.roller__stepper strong { min-width: 1.5rem; text-align: center; }
+.roller__step-down,
+.roller__step-up {
+  width: 2rem; height: 2rem;
+  border: var(--cy-geo-rule) solid var(--cy-accent);
+  border-radius: var(--cy-geo-corner);
+  background: none; cursor: pointer; font-size: 1rem;
+}
+.roller__step-down:disabled,
+.roller__step-up:disabled { opacity: 0.4; cursor: not-allowed; }
+.roller__summary {
+  display: grid; gap: 0.25rem;
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+.roller__error { color: var(--cy-warn); margin: 0; font-size: 0.85rem; }
+.roller__buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
+.roller__buttons button {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--cy-geo-corner);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  background: var(--cy-surface);
+  cursor: pointer;
+  font: inherit;
+}
+/* Qualified under .roller__buttons: the generic `.roller__buttons button`
+   rule above is (0,1,1) and would out-specify a bare `.roller__roll` (0,1,0),
+   leaving the accent background overridden while the white text survives —
+   white-on-white (ddd-axi closeout audit P1). */
+.roller__buttons .roller__roll {
+  border-color: var(--cy-accent);
+  background: var(--cy-accent);
+  color: var(--cy-accent-contrast);
+}
+.roller__cancel:disabled,
+.roller__roll:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- Shared modal shell (spec ⑦ §4.3) ---
+   Every value is a token. `position: fixed` is safe inside .cypher-sheet's
+   container-type — see the note in ModalShell.vue. */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--cy-z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--cy-gap);
+  background: var(--cy-overlay);
+}
+.modal__panel {
+  width: min(32rem, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  min-width: 0;
+  background: var(--cy-surface);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  box-shadow: var(--cy-geo-panel-shadow);
+  padding: var(--cy-pad);
+}
+.modal__panel--compact { width: min(22rem, 100%); }
+.modal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: var(--cy-gap);
+}
+.modal__close {
+  flex: 0 0 auto;
+  background: none;
+  color: var(--cy-muted);
+  border: var(--cy-geo-rule) solid var(--cy-border);
+  border-radius: var(--cy-geo-corner);
+  cursor: pointer;
+}
+/* close-disabled (ddd-6hx) makes the ✕ inert mid-roll; without this it still LOOKS
+   clickable and the refusal is silent — the exact thing the prop exists to avoid
+   (Codex closeout P2). Same treatment as the roller's own frozen controls. */
+.modal__close:disabled { opacity: 0.5; cursor: not-allowed; }
+.modal__body { min-width: 0; }
+
+/* ==========================================================================
+   CONTAINER QUERIES. Thresholds are measured off the CONTENT box: root padding
+   is --cy-gap (0.6rem) on both sides, so a 480px panel queries at 28.8rem.
+   ========================================================================== */
+
+/* --- STACK MODE (<27rem, owner decision, spec 6.2) ---
+   Both segmented controls are HIDDEN and all seven segment panels render in one
+   scroll. This inverts the usual disclosure direction — narrow shows MORE, not less
+   — and was accepted knowingly: nothing is hidden at the width where hunting is
+   hardest, and it reclaims three rows of chrome where vertical space is scarcest.
+   Banner headings are the scroll landmarks.
+
+   ui.characterSegment / ui.kitSegment are NOT cleared here — they are ignored, so
+   widening restores whatever segments were last chosen.
+
+   `width < 27rem`, NOT `max-width: 27rem`: max-width includes equality, which would
+   put exactly 27rem into stack mode and contradict 6.3's "the segmented controls
+   persist at every width >= 27rem". The boundary has its own browser assertion. */
+@container sheet (width < 27rem) {
+  /* Both controls hide; every segment panel renders in one scroll. The header ⚙ does
+     NOT hide with them — it is the only route to settings and import/export at this
+     width (spec ⑦ §6, and it carries its own capture assertion). */
+  .segmented-control { display: none; }
+
+  /* READ BEFORE EDITING — the ddd-axi bug class, and it bit on the FIRST build of
+     this mechanism. A CONTAINER QUERY ADDS ZERO SPECIFICITY. The `:not([data-active])`
+     below is NOT decoration: without it this selector is (0,2,0) and loses to the
+     base hide rule's (0,3,0), so every inactive panel stays hidden and the sheet shows
+     one panel per cluster at 280px. Matching specificity plus LATER SOURCE ORDER is
+     the entire mechanism. Any container-query override in this file must repeat its
+     base rule's selector VERBATIM. jsdom cannot see this — scripts/capture.mjs is the
+     gate, and it is mutation-tested. */
+  .cluster__panels > [data-segment]:not([data-active]) { display: block; }
+
+  .cluster__panels { display: grid; gap: var(--cy-gap); }
+
+  .pools-row { grid-template-columns: 1fr; }
+
+  /* Turning a flex row into a column reinterprets BOTH cross-axis alignment and every
+     flex-basis: align-items:flex-start would stop children stretching to full width,
+     and a 12rem/9rem basis becomes a HEIGHT. Each of these must be reset in the same
+     breath as the direction change. The last repeats its base selector verbatim for
+     the same reason the panel rule above does. */
+  /* wrap MUST flip to nowrap with the direction: a wrapped COLUMN flex container
+     has no definite height to break lines against, and the fallback sizing
+     inflates every column ~60px past its content (measured 173 vs 117 on the
+     wounds column at 340px). Same family as the flex-basis trap below. */
+  .vitals__cols { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+  /* flex-basis is MAIN-axis: stacked, the columns' 13rem basis becomes a 208px
+     HEIGHT and opens dead space between the trackers — the same trap the old
+     scalars stack rule documented. Reset in the same breath as the direction. */
+  .vitals__col { flex: none; padding-left: 0.25rem; padding-right: 0.25rem; }
+  /* Stacked columns: the vertical rules become horizontal. Selectors repeated
+     VERBATIM from the base rules — a container query adds zero specificity, so
+     these win on source order alone. */
+  .vitals__col--rule {
+    border-left: none;
+    border-top: var(--cy-geo-rule) solid var(--cy-border);
+  }
+  .item-list__fields { flex-direction: column; align-items: stretch; }
+  .item-list__fields .row-name { flex: none; width: 100%; }
+  .header__numbers { flex-direction: column; gap: 0.35rem; }
+  /* Selector repeated VERBATIM from the base rule, per the note above — a container
+     query adds zero specificity, so this wins on source order alone. At 280px the
+     wordmark would eat a third of the name field's width to no purpose. */
+  .header__mark { display: none; }
+}
+
+/* --- IDENTITY SENTENCE: two widenings (ddd-11d) ---
+   Stacked one field per line, the sentence spends the whole panel height on four inputs
+   and leaves a wide sheet empty beside them. Both steps are grid-template-columns on
+   elements that are ALREADY grids above, so nothing here changes display or direction —
+   which is what keeps the flex-basis and align-items traps documented in the stack block
+   out of this one.
+
+   THE 3-UP THRESHOLD IS BOUNDED BY THE MICROLABELS, NOT BY TASTE — but not in the way
+   it looks. .header__row-foot is a flex row at min-width:auto, so it never shrinks below
+   its own min-content (DESCRIPTOR 56px + ADJECTIVE 46px + the 0.5rem gap = 109px, the
+   widest of the four pairs). Squeeze the cell below that and the labels do NOT collide:
+   the foot keeps its width and overflows the cell, painting across the field beside it.
+
+   Measured by sweeping the sheet 380->620px with 3-up forced on: the foot first fits at
+   25rem (115px cell vs 109px needed) and breaks at 23.8rem (108px). 25rem is BELOW the
+   27rem stack threshold, so 3-up would technically fit the moment stack mode ends — at
+   27.5rem the cell is 128px against a 128px foot, i.e. zero headroom. 32rem is chosen
+   instead for ~152px cells and ~43px of slack. Lowering it toward 27rem is not a
+   correctness bug until 25rem, but it spends the entire margin. Re-measure if the
+   microlabel text, font or --cy-gap changes. */
+@container sheet (width >= 32rem) {
+  .header__group--isa { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--cy-gap); }
+}
+/* Both groups side by side, each keeping its own bar over its own fields. The bars land
+   on one row and the four fields on the next for free: the groups are siblings in one
+   grid row and both lead with the same-height bar, so their internal rows align without
+   a subgrid. 3fr/1.4fr, not 3fr/1fr — the who group holds one field to the isa group's
+   three, and a focus reads longer than a descriptor. */
+@container sheet (width >= 48rem) {
+  .header__sentence {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1.4fr);
+    column-gap: var(--cy-gap);
+    align-items: start;
+  }
+
+  /* Character and Kit side by side. This is what spec §4.2 means by "the columns come
+     from the cluster layout": the summary rows do not flow, the sheet does. */
+  .clusters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
