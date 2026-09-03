@@ -1,0 +1,88 @@
+.cypher-roll {
+  border: 1px solid #7b5cd6;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: system-ui, sans-serif;
+
+  &__stat {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.8rem;
+  }
+  &__die {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  &__beats {
+    font-size: 0.9rem;
+  }
+  &__die--auto {
+    color: #1a6b1a;
+  }
+  &__verdict {
+    font-size: 0.9rem;
+    border-top: 1px solid #ddd;
+    padding-top: 0.25rem;
+    margin-top: 0.25rem;
+    &--success { color: #1a6b1a; font-weight: 600; }
+    &--failure { color: #8a1a1a; font-weight: 600; }
+  }
+  &__detail {
+    font-size: 0.8rem;
+    opacity: 0.75;
+  }
+  &__special {
+    margin-top: 0.25rem;
+    font-weight: 600;
+    color: #a12727;
+  }
+  // The recovery card's wound-removal line (ddd-5v9): rule-separated from the
+  // total like the verdict, body-sized because it is instruction, not detail.
+  &__wounds {
+    font-size: 0.85rem;
+    border-top: 1px solid #ddd;
+    padding-top: 0.25rem;
+    margin-top: 0.25rem;
+  }
+}
+
+// The item card (item-contents spec §4). A sibling of .cypher-roll, not a variant:
+// it carries prose, not a die.
+//
+// SKIN-NEUTRAL BY CONSTRUCTION, and that is correct rather than a gap. host.css is
+// loaded into Roll20's chat pane, outside .cypher-sheet, so it can never see
+// [data-theme]. The existing roll card has the same property.
+.cypher-item {
+  border: 1px solid #7b5cd6;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: system-ui, sans-serif;
+
+  &__title {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.9rem;
+  }
+  &__fields {
+    font-size: 0.8rem;
+    opacity: 0.75;
+  }
+  &__source {
+    font-size: 0.75rem;
+    font-style: italic;
+    opacity: 0.6;
+  }
+  // pre-wrap, NOT the default. Descriptions are multi-paragraph textareas; without
+  // this every ability arrives in chat as one run-on paragraph, which would reproduce
+  // the exact readability complaint this spec exists to fix, in a second venue.
+  &__prose {
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    border-top: 1px solid #ddd;
+    padding-top: 0.35rem;
+    margin-top: 0.35rem;
+  }
+}
