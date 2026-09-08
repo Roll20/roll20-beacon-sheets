@@ -4,7 +4,7 @@
             <div class="label" data-testid="test-spell-header" style="flex:1;">{{ spell.name }}<br />({{ spell.requirements }})</div>     
         </div>
         <div>
-            <img v-if="spell.arcanaType && settings.gameSystem !== 'blue rose'" :src="'/src/assets/arcana/' + spell.arcanaType.toLowerCase() + '.png'" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
+            <img v-if="arcanaIconSrc && settings.gameSystem !== 'blue rose'" :src="arcanaIconSrc" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
         </div>   
         <!-- <div class="age-cost-tn-number" v-tippy="{ content: 'Magic Point Cost'}">
             <span>{{ spell.mpCost }}</span>
@@ -138,6 +138,26 @@ const familiarityOptions = ref([
 ]);
 const magicLabel = computed(() =>
   settings.gameSystem === 'mage' ? 'Power' : 'Arcana'
+);
+
+// Resolve arcana icons through Vite so they work in the built/hosted sheet.
+// A raw "/src/assets/arcana/x.png" path only resolves under the dev server;
+// import.meta.glob emits the bundled, base-prefixed URL for each file.
+const arcanaIconUrls = import.meta.glob('../../assets/arcana/*.png', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+const arcanaIconMap = Object.fromEntries(
+  Object.entries(arcanaIconUrls).map(([path, url]) => [
+    path.split('/').pop().replace(/\.png$/, '').toLowerCase(),
+    url,
+  ])
+);
+const arcanaIconSrc = computed(() =>
+  props.spell?.arcanaType
+    ? arcanaIconMap[props.spell.arcanaType.toLowerCase()]
+    : undefined
 );
 
 const magicPoints = computed(() => {
