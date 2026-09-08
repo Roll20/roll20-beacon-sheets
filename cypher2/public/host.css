@@ -1,0 +1,81 @@
+.cypher-roll {
+  border: 1px solid #7b5cd6;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: system-ui, sans-serif;
+}
+.cypher-roll__stat {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.8rem;
+}
+.cypher-roll__die {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.cypher-roll__beats {
+  font-size: 0.9rem;
+}
+.cypher-roll__die--auto {
+  color: #1a6b1a;
+}
+.cypher-roll__verdict {
+  font-size: 0.9rem;
+  border-top: 1px solid #ddd;
+  padding-top: 0.25rem;
+  margin-top: 0.25rem;
+}
+.cypher-roll__verdict--success {
+  color: #1a6b1a;
+  font-weight: 600;
+}
+.cypher-roll__verdict--failure {
+  color: #8a1a1a;
+  font-weight: 600;
+}
+.cypher-roll__detail {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+.cypher-roll__special {
+  margin-top: 0.25rem;
+  font-weight: 600;
+  color: #a12727;
+}
+.cypher-roll__wounds {
+  font-size: 0.85rem;
+  border-top: 1px solid #ddd;
+  padding-top: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.cypher-item {
+  border: 1px solid #7b5cd6;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: system-ui, sans-serif;
+}
+.cypher-item__title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+}
+.cypher-item__fields {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+.cypher-item__source {
+  font-size: 0.75rem;
+  font-style: italic;
+  opacity: 0.6;
+}
+.cypher-item__prose {
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  border-top: 1px solid #ddd;
+  padding-top: 0.35rem;
+  margin-top: 0.35rem;
+}
