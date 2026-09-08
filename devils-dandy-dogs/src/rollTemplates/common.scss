@@ -1,0 +1,171 @@
+.ddd-roll {
+  display: block;
+  max-width: 100%;
+  background: #1a0a0a;
+  color: #f5e9d0;
+  border: 1px solid #8a1d1d;
+  border-radius: 0.35rem;
+  padding: 0.6rem 0.75rem;
+  font-family: Georgia, 'Times New Roman', serif;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: baseline;
+    justify-content: space-between;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+    color: #e7b54a;
+  }
+  // The mode is printed so the sheet's Narrative/Combat toggle has a visible
+  // effect on the card, and so a reader knows which rulebook table applies.
+  &__mode {
+    font-size: 0.75em;
+    font-weight: 400;
+    opacity: 0.75;
+  }
+  &__dice {
+    list-style: none;
+    margin: 0 0 0.4rem;
+    padding: 0;
+  }
+  // One row per die: glyph, value, face name, and (first of each face) its meaning.
+  &__die {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 0.15rem 0.4rem;
+    align-items: center;
+    padding: 0.25rem 0;
+
+    & + & { border-top: 1px solid rgba(231, 181, 74, 0.25); }
+  }
+  &__value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  &__face {
+    font-weight: 700;
+    color: #e7b54a;
+  }
+  &__effect {
+    grid-column: 2 / -1;
+    font-size: 0.9em;
+    opacity: 0.9;
+  }
+  &__prompt {
+    font-style: italic;
+    font-size: 0.9em;
+    opacity: 0.85;
+  }
+  // Puts the Temptation die's tile and value in its header row, the way a trait roll shows one
+  // per die (ddd-4zr). Before this the card printed temptationResult()'s prose with no glyph at
+  // all, even though `band` and `value` were already in the template context — a trait roll
+  // showed tiles and a Temptation roll did not, for no reason a player could see.
+  &__temptation {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  &__lines { margin: 0; padding-left: 1.1rem; }
+  &__text { margin-top: 0.2rem; }
+}
+
+// Die glyph ARTWORK. Duplicated from src/assets/main.css on purpose: that file styles the SHEET
+// bundle, this one compiles to public/host.css for the CHAT host, and neither can reference the
+// other. src/__tests__/die-glyph-parity.test.js fails if they drift.
+//
+// Named Sass variables rather than inlined url()s so each artwork has exactly ONE definition per
+// file, mirroring main.css's custom properties. Inlining would put the same URI in a prefixed and
+// an unprefixed declaration, and the parity guard's declaration-bounded scan would then silently
+// depend on which of the two was written first.
+//
+// Format: LA PNG, pure black, real alpha. Consumed as MASKS, so the symbol colour is a CSS
+// concern and the tile recolours without re-authoring artwork. ddd-a74 is what that bought:
+// flipping the Temptation symbols from white to ink was one declaration per face.
+$glyph-eyebrow: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAABACAQAAADsFdxDAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAD/h4/MvwAAAAlwSFlzAABcRgAAXEYBFJRDQQAAAAd0SU1FB+oGHRE4H9FLkO8AAAHuSURBVFjDzZnLcsMwCEWNxv//y3TRZOJIPO4FOlNWjQQcgS2EVblqos64oA5gxRRJ+uXAGBTyjYI5JOAfA1exASEHd6ABIwP3sQ4nAk9BTdJNY+McwYsV2EF/44n7wzETYx5ZRrh4SQzEna1tRLlccwzLpN7Mn7hKWS6q6JfVclT5wyOSpzeNwNErJ7sLGm2A1VaiMbGoHXGcZEk1wJif4CgmJUYh9KJMsazkok8wHy8fcyNirm4NgsdiPsGauJuJWa2IlYyiFPMqGI/EPFOrsWV/ack2iHYkqJ3ro/9WozFvGm9wtmLv3C4/58rLVYn5mF3bML6Ayj7YwBoqZUktfgQtVBHQY45OWeaEo0zHHNTA2zWpiFptnS29fRw9/wgrJzjvuJClaIZFmr04eQppGf7kMvv81+j3IuJXjrwN8sFebB30w/ui0tQRsdrbZhtzxhNDP2D8i4i/MxHbZlEHnPiOHKSry9RqMf76/Nq/nZPl3Ze1cWLsiOa+nXDT/RGRPYmVaszULi5wXn73sbgOOSFsb94ElOSipnMs7rcDUQV0mr2JmLCZEXBLOs/2eUdk14LgOU9FLM6oW8EmU03dcP+jqwhczqMibfGmIpYDB38ezFYs6y7UqeLTpXK/73YPj/kaDfwj5K/AO9xk/ACWGX50qzzxdwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wNi0yOVQxNzo1NDowOSswMDowMOeuB70AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDYtMjlUMTc6NTQ6MDkrMDA6MDCW878BAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTA2LTI5VDE3OjU2OjMxKzAwOjAweHMHZwAAAABJRU5ErkJggg==');
+$glyph-delight: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAD/h4/MvwAAAAlwSFlzAABcRgAAXEYBFJRDQQAAAAd0SU1FB+oGHRE4H9FLkO8AAAG4SURBVGje7VjZkoQwCATL//9l9m3VJEBDwKmpXZ6mRo5Oy2WYiISIiJgiIoa+3H67XvlmgEPQIMtS2/TLg6EPQocrhhXbDzDSZGGJBDf98uQAOVk0uAHhcMPZ7gUOr3jixUP2jDZkZEGOlJu8PBkTotNR7wFxk7cZmOTPA+AZwJWnPRkwyLnvYgIeak3WLMDc2NNDPLszYYoGvzREt2Nanz89XKJyT8IPhCfiRK6XBSfKVIE2rpOwogxM08wB50qsE9rhscoZdCIAKt79BPGA3WJLqLc/TXIQEdfmdewg5+Nvt3FuydL7swyZ+mbgVayPsmVVFTl/XvNXb1UFON0MWhrDCClDBp8lwmNGewnoeKrbiPyzg59mXeEV6WLA6pIPJjoA2CdXOiFssBV84S1SBVY5pW5HMAb0ECVNG62CnWCmLd7lR/29VS7MwOymaIvYW8ny21SSAcw1R5iqb0Qc4qZgFnirehmApsW1YhqObznEQVUOpPn59CXVP4AAgKYPli9ioImDGAMNEKKvoBzCV+VAi6xbqL+QlQMQ0q8nWi9wtJ3/pfD+ltt+fWWN41fuzrRV4rWLux9wlliS8qYCfwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wNi0yOVQxNzo1NDozMyswMDowMM1RXxAAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDYtMjlUMTc6NTQ6MzMrMDA6MDC8DOesAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTA2LTI5VDE3OjU2OjMxKzAwOjAweHMHZwAAAABJRU5ErkJggg==');
+$glyph-drive: url('data:image/png;base64,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');
+$glyph-overtaken: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAADAElEQVR42s2Zv2/TQBSAP/uSsjWtUIUobSckoGIBsSIx8FsspbAzlf49TEgwsdEW/gRE23RBAiQkws7MgCpU0sR3x3BJG9tnJ77YZ3xSpMRJ/Pm97z2fz5C/BVS8iZwDLxDQqxohzPn8Fu8RPqKQFZm7aN7SJMjErBjgPhLNDg0C/1EwAJoumm0a/qMwBIjoo9kmzPGlYgA9QBB+ozAKoOmheec3EXEAE4Udmv50TAKYKOxUE4UAkRozCB7GAAzCFgJoWH4hEGVH52YCwCBsZ7Zvp2tHA1jhOkcIdCwFkhupP2wS8YQtXhGiLAc/4NC6Z0wClvkWO8/8IXP2tZkr3i8CYJYPaLpEsSEzESLr6KFpM18cIQTm2R8U2zSjj2af+ZzLfA7CXIkIc8URBDDLbsp7V4RZtyi02C0tCi1XF8pCOHDXca8khPb/omPoomNZUdijNY2OsuAhJSr2PjqpCCcXPqIKIaiR17iODoloAHcKdAWF5jcv0CgLgkODFgQ8KAjQZYFnlkQ46ZieEY0H+MtVYDMDoaCObgCXCYGNzCgUaNCuADADPEcTWV2YOBHuACHNXIQJdZwGwNTQZmYiJmrQ0wEYhI3cihDVAoxDGKvjOAA1aDnDIVMABuHUheE3zeR+7HxBAPeQOQAqAaA4SgBwoqPZfzp6JxUR5AE8GtDar3PpEXEldVZGR/sV5ROLhI0MAEXAFzqsIhO5UoS85g0tosT0XvITErclESEv+cxZ+omzlbSYybuJCYELfE+dr0Lyi9slLIRN1AuWrAgaxVPgTOLmNBvB8WZWAMt0UggSTZ/1QY4rXydY4keqICWaHusD0ytHsLugOOaxrygsWhAkmmPW/CXCrmPPH0KWjpG/RBgd+/Xq2LFUxFBH4U9HG8Kaj+XcrKKUaP6w7AshXREKRZdVP0vatopQaI645GtNPd2glWVG5FVH7wBJHWsAiOtYC8Cojr16AEZ1lPUAjLpwWA/AsCI6aC7WA2AQVvjKtboADMI5ztf1pHmKB/3/AIsDnPXHDro4AAAAAElFTkSuQmCC');
+
+// Die tile. Hex is hardcoded here and tokenised in main.css because this file compiles to
+// public/host.css for the CHAT host, a separate artifact that cannot see the sheet's custom
+// properties. #710103 is --ddd-oxblood, #ebac49 is --ddd-gold; die-glyph-parity.test.js asserts
+// the two files agree on both, which they did NOT before ddd-4ra (the rim was #8a1d1d here and
+// --ddd-blood #5e1111 there — live drift nothing was watching).
+//
+// Two tiles of OPPOSITE POLARITY since ddd-a74 — see the --ddd-die-* note in main.css for the
+// full ratio table. Short version: white is 2.06:1 on amber and gold is 1.03:1 on it, so the
+// symbol colour follows the tile (white on devil, ink on temptation) and the rim is ink on both.
+//
+// This also fixed the chat card. The old #710103 tile was 1.56:1 against .ddd-roll's own #1a0a0a
+// ground and depended entirely on its rim; these are 3.48:1 and 9.36:1, so each tile now reads
+// on its own here. Note the ink RIM is invisible on this card (1.2:1) — that is fine, because on
+// the card the rim has no work left to do. It earns its place on the SHEET, where the amber tile
+// is only 1.70:1 against the parchment panel.
+.ddd-die {
+  display: inline-block;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.25rem;
+  background-color: #ce1b1e;      // --ddd-die-devil
+  border: 1px solid #211313;      // --ddd-ink
+}
+
+// Ties .ddd-die at 0-1-0, so source order is what makes these win — keep them after it.
+.ddd-die--drive,
+.ddd-die--overtaken {
+  background-color: #f5a424;      // --ddd-die-temptation
+}
+
+// The mask goes on ::before, not on .ddd-die itself: masking the element would clip its own
+// background and border away and leave a bare symbol. The base rule carries geometry and mask
+// placement only — both inert without a mask-image — so .ddd-die--duty, the book's "Blank" face,
+// needs no opt-out. It simply never gets a background-color, and an unpainted ::before is
+// invisible.
+.ddd-die::before {
+  content: '';
+  display: block;
+  box-sizing: border-box;         // explicit: Roll20's reset is not ours to rely on
+  width: 100%;
+  height: 100%;
+  mask-position: center;
+  mask-size: 72%;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: 72%;
+  -webkit-mask-repeat: no-repeat;
+}
+
+// Devil's Eyebrow (d6 = 6) — ornate curl, from the DDD character-sheet insert p.2
+.ddd-die--eyebrow::before {
+  background-color: #fff;
+  mask-image: $glyph-eyebrow;
+  -webkit-mask-image: $glyph-eyebrow;
+}
+
+// Devil's Delight (d6 = 1) — eye-with-lashes, from the same insert page
+.ddd-die--delight::before {
+  background-color: #fff;
+  mask-image: $glyph-delight;
+  -webkit-mask-image: $glyph-delight;
+}
+
+// Devil's Duty (d6 = 2-5) — the book's "Blank" face. No rule at all: the base ::before paints
+// nothing without a background-color, so the tile shows through unmarked.
+
+// Temptation die, spiral (d6 = 3-6, band `drive`) — insert p.2 "TEMPTATION DIE ROLLS"
+.ddd-die--drive::before {
+  background-color: #211313;      // --ddd-ink
+  mask-image: $glyph-drive;
+  -webkit-mask-image: $glyph-drive;
+}
+
+// Temptation die, bolt (d6 = 1-2, band `overtaken`) — same table
+.ddd-die--overtaken::before {
+  background-color: #211313;      // --ddd-ink
+  mask-image: $glyph-overtaken;
+  -webkit-mask-image: $glyph-overtaken;
+}
