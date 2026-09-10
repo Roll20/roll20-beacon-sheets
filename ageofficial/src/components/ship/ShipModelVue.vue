@@ -17,7 +17,7 @@
         <div class="modal-body">
           <div v-if="type === 'shipDetails'">
             <div class="row age-row">
-              <div class="mb-3 col-6 age-form-field">
+              <div class="mb-3 col-12 col-md-6 age-form-field">
                 <span id="basic-addon1" class="age-input-label">Name</span>
                 <div>
                   <input
@@ -29,7 +29,7 @@
                   />
                 </div>
               </div>
-              <div class="mb-3 col-6 age-form-field" v-if="isGM">
+              <div class="mb-3 col-12 col-md-6 age-form-field" v-if="isGM">
                 <span id="basic-addon1" class="age-input-label">Type</span>
                 <div>
                   <select
@@ -46,7 +46,7 @@
             </div>
 
             <div class="row age-row">
-              <div class="mb-3 col-6 age-form-field">
+              <div class="mb-3 col-12 col-md-6 age-form-field">
                 <span id="basic-addon1" class="age-input-label"
                   >Length (meters)</span
                 >
@@ -62,22 +62,64 @@
                       aria-describedby="basic-addon1"
                     />
                   </div>
-                  <div>
-                    <span class="ship-stat-label"
-                      >Size: {{ computedShipSize.size }}</span
-                    >
-                    <span class="ship-stat-label"
-                      >Hull: {{ computedShipSize.hull }}</span
-                    >
-                    <span
-                      >Crew: {{ computedShipSize.crewMin }} ({{
-                        computedShipSize.crewAvg
-                      }})</span
-                    >
-                  </div>
                 </div>
               </div>
-              <div class="mb-3 col-6 age-form-field">
+              <div class="mb-3 col-12 col-md-6 age-form-field">
+                <span class="age-input-label">Size</span>
+                <div>
+                  <select
+                    v-model="ship.size"
+                    class="age-atk-select form-select"
+                    aria-label="Ship Size"
+                  >
+                    <option value="">—</option>
+                    <option
+                      v-for="opt in shipSizeOptions"
+                      :key="opt.size"
+                      :value="opt.size"
+                    >
+                      {{ opt.size }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3 col-12 col-md-4 age-form-field">
+                <span class="age-input-label">Hull</span>
+                <div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="Ship Hull"
+                    placeholder="e.g. 1 or 6d6"
+                    v-model="ship.hullBase"
+                  />
+                </div>
+              </div>
+              <div class="mb-3 col-12 col-md-4 age-form-field">
+                <span class="age-input-label">Minimum Crew</span>
+                <div>
+                  <input
+                    type="number"
+                    :min="0"
+                    class="form-control"
+                    aria-label="Minimum Crew"
+                    v-model.number="ship.crewMin"
+                  />
+                </div>
+              </div>
+              <div class="mb-3 col-12 col-md-4 age-form-field">
+                <span class="age-input-label">Full Efficiency Crew</span>
+                <div>
+                  <input
+                    type="number"
+                    :min="0"
+                    class="form-control"
+                    aria-label="Full Efficiency Crew"
+                    v-model.number="ship.crewFull"
+                  />
+                </div>
+              </div>
+              <div class="mb-3 col-12 col-md-4 age-form-field">
                 <span id="basic-addon1" class="age-input-label">Sensors</span>
                 <div>
                   <input
@@ -89,7 +131,7 @@
                   />
                 </div>
               </div>
-              <div class="input-group mb-3 age-form-field">
+              <div class="mb-3 col-12 col-md-8 age-form-field">
                 <span id="basic-addon1" class="age-input-label">Drive</span>
                 <VueMultiselect
                   v-model="ship.drive"
@@ -117,6 +159,9 @@
             <slot name="footer"></slot>
           </div>
         </div>
+        <div v-if="type === 'shipDetails'" class="modal-footer-actions">
+          <button class="confirm-btn" @click="$emit('close')">OK</button>
+        </div>
       </div>
     </div>
   </Transition>
@@ -137,7 +182,7 @@ const ship = useShipStore();
 const meta = useMetaStore();
 const bio = useBioStore();
 const isGM = computed(() => meta.permissions.isGM);
-const computedShipSize = computed(() => ship.computedShipSize);
+const shipSizeOptions = ship.shipSizeOptions;
 const shipDrives = [
   { _id: "1", type: "Epstein" },
   { _id: "2", type: "Thrusters" },
@@ -145,16 +190,18 @@ const shipDrives = [
 const dropdownOpen = ref(false);
 </script>
 <style scoped>
-.ship-stat-label {
-  margin-right: 6px;
-}
-
 .ship-drive-multiselect {
   width: 100%;
   max-width: 300px;
 }
 </style>
 <style>
+/* Override the global `body .modal-mask .modal-body { margin: 20px 0 }`
+   for this modal only (.model-cntr is unique to ShipModelVue). */
+.modal-mask .model-cntr .modal-body {
+  margin: 10px 0 0;
+  overflow-y: hidden;
+}
 .model-cntr {
   min-width: 300px;
   margin: auto;

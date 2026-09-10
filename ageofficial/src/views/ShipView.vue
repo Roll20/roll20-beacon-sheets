@@ -10,18 +10,16 @@
         <div class="age-ship-details ship-chip-strip">
           <div class="age-ship-chip">
             <span class="age-ship-chip-label">Size</span>
-            <span class="age-ship-chip-value">{{ computedShipSize.size }}</span>
+            <span class="age-ship-chip-value">{{ ship.size }}</span>
           </div>
           <div class="age-ship-chip">
             <span class="age-ship-chip-label">Hull</span>
-            <span class="age-ship-chip-value">{{ computedShipSize.hull }}</span>
+            <span class="age-ship-chip-value">{{ ship.hullBase }}</span>
           </div>
           <div class="age-ship-chip">
             <span class="age-ship-chip-label">Crew</span>
             <span class="age-ship-chip-value"
-              >{{ computedShipSize.crewMin }} ({{
-                computedShipSize.crewAvg
-              }})</span
+              >{{ ship.crewMin }} ({{ ship.crewFull }})</span
             >
           </div>
           <div class="age-ship-chip">
@@ -97,16 +95,15 @@
           <button
             class="age-btn ship-wide-btn"
             @click="ship.rollHull()"
-            :disabled="!computedShipSize.hull"
+            :disabled="!ship.hullBase"
             v-tippy="{
               content:
-                'Roll hull dice: ' +
-                (computedShipSize.hull || 'set ship length first'),
+                'Roll hull dice: ' + (ship.hullBase || 'set ship hull first'),
             }"
           >
             Roll Hull
-            <span v-if="computedShipSize.hull" class="age-btn-badge">{{
-              computedShipSize.hull
+            <span v-if="ship.hullBase" class="age-btn-badge">{{
+              ship.hullBase
             }}</span>
           </button>
 
@@ -212,7 +209,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 import { useMetaStore } from "@/sheet/stores/meta/metaStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
@@ -227,8 +224,6 @@ const meta = useMetaStore();
 const ship = useShipStore();
 const showModal = ref(false);
 const modalText = ref({ type: "shipDetails", header: "Ship Info" });
-
-const computedShipSize = computed(() => ship.computedShipSize);
 
 // Enemy sensors value drives Evasion and Point Defense target numbers
 const enemySensorsInput = ref(0);
