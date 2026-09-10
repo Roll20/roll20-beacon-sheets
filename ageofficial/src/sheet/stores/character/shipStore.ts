@@ -36,8 +36,11 @@ export type ShipHydrate = {
     | Record<string, { _id: string; type: string }>
     | Array<{ _id: string; type: string }>;
   sensorsBase?: number;
+  size?: string;
   hullBase?: string;
   hullPenalty?: number;
+  crewMin?: number;
+  crewFull?: number;
   length?: number;
   weapons?: Record<string, ShipWeapon>;
   crew?: Record<string, CrewHydrate>;
@@ -99,8 +102,11 @@ export const useShipStore = defineStore("ship", () => {
   const drive = ref<{ _id: string; type: string }[]>([]);
   const length = ref<number>(0);
   const sensorsBase = ref<number>(0);
+  const size = ref<string>("");
   const hullBase = ref<string>("");
   const hullPenalty = ref<number>(0);
+  const crewMin = ref<number>(0);
+  const crewFull = ref<number>(0);
   const crew = ref<CrewHydrate[]>([]);
   const qualityFlaws = ref<QualityFlawHydrate[]>([]);
   const stuntDefs = ref<ShipStuntDef[]>([]);
@@ -163,14 +169,20 @@ export const useShipStore = defineStore("ship", () => {
     },
   ];
 
-  const computedShipSize = computed(
-    () =>
-      Object.values(shipSizeOptions)
-        .reverse()
-        .find((s) =>
-          length.value !== null ? s.length <= length.value : false
-        ) || { size: "", length: 0, hull: "", crewMin: 0, crewAvg: 0 }
-  );
+  // Pure lookup of the size-table row for a given length in meters.
+  // Used only to seed the saved size/hull/crew fields on first load of a
+  // legacy ship (see hydrate()); size/hull/crew are otherwise independent
+  // saved values, not derived from length.
+  const sizeInfoFromLength = (len: number) =>
+    Object.values(shipSizeOptions)
+      .reverse()
+      .find((s) => (len !== null ? s.length <= len : false)) || {
+      size: "",
+      length: 0,
+      hull: "",
+      crewMin: 0,
+      crewAvg: 0,
+    };
 
   // Find the primary-role crew member for a given role key and return their ability score + focus bonus.
   // Falls back to any crew member with the role if no primary is set.
@@ -313,17 +325,30 @@ export const useShipStore = defineStore("ship", () => {
     });
   };
 
-  // Hull Roll: rolls the ship's hull dice formula (e.g. 2d6) with hull loss penalty applied
+  // Hull Roll: rolls the ship's saved hull value with hull loss penalty applied.
+  // The hull value can be a dice formula (e.g. "2d6") or a flat number (e.g. "1").
   const rollHull = async () => {
-    const hullFormula = computedShipSize.value.hull;
+    const hullFormula = hullBase.value.trim();
     if (!hullFormula) return;
-    const match = hullFormula.match(/^(\d+)d(\d+)$/);
-    if (!match) return;
-    const count = parseInt(match[1]);
-    const sides = parseInt(match[2]);
-    const components: any[] = [
-      { label: hullFormula, sides, count, alwaysShowInBreakdown: true },
-    ];
+    const diceMatch = hullFormula.match(/^(\d+)d(\d+)$/);
+    const flatMatch = hullFormula.match(/^\d+$/);
+    if (!diceMatch && !flatMatch) return;
+    const components: any[] = diceMatch
+      ? [
+          {
+            label: hullFormula,
+            sides: parseInt(diceMatch[2]),
+            count: parseInt(diceMatch[1]),
+            alwaysShowInBreakdown: true,
+          },
+        ]
+      : [
+          {
+            label: "Hull",
+            value: parseInt(hullFormula),
+            alwaysShowInBreakdown: true,
+          },
+        ];
     if (losses.value.hull > 0) {
       components.push({ label: "Hull Loss", value: -losses.value.hull });
     }
@@ -470,8 +495,11 @@ export const useShipStore = defineStore("ship", () => {
       drive: arrayToObject(drive.value),
       length: length.value,
       sensorsBase: sensorsBase.value,
+      size: size.value,
       hullBase: hullBase.value,
       hullPenalty: hullPenalty.value,
+      crewMin: crewMin.value,
+      crewFull: crewFull.value,
       crew: arrayToObject(
         crew.value.map(({ _id, name, primaryRole, ability }) => ({
           _id,
@@ -503,8 +531,28 @@ export const useShipStore = defineStore("ship", () => {
       .filter(Boolean);
     length.value = hydrateStore.length || 0;
     sensorsBase.value = hydrateStore.sensorsBase || 0;
-    hullBase.value = hydrateStore.hullBase || "";
     hullPenalty.value = hydrateStore.hullPenalty || 0;
+
+    // Size, hull, and crew are independent saved values. Legacy sheets predate
+    // these fields and only stored `length`, from which size/hull/crew used to
+    // be computed. A pre-feature sheet is identified by the absence of `size`
+    // (a brand-new field): only then do we seed all four from the length-based
+    // size table. This runs once, on load — after any save the fields are
+    // present and are used verbatim, so editing length (or a legitimate 0/empty
+    // value) never clobbers the user's saved size/hull/crew.
+    if (hydrateStore.size === undefined) {
+      const seed = sizeInfoFromLength(length.value);
+      const hasLength = length.value > 0;
+      size.value = hasLength ? seed.size : "";
+      hullBase.value = hasLength ? seed.hull : hydrateStore.hullBase || "";
+      crewMin.value = hasLength ? seed.crewMin : 0;
+      crewFull.value = hasLength ? seed.crewAvg : 0;
+    } else {
+      size.value = hydrateStore.size;
+      hullBase.value = hydrateStore.hullBase || "";
+      crewMin.value = hydrateStore.crewMin ?? 0;
+      crewFull.value = hydrateStore.crewFull ?? 0;
+    }
     crew.value =
       crewArray.map((c: any) => ({
         ...c,
@@ -544,8 +592,11 @@ export const useShipStore = defineStore("ship", () => {
     length,
     sensorsBase,
     sensorsCurrent,
+    size,
     hullBase,
     hullPenalty,
+    crewMin,
+    crewFull,
     crew,
     qualityFlaws,
     stuntDefs,
@@ -556,7 +607,7 @@ export const useShipStore = defineStore("ship", () => {
     losses,
     seriousLosses,
     pdcFiredThisRound,
-    computedShipSize,
+    shipSizeOptions,
     addCrewMember,
     updateCrewMember,
     deleteCrewMember,
