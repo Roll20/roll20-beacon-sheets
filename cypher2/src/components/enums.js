@@ -70,6 +70,13 @@ export const SKILL_ASSETS = [0, 1, 2]
 // none/eased/hindered mode select ('none' = the schema's null).
 export const MODIFIER_DIRECTIONS = ['eased', 'hindered']
 
+// artifact.depletion's roll branch: the die a depletion check is rolled on.
+// Smallest -> largest, the book's ladder; the stored value IS its label, so no
+// label map. Lived inline in ArtifactsSegment.vue until ddd-fwr — the last
+// stored-enum <option> list outside this file, and so the last one the schema
+// lock could not see.
+export const DEPLETION_DICE = ['1d6', '1d10', '1d20', '1d100']
+
 // EVERY read of a stored value through a label map goes through here — never
 // LABELS[value] directly (ddd-9ir / ddd-5vb audit): hydrate() applies no enum
 // validation, and a stored 'constructor' finds the inherited Function on a
@@ -94,18 +101,33 @@ export const enumLabel = (labels, value) => (Object.hasOwn(labels, value) ? labe
 // what keeps a clean row's option list BYTE-IDENTICAL — contract-enums.test.js asserts
 // those lists EQUAL the schema enum, and it must stay unmodified.
 //
-// null/undefined/'' are excluded deliberately, not incidentally: for skill.pool and
-// attack.weaponClass they are the nullable state, a LEGAL value that already owns the
-// '— no pool' / '— n/a' sentinel option. Handing it a second, disabled option would
-// brand a valid choice as broken. This is the same boundary the summary's `v-if` and
-// poolLabel() already draw.
+// null/undefined/'' are excluded BY DEFAULT, not unconditionally: for skill.pool,
+// attack.weaponClass, attack.range and the two cypher enums they are the nullable state,
+// a LEGAL value that already owns the '— no pool' / '— n/a' sentinel option. Handing it a
+// second, disabled option would brand a valid choice as broken. This is the same boundary
+// the summary's `v-if` and poolLabel() already draw.
+//
+// But five of the ten stored enums are NOT nullable (skill.rating, skill.asset,
+// attack.pool, attack.skillRating, artifact.depletion.die), and there the default was the
+// whole bug over again (ddd-fwr closeout audit F1). Firebase drops a null-valued key and
+// Roll20's attribute layer materializes it as an EMPTY STRING (ddd-wbc, live-verified) —
+// so an empty required enum is the REACHABLE case, not the exotic one. It suppressed the
+// warning, matched no <option>, and left selectedIndex at -1: the blank control this
+// helper exists to prevent, reached by the one input nobody guarded against. Pass
+// `{ nullable: false }` at those sites and an empty value gets an option of its own,
+// saying it is missing rather than showing nothing.
 //
 // The ⚠ leads so the "this is wrong" signal is the first glyph rendered and cannot be
 // clipped away at 280px (docs/sandbox-walkthrough.md item 5); the raw value comes next
 // because it is the payload — the one thing telling the player WHAT their file got
 // wrong; the parenthetical names the problem last. Nothing here can be mistaken for a
 // legal option, which the raw value alone ("psyche") would be.
-export const strayOptions = (value, allowed, what) =>
-  value === null || value === undefined || value === '' || allowed.includes(value)
-    ? []
-    : [{ value, text: `⚠ ${value} (not a valid ${what})` }]
+export const strayOptions = (value, allowed, what, { nullable = true } = {}) => {
+  if (value === null || value === undefined || value === '') {
+    // The raw value, not a coerced '': the <option> only gets SELECTED when its value
+    // matches what the row actually holds, and coercing here would re-blank the control
+    // for a stored null — the exact failure being fixed.
+    return nullable ? [] : [{ value, text: `⚠ no ${what} set` }]
+  }
+  return allowed.includes(value) ? [] : [{ value, text: `⚠ ${value} (not a valid ${what})` }]
+}

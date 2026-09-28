@@ -1,80 +1,46 @@
 <script setup>
-import { ref } from 'vue'
 import { useSheetStore } from '@/stores/sheetStore.js'
 import { useMetaStore } from '@/stores/metaStore.js'
 import { parseAndValidate, applyDocument } from '@/contract/importer.js'
 import { exportDocument, downloadDocument } from '@/contract/exporter.js'
-import { validateDocument } from '@/contract/validation.js'
+import { validateCharacterRaw } from '@/contract/validation.js'
+import { describeCharacterErrors } from '@/contract/fieldLabels.js'
+import { useImportExport } from '@/components/useImportExport.js'
 
 const sheet = useSheetStore()
 const meta = useMetaStore()
 
-const pasted = ref('')
-const failure = ref(null) // { code, message, details? } — the four distinct messages
-const pending = ref(null) // validated doc awaiting the replace confirmation
-
-const receiveText = (text) => {
-  failure.value = null
-  pending.value = null
-  const result = parseAndValidate(text)
-  if (!result.ok) {
-    failure.value = result.failure
-    return
-  }
-  pending.value = result.doc
-}
-
-const onFile = async (event) => {
-  const file = event.target.files?.[0]
-  if (!file) return
-  receiveText(await file.text())
-  event.target.value = '' // allow re-selecting the same file
-}
-
-const onValidatePaste = () => receiveText(pasted.value)
-
-const confirmImport = () => {
-  applyDocument(pending.value, { sheet, meta })
-  pending.value = null
-  pasted.value = ''
-}
-const cancelImport = () => {
-  pending.value = null
-}
-
-const copyStatus = ref(null) // { ok: boolean, message: string } — transient feedback for onCopy
-const exportFailure = ref(null) // violations that would make the exported file un-importable
-
-// Hand-edited text fields (e.g. an emptied name) can violate the schema's
-// minLength floors, producing a file this sheet would refuse to re-import.
-// Validate before handing anything out; a visible refusal beats a bad file.
-const validatedExport = () => {
-  exportFailure.value = null
-  const doc = exportDocument({ sheet, meta })
-  const { valid, errors } = validateDocument(doc)
-  if (valid) return doc
-  exportFailure.value = {
+// Hand-edited text fields (e.g. an emptied row name) can violate the schema's minLength
+// floors, producing a file this sheet would refuse to re-import. The refusal names each
+// field and where on the sheet to fix it (ddd-ag26).
+const describeExportFailure = (doc) => {
+  const { valid, errors } = validateCharacterRaw(doc)
+  if (valid) return null
+  return {
     message: 'This sheet cannot be exported yet — fix these fields first:',
-    details: errors.slice(0, 5)
+    ...describeCharacterErrors(errors, doc, { mode: 'export' })
   }
-  return null
 }
 
-const onDownload = () => {
-  const doc = validatedExport()
-  if (doc) downloadDocument(doc)
-}
-const onCopy = async () => {
-  const doc = validatedExport()
-  if (!doc) return
-  try {
-    await navigator.clipboard.writeText(JSON.stringify(doc, null, 2))
-    copyStatus.value = { ok: true, message: 'Copied to clipboard.' }
-  } catch {
-    // e.g. sandboxed-iframe CSP blocks clipboard access — surface it rather than fail silently.
-    copyStatus.value = { ok: false, message: 'Could not copy to clipboard. Use Download JSON instead.' }
-  }
-}
+const {
+  pasted,
+  failure,
+  pending,
+  onFile,
+  onValidatePaste,
+  confirmImport,
+  cancelImport,
+  copyStatus,
+  exportFailure,
+  onDownload,
+  onCopy
+} = useImportExport({
+  parse: parseAndValidate,
+  apply: (doc) => applyDocument(doc, { sheet, meta }),
+  buildExport: () => exportDocument({ sheet, meta }),
+  describeExportFailure,
+  download: downloadDocument
+})
 </script>
 
 <template>
@@ -97,6 +63,7 @@ const onCopy = async () => {
       <p>{{ failure.message }}</p>
       <ul v-if="failure.details?.length">
         <li v-for="d in failure.details" :key="d">{{ d }}</li>
+        <li v-if="failure.more">…and {{ failure.more }} more.</li>
       </ul>
     </div>
 
@@ -118,6 +85,7 @@ const onCopy = async () => {
       <p>{{ exportFailure.message }}</p>
       <ul>
         <li v-for="d in exportFailure.details" :key="d">{{ d }}</li>
+        <li v-if="exportFailure.more">…and {{ exportFailure.more }} more.</li>
       </ul>
     </div>
     <p v-if="copyStatus" class="export__copy-status" :class="{ 'export__copy-status--error': !copyStatus.ok }">

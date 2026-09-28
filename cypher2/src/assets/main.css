@@ -7,6 +7,36 @@
 /* Docs mention class names as prose; don't let the scanner turn them into utilities. */
 @source not "../../README.md";
 @source not "../../docs";
+/* ddd-iax. Same reason, one directory the list had missed. scripts/capture.mjs is the
+   browser gate, so it is FULL of layout prose — it asserts about grids, blocks, flex and
+   columns, and says so in its comments. Tailwind 4's scanner reads a bare
+   class-name-shaped word out of a COMMENT and mints a real utility from it: adding the
+   word 'rounded' to one grew this bundle by exactly 30 B and a selector diff showed a
+   dead .rounded rule as the sole addition. Every future comment there was another
+   chance to do that silently, against a bundle already at 81% of its 165 kB cap. */
+@source not "../../scripts";
+/* Same hazard, proved the same way: a class-shaped word in an HTML comment in
+   design-explorations/ minted .rotate-45 into the bundle (+24 B). Mockups and capture
+   probes are exactly where class names get written as prose. */
+@source not "../../design-explorations";
+/* And the same hazard INSIDE src/. Test files are the densest prose about class names
+   in the repo — they quote selectors, list class names, and explain layout in comments —
+   and none of it ships. This file's own comments minted .rounded and .rotate-45 into the
+   bundle while it was being written, which is the tightest possible demonstration.
+
+   The leading `../` is load-bearing and was wrong at first (closeout audit F2): an
+   @source path resolves against THIS FILE, not the project root, so a `./`-rooted glob
+   reached only src/assets/__tests__ and left the other 45 test files in the scan — while
+   still looking right, and still passing a test that pinned its literal text. Rooting it
+   at src/ dropped a further 1,709 B and eight more dead utilities (blur, filter,
+   lowercase, shrink, border-b-accent, border-t-warn, and two border-x variants), none of
+   them carried by any element. source-scan.test.js now RESOLVES the glob and checks it
+   covers every test directory, so the same mis-rooting cannot pass again.
+
+   (Do not spell a glob out inside a CSS comment: the star-slash in it closes the comment
+   early and corrupts the rest of the file. That is why this paragraph describes the
+   pattern in words.) */
+@source not "../**/__tests__";
 
 /* ===========================================================================
    TOKENS. A skin is variable redefinition and NOTHING else — there is not one
@@ -360,7 +390,8 @@
   margin-bottom: 0.4rem;
 }
 .header__row--name { flex: 1 1 auto; margin-bottom: 0; }
-.header__settings {
+.header__settings,
+.npc-sheet__settings {
   flex: 0 0 auto;
   align-self: end;
   background: none;
@@ -926,6 +957,129 @@
 .settings__hint { font-size: 0.78rem; color: var(--cy-muted); margin: 0 0 0.75rem; }
 .settings__toggle { display: flex; gap: var(--cy-gap); align-items: baseline; cursor: pointer; }
 
+/* --- NPC mode (ddd-zm47.2, spec §7) ---
+   Un-layered, like every BEM rule in this file. Inside @layer components these rules
+   would LOSE to the un-layered .btn and .field primitives whatever their specificity.
+   Single-class selectors only (tokens.test.js), so list items and text blocks carry
+   their own classes instead of being reached by descendant selectors. */
+/* No frame on the card itself (ddd-pqfl): the name line sits on the page, and the boxes
+   below it stack at the sheet's own gap, the way the character sheet lays out its panels. */
+.npc-card { display: grid; gap: var(--cy-gap); min-width: 0; }
+.npc-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem var(--cy-gap);
+}
+/* The preflight-reconciliation block reverts h3's UA margin and size, so the title
+   sets both itself. */
+.npc-card__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.5rem;
+  margin: 0;
+  min-width: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+/* "3 (9)", the book's level-and-target-number format, in the summary cells' face. */
+.npc-card__level {
+  font-family: var(--cy-font-cond);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--cy-accent);
+}
+/* The stack of boxes (ddd-pqfl), at the same gap as the card's own rows. */
+.npc-card__fields { display: grid; gap: var(--cy-gap); min-width: 0; }
+/* One banner-headed box. .banner is width: fit-content, so as a grid item it keeps its
+   tab width instead of stretching across the box. */
+.npc-card__group { display: grid; gap: 0.45rem; min-width: 0; }
+.npc-card__field { display: grid; gap: 0.1rem; min-width: 0; }
+/* Health and Armor share one row (owner amendment 2026-09-14). flex-wrap drops Armor
+   under Health when the card is too narrow for both. */
+.npc-card__vitals { display: flex; flex-wrap: wrap; align-items: start; gap: 0.45rem 1.5rem; min-width: 0; }
+/* One combat action: its paragraph, and from Task 5 its chat chip at the right. The
+   field's 0.1rem grid gap ran the actions together, 1 to 2px apart (ddd-o5vw), so each
+   action carries its own space above it, which also parts the first from the prelude. */
+.npc-card__action { display: flex; align-items: start; gap: 0.35rem; min-width: 0; margin-top: 0.4rem; }
+/* pre-wrap for the same reason as .npc-card__text. `p { margin: revert }` in the
+   preflight block puts UA margins back on paragraphs, hence the explicit 0. */
+.npc-card__action-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  color: var(--cy-ink);
+}
+/* The book prints ability names in italics. Stated outright rather than trusted to
+   the UA's em style. */
+.npc-card__action-title { font-style: italic; }
+/* pre-wrap: Combat and Description are multi-paragraph book text whose stored value
+   keeps its line breaks (spec §7.2). `p { margin: revert }` in the preflight block puts
+   UA margins back on paragraphs, hence the explicit 0. */
+.npc-card__text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  color: var(--cy-ink);
+}
+.npc-card__armor-note { color: var(--cy-muted); }
+/* Preflight strips list styling, so the bullets come back explicitly. */
+.npc-card__intrusions { display: grid; gap: 0.3rem; margin: 0; padding-left: 1.1rem; list-style: disc; }
+.npc-card__intrusion { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.45; }
+.npc-card__health-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+/* A definite width, not .field's 100% capped by max-width (ddd-9loy). Beside Armor the
+   Health field is a content-sized flex item, and a percentage width on the box is cyclic
+   there: Chromium undercounted the row's width and wrapped + onto a second line at every
+   sheet width. Measured 153px as built against the 176px the one-line row needs. */
+.npc-card__health-current { width: 4.5rem; }
+.npc-card__health-max { font-weight: 700; }
+/* Same fill as .banner--warn, whose text colour is also --cy-accent-contrast. */
+.npc-card__down {
+  padding: 0.1rem 0.5rem;
+  background: var(--cy-warn);
+  color: var(--cy-accent-contrast);
+  border-radius: var(--cy-geo-chip-radius);
+  font-family: var(--cy-font-cond);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* .npc-sheet and .npc-notice are direct grid items of .cypher-sheet, so min-width: 0
+   is load-bearing on both. See the ddd-2bv note on .play-strip. */
+.npc-sheet { display: grid; gap: var(--cy-gap); min-width: 0; }
+.npc-sheet__nameplate { display: flex; align-items: end; gap: var(--cy-gap); }
+.npc-sheet__name-row { display: grid; gap: 0.15rem; flex: 1 1 auto; min-width: 0; }
+/* The same type and width cap as .header__name. */
+.npc-sheet__name { max-width: 26rem; font-size: 1.05rem; font-weight: 700; }
+/* `p { margin: revert }` in the preflight block, hence the explicit 0. */
+.npc-notice { margin: 0; min-width: 0; color: var(--cy-muted); }
+/* margin-left: auto holds the actions at the right when the title wraps. */
+.npc-card__actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-left: auto; }
+/* Icon-only pencil toggle: the fill IS the mode indicator, exactly as on
+   .vitals__edit--active, and aria-pressed carries it for the screen reader. A single
+   class after .btn, so it wins on source order. */
+.npc-card__edit--active { background: var(--cy-accent); color: var(--cy-accent-contrast); }
+.npc-edit { display: grid; gap: 0.45rem; min-width: 0; }
+.npc-edit__row { display: grid; gap: 0.1rem; min-width: 0; }
+/* .field is width: 100%; the three numbers need a cap, not a full row. */
+.npc-edit__level, .npc-edit__health, .npc-edit__armor { max-width: 6rem; }
+.npc-edit__intrusions { display: grid; gap: 0.35rem; min-width: 0; }
+.npc-edit__intrusion-row { display: flex; align-items: start; gap: 0.35rem; min-width: 0; }
+.npc-edit__intrusion-add { justify-self: start; }
+/* Combat action rows (owner amendment 2026-09-14): title and description stacked
+   beside one ✕, the same shape as an intrusion row. */
+.npc-edit__actions { display: grid; gap: 0.35rem; min-width: 0; }
+.npc-edit__action-row { display: flex; align-items: start; gap: 0.35rem; min-width: 0; }
+.npc-edit__action-fields { display: grid; flex: 1 1 auto; gap: 0.2rem; min-width: 0; }
+.npc-edit__action-add { justify-self: start; }
+
 /* --- Guided roller modal (spec ③) ---
    The overlay, panel, header and dialog contract are ModalShell's (.modal*, below);
    only the roller's body styling lives here (ddd-6hx). */
@@ -954,6 +1108,11 @@
   padding: 0.5rem;
   font-size: 0.85rem;
 }
+/* ddd-keb3: the attack-mode refusal — no usable pool on the row, or a row deleted
+   while the roller was open. It explains a condition rather than reporting a failed
+   roll, so it takes the muted colour rather than the warning one, and the zero
+   margin every other line in this grid uses. */
+.roller__note { margin: 0; font-size: 0.85rem; color: var(--cy-muted); }
 .roller__error { color: var(--cy-warn); margin: 0; font-size: 0.85rem; }
 .roller__buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
 .roller__buttons button {

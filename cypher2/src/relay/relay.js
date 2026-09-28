@@ -11,6 +11,7 @@ import {
 } from './handlers/handlers'
 import { reactive, ref, watch, nextTick, shallowRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { healthBarGet, healthBarWrite } from '@/creature/creature.js'
 
 /* 
 This is the configuration for the relay. It defines the handlers and actions that the sheet will use.
@@ -77,6 +78,25 @@ export const computedPools = {
   intellect: poolComputed('intellect')
 }
 
+// NPC health bar (NPC spec §6). Declared for every sheet, because Beacon computed
+// values are sheet-wide, so a PC token can pick it too and reads ''. Both halves take
+// raw attributes, never Pinia: computed values run headless, where no store has
+// hydrated. The rules live in creature.js; this is only the SDK seam, and it mirrors
+// setPoolCurrent: no dispatch or an ignored value writes nothing, and a real write
+// sends the whole tree with the token-bar updateId so the open sheet hydrates it.
+export const computedHealth = {
+  tokenBarValue: true,
+  get: ({ character }) => healthBarGet(character?.attributes ?? {}),
+  set: async ({ character, dispatch }, value) => {
+    if (!dispatch?.updateCharacter) return
+    const attributes = healthBarWrite(character?.attributes ?? {}, value)
+    if (!attributes) return
+    await dispatch.updateCharacter({
+      character: { id: character?.id, attributes: { ...attributes, updateId: TOKEN_BAR_UPDATE_ID } }
+    })
+  }
+}
+
 const relayConfig = {
   handlers: {
     onInit,
@@ -88,7 +108,7 @@ const relayConfig = {
   },
   // Refer to our advanced example sheet on how to setup actions and computed properties.
   actions: {},
-  computed: computedPools
+  computed: { ...computedPools, health: computedHealth }
 }
 
 // Almost everything below here is Boilerplate and you probably want to keep it intact.
@@ -121,6 +141,20 @@ logMode is a flag that can be used to log the updates to the console. This is us
 // churn after startup or a hydrate. An edit restoring a PRE-hydrate value
 // still differs from the post-hydrate baseline, so it persists (audit r2).
 let lastSentPayload = null
+
+// The profile fields the sheet saves beside its attributes (stores/index.js dehydrateStore).
+const PROFILE_KEYS = ['name', 'bio', 'gmNotes', 'avatar']
+
+// Profile fields the cache holds that differ from what the remote is known to hold. A
+// journal rename touches only these, so its pulse still carries this sheet's updateId
+// (ddd-i0q8). An absent field is no change. A null one is a clear, read as '' to match
+// metaStore.hydrate.
+export const outsideProfileChanges = (cached, known) =>
+  Object.fromEntries(
+    PROFILE_KEYS.filter((key) => cached?.[key] !== undefined)
+      .map((key) => [key, cached[key] ?? ''])
+      .filter(([key, value]) => value !== known?.[key])
+  )
 
 const doUpdate = (dispatch, getUpdate, logMode = false) => {
   // getUpdate is a thunk: dehydration happens at debounce-fire time, never at
@@ -199,6 +233,19 @@ export const createRelay = async ({ devMode = false, primaryStore = 'app', logMo
       if (logMode) console.log('🔓🔴 locking changes')
       const { attributes, ...profile } = dispatch.characters[characterId]
       if (attributes.updateId === sheetId.value) {
+        // Our attributes, but the profile may have changed elsewhere. Take only the
+        // fields that moved, so a name still being typed here survives an own echo,
+        // and keep any pending save alive: it dehydrates at fire time and carries the
+        // new values. Rebase the save gate's profile too, since the remote holds it.
+        const known = JSON.parse(lastSentPayload ?? '{}')
+        const changed = outsideProfileChanges(profile, known)
+        if (Object.keys(changed).length) {
+          store.meta.hydrate(changed)
+          const next = { ...known, ...changed }
+          const { name, bio, gmNotes, avatar } = next
+          lastSentPayload = JSON.stringify({ name, bio, gmNotes, avatar, attributes: known.attributes })
+          await nextTick()
+        }
         blockUpdate.value = false
         return
       }

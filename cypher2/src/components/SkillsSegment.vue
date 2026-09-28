@@ -58,7 +58,7 @@ const contents = (row) => ({
            stored rating is left untouched for round-trip — hiding is not a write. -->
       <select v-if="!row.isProficiency" class="row-rating" v-model="row.rating" aria-label="Rating">
         <option
-          v-for="s in strayOptions(row.rating, RATINGS, 'rating')"
+          v-for="s in strayOptions(row.rating, RATINGS, 'rating', { nullable: false })"
           :key="s.text"
           :value="s.value"
           disabled
@@ -97,7 +97,7 @@ const contents = (row) => ({
           @change="row.asset = Number($event.target.value)"
         >
           <option
-            v-for="s in strayOptions(row.asset, SKILL_ASSETS, 'asset')"
+            v-for="s in strayOptions(row.asset, SKILL_ASSETS, 'asset', { nullable: false })"
             :key="s.text"
             :value="s.value"
             disabled

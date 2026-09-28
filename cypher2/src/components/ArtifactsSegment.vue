@@ -3,9 +3,9 @@ import ItemList from '@/components/ItemList.vue'
 import RowLevel from '@/components/RowLevel.vue'
 import RowProse from '@/components/RowProse.vue'
 import { levelField } from '@/components/rowFields.js'
+import { DEPLETION_DICE, strayOptions } from '@/components/enums.js'
 import { clampInt, syncClamped } from '@/utility/clamp.js'
 
-const DEPLETION_DICE = ['1d6', '1d10', '1d20', '1d100']
 // The three schema-legal shapes (v2): null, {chance, die}, or the "automatic"
 // sentinel — depletes on use, guaranteed; NOT the same as null, which means
 // never depletes (contract §2.1). isRoll gates every .chance/.die access so the
@@ -70,7 +70,20 @@ const summaryCells = (row) =>
           <input class="row-depletion-chance field" type="number" min="1" :value="row.depletion.chance"
             @change="row.depletion.chance = syncClamped($event, clampInt($event.target.value, 1))" />
         </label>
+        <!-- strayOptions (ddd-fwr): hydrate() applies no enum validation, so a foreign
+             file's die reaches this <select> unchecked. Without the disabled stray option
+             it matches nothing and the control renders BLANK — the ddd-9ir failure, on the
+             one stored-enum list that had not yet been given the guard. Not nullable: the
+             roll branch always has a die, so there is no sentinel for a stray to shadow. -->
         <select class="row-depletion-die field" v-model="row.depletion.die" aria-label="Depletion die">
+          <option
+            v-for="s in strayOptions(row.depletion.die, DEPLETION_DICE, 'depletion die', { nullable: false })"
+            :key="s.text"
+            :value="s.value"
+            disabled
+          >
+            {{ s.text }}
+          </option>
           <option v-for="d in DEPLETION_DICE" :key="d" :value="d">{{ d }}</option>
         </select>
       </template>

@@ -21,6 +21,12 @@ const shiftText = (row) => `${row.shifts} shift${row.shifts === 1 ? '' : 's'}`
 const stepText = (row) =>
   row.steps.length ? `${row.steps.filter((s) => s.completed).length}/${row.steps.length} steps` : null
 
+// Same one-pass shape as the other conditional-cell lists (ddd-0k1, ddd-psi): the
+// `v-if` plus interpolation below computed stepText twice per render. filter(Boolean)
+// is safe because stepText returns null or a non-empty string — an arc with steps but
+// none completed reads "0/3 steps", which is truthy.
+const arcSummaryCells = (row) => [stepText(row)].filter(Boolean)
+
 const shiftContents = (row) => ({
   title: row.name,
   fields: [shiftText(row)],
@@ -62,7 +68,7 @@ const arcContents = (row) => ({
     <ItemList :contents="arcContents" store-key="arcs" title="Character arcs" add-label="Add arc">
       <template #summary="{ row }">
         <span class="summary-name">{{ row.name }}</span>
-        <span v-if="stepText(row)" class="summary-cell">{{ stepText(row) }}</span>
+        <span v-for="(cell, i) in arcSummaryCells(row)" :key="i" class="summary-cell">{{ cell }}</span>
       </template>
       <template #row="{ row }">
         <input class="row-name field" v-model="row.name" placeholder="Arc name" />

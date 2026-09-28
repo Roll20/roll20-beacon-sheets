@@ -30,6 +30,13 @@ const costLabel = (row) => {
 const activationText = (row) =>
   row.enabler && String(row.activation).trim().toLowerCase() === 'enabler' ? null : row.activation
 
+// One pass over the cells rather than `v-if="costText(row)"` + `{{ costText(row) }}`,
+// which computed the cell twice per render (ddd-0k1, finished here by ddd-psi). Same
+// shape as artifacts, cyphers and equipment; filter(Boolean) is the collapse rule the
+// v-if enforced. Safe here, and the reason is the trap ddd-psi flagged: costText
+// returns null or a NON-EMPTY string, so a 0-point cost arrives as '0' and survives.
+const summaryCells = (row) => [costText(row), row.enabler && 'Enabler'].filter(Boolean)
+
 const contents = (row) => ({
   title: row.name,
   fields: [costLabel(row), row.enabler && 'Enabler', activationText(row)],
@@ -43,8 +50,7 @@ const contents = (row) => ({
     <!-- spec ⑦ §4.2: name · cost · Enabler marker when set. -->
     <template #summary="{ row }">
       <span class="summary-name">{{ row.name }}</span>
-      <span v-if="costText(row)" class="summary-cell">{{ costText(row) }}</span>
-      <span v-if="row.enabler" class="summary-cell">Enabler</span>
+      <span v-for="(cell, i) in summaryCells(row)" :key="i" class="summary-cell">{{ cell }}</span>
     </template>
     <template #row="{ row }">
       <input class="row-name field" v-model="row.name" placeholder="Ability name" />

@@ -2,7 +2,8 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { arrayToObject, objectToArray } from '@/utility/objectify'
-import { dispatchRef, initValues } from '@/relay/relay.js'
+import { dispatchRef } from '@/relay/relay.js'
+import { post } from '@/utility/post.js'
 import { createRollTemplate } from '@/rollTemplates/index.js'
 import { interpretStatRoll, interpretGuidedRoll, easedSteps, effortCost, rawEffortCost } from '@/dice/rolls.js'
 import { guidedRollTemplateData } from '@/rollTemplates/guidedCard.js'
@@ -97,6 +98,10 @@ const sheetStore = () => {
     // Item cards only. Roll cards stay public whatever this says — a sheet whose
     // rolls could go silent would be a different feature (item-contents spec §5).
     whisperItemCards: false
+    // settingsSeen (ddd-wqx6) is deliberately NOT defaulted here. App adds it the first
+    // time a brand-new character opens, and adding it is what changes the dehydrated
+    // document so the relay persists a ui branch. A default would change every existing
+    // character's payload, which appStore.dehydrate.test.js forbids (NPC spec §5.2).
   })
 
   // A WHITELIST, not a spread. spec ⑦ §5 drops ui.activeTab rather than mapping it,
@@ -104,7 +109,13 @@ const sheetStore = () => {
   // activeTab would merge straight back in, and since dehydrate() ships ui wholesale
   // it would be re-persisted forever. Unknown keys from a future sheet version are
   // dropped for the same reason — this branch is owned here, not by the payload.
-  const UI_KEYS = ['characterSegment', 'kitSegment', 'guidedRoll', 'theme', 'whisperItemCards']
+  const UI_KEYS = ['characterSegment', 'kitSegment', 'guidedRoll', 'theme', 'whisperItemCards', 'settingsSeen']
+
+  // Whether the last hydrated document carried a ui branch (ddd-wqx6). Not persisted.
+  // Written by the app store's hydrateStore, which also sees the no-attributes case that
+  // hydrate() never receives. Defaults true so a store nothing has hydrated, as in
+  // tests, reads as an existing character.
+  const hasStoredUi = ref(true)
 
   const arrays = { skills, abilities, attacks, equipment, cyphers, artifacts, powerShifts, currencies, arcs }
 
@@ -115,17 +126,6 @@ const sheetStore = () => {
     const i = arrays[key].value.findIndex((r) => r._id === id)
     if (i >= 0) arrays[key].value.splice(i, 1)
   }
-
-  // Visibility is an ARGUMENT, not a store read. post() is shared by the roll cards
-  // and the item cards, and only the item cards are governed by ui.whisperItemCards
-  // (item-contents spec §5) — a branch that read the flag in here would silence rolls
-  // too, and every existing caller would keep compiling.
-  const post = (content, { whisper = false } = {}) =>
-    dispatchRef.value.post({
-      characterId: initValues.character.id,
-      content,
-      options: { whisper: whisper ? 'gm' : undefined }
-    })
 
   // Post one row's contents to chat (item-contents spec §4.1). The per-list field
   // wording lives in the segment's `contents` descriptor; the shared projection rules
@@ -171,8 +171,15 @@ const sheetStore = () => {
   // every pool change.
   const rollerStat = ref(null)
   const rollerSkillId = ref(null)
+  // ddd-keb3: the same transient shape for the per-attack entry. Mutually exclusive
+  // with rollerSkillId in practice — each entry point refuses while the other's
+  // roller is open — and part of the open predicate for the same reason skillId is:
+  // an attack whose pool is illegal opens with NO stat.
+  const rollerAttackId = ref(null)
   const rollerSession = ref(0)
-  const rollerOpen = computed(() => rollerStat.value !== null || rollerSkillId.value !== null)
+  const rollerOpen = computed(() =>
+    rollerStat.value !== null || rollerSkillId.value !== null || rollerAttackId.value !== null
+  )
 
   const rollIntent = (statName) => {
     // An open roller owns the session UNCONDITIONALLY (4th audit F2): the
@@ -212,6 +219,23 @@ const sheetStore = () => {
     rollerStat.value = typeof row.pool === 'string' && Object.hasOwn(pools.value, row.pool) ? row.pool : null
   }
 
+  // Per-attack entry (ddd-keb3). rollSkill's shape: an explicit per-row button is
+  // its own opt-in, so it ignores ui.guidedRoll, and an open roller owns the
+  // session. Unlike skills there is no exclusion — every attack rolls.
+  //
+  // attack.pool has NO null branch in the schema, so null, '' or a stray value is
+  // ILLEGAL data rather than a legal absence (ddd-644, where it was invisible: a
+  // blank select and a dropped card field). It opens on the sentinel with Roll
+  // gated, and the modal says why.
+  const rollAttack = (attackId) => {
+    if (rollerOpen.value) return
+    const row = attacks.value.find((r) => r._id === attackId)
+    if (!row) return
+    rollerSession.value += 1
+    rollerAttackId.value = attackId
+    rollerStat.value = typeof row.pool === 'string' && Object.hasOwn(pools.value, row.pool) ? row.pool : null
+  }
+
   // The roller owns pool costs (spec ① decision). Concurrency policy (audit
   // passes 2–3): the spend is RESERVED synchronously at commit — no await
   // sits between the affordability check and the deduction, so the check can
@@ -243,13 +267,38 @@ const sheetStore = () => {
     ]).finally(() => clearTimeout(timer))
   }
 
-  const rollGuided = async ({ stat, skillId = null, assets = 0, effortLevels = 0, difficulty = null }) => {
+  const rollGuided = async ({ stat, skillId = null, attackId = null, assets = 0, effortLevels = 0, damageEffortLevels = 0, difficulty = null }) => {
     // Resolution-boundary clamps (the modal mirrors both, but no caller may
     // exceed them): Effort ≤ the character's Effort stat; difficulty 0–10.
     // Policy: silent normalization — the card is built from the clamped
     // values, so chat always shows what was actually charged.
+    //
+    // ddd-keb3: attack Effort and damage Effort are ONE ladder capped at the
+    // Effort stat (owner ruling, book). Attack Effort is taken first and damage
+    // Effort gets what is left, so an over-ask normalizes downward instead of
+    // charging for levels the character cannot apply.
     const levels = Math.min(Math.max(effortLevels, 0), effort.value)
+    const damageLevels = attackId === null
+      ? 0
+      : Math.min(Math.max(damageEffortLevels, 0), Math.max(effort.value - levels, 0))
     const diff = difficulty === null ? null : Math.min(Math.max(Math.floor(difficulty) || 0, 0), 10)
+
+    // Resolved ABOVE the unknown-pool throw below (round-1 plan audit): a stale
+    // attack id arriving with an unusable stat must return this structured refusal,
+    // which the modal explains in its own words, rather than throwing into the
+    // generic "Roll failed" path. Nothing has been reserved at this point.
+    const attackRow = attackId === null ? null : (attacks.value.find((r) => r._id === attackId) ?? null)
+    if (attackId !== null && !attackRow) return { ok: false, reason: 'attack-missing' }
+
+    // ddd-wc3. Same class as the modal's lookup, one layer down and worse: an
+    // ABSENT stat throws on pool.edge below, but a PROTOTYPE key returns a truthy
+    // Function and the whole roll goes quietly NaN — two failure modes for one
+    // bad input, and the quiet one is the resolution boundary charging Effort
+    // against a pool that does not exist. Loud is right HERE (the modal keeps its
+    // zero fallback, because a modal that cannot render is worse than one showing
+    // an empty pool): this throws above every deduction, so the modal's
+    // defence-in-depth catch reports "Roll failed — no points spent" truthfully.
+    if (!Object.hasOwn(pools.value, stat)) throw new Error(`rollGuided: unknown pool ${stat}`)
 
     // Snapshot everything the card will render: after the awaits below, live
     // objects may have been replaced or edited.
@@ -257,11 +306,37 @@ const sheetStore = () => {
     const edge = pool.edge
     const poolMax = pool.max
     const available = Math.min(pool.current, Math.max(poolMax, 0))
-    const row = skillId === null ? null : (skills.value.find((r) => r._id === skillId) ?? null)
+    // Attack mode ignores skillId — the attack row's own skillRating is its
+    // training term, and the modal shows no skill picker.
+    const row = attackId !== null || skillId === null ? null : (skills.value.find((r) => r._id === skillId) ?? null)
     const skill = row ? { name: row.name, rating: row.rating } : null
-    const eased = easedSteps({ skillRating: skill?.rating ?? null, assets, effortLevels: levels })
-    const rawCost = rawEffortCost(levels)
-    const cost = effortCost(levels, edge)
+    // The attack is snapshotted like everything else the card renders: after the
+    // awaits below the row may have been renamed, re-pointed or replaced by a
+    // hydrate, and the card must report commit-time truth. The modifier is copied
+    // rather than referenced for the same reason — it is a nested object the
+    // editor mutates in place.
+    const attack = attackRow
+      ? {
+          name: attackRow.name,
+          skillRating: attackRow.skillRating,
+          weaponClass: attackRow.weaponClass,
+          modifier: attackRow.modifier && typeof attackRow.modifier === 'object'
+            ? { ...attackRow.modifier }
+            : attackRow.modifier,
+          damage: attackRow.damage
+        }
+      : null
+    const eased = easedSteps({
+      skillRating: attack ? attack.skillRating : (skill?.rating ?? null),
+      weaponClass: attack?.weaponClass ?? null,
+      modifier: attack?.modifier ?? null,
+      assets,
+      effortLevels: levels
+    })
+    // One ladder for the whole action, Edge subtracted once (book): two levels
+    // split between hitting and damage cost 5, not 3 + 3.
+    const rawCost = rawEffortCost(levels + damageLevels)
+    const cost = effortCost(levels + damageLevels, edge)
     if (cost > available) return { ok: false, reason: 'insufficient-pool' }
 
     // Reserve — synchronous with the check above; nothing can interleave.
@@ -279,8 +354,8 @@ const sheetStore = () => {
     // reports the live current — never reservation-max with live-current.
     const cardFor = (interp, { refunded = false, shownAfter = poolAfter, shownMax = poolMax } = {}) => createRollTemplate({
       guidedRoll: guidedRollTemplateData({
-        statLabel, skill, assets, effortLevels: levels, interp, cost, rawCost, edge,
-        poolAfter: shownAfter, poolMax: shownMax, refunded
+        statLabel, skill, attack, assets, effortLevels: levels, damageEffortLevels: damageLevels,
+        interp, cost, rawCost, edge, poolAfter: shownAfter, poolMax: shownMax, refunded
       })
     })
 
@@ -449,8 +524,41 @@ const sheetStore = () => {
     return { bonus, slots: slots.length ? slots : defaultRecoverySlots() }
   }
 
-  const hydrate = (s) => {
-    if (!s) return
+  // ddd-7ub. Deep copy of a contract document: plain objects and arrays rebuilt,
+  // everything else passed through. Deliberately not JSON.parse(JSON.stringify(...)),
+  // which would DROP undefined-valued keys — normalizeRow distinguishes a present
+  // `cost.points: undefined` from an absent one — and not structuredClone, which
+  // refuses Proxies. The contract document is finite and acyclic by schema, so the
+  // recursion needs no cycle guard.
+  const plainClone = (value) => {
+    if (Array.isArray(value)) return value.map(plainClone)
+    if (value === null || typeof value !== 'object') return value
+    const out = {}
+    for (const key of Object.keys(value)) out[key] = plainClone(value[key])
+    return out
+  }
+
+  const hydrate = (snapshot) => {
+    if (!snapshot) return
+    // ddd-7ub. The snapshot arriving here is the SAME object the Beacon SDK holds in
+    // dispatch.characters[id].attributes, and the SDK's actionHandler merges host
+    // changes into it with lodash/merge, which MUTATES its destination in place
+    // (actionHandler.js:57). Assigning s.pools — or advancement/wounds/shield, or any
+    // nested object inside a row — straight into a ref therefore hands the host a
+    // write path into store state that never passes through the Vue proxy: reads see
+    // the new data but reactive effects may not fire, so the sheet can show stale
+    // values until something unrelated triggers a render. It also lets a test pass by
+    // aliasing rather than through the code path under test (the ddd-6qe integration
+    // guard had to deep-clone its fake cache to avoid exactly that false green).
+    //
+    // Cloned ONCE here rather than per key on purpose: a per-key clone list is a thing
+    // to keep in step, and the next ref assigned from the snapshot would re-grow the
+    // bug silently. Everything below this line is the store's own.
+    //
+    // NOT structuredClone: it throws DataCloneError on a Proxy, and dehydrate() hands
+    // back the store's own reactive objects, so every import → dehydrate → hydrate
+    // round trip would fail. plainClone reads through a proxy and rebuilds plain data.
+    const s = plainClone(snapshot)
     // Merge over the blank sentence: pre-v2 attributes carry only four keys, and
     // a clobbering assignment would export a schema-invalid document.
     if (s.sentence) sentence.value = { ...blankSentence(), ...s.sentence }
@@ -492,9 +600,9 @@ const sheetStore = () => {
     advancement, pools, recovery, wounds, shield, armor, armorModifiers, cypherLimit,
     genre, subgenre, portraitUrl,
     skills, abilities, attacks, equipment, cyphers, artifacts, powerShifts, currencies, arcs,
-    background, notes, ui,
-    addRow, removeRow, postItem, rollStat, rollerStat, rollerSkillId, rollerSession, rollerOpen,
-    rollIntent, rollSkill, rollGuided, rollRecovery, dehydrate, hydrate
+    background, notes, ui, hasStoredUi,
+    addRow, removeRow, postItem, rollStat, rollerStat, rollerSkillId, rollerAttackId, rollerSession, rollerOpen,
+    rollIntent, rollSkill, rollAttack, rollGuided, rollRecovery, dehydrate, hydrate
   }
 }
 

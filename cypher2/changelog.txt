@@ -1,0 +1,40 @@
+Cypher System 2 Character Sheet - Changelog
+============================================
+
+2026-09-16
+- A character renamed in the Roll20 journal keeps its new name. Before, the
+  next edit on the sheet could put the old name back. Portrait, bio and GM
+  notes changes stick the same way.
+- Importing the wrong file now says what it is. If you picked the Foundry
+  export in Cypher Tools, the sheet tells you to export again with the Roll20
+  option. Problems in a file are listed by field, and a refused export says
+  where on the sheet to fix it.
+
+2026-09-15
+- Attacks can now be rolled. Click the d20 beside an attack to open the guided
+  roller for it. Your training with the attack, a light weapon, and the
+  attack's modifier ease the roll automatically, and each one is listed so you
+  can see where the ease came from.
+- Enter the creature's level instead of a difficulty. The chat card says Hit or
+  Miss, and shows your damage only on a hit.
+- You can spend Effort on damage as well as on hitting. Each level adds 3
+  damage. Both kinds of Effort share one cost, so your Edge comes off once for
+  the attack.
+- A natural 17 or 18 adds its bonus damage to the total. On a 19 or 20 the card
+  offers a choice between the special effect and extra damage. A natural 20
+  refunds all the Effort you spent.
+
+2026-09-14
+- New characters now open the Settings window automatically the first time the
+  sheet is opened, so you can pick a skin and your roll options right away.
+  It only happens once per character. Characters you already have are not
+  affected.
+- GMs can turn any sheet into an NPC stat block. Open the gear menu and set
+  Sheet type to NPC. The card follows the Cypher GM's Guide, with level,
+  health, damage, armor, movement, combat actions, GM intrusions and more.
+  Switching back to Character keeps everything the sheet had.
+- An NPC's health can be linked to a token bar.
+- Only GMs see an NPC's stat block. Players see a short notice instead, but
+  keep NPC journal entries hidden from players, since the sheet only hides the
+  view.
+- GMs can export a creature to a file and import it onto another NPC sheet.

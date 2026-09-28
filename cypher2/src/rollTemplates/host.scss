@@ -33,6 +33,15 @@
     font-size: 0.8rem;
     opacity: 0.75;
   }
+  // The attack's damage (ddd-keb3). It carries __detail too, for the eases/spend
+  // rhythm, but it is not detail-weight: on an attack card the damage is the second
+  // thing the table reads, after hit or miss. Both selectors are one class, so the
+  // source-order tie-break decides — this block must stay BELOW __detail (ddd-93d).
+  &__damage {
+    font-size: 0.9rem;
+    opacity: 1;
+    font-weight: 600;
+  }
   &__special {
     margin-top: 0.25rem;
     font-weight: 600;

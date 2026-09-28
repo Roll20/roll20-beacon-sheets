@@ -39,6 +39,11 @@
   font-size: 0.8rem;
   opacity: 0.75;
 }
+.cypher-roll__damage {
+  font-size: 0.9rem;
+  opacity: 1;
+  font-weight: 600;
+}
 .cypher-roll__special {
   margin-top: 0.25rem;
   font-weight: 600;
