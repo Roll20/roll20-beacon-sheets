@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Oxanium:wght@400;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  color: inherit;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--ps-paper, #ffffff);
+  color: var(--ps-text, #0e1522);
+  width: 100%;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#app {
+  font-family: 'Oxanium', 'Segoe UI', 'Trebuchet MS', Arial, sans-serif;
+  min-height: 100dvh;
+}

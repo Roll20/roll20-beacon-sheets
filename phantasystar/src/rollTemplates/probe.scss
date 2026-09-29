@@ -1,0 +1,49 @@
+@use 'sass:list';
+
+$probe-markers: (
+  '.sheet-rolltemplate-darkmode',
+  '.sheet-darkmode',
+  '.darkmode',
+  '.dark-mode',
+  '.dark',
+  '.theme-dark',
+  '[data-theme="dark"]',
+  '[data-bs-theme="dark"]',
+  '[data-color-mode="dark"]',
+);
+
+.pstr-probe {
+  padding: 7px 10px;
+  font-size: 11px;
+  background: var(--pstr-panel);
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: monospace;
+
+    &::after {
+      content: 'no';
+      font-family: inherit;
+      color: var(--pstr-text-muted);
+    }
+  }
+}
+
+@each $marker in $probe-markers {
+  $i: list.index($probe-markers, $marker);
+  #{$marker} .pstr-probe__row--#{$i}::after {
+    content: 'YES';
+    font-weight: 700;
+    color: var(--pstr-green);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .pstr-probe__row--os::after {
+    content: 'YES';
+    font-weight: 700;
+    color: var(--pstr-green);
+  }
+}

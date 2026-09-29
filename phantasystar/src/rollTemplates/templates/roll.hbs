@@ -1,0 +1,24 @@
+<div class="pstr-card pstr-card--roll{{#if resultType}} pstr-card--{{resultType}}{{/if}}">
+  {{> header}}
+
+  <div class="pstr-card__result">
+    <div class="pstr-card__total">{{total}}</div>
+    {{#if resultType}}
+      <div class="pstr-card__verdict">
+        {{#if (isEqual resultType 'crit-success')}}Critical Hit{{/if}}
+        {{#if (isEqual resultType 'crit-fail')}}Critical Miss{{/if}}
+      </div>
+    {{/if}}
+    {{#if dc}}
+      <div class="pstr-card__dc{{#if (isGreaterOrEqual total dc)}} is-success{{else}} is-failure{{/if}}">
+        vs DC {{dc}} &middot; {{#if (isGreaterOrEqual total dc)}}Success{{else}}Failure{{/if}}
+      </div>
+    {{/if}}
+  </div>
+
+  {{> components}}
+  {{> keyValues}}
+  {{> textContent}}
+
+  {{#if footnote}}<div class="pstr-card__footnote">{{footnote}}</div>{{/if}}
+</div>

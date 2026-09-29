@@ -1,0 +1,9 @@
+{{#if textContent}}
+  <div class="pstr-card__text">
+    {{#if (isArray textContent)}}
+      {{#each textContent}}<p>{{this}}</p>{{/each}}
+    {{else}}
+      <p>{{textContent}}</p>
+    {{/if}}
+  </div>
+{{/if}}
