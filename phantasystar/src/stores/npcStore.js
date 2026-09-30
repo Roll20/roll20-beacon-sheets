@@ -11,6 +11,7 @@ import {
   proficiencyForCR,
   xpForCR,
   statBlockFromCharacter,
+  hiddenAttackIds,
   normalizeEntry,
   normalizeLegendary,
   normalizeBoss,
@@ -266,10 +267,12 @@ const npcStore = () => {
       languages: bio.languages,
       features: sheet.features,
       attacksPerAction: sheet.attacksPerAction,
-      weapons: sheet.attacks.map((a) => ({
-        ...sheet.resolveAttack(a),
-        attackPower: sheet.attackPowerFor(a).value,
-      })),
+      weapons: sheet.attacks
+        .filter((a) => !hiddenAttackIds(bio.equipment).has(a._id))
+        .map((a) => ({
+          ...sheet.resolveAttack(a),
+          attackPower: sheet.attackPowerFor(a).value,
+        })),
       techniques: techniqueStore.techniques,
       techAttacks: techniqueStore.techAttacks,
       techAttackPower: sheet.techAttackPowerValue,

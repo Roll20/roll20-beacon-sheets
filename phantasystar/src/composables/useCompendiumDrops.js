@@ -8,6 +8,7 @@ import { useMetaStore } from '@/stores/metaStore.js'
 import { useNpcStore } from '@/stores/npcStore.js'
 import { useNpcShipStore } from '@/stores/npcShipStore.js'
 import { useTechniqueStore } from '@/stores/techniqueStore.js'
+import { useCharacterStore } from '@/stores/characterStore.js'
 import { NPC, CREATURE, NPC_SHIP } from '@/sheetTypes.js'
 import { creatureToken } from '@/rules/tokens.js'
 
@@ -27,6 +28,7 @@ export const useCompendiumDrops = () => {
   const npc = useNpcStore()
   const npcShip = useNpcShipStore()
   const techniques = useTechniqueStore()
+  const character = useCharacterStore()
 
   const load = async (pointer) => {
     const fetched = await fetchEntry(dispatchRef.value, pointer)
@@ -53,12 +55,34 @@ export const useCompendiumDrops = () => {
 
   const blank = (kind) => (kind === 'ship' ? isBlankShip(npcShip) : isBlankCreature(npc))
 
+  const addProficiency = ({ kind, id, name, parent }) => {
+    const label = name || id
+    if (kind === 'armor') {
+      const map = character.proficiencies.armor
+      if (!id || !(id in map)) return notify(`${label} isn't an armor type this sheet knows.`, 'refused')
+      if (map[id]) return notify(`Already trained in ${label}.`)
+      map[id] = true
+      return notify(`Added ${label} training.`)
+    }
+    if (!['weapon', 'tool', 'vehicle'].includes(kind)) {
+      return notify(`${label} pages can't be dropped yet.`, 'refused')
+    }
+    const added = character.addProficiency(kind, { id, name, parent })
+    return notify(added ? `Added ${label} proficiency.` : `Already proficient with ${label}.`)
+  }
+
   const apply = (plan, mapped) => {
     const name = mapped.name ?? 'The page'
     if (plan.apply === 'technique') {
       const { updated } = techniques.importTechnique(mapped)
       return notify(updated ? `Updated ${name}.` : `Added ${name} to Techniques.`)
     }
+    if (plan.apply === 'item') {
+      const { weapon, pack } = app.addItemFromCompendium(mapped)
+      if (weapon) return notify(`Added ${name} to Attacks and Equipment.`)
+      return notify(pack ? `Unpacked ${name} into Equipment.` : `Added ${name} to Equipment.`)
+    }
+    if (plan.apply === 'proficiency') return addProficiency(mapped)
     if (!blank(plan.apply)) return notify('This stat block already has stats.', 'refused')
     fillStatBlock(plan.apply, mapped)
     notify(`Imported ${name}.`)

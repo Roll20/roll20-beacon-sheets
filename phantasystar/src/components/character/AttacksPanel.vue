@@ -1,11 +1,20 @@
 <script setup>
+import { computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useTechniqueStore } from '@/stores/techniqueStore.js'
+import { useBioStore } from '@/stores/bioStore.js'
+import { hiddenAttackIds } from '@/rules/index.js'
 import AttackRow from './AttackRow.vue'
 import TechAttackRow from './TechAttackRow.vue'
 
 const sheet = useCharacterStore()
 const techniques = useTechniqueStore()
+const bio = useBioStore()
+
+const shown = computed(() => {
+  const hidden = hiddenAttackIds(bio.equipment)
+  return sheet.attacks.filter((a) => !hidden.has(a._id))
+})
 </script>
 
 <template>
@@ -20,12 +29,12 @@ const techniques = useTechniqueStore()
     </div>
 
     <div class="panel">
-      <div v-if="!sheet.attacks.length && !techniques.techAttacks.length" class="empty">
+      <div v-if="!shown.length && !techniques.techAttacks.length" class="empty">
         No attacks yet.
       </div>
 
       <AttackRow
-        v-for="(atk, i) in sheet.attacks"
+        v-for="(atk, i) in shown"
         :id="atk._id"
         :key="atk._id"
         :class="{ odd: i % 2 === 1 }"
@@ -35,7 +44,7 @@ const techniques = useTechniqueStore()
         v-for="(tech, i) in techniques.techAttacks"
         :id="tech._id"
         :key="tech._id"
-        :class="{ odd: (sheet.attacks.length + i) % 2 === 1 }"
+        :class="{ odd: (shown.length + i) % 2 === 1 }"
       />
     </div>
   </div>

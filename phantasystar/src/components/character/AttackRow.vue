@@ -7,7 +7,7 @@ import {
   ABILITIES, critRange, CRIT_RANGE_MIN, formatModifier,
   WEAPON_KINDS, MASTERY_FEATURES, distanceLabel,
   weaponTypesFor, rowProficiency,
-  WEAPON_PROPERTIES, attackAbility, heavyDisadvantage,
+  WEAPON_PROPERTIES, attackAbility, heavyDisadvantage, activeWeaponText,
 } from '@/rules/index.js'
 
 const props = defineProps({ id: { type: String, required: true } })
@@ -58,6 +58,10 @@ const rangeLabel = computed(() => distanceLabel(attack.value?.kind))
 
 const masteryLabel = computed(() =>
   dmg.value.mastered && attack.value?.mastery ? attack.value.mastery : null,
+)
+
+const activeText = computed(() =>
+  activeWeaponText(attack.value?.text, { mastered: dmg.value.mastered, gradeInUse: dmg.value.gradeInUse }),
 )
 
 const heavyDis = computed(() => heavyDisadvantage(attack.value ?? {}, sheet.abilities))
@@ -186,6 +190,10 @@ const damageParts = computed(() => {
         <b>Heavy</b>Disadvantage
       </span>
     </div>
+
+    <ul v-if="activeText.length" class="text">
+      <li v-for="(line, i) in activeText" :key="i">{{ line }}</li>
+    </ul>
 
     <div v-if="editing" class="editor">
       <label class="f f--full">
@@ -375,6 +383,16 @@ const damageParts = computed(() => {
 }
 
 .stat--warn > b { color: var(--ps-red); }
+
+.text {
+  margin: 2px 0 0;
+  padding-left: 14px;
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--ps-text-muted);
+
+  li + li { margin-top: 2px; }
+}
 
 .props {
   grid-column: 1 / -1;

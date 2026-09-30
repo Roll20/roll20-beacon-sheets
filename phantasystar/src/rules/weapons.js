@@ -120,6 +120,43 @@ export const weaponDamage = ({
   };
 };
 
+export const normalizeWeaponText = (value) => {
+  let list = value;
+  if (typeof list === 'string') {
+    if (!list.startsWith('$__$')) return list.trim() ? [{ text: list.trim() }] : [];
+    try {
+      list = JSON.parse(list.slice(4));
+    } catch {
+      return [];
+    }
+  }
+  if (list && typeof list === 'object' && !Array.isArray(list)) {
+    list = Object.keys(list)
+      .sort((a, b) => int(a.replace(/\D/g, '')) - int(b.replace(/\D/g, '')))
+      .map((k) => list[k]);
+  }
+  if (!Array.isArray(list)) return [];
+  return list
+    .map((e) => (typeof e === 'string' ? { text: e } : e))
+    .filter((e) => e && typeof e.text === 'string' && e.text.trim())
+    .map((e) => {
+      const grade = e.minGrade === '' || e.minGrade == null ? NaN : Number(e.minGrade);
+      return {
+        text: e.text.trim(),
+        ...(Number.isInteger(grade) ? { minGrade: grade } : {}),
+        ...(e.requires === 'mastery' ? { requires: 'mastery' } : {}),
+      };
+    });
+};
+
+export const storeWeaponText = (list) =>
+  Object.fromEntries(normalizeWeaponText(list).map((e, i) => [`t${i}`, e]));
+
+export const activeWeaponText = (list, { mastered = false, gradeInUse = 0 } = {}) =>
+  normalizeWeaponText(list)
+    .filter((e) => (e.requires !== 'mastery' || mastered) && (e.minGrade == null || gradeInUse >= e.minGrade))
+    .map((e) => e.text);
+
 export const migrateAttackRow = (row = {}) => {
   const current = 'type' in row
     ? row
@@ -129,5 +166,9 @@ export const migrateAttackRow = (row = {}) => {
       proficient: row.proficient === false ? false : 'auto',
       isMastery: row.isMastery === true ? true : 'auto',
     };
-  return { ...current, properties: normalizeWeaponProperties(current.properties) };
+  return {
+    ...current,
+    properties: normalizeWeaponProperties(current.properties),
+    text: normalizeWeaponText(current.text),
+  };
 };

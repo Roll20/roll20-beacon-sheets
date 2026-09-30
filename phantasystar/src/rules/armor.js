@@ -66,8 +66,25 @@ export const armorContribution = (parts = {}, proficiencies = {}, strengthMod = 
 export const armorDisadvantage = (armorUntrained, abilityId) =>
   !!armorUntrained && (abilityId === 'strength' || abilityId === 'dexterity');
 
+export const hiddenAttackIds = (equipment = []) =>
+  new Set(
+    equipment
+      .filter((i) => i?.itemType === 'weapon' && i.attackId && !i.equipped)
+      .map((i) => i.attackId),
+  );
+
+export const equipLinkedWeapons = (equipment = []) =>
+  equipment.map((i) => (i?.itemType === 'weapon' && i.attackId ? { ...i, equipped: true } : i));
+
+export const itemWeight = (value) => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : '';
+  const m = String(value ?? '').match(/^\s*(\d+(?:\.\d+)?)/);
+  return m ? Number(m[1]) : '';
+};
+
 export const normalizeItem = (item = {}) => ({
   ...item,
+  weight: itemWeight(item.weight),
   itemType: ITEM_TYPE_IDS.includes(item.itemType) ? item.itemType : DEFAULT_ITEM_TYPE,
   category: ARMOR_CATEGORY_IDS.includes(item.category) ? item.category : 'light',
   strength: item.strength ?? '',

@@ -6,6 +6,9 @@ import { ABILITY_IDS } from '../rules/skills.js';
 import { DAMAGE_TYPES } from '../rules/damage.js';
 import { COMPONENT_TYPES, MIN_RANK, MAX_RANK } from '../rules/techniques.js';
 import { parseTokenSize } from '../rules/tokens.js';
+import { MASTERY_FEATURES, WEAPON_KINDS } from '../rules/equipment.js';
+import { WEAPON_PROPERTY_IDS, normalizeWeaponProperties, normalizeWeaponText } from '../rules/weapons.js';
+import { ARMOR_CATEGORY_IDS } from '../rules/armor.js';
 
 export const PAYLOAD_VERSION = 1;
 
@@ -440,6 +443,99 @@ export const techniqueFromPayload = (payload, page = {}) => {
   };
 };
 
+const ITEM_TYPES = ['weapon', 'armor', 'shield', 'consumable', 'accessory', 'gear', 'tool'];
+const MASTERY_NAMES = Object.fromEntries(MASTERY_FEATURES.map((m) => [m.toLowerCase(), m]));
+
+const toAttackRow = (payload, name, check, warnings) => {
+  const a = check.object('attack', payload.attack);
+  if (!a) return null;
+  const properties = check.list('attack.properties', a.properties) ?? [];
+  const unknown = properties.filter((p) => !WEAPON_PROPERTY_IDS.includes(p));
+  if (unknown.length) warnings.push(`attack.properties: ${unknown.join(', ')} not known - left out.`);
+  const mastery = check.text('attack.mastery', a.mastery);
+  if (mastery && !MASTERY_NAMES[mastery.toLowerCase()]) warnings.push(`attack.mastery: ${mastery} not known - left out.`);
+  return compact({
+    name,
+    type: check.text('type', payload.type),
+    grade: payload.grade === undefined ? undefined : String(check.int('grade', payload.grade) ?? ''),
+    kind: check.oneOf('attack.kind', a.kind, WEAPON_KINDS.map((k) => k.id)),
+    range: check.text('attack.range', a.range),
+    properties: normalizeWeaponProperties(properties.filter((p) => WEAPON_PROPERTY_IDS.includes(p))),
+    thrownRange: check.text('attack.thrownRange', a.thrownRange),
+    ammunitionType: check.text('attack.ammunitionType', a.ammunitionType),
+    baseDamage: check.text('attack.damage', a.damage),
+    damageType: check.text('attack.damageType', a.damageType),
+    mastery: mastery ? MASTERY_NAMES[mastery.toLowerCase()] : undefined,
+    text: normalizeWeaponText(check.list('text', payload.text) ?? []),
+  });
+};
+
+export const itemFromPayload = (payload, page = {}) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const itemType = check.oneOf('itemType', payload.itemType, ITEM_TYPES) ?? 'gear';
+  const item = check.object('item', payload.item) ?? {};
+  const name = check.text('item.name', item.name) ?? check.text('name', page.name) ?? '';
+  const grade = payload.grade !== undefined ? check.int('grade', payload.grade) : check.int('item.grade', item.grade === '' ? undefined : item.grade);
+
+  const equipment = compact({
+    name,
+    itemType,
+    grade: grade === undefined ? '' : String(grade),
+    quantity: check.int('item.quantity', item.quantity) ?? 1,
+    weight: check.text('item.weight', item.weight) ?? '',
+    text: check.prose('description', payload.description) ?? '',
+  });
+  if (itemType === 'armor') {
+    const armor = check.object('armor', payload.armor) ?? {};
+    equipment.category = check.oneOf('armor.armorType', armor.armorType, ARMOR_CATEGORY_IDS) ?? 'light';
+    equipment.strength = armor.strength == null ? '' : String(check.int('armor.strength', armor.strength) ?? '');
+    equipment.stealthDisadvantage = !!check.bool('armor.stealthDisadvantage', armor.stealthDisadvantage);
+  }
+
+  const contents = (check.list('contents', payload.contents) ?? [])
+    .map((c, i) => {
+      if (!isObject(c) || typeof c.name !== 'string' || !c.name.trim()) {
+        warnings.push(`contents[${i}]: expected an item with a name - left out.`);
+        return null;
+      }
+      return {
+        name: c.name.trim(),
+        itemType: 'gear',
+        grade: '',
+        quantity: check.int(`contents[${i}].quantity`, c.quantity) ?? 1,
+        weight: check.text(`contents[${i}].weight`, c.weight) ?? '',
+        text: '',
+      };
+    })
+    .filter(Boolean);
+
+  return {
+    source: 'payload',
+    itemType,
+    name,
+    equipment,
+    attack: itemType === 'weapon' ? toAttackRow(payload, name, check, warnings) : null,
+    contents,
+    warnings,
+  };
+};
+
+const PROFICIENCY_KINDS = ['weapon', 'armor', 'tool', 'vehicle', 'language'];
+
+export const proficiencyFromPayload = (payload, page = {}) => {
+  const warnings = [];
+  const check = checker(warnings);
+  return {
+    source: 'payload',
+    kind: check.oneOf('kind', payload.kind, PROFICIENCY_KINDS),
+    id: check.text('id', payload.id),
+    name: check.text('name', page.name) ?? '',
+    parent: check.text('parent', payload.parent) ?? '',
+    warnings,
+  };
+};
+
 export const KIND_NAMES = {
   creature: 'Monsters',
   ship: 'NPC Ships',
@@ -465,6 +561,8 @@ export const readPage = (page, kind) => {
     creature: creatureFromPayload,
     ship: npcShipFromPayload,
     technique: techniqueFromPayload,
+    item: itemFromPayload,
+    proficiency: proficiencyFromPayload,
   }[pageKind];
   if (!mapper) {
     const what = KIND_NAMES[pageKind];

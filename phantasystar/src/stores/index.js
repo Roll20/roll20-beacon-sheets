@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { editFlag } from '@/relay/permissions.js'
 import { ref, watch } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
+import { equipmentPlan } from '@/compendium/drops.js'
 import { useMetaStore } from '@/stores/metaStore.js'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useTechniqueStore } from '@/stores/techniqueStore.js'
@@ -62,12 +64,38 @@ export const useAppStore = defineStore('app', () => {
     const row = stores.sheet.attacks[stores.sheet.attacks.length - 1]
     Object.assign(row, { name: item.name ?? '', grade: String(item.grade ?? '') })
     item.attackId = row._id
+    item.equipped = true
   }
 
   const setItemField = (item, field, value) => {
     const attack = linkedAttack(item)
     if (attack && (field === 'name' || field === 'grade')) attack[field] = value
     item[field] = value
+  }
+
+  const addItemFromCompendium = ({ equipment, attack, contents = [] }) => {
+    const { sheet, bio } = stores
+    const newRow = (row) => {
+      const item = normalizeItem({ _id: uuidv4(), equipped: false, notes: '', ...row })
+      bio.equipment.push(item)
+      return item
+    }
+    if (attack) {
+      sheet.addAttack()
+      const row = sheet.attacks[sheet.attacks.length - 1]
+      Object.assign(row, attack)
+      newRow({ ...equipment, itemType: 'weapon', attackId: row._id, equipped: true })
+      return { weapon: true }
+    }
+    const rows = contents.length ? contents : [equipment]
+    for (const step of equipmentPlan(bio.equipment, rows)) {
+      if (step.add) newRow(step.add)
+      else {
+        const item = bio.equipment.find((e) => e._id === step.bump)
+        item.quantity = (parseInt(item.quantity, 10) || 1) + step.by
+      }
+    }
+    return { pack: contents.length > 0, count: rows.length }
   }
 
   const sheetType = ref(DEFAULT_SHEET_TYPE)
@@ -282,5 +310,6 @@ export const useAppStore = defineStore('app', () => {
     linkedAttack,
     setItemType,
     setItemField,
+    addItemFromCompendium,
   }
 })

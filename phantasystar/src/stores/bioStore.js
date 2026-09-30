@@ -10,6 +10,7 @@ import {
   getLifestyle,
   lifestyleCost,
   normalizeItem,
+  equipLinkedWeapons,
 } from '@/rules/index.js'
 
 import { useCharacterStore } from '@/stores/characterStore.js'
@@ -113,6 +114,7 @@ const bioStore = () => {
     languages: languages.value,
     size: size.value,
     equipment: arrayToObject(equipment.value),
+    equipRule: 1,
     meseta: meseta.value,
     lifestyle: lifestyle.value,
     expenses: expenses.value,
@@ -128,7 +130,10 @@ const bioStore = () => {
     meseta.value = s.meseta ?? meseta.value
     lifestyle.value = s.lifestyle ?? lifestyle.value
     expenses.value = s.expenses ?? expenses.value
-    if (s.equipment) equipment.value = objectToArray(s.equipment).map(normalizeItem)
+    if (s.equipment) {
+      const items = objectToArray(s.equipment).map(normalizeItem)
+      equipment.value = s.equipRule ? items : equipLinkedWeapons(items)
+    }
     if (s.vehicles) vehicles.value = objectToArray(s.vehicles)
   }
 

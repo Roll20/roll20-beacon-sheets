@@ -9,7 +9,7 @@ import {
   normalizeProfessionStats, hasLevelTable, normalizeSaveOptions,
   normalizeFeature, featuresFromText, DEFAULT_FEATURE_GROUP,
   normalizeProficiencies, isWeaponProficient, planProficiency,
-  rowProficiency, weaponDamage, migrateAttackRow,
+  rowProficiency, weaponDamage, migrateAttackRow, storeWeaponText,
   normalizeWeaponProperties, attackAbility, versatileBonus, typedDamage,
 } from '@/rules/index.js'
 import { sharedSettings } from '@/relay/sheetSettings.js'
@@ -108,6 +108,7 @@ const characterStore = () => {
     isMastery: 'auto',
     mastery: '',
     notes: '',
+    text: [],
   })
 
   const addFeature = (group = DEFAULT_FEATURE_GROUP) => {
@@ -281,6 +282,7 @@ const characterStore = () => {
   const addProficiency = (kind, { name = '', id = '', parent = '' } = {}) => {
     const plan = planProficiency(proficiencies.value, { kind, name, id, parent })
     if (!plan) return false
+    if (plan.builtIn && proficiencies.value[kind][plan.builtIn]) return false
     if (plan.builtIn) proficiencies.value[kind][plan.builtIn] = true
     else proficiencies.value.custom.push({ _id: uuidv4(), ...plan.custom })
     return true
@@ -343,7 +345,7 @@ const characterStore = () => {
     resistances: resistances.value,
     proficiencies: { ...proficiencies.value, custom: arrayToObject(proficiencies.value.custom) },
     attacksPerAction: attacksPerAction.value,
-    attacks: arrayToObject(attacks.value),
+    attacks: arrayToObject(attacks.value.map((a) => ({ ...a, text: storeWeaponText(a.text) }))),
   })
 
   const hydrate = (s = {}) => {
