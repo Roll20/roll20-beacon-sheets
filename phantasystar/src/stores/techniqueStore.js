@@ -1,7 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import { arrayToObject, objectToArray } from '@/utility/objectify'
+import {
+  arrayToObject, objectToArray, paragraphsToObject, objectToParagraphs,
+} from '@/utility/objectify'
+import { refreshTechnique, sameName } from '@/compendium/drops.js'
 
 import {
   blankTechniqueFields,
@@ -39,6 +42,27 @@ const migrateEntry = (entry) => {
     .join(' ')
   return { ...rest, fields: { ...blankTechniqueFields(), name, ...(entry.fields ?? {}) } }
 }
+
+const storedEntry = (entry) => ({
+  ...entry,
+  fields: {
+    ...entry.fields,
+    text: paragraphsToObject(entry.fields?.text),
+    boost: paragraphsToObject(entry.fields?.boost),
+  },
+})
+
+const loadedEntry = (entry) =>
+  entry?.fields
+    ? {
+      ...entry,
+      fields: {
+        ...entry.fields,
+        text: objectToParagraphs(entry.fields.text),
+        boost: objectToParagraphs(entry.fields.boost),
+      },
+    }
+    : entry
 
 const techniqueStore = () => {
   const sheet = useCharacterStore()
@@ -146,6 +170,13 @@ const techniqueStore = () => {
       fields: { ...blankTechniqueFields(), ...fields },
     })
     return _id
+  }
+
+  const importTechnique = ({ fields = {}, extras = {} } = {}) => {
+    const i = known.value.findIndex((e) => sameName(e.fields?.name, fields.name))
+    if (i < 0) return { id: addTechnique(fields, extras), updated: false }
+    known.value[i] = refreshTechnique(known.value[i], { fields, extras })
+    return { id: known.value[i]._id, updated: true }
   }
 
   const blankCombo = () => ({
@@ -270,7 +301,7 @@ const techniqueStore = () => {
   }
 
   const dehydrate = () => ({
-    known: arrayToObject(known.value),
+    known: arrayToObject(known.value.map(storedEntry)),
     hasLimitBreach: hasLimitBreach.value,
     advancedUsed: advancedUsed.value,
     limitBreachesUsed: limitBreachesUsed.value,
@@ -278,7 +309,7 @@ const techniqueStore = () => {
   })
 
   const hydrate = (s = {}) => {
-    if (s.known) known.value = objectToArray(s.known).map(migrateEntry)
+    if (s.known) known.value = objectToArray(s.known).map(migrateEntry).map(loadedEntry)
     advancedUsed.value = { ...blankAdvancedUsed(), ...(s.advancedUsed || {}) }
     hasLimitBreach.value = s.hasLimitBreach ?? hasLimitBreach.value
     limitBreachesUsed.value = s.limitBreachesUsed ?? limitBreachesUsed.value
@@ -289,7 +320,7 @@ const techniqueStore = () => {
     known, advancedUsed, hasLimitBreach, limitBreachesUsed, rowUI, lastCast, combos,
     techniques, byRank, techAttacks, isOffensive, knownCount,
     maxLimitBreaches, limitBreachesLeft, advancedSlots,
-    castPlan, addTechnique, addCustom, forget, toggleFavourite,
+    castPlan, addTechnique, importTechnique, addCustom, forget, toggleFavourite,
     isRowOpen, isRowEditing, setRowUI, lastCastRank, setLastCast,
     addCombo, removeCombo, comboLevel, setComboLevel,
     useFreeCast, restoreFreeCast, setFreeCasts, setCountsAsKnown, setShowInAttacks,

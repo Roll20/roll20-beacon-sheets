@@ -5,6 +5,7 @@ import { useMetaStore } from '@/stores/metaStore.js'
 import { initValues, dispatchRef } from '@/relay/relay.js'
 import { onSettingsChange } from '@/relay/handlers/handlers.js'
 import { applyTheme, themeOf } from '@/theme.js'
+import { useCompendiumDrops } from '@/composables/useCompendiumDrops.js'
 import CharacterPage from '@/components/character/CharacterPage.vue'
 import TechniquesPage from '@/components/techniques/TechniquesPage.vue'
 import BioPage from '@/components/bio/BioPage.vue'
@@ -17,6 +18,8 @@ import { defineAsyncComponent } from 'vue'
 
 const appStore = useAppStore()
 const meta = useMetaStore()
+
+const { dropNotice } = useCompendiumDrops()
 
 const TABS_BY_TYPE = {
   [PC]: [
@@ -124,6 +127,10 @@ const DevChat = isDev
       View only &mdash; you do not control this character.
     </p>
 
+    <p v-if="dropNotice" class="drop-notice" :class="dropNotice.tone" role="status">
+      {{ dropNotice.text }}
+    </p>
+
     <div class="pages" :inert="readOnly || undefined">
       <CharacterPage v-if="activeTab === 'character'" />
       <TechniquesPage v-else-if="activeTab === 'techniques'" />
@@ -218,6 +225,25 @@ const DevChat = isDev
   font-weight: 700;
   font-variant: small-caps;
   letter-spacing: 0.04em;
+}
+
+.drop-notice {
+  position: sticky;
+  top: var(--ps-tabs-h, 0px);
+  z-index: 19;
+  margin: 0;
+  padding: 5px 16px;
+  background: var(--ps-panel-alt);
+  border-bottom: 1.5px solid var(--ps-line);
+  color: var(--ps-heading);
+  font-size: 11px;
+  font-weight: 700;
+
+  &.refused {
+    background: var(--ps-gold-light);
+    border-bottom-color: var(--ps-gold-dark);
+    color: var(--ps-on-gold-fill, var(--ps-heading));
+  }
 }
 
 .pages[inert] {

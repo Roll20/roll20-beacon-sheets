@@ -4,7 +4,7 @@ import { useTechniqueStore } from '@/stores/techniqueStore.js'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useSheetRolls } from '@/composables/useSheetRolls.js'
 import {
-  rankLabel, MAX_RANK, ABILITIES,
+  rankLabel, MAX_RANK, ABILITIES, canRankBoost,
   freeCastsLeft, freeCastLabel, COMPONENT_TYPES, componentsLabel,
 } from '@/rules/index.js'
 import { sharedSettings } from '@/relay/sheetSettings.js'
@@ -26,7 +26,8 @@ const toggleEditing = () =>
 
 const castOptions = computed(() => {
   const out = []
-  for (let rank = props.technique.rank; rank <= MAX_RANK; rank += 1) {
+  const top = canRankBoost(props.technique) ? MAX_RANK : props.technique.rank
+  for (let rank = props.technique.rank; rank <= top; rank += 1) {
     const plan = store.castPlan(props.technique, rank)
     if (!plan) break
     if (!plan.allowed && !plan.rankSpent) {

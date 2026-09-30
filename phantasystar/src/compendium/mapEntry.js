@@ -1,5 +1,5 @@
 import { normalizeKey, compact } from './shared.js';
-import { readPayload, payloadKind, readPage } from './payload.js';
+import { readPayload, payloadKind, readPage, KIND_NAMES } from './payload.js';
 import { CREATURE_SIZE_IDS } from '../rules/monsters.js';
 import { STARSHIP_SIZE_IDS } from '../rules/starship.js';
 import { NPC_SHIP_ABILITIES } from '../rules/starshipNpc.js';
@@ -228,6 +228,9 @@ export const mapEntry = (entry, kind = entryKind(entry)) => {
   const page = readPage(entry);
   if (page) {
     if (!page.ok) return { error: page.error };
+    if (page.kind !== 'creature' && page.kind !== 'ship') {
+      return { error: `${KIND_NAMES[page.kind]} pages don't make a stat block - drop them onto a sheet.` };
+    }
     return page.mapped;
   }
   return {

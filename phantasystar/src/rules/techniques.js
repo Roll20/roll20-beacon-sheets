@@ -33,6 +33,10 @@ export const boostedTpCost = (baseRank, castRank) => {
   return TP_COST_BY_RANK[baseRank] + (castRank - baseRank) * BOOST_COST_PER_RANK;
 };
 
+export const canRankBoost = (technique) =>
+  (Number(technique?.rank) || 0) > 0 &&
+  (technique?.boost ?? []).some((p) => String(p ?? '').trim() !== '');
+
 export const isAdvancedCast = (castRank) => castRank >= ADVANCED_RANK_THRESHOLD;
 
 export const canCastAtRank = (castRank, maxTechRank, advancedRank) => {

@@ -4,6 +4,7 @@ import { STARSHIP_SIZE_IDS } from '../rules/starship.js';
 import { NPC_SHIP_ABILITY_IDS } from '../rules/starshipNpc.js';
 import { ABILITY_IDS } from '../rules/skills.js';
 import { DAMAGE_TYPES } from '../rules/damage.js';
+import { COMPONENT_TYPES, MIN_RANK, MAX_RANK } from '../rules/techniques.js';
 
 export const PAYLOAD_VERSION = 1;
 
@@ -297,7 +298,7 @@ export const creatureFromPayload = (payload, page = {}) => {
       immunities: check.text('immunities', payload.immunities),
     }),
     name: check.text('name', page.name),
-    notes: check.text('content', page.content),
+    notes: check.text('description', payload.description),
     skills: toBonusLines('skills', payload.skills, check, warnings),
     ...creatureSections(payload, check, warnings),
     pending: {},
@@ -345,7 +346,7 @@ export const npcShipFromPayload = (payload, page = {}) => {
       passivePerception: check.int('passivePerception', payload.passivePerception),
     }),
     name: check.text('name', page.name),
-    notes: check.text('content', page.content),
+    notes: check.text('description', payload.description),
     saves: toBonusLines('saves', payload.saves, check, warnings),
     skills: toBonusLines('skills', payload.skills, check, warnings),
     traits: toRows('traits', payload.traits, check, warnings),
@@ -356,7 +357,82 @@ export const npcShipFromPayload = (payload, page = {}) => {
   };
 };
 
-const KIND_NAMES = {
+const COMPONENT_TYPE_IDS = COMPONENT_TYPES.map((t) => t.id);
+
+export const techniqueFromPayload = (payload, page = {}) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const box = check.object('fields', payload.fields) ?? {};
+
+  const paragraphs = (field, value) => {
+    const items = check.list(field, value);
+    if (items === undefined) return undefined;
+    if (!items.every((p) => typeof p === 'string')) {
+      warnings.push(`${field}: expected a list of paragraphs - left alone.`);
+      return undefined;
+    }
+    return items;
+  };
+
+  let rank = check.int('fields.rank', box.rank);
+  if (rank !== undefined && (rank < MIN_RANK || rank > MAX_RANK)) {
+    warnings.push(`fields.rank: expected ${MIN_RANK} to ${MAX_RANK} - left alone.`);
+    rank = undefined;
+  }
+
+  const saveAbility =
+    box.saveAbility === null ? null : check.oneOf('fields.saveAbility', box.saveAbility, ABILITY_IDS);
+  let components;
+  if (box.components === null) components = null;
+  else {
+    const c = check.object('fields.components', box.components);
+    const type = c ? check.oneOf('fields.components.type', c.type, COMPONENT_TYPE_IDS) : undefined;
+    if (type) components = { type, text: check.text('fields.components.text', c.text) ?? '' };
+  }
+
+  const label = (field, value) => {
+    const id = check.text(field, value);
+    return id === undefined ? undefined : damageLabel(id);
+  };
+
+  const fields = compact({
+    name: check.text('fields.name', box.name) ?? check.text('name', page.name),
+    rank,
+    castingTime: check.text('fields.castingTime', box.castingTime),
+    range: check.text('fields.range', box.range),
+    duration: check.text('fields.duration', box.duration),
+    concentration: check.bool('fields.concentration', box.concentration),
+    attack: check.bool('fields.attack', box.attack),
+    saveAbility,
+    components,
+    text: paragraphs('fields.text', box.text),
+    boost: paragraphs('fields.boost', box.boost),
+  });
+
+  return {
+    source: 'payload',
+    id: check.text('id', payload.id),
+    fields,
+    extras: compact({
+      damage: check.text('damage', payload.damage),
+      damageType: label('damageType', payload.damageType),
+      damage2: check.text('damage2', payload.damage2),
+      damage2Type: label('damage2Type', payload.damage2Type),
+      healing: check.text('healing', payload.healing),
+      addAbilityMod: check.bool('addAbilityMod', payload.addAbilityMod),
+      saveEffect: check.text('saveEffect', payload.saveEffect),
+      boostDamage: check.text('boostDamage', payload.boostDamage),
+      boostDamage2: check.text('boostDamage2', payload.boostDamage2),
+      boostHealing: check.text('boostHealing', payload.boostHealing),
+    }),
+    name: fields.name,
+    warnings,
+  };
+};
+
+export const KIND_NAMES = {
+  creature: 'Monsters',
+  ship: 'NPC Ships',
   starship: 'Starships',
   technique: 'Techniques',
   item: 'Items',
@@ -375,7 +451,11 @@ export const readPage = (page, kind) => {
   if (!read.ok) return read;
 
   const pageKind = kind ?? payloadKind(page, read.payload);
-  const mapper = { creature: creatureFromPayload, ship: npcShipFromPayload }[pageKind];
+  const mapper = {
+    creature: creatureFromPayload,
+    ship: npcShipFromPayload,
+    technique: techniqueFromPayload,
+  }[pageKind];
   if (!mapper) {
     const what = KIND_NAMES[pageKind];
     return {

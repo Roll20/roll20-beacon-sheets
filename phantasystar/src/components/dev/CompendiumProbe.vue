@@ -88,7 +88,7 @@ onMounted(async () => {
       <h4>Sheet Drops</h4>
       <p class="hint">
         What arrives at <code>onDropOver</code> when something is dropped onto this open
-        sheet. A stub &mdash; it records and imports nothing. Drags seen:
+        sheet. Drags seen:
         <strong>{{ dragOverCount }}</strong>.
         <template v-if="refusedDropCount">
           Refused (view-only viewer): <strong>{{ refusedDropCount }}</strong>.

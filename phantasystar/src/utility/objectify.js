@@ -37,3 +37,27 @@ export const objectToArray = (object) => {
 
   return newArray.filter((x) => x)
 }
+
+export const paragraphsToObject = (list) =>
+  Object.fromEntries((Array.isArray(list) ? list : []).map((text, i) => [`p${i}`, String(text ?? '')]))
+
+export const objectToParagraphs = (value) => {
+  if (Array.isArray(value)) return value.map((p) => String(p ?? ''))
+  if (typeof value === 'string') {
+    if (value.startsWith('$__$')) {
+      try {
+        const parsed = JSON.parse(value.slice(4))
+        if (Array.isArray(parsed)) return parsed.map((p) => String(p ?? ''))
+      } catch {
+      }
+    }
+    return value.trim() ? [value] : []
+  }
+  if (value && typeof value === 'object') {
+    return Object.keys(value)
+      .filter((k) => /^p\d+$/.test(k))
+      .sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)))
+      .map((k) => String(value[k] ?? ''))
+  }
+  return []
+}
