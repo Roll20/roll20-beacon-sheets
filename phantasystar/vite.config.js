@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import { readFileSync } from 'node:fs'
+import process from 'node:process'
 import { defineConfig } from 'vite'
 import Handlebars from 'handlebars'
 import vue from '@vitejs/plugin-vue'

@@ -5,6 +5,7 @@ import { NPC_SHIP_ABILITY_IDS } from '../rules/starshipNpc.js';
 import { ABILITY_IDS } from '../rules/skills.js';
 import { DAMAGE_TYPES } from '../rules/damage.js';
 import { COMPONENT_TYPES, MIN_RANK, MAX_RANK } from '../rules/techniques.js';
+import { parseTokenSize } from '../rules/tokens.js';
 
 export const PAYLOAD_VERSION = 1;
 
@@ -30,6 +31,14 @@ const property = (page, name) => {
   for (const [key, value] of Object.entries(page?.properties ?? {})) {
     if (normalizeKey(key) === wanted) return value;
   }
+  return undefined;
+};
+
+const tokenSizeProperty = (page, warnings) => {
+  const raw = property(page, 'Token Size');
+  if (raw === undefined || raw === null || String(raw).trim() === '') return undefined;
+  if (parseTokenSize(raw)) return String(raw).trim();
+  warnings.push(`Token Size: expected a number or "width,height" - left alone.`);
   return undefined;
 };
 
@@ -278,6 +287,7 @@ export const creatureFromPayload = (payload, page = {}) => {
     source: 'payload',
     patch: compact({
       size: check.oneOf('size', payload.size, CREATURE_SIZE_IDS),
+      tokenSize: tokenSizeProperty(page, warnings),
       creatureType: check.text('creatureType', payload.creatureType),
       tags: check.text('tags', payload.tags),
       alignment: check.text('alignment', payload.alignment),

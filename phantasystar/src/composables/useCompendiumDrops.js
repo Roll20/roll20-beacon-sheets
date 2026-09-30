@@ -9,6 +9,7 @@ import { useNpcStore } from '@/stores/npcStore.js'
 import { useNpcShipStore } from '@/stores/npcShipStore.js'
 import { useTechniqueStore } from '@/stores/techniqueStore.js'
 import { NPC, CREATURE, NPC_SHIP } from '@/sheetTypes.js'
+import { creatureToken } from '@/rules/tokens.js'
 
 export const dropNotice = ref(null)
 
@@ -39,6 +40,15 @@ export const useCompendiumDrops = () => {
     app.setSheetType(NPC)
     app.setNpcMode(kind === 'ship' ? NPC_SHIP : CREATURE)
     ;(kind === 'ship' ? npcShip : npc).importEntry(mapped)
+    if (kind === 'creature') sizeTokens()
+  }
+
+  const sizeTokens = () => {
+    const characterId = initValues.character?.id
+    const dispatch = dispatchRef.value
+    if (!characterId || typeof dispatch?.updateTokensByCharacter !== 'function') return
+    const token = creatureToken({ tokenSize: npc.tokenSize, size: npc.size, senses: npc.senses })
+    Promise.resolve(dispatch.updateTokensByCharacter({ characterId, token })).catch(() => {})
   }
 
   const blank = (kind) => (kind === 'ship' ? isBlankShip(npcShip) : isBlankCreature(npc))

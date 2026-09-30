@@ -11,6 +11,7 @@ import {
   CREATURE_TYPES,
   CHALLENGE_RATINGS,
   formatModifier,
+  tokenSizeForSize,
 } from '@/rules/index.js'
 
 const npc = useNpcStore()
@@ -38,6 +39,10 @@ const KINDS = [
             <select v-model="npc.size">
               <option v-for="s in CREATURE_SIZES" :key="s.id" :value="s.id">{{ s.name }}</option>
             </select>
+          </label>
+          <label>
+            <span>Token Size</span>
+            <input v-model="npc.tokenSize" :placeholder="tokenSizeForSize(npc.size)" />
           </label>
           <label>
             <span>Type</span>

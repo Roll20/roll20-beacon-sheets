@@ -4,6 +4,7 @@ import { CREATURE_SIZE_IDS } from '../rules/monsters.js';
 import { STARSHIP_SIZE_IDS } from '../rules/starship.js';
 import { NPC_SHIP_ABILITIES } from '../rules/starshipNpc.js';
 import { ABILITY_IDS } from '../rules/skills.js';
+import { parseTokenSize } from '../rules/tokens.js';
 
 export { normalizeKey, compact };
 
@@ -63,6 +64,7 @@ export const toSize = (value, allowed) => {
 
 export const CREATURE_ALIASES = {
   size: ['size', 'creature size'],
+  tokenSize: ['token size'],
   creatureType: ['type', 'creature type', 'monster type'],
   tags: ['subtype', 'tags', 'tag'],
   alignment: ['alignment'],
@@ -164,6 +166,7 @@ export const toCreature = (entry) => {
   return {
     patch: compact({
       size: toSize(at('size'), CREATURE_SIZE_IDS),
+      tokenSize: parseTokenSize(at('tokenSize')) ? toText(at('tokenSize')) : undefined,
       creatureType: toText(at('creatureType')),
       tags: toText(at('tags')),
       alignment: toText(at('alignment')),

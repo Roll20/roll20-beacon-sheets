@@ -40,6 +40,7 @@ const blankProficiencies = () => Object.fromEntries(ABILITY_IDS.map((id) => [id,
 
 const npcStore = () => {
   const size = ref(DEFAULT_CREATURE_SIZE)
+  const tokenSize = ref('')
   const creatureType = ref('')
   const tags = ref('')
   const alignment = ref('')
@@ -285,6 +286,7 @@ const npcStore = () => {
 
   const dehydrate = () => ({
     size: size.value,
+    tokenSize: tokenSize.value,
     creatureType: creatureType.value,
     tags: tags.value,
     alignment: alignment.value,
@@ -317,6 +319,7 @@ const npcStore = () => {
 
   const hydrate = (s = {}) => {
     size.value = s.size ?? size.value
+    tokenSize.value = s.tokenSize ?? tokenSize.value
     creatureType.value = s.creatureType ?? creatureType.value
     tags.value = s.tags ?? tags.value
     alignment.value = s.alignment ?? alignment.value
@@ -348,7 +351,7 @@ const npcStore = () => {
   }
 
   return {
-    size, creatureType, tags, alignment,
+    size, tokenSize, creatureType, tags, alignment,
     defense, defenseNote, hp, hitDice, speed, initiative,
     abilities, saveProficiencies, saveBonus,
     cr, notes, skills, senses, languages, resistances, immunities,
