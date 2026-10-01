@@ -74,7 +74,7 @@ const byLevelValue = (byLevel, level) => {
   return best ?? 0;
 };
 
-export const resourceMax = (resource, { level = 1, abilities = {}, professionStats = null } = {}) => {
+export const resourceMax = (resource, { level = 1, abilities = {}, professionStats = null, extra = 0 } = {}) => {
   const r = normalizeResource(resource);
   if (r.maxOverride !== null) return Math.max(0, r.maxOverride);
   const m = r.max;
@@ -84,7 +84,7 @@ export const resourceMax = (resource, { level = 1, abilities = {}, professionSta
   else if ('ability' in m) n = Math.max(int(abilities[m.ability]) ?? 0, m.min ?? -Infinity);
   else if ('perLevel' in m) n = m.perLevel * clampLevel(level);
   else n = m.fixed;
-  return Math.max(0, n);
+  return Math.max(0, n + (Number(extra) || 0));
 };
 
 export const resourceLeft = (resource, max) => Math.max(0, max - Math.min(max, normalizeResource(resource).used));

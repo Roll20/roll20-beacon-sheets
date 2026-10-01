@@ -49,10 +49,8 @@ const rolls = useSheetRolls()
       </div>
     </SheetPanel>
 
-    <SheetPanel title="Technique Points">
-      <div v-if="!sheet.techAbility && !sheet.maxTP" class="no-tech">No tech ability</div>
-
-      <div v-else class="tp-grid">
+    <SheetPanel v-if="sheet.techAbility || sheet.maxTP" title="Technique Points">
+      <div class="tp-grid">
         <CircularGauge
           :value="sheet.maxTP"
           :max="sheet.maxTP"
@@ -169,7 +167,6 @@ const rolls = useSheetRolls()
   color: var(--ps-derived, var(--ps-text));
 }
 
-.no-tech { font-size: 12px; color: var(--ps-text-muted); padding: 6px 2px; }
 
 .hint {
   font-size: 10px;

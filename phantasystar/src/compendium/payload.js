@@ -726,6 +726,10 @@ const levelFeatures = (features, prefix, warnings) => {
         roll: isObject(entry.roll) ? entry.roll : null,
         move: isObject(entry.move) ? entry.move : null,
         techniques: Array.isArray(entry.techniques) ? entry.techniques : [],
+        pickCount: Number.isInteger(entry.pickCount) ? entry.pickCount : 1,
+        optionMode: entry.optionMode === 'add' ? 'add' : '',
+        initiate: isObject(entry.initiate) ? entry.initiate : null,
+        ...(typeof entry.extraUseOf === 'string' ? { extraUseOf: entry.extraUseOf } : {}),
       });
       for (const uses of Array.isArray(entry.uses) ? entry.uses : []) {
         if (!isObject(uses) || !isObject(uses.max)) continue;
@@ -801,6 +805,30 @@ export const pathFromPayload = (payload, page = {}, features = null) => {
   };
 };
 
+const PROFICIENCY_GRANT_KINDS = ['armor', 'weapon', 'tool', 'vehicle'];
+
+export const featFromPayload = (payload, page = {}, features = null) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const id = check.text('id', payload.id) ?? '';
+  const { rows, resources, choices } = levelFeatures(features, `feat:${id}`, warnings);
+  return {
+    source: 'payload',
+    id,
+    name: check.text('feat', payload.feat) ?? check.text('name', page.name) ?? '',
+    featType: check.text('featType', payload.featType) ?? '',
+    repeatable: check.bool('repeatable', payload.repeatable) ?? false,
+    armorStep: check.bool('armorStep', payload.armorStep) ?? false,
+    proficiencies: (check.list('proficiencies', payload.proficiencies) ?? [])
+      .filter((p) => isObject(p) && PROFICIENCY_GRANT_KINDS.includes(p.kind) && typeof p.id === 'string')
+      .map((p) => ({ kind: p.kind, id: p.id, name: typeof p.name === 'string' ? p.name : '' })),
+    features: rows.map((r) => ({ ...r, group: 'feat', level: null })),
+    resources: resources.map((r) => ({ ...r, level: null })),
+    choices: choices.map((c) => c.label),
+    warnings,
+  };
+};
+
 export const KIND_NAMES = {
   creature: 'Monsters',
   ship: 'NPC Ships',
@@ -835,6 +863,7 @@ export const readPage = (page, kind) => {
     path: pathFromPayload,
     starship: starshipFromPayload,
     vehicle: vehicleFromPayload,
+    feat: featFromPayload,
   }[pageKind];
   if (!mapper) {
     const what = KIND_NAMES[pageKind];

@@ -129,8 +129,13 @@ const setLeft = (row, value) => sheet.setResourceUsed(row.id, row.max - (Number(
   border-radius: var(--ps-radius-sm);
   padding: 1px 5px;
   cursor: pointer;
+  color: var(--ps-chip-idle, var(--ps-heading));
 
-  &:hover:not(:disabled) { background: var(--ps-gold-light); }
+  &:hover:not(:disabled) {
+    background: var(--ps-green);
+    border-color: var(--ps-green);
+    color: var(--ps-on-green-fill, var(--ps-on-fill));
+  }
   &:disabled { opacity: 0.4; cursor: not-allowed; }
   &.armed { opacity: 1; background: var(--ps-blue); border-color: var(--ps-blue); color: var(--ps-on-fill); }
 }

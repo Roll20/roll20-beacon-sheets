@@ -26,6 +26,10 @@ import {
   loadActionBlock,
   storeCreatureTechniques,
   loadCreatureTechniques,
+  findCreatureTechnique,
+  creatureWeaponAction,
+  creatureTechnique,
+  refreshCreatureTechnique,
 } from '@/rules/index.js'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useTechniqueStore } from '@/stores/techniqueStore.js'
@@ -152,6 +156,46 @@ const npcStore = () => {
 
   const setTechniqueUsed = (technique, used) => {
     if (technique) technique.used = Math.max(0, Number(used) || 0)
+  }
+
+  const moveCreatureTechnique = (fromId, techniqueId, toId) => {
+    const groups = techniques.value.groups
+    const from = groups.find((g) => g._id === fromId)
+    const to = groups.find((g) => g._id === toId)
+    const i = from ? from.list.findIndex((t) => t._id === techniqueId) : -1
+    if (!to || from === to || i < 0) return
+    to.list.push(...from.list.splice(i, 1))
+  }
+
+  const techAbilityMod = () => num(abilities.value[techniques.value.ability])
+
+  const importTechnique = (mapped) => {
+    const block = techniques.value
+    const options = { abilityMod: techAbilityMod() }
+    const row = creatureTechnique(mapped, options)
+    const current = findCreatureTechnique(block, row.id)
+    block.enabled = true
+    if (current) {
+      Object.assign(current, refreshCreatureTechnique(current, mapped, options))
+      return { updated: true }
+    }
+    let group = block.groups.find((g) => g.uses === AT_WILL)
+    if (!group) {
+      group = { _id: uuidv4(), ...normalizeTechniqueGroup({ uses: AT_WILL }) }
+      block.groups.push(group)
+    }
+    group.list.push({ _id: uuidv4(), ...row })
+    return { updated: false }
+  }
+
+  const addWeaponAction = (attack) => {
+    const action = creatureWeaponAction(attack, {
+      abilities: abilities.value,
+      cr: cr.value,
+      saveBonus: saveBonus.value ?? 0,
+    })
+    actions.value.push({ ...blankEntry(), ...normalizeEntry(action) })
+    return action
   }
 
   const restoreTechniques = () => {
@@ -365,6 +409,7 @@ const npcStore = () => {
     addSkill, removeSkill, addEntry, removeEntry, damageEntry,
     setSection, spendAction, setUsed, entriesFor: listFor,
     addTechniqueGroup, removeTechniqueGroup, addCreatureTechnique, removeCreatureTechnique,
+    moveCreatureTechnique, importTechnique, addWeaponAction,
     setTechniqueUsed, restoreTechniques, slugId,
     importEntry, copyFromCharacter,
     dehydrate, hydrate,

@@ -22,3 +22,5 @@ export * from './tokens.js';
 export * from './resources.js';
 export * from './riders.js';
 export * from './featureEffects.js';
+export * from './creatureDrops.js';
+export * from './feats.js';

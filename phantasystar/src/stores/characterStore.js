@@ -8,7 +8,7 @@ import {
   characterAttackPower, normalizeResistances, normalizeTechOptions,
   normalizeProfessionStats, hasLevelTable, normalizeSaveOptions,
   normalizeFeature, featuresFromText, DEFAULT_FEATURE_GROUP, storeFeature,
-  normalizeResource, resourceMax, usedAfterRest,
+  normalizeResource, resourceMax, usedAfterRest, extraUsesFor,
   featureReached, pickAllows, riderFits, riderFormula, riderType,
   normalizeProficiencies, isWeaponProficient, planProficiency,
   rowProficiency, weaponDamage, migrateAttackRow, storeWeaponText,
@@ -135,8 +135,14 @@ const characterStore = () => {
     resources.value = resources.value.filter((r) => r._id !== id)
   }
 
+  const extraUsesOf = (row) =>
+    extraUsesFor(features.value.find((f) => f._id === row.feature), features.value)
+
   const resourceMaxFor = (row) =>
-    resourceMax(row, { level: summary.value.level, abilities: abilities.value, professionStats: professionStats.value })
+    resourceMax(row, {
+      level: summary.value.level, abilities: abilities.value, professionStats: professionStats.value,
+      extra: extraUsesOf(row),
+    })
 
   const setResourceUsed = (id, used) => {
     const row = resources.value.find((r) => r._id === id)
@@ -506,7 +512,7 @@ const characterStore = () => {
     damageFor, resolveAttack,
     defenseValue, defenseDexApplied, armorState, agilityValue, speedValue, featureMovementParts,
     fate, hitDice, suggestedMaxHp,
-    addFeature, removeFeature, addResource, removeResource, resourceMaxFor, setResourceUsed, restResources,
+    addFeature, removeFeature, addResource, removeResource, resourceMaxFor, extraUsesOf, setResourceUsed, restResources,
     diceContext, usesLeftFor, spendUse, riderFeatures, riderBlocked, setRider, ridersFor, spendRiders,
     addAttack, removeAttack, setSkillRanks, setSkillMisc, setSkillAbility,
     toggleSaveProficiency, toggleProficiency, addProficiency, removeCustomProficiency,

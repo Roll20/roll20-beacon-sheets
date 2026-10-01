@@ -85,6 +85,8 @@ export const useCompendiumDrops = () => {
     return notify(added ? `Added ${label} proficiency.` : `Already proficient with ${label}.`)
   }
 
+  const ARMOR_WORDS = { shields: 'shields', light_armor: 'light armor', medium_armor: 'medium armor', heavy_armor: 'heavy armor' }
+
   const toChoose = (name, labels, verb = 'Added') =>
     labels.length ? `${verb} ${name}. To choose: ${labels.join('; ')}.` : `${verb} ${name}.`
 
@@ -143,9 +145,25 @@ export const useCompendiumDrops = () => {
     }
     if (plan.apply === 'profession') return applyProfession(mapped)
     if (plan.apply === 'path') return applyPath(mapped)
+    if (plan.apply === 'feat') {
+      const done = app.applyFeat(mapped)
+      if (done.refuse) return notify(done.refuse, 'refused')
+      if (done.mode === 'refresh') return notify(`Updated ${name}.`)
+      const trained = done.armor.length ? ` Trained in ${done.armor.map((id) => ARMOR_WORDS[id]).join(' and ')}.` : ''
+      return notify(`${toChoose(done.mode === 'again' ? `${name} again` : name, mapped.choices, 'Took')}${trained}`)
+    }
     if (plan.apply === 'technique') {
       const { updated } = techniques.importTechnique(mapped)
       return notify(updated ? `Updated ${name}.` : `Added ${name} to Techniques.`)
+    }
+    if (plan.apply === 'creatureTechnique') {
+      const { updated } = npc.importTechnique(mapped)
+      return notify(updated ? `Updated ${name}.` : `Added ${name} to Techniques, At Will.`)
+    }
+    if (plan.apply === 'creatureWeapon') {
+      if (!mapped.attack) return notify('Only weapons drop onto a creature.', 'refused')
+      npc.addWeaponAction(mapped.attack)
+      return notify(`Added ${name} to Actions.`)
     }
     if (plan.apply === 'item') {
       const { weapon, pack } = app.addItemFromCompendium(mapped)

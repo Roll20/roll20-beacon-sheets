@@ -10,6 +10,7 @@ export const DEFAULT_FEATURE_GROUP = 'profession';
 
 import { normalizeRider, normalizeFeatureRoll } from './riders.js';
 import { normalizeMove, normalizeGrants, storeGrants } from './featureEffects.js';
+import { normalizeInitiate, normalizeAddUses } from './feats.js';
 
 const toLevel = (value) => {
   if (value === '' || value === null || value === undefined) return null;
@@ -33,9 +34,16 @@ export const normalizeFeatureOptions = (value) => {
 export const storeFeatureOptions = (list) =>
   Object.fromEntries(normalizeFeatureOptions(list).map((o, i) => [`o${i}`, o]));
 
+export const featurePicks = (feature) =>
+  String(feature?.pick ?? '').split('|').filter(Boolean);
+
 export const normalizeFeature = (row = {}) => {
   const options = normalizeFeatureOptions(row.options);
-  const pick = typeof row.pick === 'string' && options.some((o) => o.name === row.pick) ? row.pick : '';
+  const pickCount = Math.max(1, Math.trunc(Number(row.pickCount)) || 1);
+  const pick = featurePicks(row)
+    .filter((name) => options.some((o) => o.name === name))
+    .slice(0, pickCount)
+    .join('|');
   return {
     name: typeof row.name === 'string' ? row.name : '',
     text: typeof row.text === 'string' ? row.text : '',
@@ -45,12 +53,16 @@ export const normalizeFeature = (row = {}) => {
     ref: typeof row.ref === 'string' ? row.ref : '',
     options,
     pick,
+    pickCount,
+    optionMode: row.optionMode === 'add' ? 'add' : '',
     rider: normalizeRider(row.rider),
     riderOn: row.riderOn === true,
     roll: normalizeFeatureRoll(row.roll),
     move: normalizeMove(row.move),
     techniques: normalizeGrants(row.techniques),
     granted: typeof row.granted === 'string' ? row.granted : '',
+    addUses: normalizeAddUses(row.addUses),
+    initiate: normalizeInitiate(row.initiate),
     ...(row._id ? { _id: row._id } : {}),
   };
 };

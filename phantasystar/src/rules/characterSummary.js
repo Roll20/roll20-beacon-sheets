@@ -2,6 +2,7 @@ import { ABILITY_IDS, resolveSkills } from './skills.js';
 import { normalizeProfessionStats, professionRow } from './profession.js';
 import { armorContribution } from './armor.js';
 import { featureMovement } from './featureEffects.js';
+import { initiateNumbers } from './feats.js';
 import { normalizeProficiencies } from './proficiencies.js';
 import { clampLevel, saveBonus, maxSkillRank, levelFromXp, fatePoints } from './progression.js';
 import {
@@ -51,12 +52,15 @@ export const summarizeSheet = (sheet = {}) => {
 
   const ability = (id) => num(abilities[id]);
 
-  const techOptions = normalizeTechOptions(sheet.techOptions);
-  const techAbility = techOptions.ability || professionStats.techAbility || null;
-  const techAbilityMod = techAbility ? ability(techAbility) : 0;
-  const techBonusValue = num(row.techBonus);
+  const initiate = initiateNumbers(sheet.features, level);
+  const own = (key) => num(row[key]) !== 0;
 
-  const maxTP = num(row.maxTP);
+  const techOptions = normalizeTechOptions(sheet.techOptions);
+  const techAbility = techOptions.ability || professionStats.techAbility || initiate?.techAbility || null;
+  const techAbilityMod = techAbility ? ability(techAbility) : 0;
+  const techBonusValue = own('techBonus') || !initiate ? num(row.techBonus) : initiate.techBonus;
+
+  const maxTP = own('maxTP') || !initiate ? num(row.maxTP) : initiate.maxTP;
 
   const armor = armorContribution(
     defenseParts,
@@ -117,7 +121,7 @@ export const summarizeSheet = (sheet = {}) => {
     techAbility,
     techAbilityMod,
     techOptions,
-    maxTechRank: row.maxTechRank,
+    maxTechRank: own('maxTechRank') || !initiate ? row.maxTechRank : initiate.maxTechRank,
     advancedRank: row.advancedRank,
     techniquesKnown: row.techniquesKnown,
 

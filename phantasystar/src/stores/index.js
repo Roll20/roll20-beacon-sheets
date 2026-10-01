@@ -21,7 +21,7 @@ import {
 } from '@/sheetTypes.js'
 import {
   normalizeProficiencies, normalizeWeaponProperties, defensePartsFromEquipment, normalizeItem,
-  normalizeFeature, normalizeProfessionStats, normalizeResource, ABILITY_IDS,
+  normalizeFeature, normalizeProfessionStats, normalizeResource, ABILITY_IDS, featDrop,
 } from '@/rules/index.js'
 
 export const DEFAULT_CHARACTER_NAME = 'New Character'
@@ -174,6 +174,29 @@ export const useAppStore = defineStore('app', () => {
     sheet.path = mapped.name
     sheet.professionStats = { ...normalizeProfessionStats(sheet.professionStats), pathId: mapped.id }
     placeLevelFeatures(`path:${mapped.id}:`, mapped)
+  }
+
+  const applyFeat = (mapped) => {
+    const { sheet } = stores
+    const plan = featDrop(sheet.features, mapped, { armor: sheet.proficiencies.armor })
+    if (plan.refuse) return plan
+    if (plan.mode === 'refresh') {
+      placeLevelFeatures(`feat:${mapped.id}:`, { features: plan.rows, resources: plan.resources })
+      return plan
+    }
+    for (const row of plan.rows) {
+      const feature = { _id: uuidv4(), ...normalizeFeature(row) }
+      sheet.features.push(feature)
+      for (const r of plan.resources.filter((x) => x.source === row.source && x.ref === row.ref)) {
+        sheet.resources.push({ _id: uuidv4(), ...normalizeResource({ ...r, feature: feature._id }) })
+      }
+    }
+    for (const id of plan.armor) sheet.proficiencies.armor[id] = true
+    for (const p of mapped.proficiencies) {
+      if (p.kind === 'armor' && p.id in sheet.proficiencies.armor) sheet.proficiencies.armor[p.id] = true
+      else if (p.kind !== 'armor') sheet.addProficiency(p.kind, { id: p.id, name: p.name })
+    }
+    return plan
   }
 
   const applyStartingEquipment = (kit) => {
@@ -419,6 +442,7 @@ export const useAppStore = defineStore('app', () => {
     applyBackground,
     applyProfession,
     applyPath,
+    applyFeat,
     applyStartingEquipment,
     removeProfession,
     removePath,

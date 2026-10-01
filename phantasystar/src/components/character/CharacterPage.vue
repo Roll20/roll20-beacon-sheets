@@ -59,7 +59,7 @@ const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) 
                 <input v-model.number="sheet.speed" type="number" />
               </label>
               <label class="part">
-                <span>Misc Bonus</span>
+                <span>Misc</span>
                 <input v-model.number="sheet.speedMisc" type="number" />
               </label>
               <div v-for="p in speedParts" :key="p.name" class="part">
@@ -69,7 +69,7 @@ const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) 
             </StatDropdown>
             <div class="move-text">
               <strong>Speed</strong>
-              <small>Base Speed + Misc Bonus</small>
+              <small>Base Speed + Misc</small>
             </div>
           </div>
           <div class="move">
@@ -79,7 +79,7 @@ const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) 
                 <output>{{ formatModifier(sheet.abilities.dexterity) }}</output>
               </div>
               <label class="part">
-                <span>Misc Bonus</span>
+                <span>Misc</span>
                 <input v-model.number="sheet.agilityMisc" type="number" />
               </label>
               <div v-for="p in agilityParts" :key="p.name" class="part">
@@ -89,7 +89,7 @@ const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) 
             </StatDropdown>
             <div class="move-text">
               <strong>Agility</strong>
-              <small>DEX + Misc Bonus</small>
+              <small>DEX + Misc</small>
             </div>
           </div>
           <button type="button" class="initiative" @click="rolls.rollInitiative()">

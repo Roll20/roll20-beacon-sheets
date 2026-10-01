@@ -235,16 +235,16 @@ const DevChat = isDev
   z-index: 19;
   margin: 0;
   padding: 5px 16px;
-  background: var(--ps-panel-alt);
-  border-bottom: 1.5px solid var(--ps-line);
-  color: var(--ps-heading);
+  background: var(--ps-green);
+  border-bottom: 1.5px solid var(--ps-green);
+  color: var(--ps-on-green-fill, var(--ps-on-fill));
   font-size: 11px;
   font-weight: 700;
 
   &.refused {
-    background: var(--ps-gold-light);
-    border-bottom-color: var(--ps-gold-dark);
-    color: var(--ps-on-gold-fill, var(--ps-heading));
+    background: var(--ps-red);
+    border-bottom-color: var(--ps-red);
+    color: var(--ps-on-fill);
   }
 }
 

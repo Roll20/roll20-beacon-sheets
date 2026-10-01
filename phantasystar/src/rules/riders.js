@@ -108,4 +108,5 @@ export const riderType = (rider, attack = {}) => {
   return r?.type === 'weapon' ? attack.damageType || '' : r?.type || '';
 };
 
-export const pickAllows = (part, feature) => !part?.pick || feature?.pick === part.pick;
+export const pickAllows = (part, feature) =>
+  !part?.pick || String(feature?.pick ?? '').split('|').includes(part.pick);

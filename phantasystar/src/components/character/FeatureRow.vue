@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
-import { FEATURE_GROUPS, RECOVERIES, featureColumnValues, resourceMax } from '@/rules/index.js'
+import { FEATURE_GROUPS, RECOVERIES, featureColumnValues, featurePicks, resourceMax } from '@/rules/index.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
 
 const props = defineProps({
@@ -21,8 +21,27 @@ const split = (text) =>
     .map((p) => p.trim())
     .filter(Boolean)
 
-const picked = computed(() => feature.value?.options?.find((o) => o.name === feature.value.pick) ?? null)
+const picks = computed(() => featurePicks(feature.value))
+const picked = computed(() =>
+  feature.value?.optionMode === 'add'
+    ? null
+    : feature.value?.options?.find((o) => o.name === picks.value[0]) ?? null,
+)
 const paragraphs = computed(() => (picked.value ? split(picked.value.text) : split(feature.value?.text)))
+const added = computed(() => {
+  if (feature.value?.optionMode !== 'add') return []
+  const chosen = feature.value.options.filter((o) => picks.value.includes(o.name))
+  return chosen.length ? chosen : feature.value.options
+})
+
+const slots = computed(() => Array.from({ length: feature.value?.pickCount ?? 1 }, (_, i) => i))
+const pickAt = (i) => picks.value[i] ?? ''
+const setPick = (i, name) => {
+  const next = [...picks.value]
+  next[i] = name
+  feature.value.pick = next.filter(Boolean).join('|')
+}
+const offered = (i) => feature.value.options.filter((o) => !picks.value.some((p, j) => j !== i && p === o.name))
 
 const values = computed(() =>
   feature.value?.source?.startsWith('profession:')
@@ -34,6 +53,7 @@ const uses = computed(() => sheet.resources.filter((r) => r.feature === props.id
 const ruleMax = (row) =>
   resourceMax({ ...row, maxOverride: null }, {
     level: sheet.effectiveLevel, abilities: sheet.abilities, professionStats: sheet.professionStats,
+    extra: sheet.extraUsesOf(row),
   })
 const setMaxOverride = (row, value) => {
   const n = Number(value)
@@ -62,16 +82,20 @@ const levelInput = computed({
         {{ feature.name || 'Unnamed feature' }}
       </button>
       <span v-for="v in values" :key="v.id" class="value">{{ v.label ? `${v.label} ` : '' }}{{ v.value }}</span>
-      <select
-        v-if="feature.options.length"
-        v-model="feature.pick"
-        class="pick"
-        :class="{ unpicked: !feature.pick }"
-        :title="`${feature.name} benefit`"
-      >
-        <option value="">&mdash;</option>
-        <option v-for="o in feature.options" :key="o.name" :value="o.name">{{ o.name }}</option>
-      </select>
+      <template v-if="feature.options.length">
+        <select
+          v-for="i in slots"
+          :key="i"
+          :value="pickAt(i)"
+          class="pick"
+          :class="{ unpicked: !pickAt(i) }"
+          :title="`${feature.name} benefit`"
+          @change="setPick(i, $event.target.value)"
+        >
+          <option value="">&mdash;</option>
+          <option v-for="o in offered(i)" :key="o.name" :value="o.name">{{ o.name }}</option>
+        </select>
+      </template>
       <span v-if="feature.level" class="level">Level {{ feature.level }}</span>
       <ConfirmDelete class="del" title="Remove" @confirm="sheet.removeFeature(feature._id)" />
     </div>
@@ -126,6 +150,7 @@ const levelInput = computed({
     <div v-else-if="open" class="body">
       <p v-if="picked" class="picked">{{ picked.name }}</p>
       <p v-for="(para, i) in paragraphs" :key="i">{{ para }}</p>
+      <p v-for="o in added" :key="o.name"><strong>{{ o.name }}.</strong> {{ o.text }}</p>
     </div>
 
     <div v-if="open" class="editbar">

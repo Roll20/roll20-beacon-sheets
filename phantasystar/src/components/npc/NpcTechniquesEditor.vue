@@ -47,6 +47,14 @@ const settleId = (t) => {
         <div class="tech__top">
           <input v-model="t.name" class="tech__name" placeholder="Technique" @change="settleId(t)" />
           <label class="small"><span>Rank</span><input v-model.number="t.rank" type="number" min="0" /></label>
+          <label v-if="npc.techniques.groups.length > 1" class="uses">
+            <span>Uses</span>
+            <select :value="group._id" @change="npc.moveCreatureTechnique(group._id, t._id, $event.target.value)">
+              <option v-for="(g, i) in npc.techniques.groups" :key="g._id" :value="g._id">
+                {{ techniqueUsesLabel(g.uses) }}{{ npc.techniques.groups.filter((x) => x.uses === g.uses).length > 1 ? ` (${i + 1})` : '' }}
+              </option>
+            </select>
+          </label>
           <ConfirmDelete class="del" title="Remove" @confirm="npc.removeCreatureTechnique(group._id, t._id)" />
         </div>
         <div class="tech__grid">
@@ -144,6 +152,7 @@ input[type='number'] { text-align: center; }
 }
 
 .small { width: 60px; }
+.uses { width: 120px; }
 
 .check {
   flex-direction: row;

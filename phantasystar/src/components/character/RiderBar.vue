@@ -54,14 +54,18 @@ const chips = computed(() => {
   font-family: inherit;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ps-heading);
+  color: var(--ps-chip-idle, var(--ps-heading));
   background: var(--ps-field);
   border: 1px solid var(--ps-line);
   border-radius: 10px;
   padding: 2px 8px;
   cursor: pointer;
 
-  &:hover:not(:disabled) { background: var(--ps-gold-light); }
+  &:hover:not(:disabled) {
+    background: var(--ps-green);
+    border-color: var(--ps-green);
+    color: var(--ps-on-green-fill, var(--ps-on-fill));
+  }
 
   &.on {
     background: var(--ps-blue);

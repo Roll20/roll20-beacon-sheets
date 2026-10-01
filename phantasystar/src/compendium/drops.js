@@ -6,7 +6,10 @@ export const dropPlan = (kind, { sheetType, npcMode } = {}) => {
   const shipSheet = sheetType === NPC && npcMode === NPC_SHIP;
   switch (kind) {
     case 'technique':
-      return sheetType === PC ? { apply: 'technique' } : { refuse: 'Techniques drop onto a player character.' };
+      if (creatureSheet) return { apply: 'creatureTechnique' };
+      return sheetType === PC
+        ? { apply: 'technique' }
+        : { refuse: 'Techniques drop onto a player character or a creature.' };
     case 'creature':
       return creatureSheet
         ? { apply: 'creature' }
@@ -23,7 +26,10 @@ export const dropPlan = (kind, { sheetType, npcMode } = {}) => {
         ? { apply: 'vehicle' }
         : { refuse: 'Vehicles drop onto a character, a starship sheet, or the map.' };
     case 'item':
-      return sheetType === PC ? { apply: 'item' } : { refuse: 'Items drop onto a player character.' };
+      if (creatureSheet) return { apply: 'creatureWeapon' };
+      return sheetType === PC
+        ? { apply: 'item' }
+        : { refuse: 'Items drop onto a player character. Weapons drop onto a creature too.' };
     case 'proficiency':
       return sheetType === PC
         ? { apply: 'proficiency' }
@@ -32,6 +38,7 @@ export const dropPlan = (kind, { sheetType, npcMode } = {}) => {
     case 'background':
     case 'profession':
     case 'path':
+    case 'feat':
       return sheetType === PC
         ? { apply: kind }
         : { refuse: `${KIND_NAMES[kind]} drop onto a player character.` };
