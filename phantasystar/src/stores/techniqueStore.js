@@ -285,6 +285,7 @@ const techniqueStore = () => {
     known.value.forEach((e) => {
       if (e.freeCasts) e.freeCasts = refreshFreeCasts(e.freeCasts, 'short')
     })
+    sheet.restResources('short')
   }
 
   const longRest = () => {
@@ -298,6 +299,7 @@ const techniqueStore = () => {
     sheet.hp.current = num(sheet.hp.max)
     sheet.hitDiceUsed = 0
     sheet.clearDeathSaves()
+    sheet.restResources('long')
   }
 
   const dehydrate = () => ({

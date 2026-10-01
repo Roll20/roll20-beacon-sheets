@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
-import { FEATURE_GROUPS } from '@/rules/index.js'
+import { FEATURE_GROUPS, RECOVERIES, featureColumnValues, resourceMax } from '@/rules/index.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
 
 const props = defineProps({
@@ -15,12 +15,30 @@ const sheet = useCharacterStore()
 
 const feature = computed(() => sheet.features.find((f) => f._id === props.id) ?? null)
 
-const paragraphs = computed(() =>
-  String(feature.value?.text ?? '')
+const split = (text) =>
+  String(text ?? '')
     .split(/\n\s*\n/)
     .map((p) => p.trim())
-    .filter(Boolean),
+    .filter(Boolean)
+
+const picked = computed(() => feature.value?.options?.find((o) => o.name === feature.value.pick) ?? null)
+const paragraphs = computed(() => (picked.value ? split(picked.value.text) : split(feature.value?.text)))
+
+const values = computed(() =>
+  feature.value?.source?.startsWith('profession:')
+    ? featureColumnValues(sheet.professionStats, sheet.effectiveLevel, feature.value.ref)
+    : [],
 )
+
+const uses = computed(() => sheet.resources.filter((r) => r.feature === props.id))
+const ruleMax = (row) =>
+  resourceMax({ ...row, maxOverride: null }, {
+    level: sheet.effectiveLevel, abilities: sheet.abilities, professionStats: sheet.professionStats,
+  })
+const setMaxOverride = (row, value) => {
+  const n = Number(value)
+  row.maxOverride = value === '' || !Number.isFinite(n) ? null : Math.max(0, Math.trunc(n))
+}
 
 const levelInput = computed({
   get: () => feature.value?.level ?? '',
@@ -43,6 +61,17 @@ const levelInput = computed({
         <span class="caret" :class="{ turned: open }">&#9656;</span>
         {{ feature.name || 'Unnamed feature' }}
       </button>
+      <span v-for="v in values" :key="v.id" class="value">{{ v.label ? `${v.label} ` : '' }}{{ v.value }}</span>
+      <select
+        v-if="feature.options.length"
+        v-model="feature.pick"
+        class="pick"
+        :class="{ unpicked: !feature.pick }"
+        :title="`${feature.name} benefit`"
+      >
+        <option value="">&mdash;</option>
+        <option v-for="o in feature.options" :key="o.name" :value="o.name">{{ o.name }}</option>
+      </select>
       <span v-if="feature.level" class="level">Level {{ feature.level }}</span>
       <ConfirmDelete class="del" title="Remove" @confirm="sheet.removeFeature(feature._id)" />
     </div>
@@ -66,9 +95,36 @@ const levelInput = computed({
         <span>Description</span>
         <textarea v-model="feature.text" rows="4" />
       </label>
+      <div class="uses f--full">
+        <div v-for="row in uses" :key="row._id" class="use">
+          <label class="f">
+            <span>Uses</span>
+            <input v-model="row.name" :placeholder="feature.name" />
+          </label>
+          <label class="f f--narrow">
+            <span>Max</span>
+            <input
+              type="number"
+              min="0"
+              :value="row.maxOverride ?? ''"
+              :placeholder="ruleMax(row)"
+              @change="setMaxOverride(row, $event.target.value)"
+            />
+          </label>
+          <label class="f">
+            <span>Recovery</span>
+            <select v-model="row.recovery">
+              <option v-for="r in RECOVERIES" :key="r.id" :value="r.id">{{ r.name }}</option>
+            </select>
+          </label>
+          <ConfirmDelete class="del" title="Remove uses" @confirm="sheet.removeResource(row._id)" />
+        </div>
+        <button type="button" class="mini" @click="sheet.addResource(feature._id)">+ Uses</button>
+      </div>
     </div>
 
     <div v-else-if="open" class="body">
+      <p v-if="picked" class="picked">{{ picked.name }}</p>
       <p v-for="(para, i) in paragraphs" :key="i">{{ para }}</p>
     </div>
 
@@ -135,6 +191,42 @@ const levelInput = computed({
   @include ps-caption;
   flex: 0 0 auto;
   font-size: 9px;
+}
+
+.value {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ps-heading);
+  white-space: nowrap;
+}
+
+.pick {
+  @include ps-control(18px);
+  flex: 0 1 auto;
+  max-width: 130px;
+  font-size: 10px;
+  text-align: left;
+  padding: 0 2px;
+
+  &.unpicked { border-color: var(--ps-gold-dark); }
+}
+
+.picked { font-weight: 700; }
+
+.uses {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.use {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) 56px minmax(0, 1fr) auto;
+  gap: 5px 8px;
+  align-items: end;
+  width: 100%;
 }
 
 .del {

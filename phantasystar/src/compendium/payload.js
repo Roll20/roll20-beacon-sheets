@@ -16,6 +16,7 @@ export const CATEGORY_KINDS = {
   monsters: 'creature',
   npcships: 'ship',
   starships: 'starship',
+  vehicles: 'vehicle',
   techniques: 'technique',
   items: 'item',
   proficiencies: 'proficiency',
@@ -370,6 +371,88 @@ export const npcShipFromPayload = (payload, page = {}) => {
   };
 };
 
+export const starshipFromPayload = (payload, page = {}) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const hullDie = check.text('hullDie', payload.hullDie);
+  const weapons = (check.list('weapons', payload.weapons) ?? []).flatMap((w, i) => {
+    const at = `weapons[${i}]`;
+    if (!isObject(w)) {
+      warnings.push(`${at}: skipped a weapon that is not an object.`);
+      return [];
+    }
+    const damageType = check.text(`${at}.damageType`, w.damageType);
+    const row = {
+      name: check.text(`${at}.name`, w.name) ?? '',
+      range: check.text(`${at}.range`, w.range) ?? '',
+      damage: check.text(`${at}.damage`, w.damage) ?? '',
+      damageType: damageType === undefined ? '' : damageLabel(damageType),
+      addDexToDamage: !!check.bool(`${at}.addDexToDamage`, w.addDexToDamage),
+      notes: check.text(`${at}.notes`, w.notes) ?? '',
+    };
+    const quantity = Math.max(1, check.int(`${at}.quantity`, w.quantity) ?? 1);
+    return Array.from({ length: quantity }, () => ({ ...row }));
+  });
+  return {
+    source: 'payload',
+    name: check.text('name', page.name),
+    stats: compact({
+      size: check.oneOf('size', payload.size, STARSHIP_SIZE_IDS),
+      crewCapacity: check.int('crewCapacity', payload.crewCapacity),
+      actionStations: check.text('actionStations', payload.actionStations),
+      baseDefense: check.int('baseDefense', payload.baseDefense),
+      maneuverability: check.int('maneuverability', payload.maneuverability),
+      defenseModifier: check.int('defenseModifier', payload.defenseModifier),
+      baseHullPoints: check.int('baseHullPoints', payload.baseHullPoints),
+      baseStructuralIntegrity: check.int('baseStructuralIntegrity', payload.baseStructuralIntegrity),
+      hullDie: hullDie && /^d\d+$/.test(hullDie) ? hullDie : undefined,
+      hullDiceTotal: check.int('hullDiceTotal', payload.hullDiceTotal),
+      interceptSpeed: check.int('interceptSpeed', payload.interceptSpeed),
+      sensorRange: check.int('sensorRange', payload.sensorRange),
+      specialFeatures: check.prose('specialFeatures', payload.specialFeatures),
+      defenseSystems: check.prose('defenseSystems', payload.defenseSystems),
+      resistances: check.text('resistances', payload.resistances),
+    }),
+    weapons,
+    warnings,
+  };
+};
+
+export const vehicleFromPayload = (payload, page = {}) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const block = check.object('statBlock', payload.statBlock);
+  const name = check.text('name', page.name);
+  if (!block) return { source: 'payload', name, kind: 'vehicle', hasStatBlock: false, stats: {}, weapons: [], warnings };
+  const saves = check.object('statBlock.saves', block.saves) ?? {};
+  const ship = starshipFromPayload({ weapons: block.weapons }, page);
+  warnings.push(...ship.warnings);
+  return {
+    source: 'payload',
+    name,
+    kind: 'vehicle',
+    hasStatBlock: true,
+    tokenSize: tokenSizeProperty(page, warnings),
+    stats: compact({
+      size: check.oneOf('statBlock.size', block.size, CREATURE_SIZE_IDS),
+      crewCapacity: check.int('statBlock.seating', block.seating),
+      actionStations: check.text('statBlock.stations', block.stations),
+      baseDefense: check.int('statBlock.baseDefense', block.baseDefense),
+      maneuverability: 0,
+      baseHullPoints: check.int('statBlock.hp', block.hp),
+      controlSpeed: check.text('statBlock.controlSpeed', block.controlSpeed),
+      strSave: check.int('statBlock.saves.strength', saves.strength),
+      conSave: check.int('statBlock.saves.constitution', saves.constitution),
+      interceptSpeed: check.text('speed', payload.speed),
+      immunities: check.text('statBlock.immunities', block.immunities),
+      specialFeatures: check.prose('statBlock.specialFeatures', block.specialFeatures),
+      defenseSystems: check.prose('statBlock.utility', block.utility),
+    }),
+    weapons: ship.weapons,
+    warnings,
+  };
+};
+
 const COMPONENT_TYPE_IDS = COMPONENT_TYPES.map((t) => t.id);
 
 export const techniqueFromPayload = (payload, page = {}) => {
@@ -536,10 +619,193 @@ export const proficiencyFromPayload = (payload, page = {}) => {
   };
 };
 
+const choiceLabels = (choice) =>
+  (Array.isArray(choice) ? choice : choice ? [choice] : [])
+    .map((c) => (isObject(c) && typeof c.label === 'string' ? c.label : null))
+    .filter(Boolean);
+
+const originFeatures = (features, source) => {
+  const rows = [];
+  const choices = [];
+  for (const entry of features?.['level-1'] ?? []) {
+    if (!isObject(entry) || typeof entry.name !== 'string') continue;
+    const text = Array.isArray(entry.text) ? entry.text.filter((p) => typeof p === 'string') : [];
+    rows.push({ name: entry.name, text: text.join('\n\n'), group: 'origin', level: null, source });
+    choices.push(...choiceLabels(entry.choice));
+  }
+  return { rows, choices };
+};
+
+const toProficiencyList = (value, field, warnings) =>
+  (Array.isArray(value) ? value : []).filter((p) => {
+    const ok = isObject(p) && typeof p.kind === 'string' && typeof p.id === 'string';
+    if (!ok) warnings.push(`${field}: skipped an entry without a kind and id.`);
+    return ok;
+  });
+
+export const speciesFromPayload = (payload, page = {}, features = null) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const id = check.text('id', payload.id) ?? '';
+  const sizes = (Array.isArray(payload.size) ? payload.size : [payload.size]).filter((s) => typeof s === 'string');
+  const { rows, choices } = originFeatures(features, `species:${id}`);
+  if (sizes.length > 1) choices.unshift(`size (${sizes.join(' or ')})`);
+  return {
+    source: 'payload',
+    name: check.text('species', payload.species) ?? check.text('name', page.name) ?? '',
+    size: sizes.length === 1 ? sizes[0] : '',
+    speed: check.int('speed', payload.speed),
+    languages: (check.list('languages', payload.languages) ?? []).filter((l) => typeof l === 'string'),
+    proficiencies: toProficiencyList(payload.proficiencies, 'proficiencies', warnings),
+    features: rows,
+    choices,
+    warnings,
+  };
+};
+
+export const backgroundFromPayload = (payload, page = {}, features = null) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const id = check.text('id', payload.id) ?? '';
+  const ranks = check.object('skillRanks', payload.skillRanks) ?? {};
+  const skillRanks = Object.fromEntries(
+    Object.entries(ranks).filter(([, n]) => Number.isInteger(n) && n > 0),
+  );
+  const { rows } = originFeatures(features, `background:${id}`);
+  const choices = [
+    ...choiceLabels(payload.skillChoice),
+    ...choiceLabels(payload.proficiencyChoices),
+    ...(check.list('equipmentChoices', payload.equipmentChoices) ?? []).filter((c) => typeof c === 'string'),
+  ];
+  const equipment = (check.list('equipment', payload.equipment) ?? [])
+    .filter((e) => isObject(e) && typeof e.name === 'string' && e.name.trim())
+    .map((e) => ({
+      name: e.name.trim(), itemType: 'gear', grade: '', quantity: Number.isInteger(e.quantity) ? e.quantity : 1,
+      weight: typeof e.weight === 'string' || typeof e.weight === 'number' ? e.weight : '', text: '',
+    }));
+  return {
+    source: 'payload',
+    name: check.text('background', payload.background) ?? check.text('name', page.name) ?? '',
+    skillRanks,
+    proficiencies: toProficiencyList(payload.proficiencies, 'proficiencies', warnings),
+    equipment,
+    meseta: check.int('meseta', payload.meseta) ?? 0,
+    features: rows,
+    choices,
+    warnings,
+  };
+};
+
+const RESOURCE_KEYS = ['max', 'recovery', 'pool', 'unit', 'name'];
+
+const levelFeatures = (features, prefix, warnings) => {
+  const rows = [];
+  const resources = [];
+  const choices = [];
+  const levels = Object.keys(features ?? {}).sort((a, b) => parseInt(a.slice(6), 10) - parseInt(b.slice(6), 10));
+  for (const key of levels) {
+    const level = parseInt(key.slice(6), 10);
+    const source = `${prefix}:${key}`;
+    for (const entry of features[key]) {
+      if (!isObject(entry) || typeof entry.name !== 'string') {
+        warnings.push(`data-features.${key}: skipped an entry without a name.`);
+        continue;
+      }
+      if (entry.listed === false) {
+        for (const label of choiceLabels(entry.choice)) choices.push({ level, label });
+        continue;
+      }
+      const ref = typeof entry.id === 'string' ? entry.id : '';
+      const text = Array.isArray(entry.text) ? entry.text.filter((p) => typeof p === 'string') : [];
+      const options = (Array.isArray(entry.options) ? entry.options : [])
+        .filter((o) => isObject(o) && typeof o.name === 'string')
+        .map((o) => ({ name: o.name, text: typeof o.text === 'string' ? o.text : '' }));
+      rows.push({
+        name: entry.name, text: text.join('\n\n'), group: 'profession', level, source, ref, options, pick: '',
+        rider: isObject(entry.rider) ? entry.rider : null,
+        roll: isObject(entry.roll) ? entry.roll : null,
+        move: isObject(entry.move) ? entry.move : null,
+        techniques: Array.isArray(entry.techniques) ? entry.techniques : [],
+      });
+      for (const uses of Array.isArray(entry.uses) ? entry.uses : []) {
+        if (!isObject(uses) || !isObject(uses.max)) continue;
+        resources.push({
+          source, ref, level,
+          ...Object.fromEntries(RESOURCE_KEYS.filter((k) => k in uses).map((k) => [k, uses[k]])),
+        });
+      }
+      if (options.length) choices.push({ level, label: entry.name });
+      for (const label of choiceLabels(entry.choice)) choices.push({ level, label });
+    }
+  }
+  return { rows, resources, choices };
+};
+
+export const professionFromPayload = (payload, page = {}, features = null) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const id = check.text('id', payload.id) ?? '';
+  const stats = check.object('professionStats', payload.professionStats) ?? {};
+  const { rows, resources, choices } = levelFeatures(features, `profession:${id}`, warnings);
+  const kit = check.object('startingEquipment', payload.startingEquipment);
+  const option = (key) => {
+    const box = kit && isObject(kit[key]) ? kit[key] : null;
+    if (!box) return null;
+    return {
+      items: (Array.isArray(box.items) ? box.items : [])
+        .filter(isObject)
+        .map((item) => itemFromPayload(item)),
+      meseta: check.int(`startingEquipment.${key}.meseta`, box.meseta) ?? 0,
+      choices: (Array.isArray(box.choices) ? box.choices : []).filter((c) => typeof c === 'string'),
+    };
+  };
+  const a = option('a');
+  const b = option('b');
+  return {
+    source: 'payload',
+    id,
+    name: check.text('profession', payload.profession) ?? check.text('name', page.name) ?? '',
+    professionStats: {
+      id,
+      hitDie: check.int('professionStats.hitDie', stats.hitDie) ?? null,
+      techAbility: stats.techAbility === null ? '' : check.oneOf('professionStats.techAbility', stats.techAbility, ABILITY_IDS) ?? '',
+      levels: check.list('professionStats.levels', stats.levels) ?? null,
+      columns: check.list('professionStats.columns', stats.columns) ?? [],
+    },
+    saveProficiencies: (check.list('saveProficiencies', payload.saveProficiencies) ?? []).filter((s) => ABILITY_IDS.includes(s)),
+    proficiencies: toProficiencyList(payload.proficiencies, 'proficiencies', warnings),
+    startChoices: [...choiceLabels(payload.skillChoice), ...choiceLabels(payload.proficiencyChoices)],
+    startingEquipment: a || b ? { a, b } : null,
+    pathLevel: check.int('pathLevel', payload.pathLevel) ?? null,
+    features: rows,
+    resources,
+    choices,
+    warnings,
+  };
+};
+
+export const pathFromPayload = (payload, page = {}, features = null) => {
+  const warnings = [];
+  const check = checker(warnings);
+  const id = check.text('id', payload.id) ?? '';
+  const { rows, resources, choices } = levelFeatures(features, `path:${id}`, warnings);
+  return {
+    source: 'payload',
+    id,
+    name: check.text('path', payload.path) ?? check.text('name', page.name) ?? '',
+    profession: check.text('profession', payload.profession) ?? '',
+    features: rows,
+    resources,
+    choices,
+    warnings,
+  };
+};
+
 export const KIND_NAMES = {
   creature: 'Monsters',
   ship: 'NPC Ships',
   starship: 'Starships',
+  vehicle: 'Vehicles',
   technique: 'Techniques',
   item: 'Items',
   proficiency: 'Proficiencies',
@@ -563,6 +829,12 @@ export const readPage = (page, kind) => {
     technique: techniqueFromPayload,
     item: itemFromPayload,
     proficiency: proficiencyFromPayload,
+    species: speciesFromPayload,
+    background: backgroundFromPayload,
+    profession: professionFromPayload,
+    path: pathFromPayload,
+    starship: starshipFromPayload,
+    vehicle: vehicleFromPayload,
   }[pageKind];
   if (!mapper) {
     const what = KIND_NAMES[pageKind];
@@ -574,6 +846,6 @@ export const readPage = (page, kind) => {
     };
   }
 
-  const mapped = mapper(read.payload, page);
+  const mapped = mapper(read.payload, page, read.features);
   return { ok: true, kind: pageKind, mapped: { ...mapped, warnings: [...read.warnings, ...mapped.warnings] } };
 };

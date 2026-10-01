@@ -2,7 +2,9 @@ import { defineStore } from 'pinia'
 import { editFlag } from '@/relay/permissions.js'
 import { ref, watch } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import { equipmentPlan } from '@/compendium/drops.js'
+import {
+  equipmentPlan, backgroundRanks, mergeLevelFeatures, mergeLevelResources,
+} from '@/compendium/drops.js'
 import { useMetaStore } from '@/stores/metaStore.js'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useTechniqueStore } from '@/stores/techniqueStore.js'
@@ -19,6 +21,7 @@ import {
 } from '@/sheetTypes.js'
 import {
   normalizeProficiencies, normalizeWeaponProperties, defensePartsFromEquipment, normalizeItem,
+  normalizeFeature, normalizeProfessionStats, normalizeResource, ABILITY_IDS,
 } from '@/rules/index.js'
 
 export const DEFAULT_CHARACTER_NAME = 'New Character'
@@ -73,10 +76,12 @@ export const useAppStore = defineStore('app', () => {
     item[field] = value
   }
 
-  const addItemFromCompendium = ({ equipment, attack, contents = [] }) => {
+  const addItemFromCompendium = ({ equipment, attack, contents = [] }, { wear = false } = {}) => {
     const { sheet, bio } = stores
+    const worn = (type) => bio.equipment.some((e) => e.itemType === type && e.equipped)
     const newRow = (row) => {
-      const item = normalizeItem({ _id: uuidv4(), equipped: false, notes: '', ...row })
+      const equipped = wear && ['armor', 'shield'].includes(row.itemType) && !worn(row.itemType)
+      const item = normalizeItem({ _id: uuidv4(), equipped, notes: '', ...row })
       bio.equipment.push(item)
       return item
     }
@@ -96,6 +101,105 @@ export const useAppStore = defineStore('app', () => {
       }
     }
     return { pack: contents.length > 0, count: rows.length }
+  }
+
+  const replaceOriginFeatures = (prefix, rows) => {
+    const { sheet } = stores
+    sheet.features = sheet.features.filter((f) => !String(f.source ?? '').startsWith(prefix))
+    for (const row of rows) sheet.features.push({ _id: uuidv4(), ...normalizeFeature(row) })
+  }
+
+  const addOriginProficiencies = (list = []) =>
+    list.filter((p) => ['weapon', 'tool', 'vehicle'].includes(p.kind))
+      .filter((p) => stores.sheet.addProficiency(p.kind, { id: p.id })).length
+
+  const applySpecies = (mapped) => {
+    const { sheet, bio } = stores
+    sheet.species = mapped.name
+    if (mapped.size) bio.size = mapped.size
+    if (Number.isInteger(mapped.speed)) sheet.speed = mapped.speed
+    const known = bio.languages.toLowerCase()
+    const extra = mapped.languages.filter((l) => !known.includes(l.toLowerCase()))
+    if (extra.length) bio.languages = [bio.languages.trim(), ...extra].filter(Boolean).join(', ')
+    addOriginProficiencies(mapped.proficiencies)
+    replaceOriginFeatures('species:', mapped.features)
+  }
+
+  const applyBackground = (mapped) => {
+    const { sheet, bio } = stores
+    sheet.background = mapped.name
+    const { set, leftover } = backgroundRanks(sheet.skills, mapped.skillRanks, sheet.skillRankCap)
+    for (const [id, ranks] of Object.entries(set)) sheet.skills[id].ranks = ranks
+    addOriginProficiencies(mapped.proficiencies)
+    if (mapped.equipment.length) addItemFromCompendium({ equipment: {}, contents: mapped.equipment })
+    bio.meseta = (Number(bio.meseta) || 0) + (mapped.meseta || 0)
+    replaceOriginFeatures('background:', mapped.features)
+    return { leftover }
+  }
+
+  const placeLevelFeatures = (prefix, mapped) => {
+    const { sheet } = stores
+    sheet.features = mergeLevelFeatures(sheet.features, mapped.features, prefix, uuidv4)
+      .map((f) => ({ _id: f._id, ...normalizeFeature(f) }))
+    sheet.resources = mergeLevelResources(sheet.resources, mapped.resources, sheet.features, uuidv4)
+      .map((r) => ({ _id: r._id, ...normalizeResource(r) }))
+  }
+
+  const placeProfessionStats = (mapped) => {
+    const { sheet } = stores
+    const current = normalizeProfessionStats(sheet.professionStats)
+    sheet.professionStats = normalizeProfessionStats({
+      ...current,
+      ...mapped.professionStats,
+      pathId: current.pathId,
+      current: current.current,
+    })
+  }
+
+  const applyProfession = (mapped, { refresh = false } = {}) => {
+    const { sheet } = stores
+    sheet.profession = mapped.name
+    placeProfessionStats(mapped)
+    placeLevelFeatures(`profession:${mapped.id}:`, mapped)
+    if (refresh) return
+    for (const id of mapped.saveProficiencies) if (ABILITY_IDS.includes(id)) sheet.saveProficiencies[id] = true
+    for (const p of mapped.proficiencies) {
+      if (p.kind === 'armor' && p.id in sheet.proficiencies.armor) sheet.proficiencies.armor[p.id] = true
+    }
+    addOriginProficiencies(mapped.proficiencies)
+  }
+
+  const applyPath = (mapped) => {
+    const { sheet } = stores
+    sheet.path = mapped.name
+    sheet.professionStats = { ...normalizeProfessionStats(sheet.professionStats), pathId: mapped.id }
+    placeLevelFeatures(`path:${mapped.id}:`, mapped)
+  }
+
+  const applyStartingEquipment = (kit) => {
+    const { sheet, bio } = stores
+    if (!kit) return
+    for (const item of kit.items ?? []) addItemFromCompendium(item, { wear: true })
+    bio.meseta = (Number(bio.meseta) || 0) + (kit.meseta || 0)
+    sheet.startingEquipmentTaken = true
+  }
+
+  const removePath = () => {
+    const { sheet } = stores
+    const id = normalizeProfessionStats(sheet.professionStats).pathId
+    sheet.path = ''
+    sheet.professionStats = { ...normalizeProfessionStats(sheet.professionStats), pathId: '' }
+    if (id) placeLevelFeatures(`path:${id}:`, { features: [], resources: [] })
+  }
+
+  const removeProfession = () => {
+    const { sheet } = stores
+    const stats = normalizeProfessionStats(sheet.professionStats)
+    removePath()
+    sheet.profession = ''
+    sheet.professionStats = normalizeProfessionStats({ current: stats.current })
+    const prefix = stats.id ? `profession:${stats.id}:` : null
+    if (prefix) placeLevelFeatures(prefix, { features: [], resources: [] })
   }
 
   const sheetType = ref(DEFAULT_SHEET_TYPE)
@@ -311,5 +415,12 @@ export const useAppStore = defineStore('app', () => {
     setItemType,
     setItemField,
     addItemFromCompendium,
+    applySpecies,
+    applyBackground,
+    applyProfession,
+    applyPath,
+    applyStartingEquipment,
+    removeProfession,
+    removePath,
   }
 })

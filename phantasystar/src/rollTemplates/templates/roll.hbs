@@ -1,6 +1,7 @@
 <div class="pstr-card pstr-card--roll{{#if resultType}} pstr-card--{{resultType}}{{/if}}">
   {{> header}}
 
+  {{#unless noTotal}}
   <div class="pstr-card__result">
     <div class="pstr-card__total">{{total}}</div>
     {{#if resultType}}
@@ -15,6 +16,7 @@
       </div>
     {{/if}}
   </div>
+  {{/unless}}
 
   {{> components}}
   {{> keyValues}}

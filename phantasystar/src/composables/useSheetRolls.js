@@ -13,7 +13,7 @@ import {
   getSkill, ABILITIES,
   patchRepairFormula, PATCH_REPAIR_MAX_DICE, CREW_ROLES, crewSaveBonus,
   getNpcShipAbility, heavyDisadvantage, armorDisadvantage, attackAbility,
-  describeCombo, comboTier, comboSaveDC,
+  describeCombo, comboTier, comboSaveDC, pickAllows, featureRollFormula, featureRollLines, riderFormula,
 } from '@/rules/index.js'
 
 const options = reactive({
@@ -291,13 +291,15 @@ export const useSheetRolls = () => {
     })
   }
 
-  const rollDamage = async (attack, { crit = false } = {}) => {
+  const rollDamage = async (attack, { crit = false, riders = [] } = {}) => {
     const lines = [
       { formula: attack.damage, type: attack.damageType, extra: attack.critExtra },
       { formula: attack.damage2, type: attack.damage2Type, extra: attack.crit2Extra },
     ]
-      .map(({ formula, type, extra }) => ({
+      .concat(riders.map((r) => ({ formula: r.formula, type: r.type, source: r.feature.name })))
+      .map(({ formula, type, extra, source }) => ({
         type,
+        source,
         formula: crit ? critFormula(formula, extra) : String(formula ?? '').trim(),
       }))
       .filter((line) => line.formula)
@@ -310,8 +312,9 @@ export const useSheetRolls = () => {
 
     const components = lines.map((line, i) => {
       const value = results[`dmg${i}`]?.total ?? 0
+      const label = [line.formula, line.type].filter(Boolean).join(' ')
       return {
-        label: [line.formula, line.type].filter(Boolean).join(' '),
+        label: line.source ? `${line.source}: ${label}` : label,
         display: String(value),
         value,
       }
@@ -328,7 +331,85 @@ export const useSheetRolls = () => {
     return total
   }
 
-  const rollWeaponDamage = (row, options) => rollDamage(sheet.resolveAttack(row), options)
+  const rollWeaponDamage = async (row, options = {}) => {
+    const attack = sheet.resolveAttack(row)
+    const riders = sheet.ridersFor(attack)
+    const total = await rollDamage(attack, { ...options, riders })
+    if (total !== null) sheet.spendRiders(riders)
+    return total
+  }
+
+  const featureText = (feature) => {
+    const picked = feature.options?.find((o) => o.name === feature.pick)
+    return String(picked?.text ?? feature.text ?? '')
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+  }
+
+  const useResource = async (resourceId) => {
+    const row = sheet.resources.find((r) => r._id === resourceId)
+    const feature = row && sheet.features.find((f) => f._id === row.feature)
+    if (!feature || sheet.usesLeftFor(feature._id) === 0) return null
+    const title = row.name || feature.name
+    const rolls = feature.roll && pickAllows(feature.roll, feature)
+    const lines = rolls ? featureRollLines(feature.roll, sheet.diceContext()) : []
+    if (lines.length) {
+      const results = await getRollResult(lines.map((l, i) => ({ key: `line${i}`, formula: l.formula })))
+      sheet.spendUse(feature._id)
+      const type = feature.roll.type
+      await send('roll', {
+        characterName: characterName.value,
+        title,
+        subtitle: type || undefined,
+        noTotal: true,
+        components: lines.map((l, i) => {
+          const value = results[`line${i}`]?.total ?? 0
+          return { label: `${l.label}: ${l.formula}`, display: String(value), value }
+        }),
+      })
+      return null
+    }
+    const roll = rolls ? featureRollFormula(feature.roll, sheet.diceContext()) : null
+    if (!roll?.formula && feature.rider && feature.rider.mode !== 'always' && pickAllows(feature.rider, feature)) {
+      sheet.setRider(feature._id, true)
+      const formula = riderFormula(feature.rider, sheet.diceContext())
+      const type = feature.rider.type === 'weapon' ? '' : feature.rider.type
+      return send('chat', {
+        characterName: characterName.value,
+        title,
+        keyValues: { Damage: [formula, type].filter(Boolean).join(' ') || undefined },
+      })
+    }
+    if (!roll?.formula) {
+      sheet.spendUse(feature._id)
+      return send('chat', {
+        characterName: characterName.value,
+        title,
+        subtitle: feature.pick || undefined,
+        textContent: featureText(feature),
+      })
+    }
+    const results = await getRollResult([{ key: 'use', formula: roll.formula }])
+    const rolled = results.use?.total ?? 0
+    const total = roll.min !== null ? Math.max(roll.min, rolled) : rolled
+    sheet.spendUse(feature._id)
+    const keyValues = {}
+    if (feature.roll.heal === 'self') {
+      const before = Number(sheet.hp.current) || 0
+      sheet.hp.current = healHp(before, sheet.hp.max, total)
+      keyValues.HP = `${before} → ${sheet.hp.current}`
+    }
+    await send('roll', {
+      characterName: characterName.value,
+      title,
+      subtitle: feature.roll.heal ? 'Healing' : feature.pick || undefined,
+      total,
+      components: [{ label: roll.formula, display: String(total), value: total }],
+      keyValues,
+    })
+    return total
+  }
 
   const rollDeathSave = async () => {
     const results = await getRollResult([{ key: 'd20', count: 1, sides: 20 }])
@@ -690,6 +771,20 @@ export const useSheetRolls = () => {
     })
   }
 
+  const rollVehicleControl = () =>
+    rollD20({
+      title: 'Control Check',
+      subtitle: ship.pilot.name || undefined,
+      modifier: ship.controlBonusValue,
+    })
+
+  const rollVehicleSave = (abilityId) =>
+    rollD20({
+      title: `${abilityName(abilityId)} Save`,
+      subtitle: store.meta.name || undefined,
+      modifier: Number(abilityId === 'strength' ? ship.strSave : ship.conSave) || 0,
+    })
+
   const rollShipAttack = (weapon) =>
     rollD20({
       title: weapon.name || 'Ship Weapon',
@@ -697,7 +792,7 @@ export const useSheetRolls = () => {
       modifier: ship.weaponPower(weapon),
       isAttack: true,
       keyValues: {
-        Range: weapon.range ? `${weapon.range} units` : undefined,
+        Range: weapon.range ? (ship.isVehicle ? weapon.range : `${weapon.range} units`) : undefined,
       },
       footnote: weapon.notes || undefined,
     })
@@ -945,6 +1040,9 @@ export const useSheetRolls = () => {
     rollAttack,
     rollWeaponDamage,
     rollDamage,
+    useResource,
+    rollVehicleControl,
+    rollVehicleSave,
     rollDeathSave,
     spendHitDie,
     postTechnique,

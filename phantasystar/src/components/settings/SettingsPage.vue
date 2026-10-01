@@ -2,7 +2,9 @@
 import { computed, defineAsyncComponent } from 'vue'
 import { useMetaStore } from '@/stores/metaStore.js'
 import { useAppStore } from '@/stores/index.js'
-import { SHEET_TYPES, NPC_MODES, NPC } from '@/sheetTypes.js'
+import { SHEET_TYPES, NPC_MODES, NPC, STARSHIP } from '@/sheetTypes.js'
+import { STARSHIP_KINDS } from '@/rules/index.js'
+import { useStarshipStore } from '@/stores/starshipStore.js'
 import SheetPanel from '@/components/shared/SheetPanel.vue'
 import CompendiumImport from './CompendiumImport.vue'
 
@@ -21,6 +23,7 @@ import sheetComputed from '@/relay/handlers/computed.js'
 
 const meta = useMetaStore()
 const app = useAppStore()
+const ship = useStarshipStore()
 
 const isGM = computed(() => meta.permissions.isGM)
 
@@ -60,6 +63,22 @@ const exampleName = computed(() => meta.name || 'Character Name')
                 <strong>{{ type.name }}</strong>
               </span>
             </label>
+
+            <div v-if="type.id === STARSHIP && app.sheetType === STARSHIP" class="nested">
+              <label v-for="k in STARSHIP_KINDS" :key="k.id" class="option">
+                <input
+                  type="radio"
+                  name="ps-starship-kind"
+                  :value="k.id"
+                  :checked="ship.kind === k.id"
+                  :disabled="!meta.canEdit"
+                  @change="ship.setKind(k.id)"
+                />
+                <span class="option__body">
+                  <strong>{{ k.name }}</strong>
+                </span>
+              </label>
+            </div>
 
             <div v-if="type.id === NPC && app.sheetType === NPC" class="nested">
               <label v-for="mode in NPC_MODES" :key="mode.id" class="option">

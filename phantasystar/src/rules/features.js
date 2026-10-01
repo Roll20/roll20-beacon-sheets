@@ -8,20 +8,70 @@ export const FEATURE_GROUP_IDS = FEATURE_GROUPS.map((g) => g.id);
 
 export const DEFAULT_FEATURE_GROUP = 'profession';
 
+import { normalizeRider, normalizeFeatureRoll } from './riders.js';
+import { normalizeMove, normalizeGrants, storeGrants } from './featureEffects.js';
+
 const toLevel = (value) => {
   if (value === '' || value === null || value === undefined) return null;
   const n = Number(value);
   return Number.isInteger(n) && n >= 1 && n <= 20 ? n : null;
 };
 
-export const normalizeFeature = (row = {}) => ({
-  name: typeof row.name === 'string' ? row.name : '',
-  text: typeof row.text === 'string' ? row.text : '',
-  group: FEATURE_GROUP_IDS.includes(row.group) ? row.group : DEFAULT_FEATURE_GROUP,
-  level: toLevel(row.level),
-  source: typeof row.source === 'string' ? row.source : '',
-  ...(row._id ? { _id: row._id } : {}),
+export const normalizeFeatureOptions = (value) => {
+  let list = value;
+  if (list && typeof list === 'object' && !Array.isArray(list)) {
+    list = Object.keys(list)
+      .filter((k) => /^o\d+$/.test(k))
+      .sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)))
+      .map((k) => list[k]);
+  }
+  return (Array.isArray(list) ? list : [])
+    .filter((o) => o && typeof o.name === 'string' && o.name.trim())
+    .map((o) => ({ name: o.name, text: typeof o.text === 'string' ? o.text : '' }));
+};
+
+export const storeFeatureOptions = (list) =>
+  Object.fromEntries(normalizeFeatureOptions(list).map((o, i) => [`o${i}`, o]));
+
+export const normalizeFeature = (row = {}) => {
+  const options = normalizeFeatureOptions(row.options);
+  const pick = typeof row.pick === 'string' && options.some((o) => o.name === row.pick) ? row.pick : '';
+  return {
+    name: typeof row.name === 'string' ? row.name : '',
+    text: typeof row.text === 'string' ? row.text : '',
+    group: FEATURE_GROUP_IDS.includes(row.group) ? row.group : DEFAULT_FEATURE_GROUP,
+    level: toLevel(row.level),
+    source: typeof row.source === 'string' ? row.source : '',
+    ref: typeof row.ref === 'string' ? row.ref : '',
+    options,
+    pick,
+    rider: normalizeRider(row.rider),
+    riderOn: row.riderOn === true,
+    roll: normalizeFeatureRoll(row.roll),
+    move: normalizeMove(row.move),
+    techniques: normalizeGrants(row.techniques),
+    granted: typeof row.granted === 'string' ? row.granted : '',
+    ...(row._id ? { _id: row._id } : {}),
+  };
+};
+
+export const storeFeature = (feature) => ({
+  ...feature,
+  options: storeFeatureOptions(feature.options),
+  roll: feature.roll
+    ? {
+      ...feature.roll,
+      plus: Object.fromEntries((feature.roll.plus ?? []).map((p, i) => [`p${i}`, p])),
+      lines: Object.fromEntries((feature.roll.lines ?? []).map((l, i) => [`l${i}`, l])),
+    }
+    : null,
+  techniques: storeGrants(feature.techniques),
 });
+
+export const isLevelSource = (source = '') => /^(profession|path):/.test(source);
+
+export const featureReached = (feature, level) =>
+  !isLevelSource(feature?.source) || feature.level === null || feature.level === undefined || feature.level <= level;
 
 const originRank = (source) => {
   if (source.startsWith('species:')) return 0;

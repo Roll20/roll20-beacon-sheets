@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
+import { useAppStore } from '@/stores/index.js'
 import {
   ABILITIES, HIT_DICE, INITIATE_TECH_ABILITIES, formatModifier,
 } from '@/rules/index.js'
@@ -12,6 +13,7 @@ defineProps({ open: { type: Boolean, default: false } })
 defineEmits(['close'])
 
 const sheet = useCharacterStore()
+const app = useAppStore()
 
 const setStat = (key, value) => {
   sheet.professionStats = { ...sheet.professionStats, [key]: value }
@@ -91,6 +93,24 @@ const levelRows = computed(() => [
         <ConfirmDelete class="del" title="Remove the level table" @confirm="sheet.clearProfessionTable()" />
       </div>
     </div>
+
+    <h3 class="sub">{{ sheet.profession || 'Profession' }}</h3>
+    <div class="rows">
+      <label class="row row--check">
+        <span class="name">Starting Equipment Taken</span>
+        <input v-model="sheet.startingEquipmentTaken" type="checkbox" class="check" />
+      </label>
+      <div v-if="sheet.path" class="row">
+        <span class="name">Path</span>
+        <span class="table-state">{{ sheet.path }}</span>
+        <ConfirmDelete class="del" title="Remove the path" @confirm="app.removePath()" />
+      </div>
+      <div v-if="sheet.profession" class="row">
+        <span class="name">Profession</span>
+        <span class="table-state">{{ sheet.profession }}</span>
+        <ConfirmDelete class="del" title="Remove the profession" @confirm="app.removeProfession()" />
+      </div>
+    </div>
   </SheetModal>
 </template>
 
@@ -107,6 +127,7 @@ const levelRows = computed(() => [
   align-items: center;
 
   &--saves { grid-template-columns: minmax(0, 1fr) auto; }
+  &--check { grid-template-columns: minmax(0, 1fr) auto; cursor: pointer; }
 }
 
 .name { font-size: var(--ps-fs-body); color: var(--ps-text); }
@@ -139,6 +160,8 @@ const levelRows = computed(() => [
   @include ps-list-head;
   margin: 12px 0 4px;
 }
+
+.check { @include ps-pip-check(14px); }
 
 .table-state { font-size: var(--ps-fs-body); color: var(--ps-text-muted); text-align: center; }
 

@@ -12,7 +12,8 @@ const rolls = useSheetRolls()
   <div class="weapons">
     <div class="head">
       <h2 class="ps-heading">Weapon Systems</h2>
-      <span class="formula">Attack Power = gunner&rsquo;s DEX + gunner&rsquo;s Save Bonus</span>
+      <span v-if="ship.isVehicle" class="formula">Attack Power = gunner&rsquo;s DEX + gunner&rsquo;s Attack Bonus</span>
+      <span v-else class="formula">Attack Power = gunner&rsquo;s DEX + gunner&rsquo;s Save Bonus</span>
       <button type="button" class="add" @click="ship.addWeapon()">+ Add</button>
     </div>
 
@@ -22,7 +23,7 @@ const rolls = useSheetRolls()
         <span>Weapon</span>
         <span>Range</span>
         <span>DEX</span>
-        <span>Save</span>
+        <span>{{ ship.isVehicle ? 'Atk Bonus' : 'Save' }}</span>
         <span>Attack</span>
         <span>Damage</span>
         <span>Type</span>
@@ -40,9 +41,9 @@ const rolls = useSheetRolls()
           <option v-for="c in ship.roster" :key="c._id" :value="c._id">{{ c.name || 'Unnamed' }}</option>
         </select>
         <input v-model="w.name" placeholder="Laser Cannon" />
-        <input v-model="w.range" placeholder="8" class="narrow" />
+        <input v-model="w.range" :placeholder="ship.isVehicle ? '120 ft.' : '8'" class="narrow" />
         <output class="narrow">{{ ship.gunnerOf(w).dexterity }}</output>
-        <output class="narrow">{{ ship.gunnerOf(w).saveBonus }}</output>
+        <output class="narrow">{{ ship.isVehicle ? ship.gunnerOf(w).attackBonus : ship.gunnerOf(w).saveBonus }}</output>
 
         <button
           type="button"

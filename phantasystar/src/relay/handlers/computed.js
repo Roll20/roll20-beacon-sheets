@@ -59,6 +59,9 @@ export const getHp = ({ character }) => {
 
   if (type === STARSHIP) {
     const ship = shipOf(character)
+    if (ship.kind === 'vehicle') {
+      return { current: num(ship.hullCurrent), max: Math.max(0, num(ship.baseHullPoints)), temp: 0 }
+    }
     return {
       current: num(ship.hullCurrent),
       max: maxHullPoints(
@@ -180,6 +183,7 @@ export const getSi = ({ character }) => {
 
   if (type !== STARSHIP) return { current: 0, max: 0 }
   const ship = shipOf(character)
+  if (ship.kind === 'vehicle') return { current: 0, max: 0 }
   return {
     current: num(ship.siCurrent),
     max: maxStructuralIntegrity(

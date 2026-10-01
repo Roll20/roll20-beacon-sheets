@@ -7,7 +7,9 @@ import {
   ABILITY_IDS, SKILLS, getSkill, summarizeSheet,
   characterAttackPower, normalizeResistances, normalizeTechOptions,
   normalizeProfessionStats, hasLevelTable, normalizeSaveOptions,
-  normalizeFeature, featuresFromText, DEFAULT_FEATURE_GROUP,
+  normalizeFeature, featuresFromText, DEFAULT_FEATURE_GROUP, storeFeature,
+  normalizeResource, resourceMax, usedAfterRest,
+  featureReached, pickAllows, riderFits, riderFormula, riderType,
   normalizeProficiencies, isWeaponProficient, planProficiency,
   rowProficiency, weaponDamage, migrateAttackRow, storeWeaponText,
   normalizeWeaponProperties, attackAbility, versatileBonus, typedDamage,
@@ -70,6 +72,8 @@ const characterStore = () => {
   const fateSpent = ref(0)
 
   const features = ref([])
+  const resources = ref([])
+  const startingEquipmentTaken = ref(false)
 
   const resistances = ref(normalizeResistances(null))
   const proficiencies = ref(normalizeProficiencies(null))
@@ -119,6 +123,80 @@ const characterStore = () => {
   const removeFeature = (id) => {
     const i = features.value.findIndex((f) => f._id === id)
     if (i >= 0) features.value.splice(i, 1)
+    resources.value = resources.value.filter((r) => r.feature !== id)
+  }
+
+  const addResource = (featureId) => {
+    const row = { _id: uuidv4(), ...normalizeResource({ feature: featureId, max: { fixed: 1 } }) }
+    resources.value.push(row)
+    return row._id
+  }
+  const removeResource = (id) => {
+    resources.value = resources.value.filter((r) => r._id !== id)
+  }
+
+  const resourceMaxFor = (row) =>
+    resourceMax(row, { level: summary.value.level, abilities: abilities.value, professionStats: professionStats.value })
+
+  const setResourceUsed = (id, used) => {
+    const row = resources.value.find((r) => r._id === id)
+    if (!row) return
+    row.used = Math.min(resourceMaxFor(row), Math.max(0, Math.trunc(Number(used) || 0)))
+  }
+
+  const restResources = (period) => {
+    for (const row of resources.value) row.used = usedAfterRest(row, period)
+  }
+
+  const diceContext = () => ({ level: summary.value.level, abilities: abilities.value, professionStats: professionStats.value })
+  const usesRow = (featureId) => resources.value.find((r) => r.feature === featureId) ?? null
+  const usesLeftFor = (featureId) => {
+    const row = usesRow(featureId)
+    return row ? Math.max(0, resourceMaxFor(row) - row.used) : null
+  }
+  const spendUse = (featureId) => {
+    const row = usesRow(featureId)
+    if (!row) return true
+    if (row.used >= resourceMaxFor(row)) return false
+    row.used += 1
+    return true
+  }
+
+  const riderFeatures = computed(() =>
+    features.value.filter((f) => f.rider && featureReached(f, summary.value.level) && pickAllows(f.rider, f)),
+  )
+
+  const riderBlocked = (feature) => {
+    const spend = feature?.rider?.spend
+    if (spend === 'uses' && usesLeftFor(feature._id) === 0) return 'No uses left'
+    if (spend?.tp && (Number(tp.value.current) || 0) < spend.tp) return 'Not enough TP'
+    return null
+  }
+
+  const setRider = (featureId, on) => {
+    const feature = features.value.find((f) => f._id === featureId)
+    if (!feature?.rider || feature.rider.mode === 'always') return
+    if (on && riderBlocked(feature)) return
+    if (on && feature.rider.mode === 'mark' && feature.rider.spend === 'uses' && !spendUse(featureId)) return
+    feature.riderOn = !!on
+  }
+
+  const ridersFor = (attack = {}) => {
+    const ctx = diceContext()
+    return riderFeatures.value
+      .filter((f) => (f.rider.mode === 'always' || f.riderOn) && riderFits(f.rider, attack))
+      .map((f) => ({ feature: f, formula: riderFormula(f.rider, ctx), type: riderType(f.rider, attack) }))
+      .filter((r) => r.formula)
+  }
+
+  const spendRiders = (applied = []) => {
+    for (const { feature } of applied) {
+      const f = features.value.find((x) => x._id === feature._id)
+      if (!f || f.rider.mode !== 'once') continue
+      if (f.rider.spend === 'uses') spendUse(f._id)
+      if (f.rider.spend?.tp) tp.value.current = Math.max(0, (Number(tp.value.current) || 0) - f.rider.spend.tp)
+      f.riderOn = false
+    }
   }
 
   const addAttack = () => {
@@ -148,6 +226,7 @@ const characterStore = () => {
       speedMisc: speedMisc.value,
       agilityMisc: agilityMisc.value,
       fateSpent: fateSpent.value,
+      features: features.value,
     }),
   )
 
@@ -235,6 +314,7 @@ const characterStore = () => {
   const defenseDexApplied = computed(() => summary.value.defenseDexApplied)
 
   const agilityValue = computed(() => summary.value.agility)
+  const featureMovementParts = computed(() => summary.value.movement)
   const speedValue = computed(() => summary.value.speed)
 
   const fate = computed(() => summary.value.fate)
@@ -339,7 +419,9 @@ const characterStore = () => {
     speedMisc: speedMisc.value,
     agilityMisc: agilityMisc.value,
     fateSpent: fateSpent.value,
-    features: arrayToObject(features.value),
+    features: arrayToObject(features.value.map(storeFeature)),
+    resources: arrayToObject(resources.value),
+    startingEquipmentTaken: startingEquipmentTaken.value,
     originFeatures: '',
     professionFeatures: '',
     resistances: resistances.value,
@@ -389,6 +471,10 @@ const characterStore = () => {
       const migrated = featuresFromText(s)
       if (migrated.length) features.value = migrated.map((f) => ({ _id: uuidv4(), ...f }))
     }
+    if (s.resources) {
+      resources.value = objectToArray(s.resources).map((r) => ({ _id: r._id, ...normalizeResource(r) }))
+    }
+    startingEquipmentTaken.value = s.startingEquipmentTaken ?? startingEquipmentTaken.value
     resistances.value = normalizeResistances(s.resistances ?? resistances.value)
     if (s.proficiencies) {
       proficiencies.value = normalizeProficiencies({
@@ -410,7 +496,7 @@ const characterStore = () => {
     abilities, saveProficiencies, saveOptions, skills,
     hp, hitDiceUsed, deathSaves, tp, techOptions,
     defenseParts, speed, speedMisc, agilityMisc, fateSpent,
-    features, resistances, proficiencies,
+    features, resources, startingEquipmentTaken, resistances, proficiencies,
     attacksPerAction, attacks,
     hasProfessionTable, effectiveLevel, saveBonusValue, skillRankCap, levelForXp,
     attackBonusValue, techBonusValue, techAbility, techAbilityMod,
@@ -418,9 +504,11 @@ const characterStore = () => {
     techAttackPowerValue, techSaveDCValue,
     saves, deathSaveBonus, skillTotals, skillRoster, passivePerceptionValue, attackPowerFor,
     damageFor, resolveAttack,
-    defenseValue, defenseDexApplied, armorState, agilityValue, speedValue,
+    defenseValue, defenseDexApplied, armorState, agilityValue, speedValue, featureMovementParts,
     fate, hitDice, suggestedMaxHp,
-    addFeature, removeFeature, addAttack, removeAttack, setSkillRanks, setSkillMisc, setSkillAbility,
+    addFeature, removeFeature, addResource, removeResource, resourceMaxFor, setResourceUsed, restResources,
+    diceContext, usesLeftFor, spendUse, riderFeatures, riderBlocked, setRider, ridersFor, spendRiders,
+    addAttack, removeAttack, setSkillRanks, setSkillMisc, setSkillAbility,
     toggleSaveProficiency, toggleProficiency, addProficiency, removeCustomProficiency,
     toggleCustomMastery, toggleResistance, setDeathSave, clearDeathSaves,
     clearProfessionTable,

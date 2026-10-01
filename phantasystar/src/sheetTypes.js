@@ -5,7 +5,7 @@ export const STARSHIP = 'starship'
 export const SHEET_TYPES = [
   { id: PC, name: 'Player Character' },
   { id: NPC, name: 'NPC' },
-  { id: STARSHIP, name: 'Starship (Player)' },
+  { id: STARSHIP, name: 'Starship or Vehicle' },
 ]
 
 export const SHEET_TYPE_IDS = SHEET_TYPES.map((t) => t.id)

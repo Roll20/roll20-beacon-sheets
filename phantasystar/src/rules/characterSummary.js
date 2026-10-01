@@ -1,6 +1,7 @@
 import { ABILITY_IDS, resolveSkills } from './skills.js';
 import { normalizeProfessionStats, professionRow } from './profession.js';
 import { armorContribution } from './armor.js';
+import { featureMovement } from './featureEffects.js';
 import { normalizeProficiencies } from './proficiencies.js';
 import { clampLevel, saveBonus, maxSkillRank, levelFromXp, fatePoints } from './progression.js';
 import {
@@ -73,6 +74,13 @@ export const summarizeSheet = (sheet = {}) => {
     miscMod: num(defenseParts.itemMisc),
   });
 
+  const movement = featureMovement(sheet.features, {
+    level,
+    professionStats,
+    armorType: defenseParts.armorType || 'none',
+    shield: !!(defenseParts.shieldItemId || defenseParts.shieldName || num(defenseParts.shieldBonus)),
+  });
+
   const dex = ability('dexterity');
   let defenseDexApplied = dex;
   if (defenseParts.armorType === 'medium') defenseDexApplied = Math.min(dex, 2);
@@ -128,8 +136,9 @@ export const summarizeSheet = (sheet = {}) => {
     defense: defenseValue,
     defenseDexApplied,
     armor,
-    agility: agility(dex, num(sheet.agilityMisc)),
-    speed: num(sheet.speed) + num(sheet.speedMisc) - armor.speedPenalty,
+    agility: agility(dex, num(sheet.agilityMisc) + movement.agility),
+    speed: num(sheet.speed) + num(sheet.speedMisc) + movement.speed - armor.speedPenalty,
+    movement,
 
     saves,
     saveOptions,

@@ -1,13 +1,15 @@
 <script setup>
 import { reactive, computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
-import { groupFeatures } from '@/rules/index.js'
+import { groupFeatures, featureReached } from '@/rules/index.js'
 import SheetPanel from '@/components/shared/SheetPanel.vue'
 import FeatureRow from './FeatureRow.vue'
 
 const sheet = useCharacterStore()
 
-const groups = computed(() => groupFeatures(sheet.features))
+const groups = computed(() =>
+  groupFeatures(sheet.features.filter((f) => featureReached(f, sheet.effectiveLevel))),
+)
 
 const ui = reactive({})
 const rowUI = (id) => ui[id] ?? { open: false, editing: false }

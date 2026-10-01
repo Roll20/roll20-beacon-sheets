@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import RollBar from '@/components/shared/RollBar.vue'
 import RestButtons from '@/components/shared/RestButtons.vue'
@@ -11,6 +12,7 @@ import DefensePanel from './DefensePanel.vue'
 import AttacksPanel from './AttacksPanel.vue'
 import VitalsPanels from './VitalsPanels.vue'
 import LowerPanels from './LowerPanels.vue'
+import ResourcesPanel from './ResourcesPanel.vue'
 import StatDropdown from '@/components/shared/StatDropdown.vue'
 import D20Icon from '@/components/shared/D20Icon.vue'
 import { formatModifier } from '@/rules/index.js'
@@ -18,6 +20,9 @@ import { useSheetRolls } from '@/composables/useSheetRolls.js'
 
 const sheet = useCharacterStore()
 const rolls = useSheetRolls()
+
+const speedParts = computed(() => sheet.featureMovementParts.parts.filter((p) => p.speed))
+const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) => p.agility))
 </script>
 
 <template>
@@ -57,6 +62,10 @@ const rolls = useSheetRolls()
                 <span>Misc Bonus</span>
                 <input v-model.number="sheet.speedMisc" type="number" />
               </label>
+              <div v-for="p in speedParts" :key="p.name" class="part">
+                <span>{{ p.name }}</span>
+                <output>+{{ p.speed }}</output>
+              </div>
             </StatDropdown>
             <div class="move-text">
               <strong>Speed</strong>
@@ -73,6 +82,10 @@ const rolls = useSheetRolls()
                 <span>Misc Bonus</span>
                 <input v-model.number="sheet.agilityMisc" type="number" />
               </label>
+              <div v-for="p in agilityParts" :key="p.name" class="part">
+                <span>{{ p.name }}</span>
+                <output>+{{ p.agility }}</output>
+              </div>
             </StatDropdown>
             <div class="move-text">
               <strong>Agility</strong>
@@ -91,6 +104,7 @@ const rolls = useSheetRolls()
 
       <div class="lower-right">
         <VitalsPanels />
+        <ResourcesPanel />
         <LowerPanels />
       </div>
     </div>

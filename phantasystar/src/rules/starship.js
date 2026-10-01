@@ -26,7 +26,7 @@ export const CREW_ROLE_IDS = CREW_ROLES.map((r) => r.id);
 
 export const vehicleBonus = (saveBonus, proficient) => (proficient ? int(saveBonus) : 0);
 
-const MEMBER_STATS = ['dexterity', 'intelligence', 'wisdom', 'saveBonus'];
+const MEMBER_STATS = ['dexterity', 'intelligence', 'wisdom', 'saveBonus', 'attackBonus'];
 
 export const blankCrewMember = (id, name = '') => ({
   _id: id,
@@ -35,6 +35,7 @@ export const blankCrewMember = (id, name = '') => ({
   intelligence: 0,
   wisdom: 0,
   saveBonus: 0,
+  attackBonus: 0,
   proficient: false,
 });
 
@@ -52,6 +53,7 @@ export const seatStats = (member) => ({
   intelligence: int(member?.intelligence),
   wisdom: int(member?.wisdom),
   saveBonus: int(member?.saveBonus),
+  attackBonus: int(member?.attackBonus),
   proficient: !!member?.proficient,
 });
 
@@ -137,3 +139,16 @@ export const STARSHIP_PRICES = [
   { id: 'light-freighter', name: 'Light Freighter', cost: 35000 },
   { id: 'heavy-freighter', name: 'Heavy Freighter', cost: 60000 },
 ];
+
+export const STARSHIP_KINDS = [
+  { id: 'starship', name: 'Starship (Player)' },
+  { id: 'vehicle', name: 'Vehicle' },
+];
+
+export const STARSHIP_KIND_IDS = STARSHIP_KINDS.map((k) => k.id);
+
+export const vehicleAttackPower = (gunnerDexMod, attackBonus = 0, proficient = true) =>
+  int(gunnerDexMod) + (proficient ? int(attackBonus) : 0);
+
+export const vehicleControlBonus = (operatorDexMod, saveBonus = 0, proficient = false) =>
+  int(operatorDexMod) + vehicleBonus(saveBonus, proficient);

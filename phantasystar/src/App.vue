@@ -12,6 +12,7 @@ import BioPage from '@/components/bio/BioPage.vue'
 import ShipPage from '@/components/ship/ShipPage.vue'
 import NpcPage from '@/components/npc/NpcPage.vue'
 import SettingsPage from '@/components/settings/SettingsPage.vue'
+import StartingEquipmentModal from '@/components/shared/StartingEquipmentModal.vue'
 import { PC, NPC, STARSHIP } from '@/sheetTypes.js'
 import psLogo from '@/assets/img/ps-logo.webp'
 import { defineAsyncComponent } from 'vue'
@@ -19,7 +20,7 @@ import { defineAsyncComponent } from 'vue'
 const appStore = useAppStore()
 const meta = useMetaStore()
 
-const { dropNotice } = useCompendiumDrops()
+const { dropNotice, equipmentOffer, takeStartingEquipment } = useCompendiumDrops()
 
 const TABS_BY_TYPE = {
   [PC]: [
@@ -33,7 +34,7 @@ const TABS_BY_TYPE = {
     { id: 'settings', label: 'Settings' },
   ],
   [STARSHIP]: [
-    { id: 'ship', label: 'Starship' },
+    { id: 'ship', label: 'Statistics' },
     { id: 'settings', label: 'Settings' },
   ],
 }
@@ -130,6 +131,7 @@ const DevChat = isDev
     <p v-if="dropNotice" class="drop-notice" :class="dropNotice.tone" role="status">
       {{ dropNotice.text }}
     </p>
+    <StartingEquipmentModal :offer="equipmentOffer" @take="takeStartingEquipment" />
 
     <div class="pages" :inert="readOnly || undefined">
       <CharacterPage v-if="activeTab === 'character'" />

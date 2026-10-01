@@ -6,6 +6,7 @@ import { useBioStore } from '@/stores/bioStore.js'
 import { hiddenAttackIds } from '@/rules/index.js'
 import AttackRow from './AttackRow.vue'
 import TechAttackRow from './TechAttackRow.vue'
+import RiderBar from './RiderBar.vue'
 
 const sheet = useCharacterStore()
 const techniques = useTechniqueStore()
@@ -29,6 +30,7 @@ const shown = computed(() => {
     </div>
 
     <div class="panel">
+      <RiderBar />
       <div v-if="!shown.length && !techniques.techAttacks.length" class="empty">
         No attacks yet.
       </div>

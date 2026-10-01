@@ -22,6 +22,9 @@ import {
   zeroHullSaveDC,
   siLossThreshold,
   PATCH_REPAIR_MAX_DICE,
+  STARSHIP_KIND_IDS,
+  vehicleAttackPower,
+  vehicleControlBonus,
 } from '@/rules/index.js'
 
 const num = (v, fallback = 0) => {
@@ -35,6 +38,11 @@ const roleName = (roleId) => CREW_ROLES.find((r) => r.id === roleId)?.name ?? ''
 
 const starshipStore = () => {
   const owner = ref('')
+  const kind = ref('starship')
+  const isVehicle = computed(() => kind.value === 'vehicle')
+  const setKind = (next) => {
+    kind.value = STARSHIP_KIND_IDS.includes(next) ? next : 'starship'
+  }
   const size = ref('')
   const crewCapacity = ref('')
   const actionStations = ref('')
@@ -79,6 +87,11 @@ const starshipStore = () => {
   const hullCurrent = ref(0)
   const siCurrent = ref(0)
   const patchRepairsUsed = ref(0)
+
+  const controlSpeed = ref('')
+  const strSave = ref(0)
+  const conSave = ref(0)
+  const immunities = ref('')
 
   const specialFeatures = ref('')
   const defenseSystems = ref('')
@@ -142,7 +155,13 @@ const starshipStore = () => {
   const initiativeBonus = computed(() => num(pilot.value.dexterity))
 
   const maxHull = computed(() =>
-    maxHullPoints(baseHullPoints.value, defenseModifier.value, technician.value.intelligence),
+    isVehicle.value
+      ? Math.max(0, num(baseHullPoints.value))
+      : maxHullPoints(baseHullPoints.value, defenseModifier.value, technician.value.intelligence),
+  )
+
+  const controlBonusValue = computed(() =>
+    vehicleControlBonus(pilot.value.dexterity, pilot.value.saveBonus, pilot.value.proficient),
   )
 
   const maxSi = computed(() =>
@@ -166,7 +185,9 @@ const starshipStore = () => {
 
   const weaponPower = (weapon) => {
     const gunner = gunnerOf(weapon)
-    return weaponAttackPower(gunner.dexterity, gunner.saveBonus, gunner.proficient)
+    return isVehicle.value
+      ? vehicleAttackPower(gunner.dexterity, gunner.attackBonus, gunner.proficient)
+      : weaponAttackPower(gunner.dexterity, gunner.saveBonus, gunner.proficient)
   }
 
   const clearRole = (roleId) => {
@@ -191,8 +212,39 @@ const starshipStore = () => {
     if (restoreSi) siCurrent.value = maxSi.value
   }
 
+  const isBlank = () =>
+    !num(baseDefense.value) && !num(baseHullPoints.value) && !weapons.value.length
+
+  const importEntry = ({ stats = {}, weapons: rows = [], kind: pageKind = 'starship' } = {}) => {
+    const fresh = isBlank()
+    setKind(pageKind)
+    const fields = {
+      size, crewCapacity, actionStations, baseDefense, maneuverability, defenseModifier,
+      baseHullPoints, baseStructuralIntegrity, hullDie, hullDiceTotal, interceptSpeed, sensorRange,
+      specialFeatures, defenseSystems, resistances, controlSpeed, strSave, conSave, immunities,
+    }
+    for (const [key, target] of Object.entries(fields)) {
+      if (stats[key] !== undefined) target.value = stats[key]
+    }
+    weapons.value = rows.map((row, i) => ({
+      ...blankWeapon(),
+      ...row,
+      gunnerId: weapons.value[i]?.gunnerId ?? '',
+    }))
+    if (fresh) {
+      hullCurrent.value = maxHull.value
+      siCurrent.value = maxSi.value
+    }
+    return { updated: !fresh }
+  }
+
   const dehydrate = () => ({
     owner: owner.value,
+    kind: kind.value,
+    controlSpeed: controlSpeed.value,
+    strSave: strSave.value,
+    conSave: conSave.value,
+    immunities: immunities.value,
     size: size.value,
     crewCapacity: crewCapacity.value,
     actionStations: actionStations.value,
@@ -221,6 +273,11 @@ const starshipStore = () => {
 
   const hydrate = (s = {}) => {
     owner.value = s.owner ?? owner.value
+    if (s.kind !== undefined) setKind(s.kind)
+    controlSpeed.value = s.controlSpeed ?? controlSpeed.value
+    strSave.value = s.strSave ?? strSave.value
+    conSave.value = s.conSave ?? conSave.value
+    immunities.value = s.immunities ?? immunities.value
     size.value = s.size ?? size.value
     crewCapacity.value = s.crewCapacity ?? crewCapacity.value
     actionStations.value = s.actionStations ?? actionStations.value
@@ -284,7 +341,8 @@ const starshipStore = () => {
   }
 
   return {
-    owner, size, crewCapacity, actionStations, description,
+    owner, kind, size, crewCapacity, actionStations, description,
+    controlSpeed, strSave, conSave, immunities,
     roster, stations,
     baseDefense, maneuverability, defenseModifier,
     baseHullPoints, baseStructuralIntegrity, hullDie, hullDiceTotal,
@@ -295,9 +353,9 @@ const starshipStore = () => {
     crew, pilot, copilot, maneuverDefenseMember, technician, gunnerOf,
     pilotingBonusValue, maneuverSaveDCValue, maneuverDefenseValue, defenseValue,
     initiativeBonus, maxHull, maxSi, siThreshold, zeroHullDC,
-    isDisabled, isDestroyed, patchRepair,
-    weaponPower, addCrewmember, removeCrewmember, addWeapon, removeWeapon,
-    clearRole, spendSi, applyRepair, fullRepair,
+    isDisabled, isDestroyed, patchRepair, isVehicle, controlBonusValue,
+    weaponPower, addCrewmember, removeCrewmember, addWeapon, removeWeapon, isBlank, importEntry,
+    clearRole, spendSi, applyRepair, fullRepair, setKind,
     dehydrate, hydrate,
   }
 }
