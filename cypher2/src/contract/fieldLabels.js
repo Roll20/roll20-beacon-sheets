@@ -42,6 +42,12 @@ const TOP = {
   background: 'Background',
   notes: 'Notes',
   portraitUrl: 'Portrait link',
+  // schemaVersion 3 (ddd-xrug, spec §10).
+  rules: 'Optional rules',
+  damageTrack: 'Damage track',
+  luck: 'Luck Pool',
+  stress: 'Stress',
+  wearingArmor: 'Wearing armor',
   ...LISTS
 }
 
@@ -73,6 +79,8 @@ const PLACES = {
   recovery: 'Damage & Recovery',
   wounds: 'Damage & Recovery',
   shield: 'Damage & Recovery',
+  rules: 'Damage & Recovery',
+  damageTrack: 'Damage & Recovery',
   skills: 'Character › Skills',
   abilities: 'Character › Abilities',
   advancement: 'Character › Advancement',
@@ -97,11 +105,22 @@ export const NO_EDITOR_PATTERNS = [
   'armor',
   'portraitUrl',
   'sentence/secondDescriptor',
-  'sentence/secondFocus'
+  'sentence/secondFocus',
+  // schemaVersion 3, phase 1 (ddd-xrug): the sheet carries these three but renders none of
+  // them, and a line must not send the player to a control that does not exist. Phase 2
+  // removes luck; phase 3 removes stress and wearingArmor.
+  'luck',
+  'stress',
+  'wearingArmor'
 ]
 
 // Field words that read badly humanized.
-const FIELD_WORDS = { isProficiency: 'proficiency', displayName: 'display name' }
+const FIELD_WORDS = {
+  isProficiency: 'proficiency',
+  displayName: 'display name',
+  stressCost: 'Stress cost',
+  supernaturalLevels: 'supernatural levels'
+}
 
 const humanize = (key) => FIELD_WORDS[key] ?? key.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase()
 

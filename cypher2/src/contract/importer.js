@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
-import { validateCharacterRaw, SUPPORTED_SCHEMA_VERSION } from './validation.js'
+import { validateCharacterRaw, MAX_SUPPORTED_SCHEMA_VERSION, supportedVersionsPhrase } from './validation.js'
 import { describeCharacterErrors } from './fieldLabels.js'
-import { ARRAY_KEYS } from '@/stores/sheetStore.js'
+import { ARRAY_KEYS, rowFactories, v3Defaults } from '@/stores/sheetStore.js'
 import { FAILURE } from './failure.js'
 
 // Defined in failure.js so the Vue-free creature importer can share it (ddd-zm47.3).
@@ -50,12 +50,15 @@ export const parseAndValidate = (text) => {
     )
   }
 
+  // The typeof half is load-bearing: '4' > 3 is true in JavaScript, so without it a
+  // string version would be reported as a file from the future rather than a malformed
+  // one. Every non-number version falls through to the validator's const failure.
   const version = doc.schemaVersion
-  if (typeof version === 'number' && version > SUPPORTED_SCHEMA_VERSION) {
+  if (typeof version === 'number' && version > MAX_SUPPORTED_SCHEMA_VERSION) {
     return fail(
       FAILURE.NEWER_VERSION,
-      `This character uses schema version ${version}, but this sheet supports version ` +
-        `${SUPPORTED_SCHEMA_VERSION}. The sheet needs updating — the file is fine.`
+      `This character uses schema version ${version}, but this sheet supports ` +
+        `${supportedVersionsPhrase()}. The sheet needs updating — the file is fine.`
     )
   }
 
@@ -93,8 +96,21 @@ export const applyDocument = (doc, { sheet, meta }) => {
   sheet.genre = doc.genre
   sheet.subgenre = doc.subgenre
   sheet.portraitUrl = doc.portraitUrl
+  // The five schemaVersion 3 keys are written on EVERY import, not only when the document
+  // carries them (ddd-xrug). A version 2 document carries none of them, and a wholesale
+  // replace must reset them to their defaults rather than leave the previous character's
+  // damage track and Luck Pool sitting in the store (beacon-mapping §5 step 4).
+  const v3 = v3Defaults()
+  sheet.rules = doc.rules === undefined ? v3.rules : plain(doc.rules)
+  sheet.damageTrack = doc.damageTrack === undefined ? v3.damageTrack : plain(doc.damageTrack)
+  sheet.luck = doc.luck === undefined ? v3.luck : plain(doc.luck)
+  sheet.stress = doc.stress === undefined ? v3.stress : plain(doc.stress)
+  sheet.wearingArmor = doc.wearingArmor === undefined ? v3.wearingArmor : doc.wearingArmor
   ARRAY_KEYS.forEach((k) => {
-    sheet[k] = doc[k].map((row) => ({ _id: uuidv4(), ...plain(row) }))
+    // The factory sits between the id and the document so the DOCUMENT still wins every key
+    // it carries. It is there to supply stressCost for a version 2 ability row, which has
+    // no such key and would otherwise export as undefined.
+    sheet[k] = doc[k].map((row) => ({ _id: uuidv4(), ...rowFactories[k](), ...plain(row) }))
   })
   sheet.background = doc.background
   sheet.notes = doc.notes

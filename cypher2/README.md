@@ -11,13 +11,19 @@ published by **Monte Cook Games**. Built with Vue 3, Pinia, and the Beacon SDK.
   effort spending (edge-aware), and live cost/ease preview
 - Attack rolls from the guided roller, with training, light weapons and the
   attack's own modifier applied as ease, and effort spendable on damage
-- Damage track, recovery rolls, shield and armor tracking
+- Wound boxes, recovery rolls, shield and armor tracking. A game that uses the
+  damage track gets the four-step track in place of the wound boxes, set from
+  the Damage & Recovery panel
+- Reads character files for the Old Gods of Appalachia and The Magnus Archives
+  rules as well as Cypher 2, and exports whichever format the character needs
 - Skills (with proficiencies), abilities, attacks, cyphers, artifacts, gear,
   and character arcs
 - NPC mode: a GM can turn any sheet into a stat block following the Cypher GM's
   Guide, with health linkable to a token bar
 - Import and export of character data, and of NPC creature stat blocks
 - Genre skins configurable from the sheet's settings
+- Drag a page from the Cypher compendium onto the sheet to add an ability,
+  skill, cypher, artifact or piece of equipment as a new row
 
 ## Development
 
@@ -29,11 +35,12 @@ npm run build    # generates the validator, compiles scss, bundles dist/
 
 ## Structure notes
 
-- `src/contract/validate.js` and `src/contract/validateCreature.js` are
-  **generated** — `prebuild` regenerates them from
-  `cypher-contract/cypher-character.schema.json` and
-  `cypher-contract/cypher-creature.schema.json` (the vendored character- and
-  creature-data schemas). Edit the schemas, not the generated files.
+- The four files in `src/contract/` named `validate.js`, `validateV3.js`,
+  `validateCreature.js` and `validateDropPayload.js` are **generated** —
+  `prebuild` regenerates them from the three vendored schemas in
+  `cypher-contract/`: `cypher-character.schema.json`,
+  `cypher-character.schema.v3.json` and `cypher-creature.schema.json`. Edit the
+  schemas, not the generated files. A missing schema fails the build by design.
 - `public/host.css` is compiled from `src/rollTemplates/host.scss` by
   `npm run build-scss`.
 - `changelog.txt` is the player-facing changelog.

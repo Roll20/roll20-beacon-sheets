@@ -3,12 +3,18 @@ import { useSheetStore } from '@/stores/sheetStore.js'
 import { useMetaStore } from '@/stores/metaStore.js'
 import { parseAndValidate, applyDocument } from '@/contract/importer.js'
 import { exportDocument, downloadDocument } from '@/contract/exporter.js'
-import { validateCharacterRaw } from '@/contract/validation.js'
+import { validateCharacterRaw, supportedVersionsPhrase } from '@/contract/validation.js'
 import { describeCharacterErrors } from '@/contract/fieldLabels.js'
 import { useImportExport } from '@/components/useImportExport.js'
 
 const sheet = useSheetStore()
 const meta = useMetaStore()
+
+// Read from the same constant the importer's refusal message reads, so the advertised
+// versions and the accepted versions cannot drift apart.
+const importHint =
+  `Accepts Cypher character JSON (schema ${supportedVersionsPhrase()}) — the native export from ` +
+  "Cypher Tools or this sheet's own export."
 
 // Hand-edited text fields (e.g. an emptied row name) can violate the schema's minLength
 // floors, producing a file this sheet would refuse to re-import. The refusal names each
@@ -46,10 +52,7 @@ const {
 <template>
   <section class="import-export">
     <h3>Import character</h3>
-    <p class="import__hint">
-      Accepts Cypher character JSON (schema version 2) — the native export from Cypher Tools
-      or this sheet's own export.
-    </p>
+    <p class="import__hint">{{ importHint }}</p>
     <input class="import__file" type="file" accept=".json,application/json" @change="onFile" />
     <textarea
       class="import__paste field"

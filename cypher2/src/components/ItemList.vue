@@ -145,6 +145,20 @@ watch(liveIds, (ids) => {
   if (confirming.value !== null && !live.has(confirming.value)) confirming.value = null
 })
 
+// Compendium drop (spec ⑥ §6.1). The coordinator only names the new row. Scrolling is
+// this list's job, because the row is not in the DOM until Vue renders it, hence the
+// nextTick. Focus stays where it is. Every list runs this and only the one holding the
+// row finds it.
+const root = ref(null)
+watch(
+  () => sheet.dropHighlightId,
+  async (id) => {
+    await nextTick()
+    const rowEl = [...(root.value?.querySelectorAll('[data-row-id]') ?? [])].find((el) => el.dataset.rowId === id)
+    rowEl?.scrollIntoView({ block: 'nearest' })
+  }
+)
+
 const openEditor = (row) => {
   editingId.value = row._id
 }
@@ -181,7 +195,7 @@ const onRemove = (id) => {
 </script>
 
 <template>
-  <section class="item-list panel" :class="{ 'item-list--warn': warn }" :data-list="storeKey">
+  <section ref="root" class="item-list panel" :class="{ 'item-list--warn': warn }" :data-list="storeKey">
     <header class="item-list__head">
       <h3 class="banner" :class="{ 'banner--warn': warn }">{{ title }}</h3>
       <button
@@ -220,7 +234,11 @@ const onRemove = (id) => {
         v-for="(row, index) in rows"
         :key="row._id"
         class="item-list__row"
-        :class="{ 'item-list__row--read': hasSummary }"
+        :class="{
+          'item-list__row--read': hasSummary,
+          'item-list__row--dropped': sheet.dropHighlightId === row._id
+        }"
+        :data-row-id="row._id"
       >
         <!-- READ-OPTIMIZED (spec ⑦ §4.2): a compact summary. The summary LINE is the
              disclosure toggle (item-contents spec §6 D3) rather than a separate caret

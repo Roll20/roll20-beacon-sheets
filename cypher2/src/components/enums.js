@@ -77,6 +77,18 @@ export const MODIFIER_DIRECTIONS = ['eased', 'hindered']
 // lock could not see.
 export const DEPLETION_DICE = ['1d6', '1d10', '1d20', '1d100']
 
+// damageTrack.step's closed enum, from the schemaVersion 3 file (ddd-xrug). Best ->
+// worst, the book's ladder; the schema's enum happens to agree and the guard test pins
+// this spelling literally. The store reads the list in its hydrate heal, so a persisted
+// step outside it is layer junk and nulls the whole track.
+export const DAMAGE_TRACK_STEPS = ['hale', 'impaired', 'debilitated', 'dead']
+export const DAMAGE_TRACK_STEP_LABELS = {
+  hale: 'Hale',
+  impaired: 'Impaired',
+  debilitated: 'Debilitated',
+  dead: 'Dead'
+}
+
 // EVERY read of a stored value through a label map goes through here — never
 // LABELS[value] directly (ddd-9ir / ddd-5vb audit): hydrate() applies no enum
 // validation, and a stored 'constructor' finds the inherited Function on a

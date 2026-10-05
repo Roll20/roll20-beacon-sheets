@@ -16,6 +16,7 @@ import SettingsModal from '@/components/SettingsModal.vue'
 import RollerModal from '@/components/RollerModal.vue'
 import NpcSheet from '@/components/NpcSheet.vue'
 import NpcGmNotice from '@/components/NpcGmNotice.vue'
+import DropNotice from '@/components/DropNotice.vue'
 import {
   CHARACTER_SEGMENTS,
   KIT_SEGMENTS,
@@ -175,5 +176,10 @@ watch(() => npc.isNpc, (on) => {
          watch in the script closes a roller that was open at the switch; this
          gate covers any later opener while the sheet is an NPC. -->
     <RollerModal v-if="sheet.rollerOpen && !npc.isNpc" :key="sheet.rollerSession" />
+    <!-- Compendium drop feedback (spec ⑥ decision 17). Outside the mode branch, so the
+         NPC refusal shows on an NPC sheet too. position: fixed, so it takes no grid
+         cell. Inside .cypher-sheet rather than teleported, because the skin tokens live
+         on this element's data-theme. Always rendered: see DropNotice.vue. -->
+    <DropNotice />
   </div>
 </template>

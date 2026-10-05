@@ -55,6 +55,16 @@
     padding-top: 0.25rem;
     margin-top: 0.25rem;
   }
+  // The damage-track nudge (ddd-xrug, spec §9). Instruction, not detail, so it is
+  // body-sized and rule-separated like __wounds rather than dimmed like the spend
+  // line it follows. Below __detail so a source-order tie-break goes this way.
+  &__nudge {
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-top: 1px solid #ddd;
+    padding-top: 0.25rem;
+    margin-top: 0.25rem;
+  }
 }
 
 // The item card (item-contents spec §4). A sibling of .cypher-roll, not a variant:

@@ -7,9 +7,10 @@ import {
   onSettingsChange,
   onSharedSettingsChange,
   onTranslationsRequest,
-  onDragOver
+  onDragOver,
+  onDropOver
 } from './handlers/handlers'
-import { reactive, ref, watch, nextTick, shallowRef } from 'vue'
+import { reactive, ref, watch, nextTick, shallowRef, computed } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { healthBarGet, healthBarWrite } from '@/creature/creature.js'
 
@@ -97,14 +98,16 @@ export const computedHealth = {
   }
 }
 
-const relayConfig = {
+// Exported for the handler-registration test (spec ⑥ §7.2 "Relay").
+export const relayConfig = {
   handlers: {
     onInit,
     onChange,
     onSettingsChange,
     onSharedSettingsChange,
     onTranslationsRequest,
-    onDragOver
+    onDragOver,
+    onDropOver
   },
   // Refer to our advanced example sheet on how to setup actions and computed properties.
   actions: {},
@@ -124,7 +127,40 @@ We use refs to keep track of the state of the sheet.
 This is a way to keep track of the state of the sheet in a reactive way.
 */
 export const beaconPulse = ref(0)
-export const blockUpdate = ref(false)
+// Hydrate lock (spec ⑥ decision 14). A COUNT of pulse callbacks still running, not a
+// boolean each one clears. Vue does not await an async watch callback, so two can
+// overlap around their `await nextTick()`, and the first to finish must not unlock the
+// second.
+const activeHydrates = ref(0)
+// Set when a hydrate throws after it began changing the store. The store may then hold
+// part of the remote document, and saving it would overwrite the remote with that mix,
+// so saves stay blocked until a later hydrate succeeds (plan audit round 1).
+const hydrateFailed = ref(false)
+// Saves are skipped while this is true.
+export const blockUpdate = computed(() => activeHydrates.value > 0 || hydrateFailed.value)
+let idleWaiters = []
+
+// Only the pulse watcher calls these two in production. They are exported so tests can
+// hold the lock longer than any real hydrate does.
+export const beginHydrate = () => {
+  activeHydrates.value += 1
+}
+export const endHydrate = () => {
+  activeHydrates.value = Math.max(0, activeHydrates.value - 1)
+  if (blockUpdate.value) return
+  const waiters = idleWaiters
+  idleWaiters = []
+  for (const resolve of waiters) resolve()
+}
+export const hydratesInFlight = () => activeHydrates.value
+
+// Resolves once saves are unblocked. Another hydrate can start before the caller's
+// continuation runs, so a caller about to write must re-check blockUpdate in the same
+// synchronous run as the write (compendium/drop.js does). A caller that gives up first
+// leaves its resolver here until the lock drains. That is one small closure per
+// abandoned wait, accepted like the SDK's own unanswered request handlers (spec ⑥ §5).
+export const awaitHydrationIdle = () =>
+  blockUpdate.value ? new Promise((resolve) => idleWaiters.push(resolve)) : Promise.resolve()
 export const dispatchRef = shallowRef()
 export const dropUpdate = ref({})
 export const settingsSheet = ref(false)
@@ -228,39 +264,66 @@ export const createRelay = async ({ devMode = false, primaryStore = 'app', logMo
     // Watch for changes from the Beacon SDK, triggered everytime the Beacon Pulse value changes
     watch(beaconPulse, async (newValue, oldValue) => {
       if (logMode) console.log('❤️ Beacon Pulse', { newValue, oldValue })
-      const characterId = initValues.character.id
-      blockUpdate.value = true
+      beginHydrate()
       if (logMode) console.log('🔓🔴 locking changes')
-      const { attributes, ...profile } = dispatch.characters[characterId]
-      if (attributes.updateId === sheetId.value) {
-        // Our attributes, but the profile may have changed elsewhere. Take only the
-        // fields that moved, so a name still being typed here survives an own echo,
-        // and keep any pending save alive: it dehydrates at fire time and carries the
-        // new values. Rebase the save gate's profile too, since the remote holds it.
-        const known = JSON.parse(lastSentPayload ?? '{}')
-        const changed = outsideProfileChanges(profile, known)
-        if (Object.keys(changed).length) {
-          store.meta.hydrate(changed)
-          const next = { ...known, ...changed }
-          const { name, bio, gmNotes, avatar } = next
-          lastSentPayload = JSON.stringify({ name, bio, gmNotes, avatar, attributes: known.attributes })
-          await nextTick()
+      // Whether this pulse has attempted a store write. A throw before that leaves the
+      // store exactly as it was, so saves may resume. A throw after it may have left part
+      // of the remote document applied, so they may not. Conservative: a write that threw
+      // before changing anything still counts as attempted.
+      let storeWriteStarted = false
+      try {
+        const characterId = initValues.character.id
+        const { attributes, ...profile } = dispatch.characters[characterId]
+        // After a part-way failure the store may not match the remote, so even our own
+        // echo takes the full hydrate below, which reloads the whole remote document and
+        // unblocks saves. Otherwise an editor whose later pulses are all own echoes would
+        // stay blocked for the session (plan audit round 2).
+        if (attributes.updateId === sheetId.value && !hydrateFailed.value) {
+          // Our attributes, but the profile may have changed elsewhere. Take only the
+          // fields that moved, so a name still being typed here survives an own echo,
+          // and keep any pending save alive: it dehydrates at fire time and carries the
+          // new values. Rebase the save gate's profile too, since the remote holds it.
+          const known = JSON.parse(lastSentPayload ?? '{}')
+          const changed = outsideProfileChanges(profile, known)
+          if (Object.keys(changed).length) {
+            storeWriteStarted = true
+            store.meta.hydrate(changed)
+            const next = { ...known, ...changed }
+            const { name, bio, gmNotes, avatar } = next
+            lastSentPayload = JSON.stringify({ name, bio, gmNotes, avatar, attributes: known.attributes })
+            await nextTick()
+          }
+          return
         }
-        blockUpdate.value = false
-        return
+        // A real hydrate supersedes any pending local persist: cancel it, or its
+        // pre-hydrate snapshot fires after unlock and overwrites the newer remote
+        // state (ddd-ej2). Own-echo pulses return above and keep pending writes.
+        debounceUpdate.cancel()
+        storeWriteStarted = true
+        store.hydrateStore(attributes, profile)
+        // Baseline = the document remote just gave us: roller churn after a
+        // hydrate must not echo it back, while an edit restoring a pre-hydrate
+        // value differs from this baseline and still persists (ddd-hy2 audit).
+        lastSentPayload = JSON.stringify(store.dehydrateStore())
+        // The store now matches the remote document, so a failure before this one no
+        // longer blocks saves.
+        hydrateFailed.value = false
+        await nextTick()
+      } catch (error) {
+        // Before spec ⑥ a throw here left the lock set for the rest of the session and
+        // silently stopped every save. Logged rather than rethrown: Vue's production
+        // build only logs a watcher error too.
+        console.error('Beacon hydrate failed', error)
+        if (storeWriteStarted) {
+          // A half-applied hydrate: drop any queued save and block new ones until a
+          // later hydrate succeeds, so the mix is never written over the remote.
+          debounceUpdate.cancel()
+          hydrateFailed.value = true
+        }
+      } finally {
+        endHydrate()
+        if (logMode) console.log('🔓🟢 unlocking changes')
       }
-      // A real hydrate supersedes any pending local persist: cancel it, or its
-      // pre-hydrate snapshot fires after unlock and overwrites the newer remote
-      // state (ddd-ej2). Own-echo pulses return above and keep pending writes.
-      debounceUpdate.cancel()
-      store.hydrateStore(attributes, profile)
-      // Baseline = the document remote just gave us: roller churn after a
-      // hydrate must not echo it back, while an edit restoring a pre-hydrate
-      // value differs from this baseline and still persists (ddd-hy2 audit).
-      lastSentPayload = JSON.stringify(store.dehydrateStore())
-      await nextTick()
-      if (logMode) console.log('🔓🟢 unlocking changes')
-      blockUpdate.value = false
     })
 
     return { ...dispatch }

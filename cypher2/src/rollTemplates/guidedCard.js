@@ -140,7 +140,18 @@ const specialFor = (interp, damage) => {
   return special
 }
 
-export const guidedRollTemplateData = ({ statLabel, skill, attack = null, assets, effortLevels, damageEffortLevels = 0, interp, cost, rawCost, edge, poolAfter, poolMax, refunded = false }) => {
+// Old Gods of Appalachia moves a character one step down the damage track every time
+// a Pool is reduced to 0 (spec §9). The sheet never moves the track itself (owner
+// ruling, ddd-4uhf), so the card tells the player to. Fixed copy rather than the
+// resulting step, so it stays correct whatever position the sheet believes.
+export const NUDGE_LINE = 'Pool emptied. Move one step down the damage track.'
+
+// `emptied` is the CALLER's answer, never re-derived from poolAfter. The card shows a
+// live pool figure on the dispatch-timeout path, where a 0 can mean a concurrent
+// hydrate emptied the pool and this roll took nothing — a case that earns no line.
+// `damageTrack` is likewise the caller's reservation-time snapshot of the rule, so a
+// table toggling it mid-roll cannot rewrite a card for a spend already made.
+export const guidedRollTemplateData = ({ statLabel, skill, attack = null, assets, effortLevels, damageEffortLevels = 0, interp, cost, rawCost, edge, poolAfter, poolMax, refunded = false, damageTrack = false, emptied = false }) => {
   const damage = attack
     ? attackDamage({ weaponDamage: attack.damage, damageEffortLevels, die: interp.die })
     : null
@@ -156,6 +167,9 @@ export const guidedRollTemplateData = ({ statLabel, skill, attack = null, assets
     damage: damage
       ? damageLine({ damage, levels: damageEffortLevels, die: interp.die, success: interp.success })
       : null,
-    special: specialFor(interp, damage)
+    special: specialFor(interp, damage),
+    // A refund puts the points back, so a natural 20 and a dispatch-timeout refund
+    // carry no line even when the reservation had emptied the pool.
+    nudge: damageTrack && emptied && !refunded ? NUDGE_LINE : null
   }
 }

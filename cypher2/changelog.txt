@@ -1,6 +1,52 @@
 Cypher System 2 Character Sheet - Changelog
 ============================================
 
+2026-09-30
+- The sheet now reads character files that use the Old Gods of Appalachia and
+  The Magnus Archives rules. Import one from Cypher Tools the same way you
+  always have.
+- A game that uses the damage track gets it in place of the wound boxes. The
+  Damage & Recovery panel lists Hale, Impaired, Debilitated and Dead. Click the
+  marker beside a step to say that is where your character is, and it fills in.
+  Click the step's name instead to read what that step does to the character. A
+  line under the track says how a character moves up and down it. The sheet never
+  moves the step for you.
+- To turn the track on or off, click the pencil on the Damage & Recovery panel
+  and use the Damage track checkbox. Turning it off brings the wound boxes back
+  with the values they had. It also forgets which step you were on, so turning
+  the track back on starts again at Hale.
+- Switching the Damage track or Stress checkbox off throws away what that rule
+  was holding: the step your character was on, or your Stress points and
+  supernatural levels. There is no way to get those back from the sheet, so the
+  checkbox now asks twice. The first click turns the label red and tells you what
+  it is about to clear, and only a second click does it. Use the other checkbox
+  instead, or close the pencil, and nothing is cleared. It asks only when there is
+  something to lose. A track still sitting at Hale, or Stress at zero, switches
+  off on the first click, the way the bullet above describes.
+- In a game that uses the damage track, a guided roll that spends Effort and
+  empties a Pool now says so on the chat card, because emptying a Pool moves a
+  character one step down the track. A game with the track off is unchanged and
+  gets no such line.
+
+2026-09-17
+- You can drag a page out of the Cypher compendium and drop it onto the sheet.
+  An ability, a skill, a cypher, an artifact or a piece of equipment lands as a
+  new row in the right list, the sheet switches to the tab holding that list, and
+  the new row is highlighted so you can see where it went. Drop the same page
+  twice and you get two rows, because the sheet does not assume a duplicate is a
+  mistake.
+- A page the sheet cannot turn into a row says so instead of doing nothing. A
+  focus or a type page tells you to pick it in the character's sentence. A page
+  with nothing for the sheet to read says the page is malformed. A page written
+  for a newer sheet says the sheet needs updating, and one written for an older
+  sheet says it cannot be read.
+- An NPC stat block refuses a drop, because its rows are not the character
+  lists.
+- A viewer who can see a character but cannot change it should not drag onto it.
+  The row appears for a moment and then disappears, because the server refuses
+  the change. Nothing is damaged and nothing is saved. This is a known rough
+  edge and it is being fixed.
+
 2026-09-16
 - A character renamed in the Roll20 journal keeps its new name. Before, the
   next edit on the sheet could put the old name back. Portrait, bio and GM

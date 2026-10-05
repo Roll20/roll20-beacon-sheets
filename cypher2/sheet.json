@@ -3,9 +3,9 @@
   "authors": "Monte Cook Games",
   "roll20userid": "2554658",
   "preview": "preview.png",
-  "compendium": "",
+  "compendium": "Cypher",
   "useroptions": [],
-  "instructions": "Official Beacon character sheet for Cypher 2. A GM can turn any sheet into an NPC stat block from the gear menu, under Sheet type. Only viewers with GM rights see an NPC's stat block, but the sheet only hides it from view. Journal permissions are what actually keep players out, so do not give players access to an NPC's journal entry. A token bar linked to Health shows its numbers on the map to anyone allowed to see that bar, so keep NPC health bars hidden from players if the numbers should stay secret. GM rights are checked when the sheet opens, so a player promoted to GM must close and reopen the sheet.",
+  "instructions": "Official Beacon character sheet for Cypher. A GM can turn any sheet into an NPC stat block from the gear menu, under Sheet type. Only viewers with GM rights see an NPC's stat block, but the sheet only hides it from view. Journal permissions are what actually keep players out, so do not give players access to an NPC's journal entry. A token bar linked to Health shows its numbers on the map to anyone allowed to see that bar, so keep NPC health bars hidden from players if the numbers should stay secret. GM rights are checked when the sheet opens, so a player promoted to GM must close and reopen the sheet.",
   "legacy": false,
   "tags": ""
 }

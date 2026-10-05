@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { arrayToObject, objectToArray } from '@/utility/objectify'
+// Import cycle (relay.js → handlers.js → drop.js → stores → relay.js): read relay bindings only inside functions, never at module top level.
 import { dispatchRef } from '@/relay/relay.js'
 import { post } from '@/utility/post.js'
 import { createRollTemplate } from '@/rollTemplates/index.js'
@@ -9,6 +10,10 @@ import { interpretStatRoll, interpretGuidedRoll, easedSteps, effortCost, rawEffo
 import { guidedRollTemplateData } from '@/rollTemplates/guidedCard.js'
 import { recoveryRollTemplateData } from '@/rollTemplates/recoveryCard.js'
 import { itemCardTemplateData } from '@/rollTemplates/itemCard.js'
+// Contract data, locked to the v3 schema by components/__tests__/contract-enums.test.js,
+// which is where every stored enum already lives. enums.js imports nothing, so there is no
+// cycle back into the stores.
+import { DAMAGE_TRACK_STEPS } from '@/components/enums.js'
 
 // The nine contract arrays, in schema order.
 export const ARRAY_KEYS = [
@@ -20,7 +25,7 @@ export const ARRAY_KEYS = [
 // callers stamp one at creation (beacon-mapping §3.2).
 export const rowFactories = {
   skills: () => ({ name: 'New skill', rating: 'practiced', pool: null, asset: 0, isProficiency: false, source: '', description: '' }),
-  abilities: () => ({ name: 'New ability', cost: null, pools: [], enabler: false, activation: '', source: '', description: '' }),
+  abilities: () => ({ name: 'New ability', cost: null, pools: [], enabler: false, activation: '', source: '', description: '', stressCost: null }),
   attacks: () => ({ name: 'New attack', pool: 'might', weaponClass: 'light', damage: 0, skillRating: 'practiced', range: null, modifier: null, notes: '' }),
   equipment: () => ({ name: 'New equipment', level: null, quantity: 1, notes: '' }),
   cyphers: () => ({ name: 'New cypher', displayName: '', level: null, cypherKind: null, power: null, activated: false, description: '' }),
@@ -36,6 +41,25 @@ export const rowFactories = {
 export const STANDARD_SLOT_KINDS = ['action', 'tenMinutes', 'oneHour', 'tenHours']
 export const defaultRecoverySlots = () =>
   STANDARD_SLOT_KINDS.map((kind) => ({ kind, used: false, note: '' }))
+
+// How long a dropped row stays highlighted (spec ⑥ §4.4, "about two seconds").
+export const DROP_HIGHLIGHT_MS = 2000
+
+// The five schemaVersion 3 root fields at their defaults (ddd-xrug, spec §7). A factory,
+// not a shared constant: rules is an object the checkboxes mutate in place.
+//
+// These six values ARE the export predicate. A document holding all of them, with every
+// ability row's stressCost null, carries nothing version 3 can express, so exporter.js
+// emits version 2 and omits them. Changing a default here changes which version every
+// existing character exports as, so change both together or the round-trip law on one
+// corpus or the other goes red immediately.
+export const v3Defaults = () => ({
+  rules: { damageTrack: false, stress: false },
+  damageTrack: null,
+  luck: null,
+  stress: null,
+  wearingArmor: false
+})
 
 const sheetStore = () => {
   // Scalars and nested objects: schema paths verbatim (beacon-mapping §2).
@@ -70,6 +94,17 @@ const sheetStore = () => {
   const genre = ref('')
   const subgenre = ref('')
   const portraitUrl = ref('')
+
+  // schemaVersion 3 (ddd-xrug). Carried and persisted whether or not the sheet renders
+  // them: phase 1 renders rules and damageTrack only, and dropping luck, stress or
+  // wearingArmor here would mean an import followed by an export deleted a player's Luck
+  // Pool (spec §2).
+  const v3 = v3Defaults()
+  const rules = ref(v3.rules)
+  const damageTrack = ref(v3.damageTrack)
+  const luck = ref(v3.luck)
+  const stress = ref(v3.stress)
+  const wearingArmor = ref(v3.wearingArmor)
 
   const skills = ref([])
   const abilities = ref([])
@@ -125,6 +160,51 @@ const sheetStore = () => {
   const removeRow = (key, id) => {
     const i = arrays[key].value.findIndex((r) => r._id === id)
     if (i >= 0) arrays[key].value.splice(i, 1)
+  }
+
+  // Compendium drop (spec ⑥ decision 8). The only write path a drop has: a fresh _id, the
+  // row factory, then the payload's item over the top.
+  //
+  // The factory is what makes the row COMPLETE (ddd-xrug). A drop payload is authored
+  // against contract version 2, whose ability branch has no stressCost and forbids extra
+  // keys, so a valid ability drop cannot carry one. Spread only the item and the row is
+  // short a key the v3 schema requires, and the player's next export is refused.
+  //
+  // The order is what keeps the page authoritative, and it costs nothing: the payload
+  // schema requires every key of its item shape, so a valid payload wins all of them and
+  // the factory reaches only the keys that shape does not have.
+  //
+  // structuredClone so the store shares no object with the parsed payload (§5 "Row copy").
+  const addDroppedRow = (list, item) => {
+    const _id = uuidv4()
+    arrays[list].value.push({ _id, ...rowFactories[list](), ...structuredClone(item) })
+    return _id
+  }
+
+  // Drop feedback. TRANSIENT, like rollerStat: never in dehydrate(), never exported.
+  // Each notice and each announcement carries a sequence number, so the same words
+  // twice are still two changes that DropNotice renders and a screen reader announces.
+  const dropNotice = ref(null)
+  const dropAnnouncement = ref({ seq: 0, text: '' })
+  const dropHighlightId = ref(null)
+  let noticeSeq = 0
+  const showDropNotice = (message) => {
+    noticeSeq += 1
+    dropNotice.value = { seq: noticeSeq, message }
+  }
+  const dismissDropNotice = () => {
+    dropNotice.value = null
+  }
+  const announceDrop = (text) => {
+    dropAnnouncement.value = { seq: dropAnnouncement.value.seq + 1, text }
+  }
+  // The timer clears only the id it set, so an older drop's timer cannot remove a newer
+  // drop's highlight (§5 "Rapid drops").
+  const highlightDroppedRow = (id) => {
+    dropHighlightId.value = id
+    setTimeout(() => {
+      if (dropHighlightId.value === id) dropHighlightId.value = null
+    }, DROP_HIGHLIGHT_MS)
   }
 
   // Post one row's contents to chat (item-contents spec §4.1). The per-list field
@@ -305,6 +385,11 @@ const sheetStore = () => {
     const pool = pools.value[stat]
     const edge = pool.edge
     const poolMax = pool.max
+    // The damage-track rule is snapshotted like every other figure the card renders
+    // (ddd-xrug). Read live inside cardFor it would let a table toggling the rule
+    // mid-roll strip the nudge off a spend that really did empty a Pool, or add one
+    // to a roll made under the other rules. The card reports commit-time truth.
+    const trackOn = rules.value.damageTrack
     const available = Math.min(pool.current, Math.max(poolMax, 0))
     // Attack mode ignores skillId — the attack row's own skillRating is its
     // training term, and the modal shows no skill picker.
@@ -342,6 +427,9 @@ const sheetStore = () => {
     // Reserve — synchronous with the check above; nothing can interleave.
     pool.current -= cost
     const poolAfter = pool.current
+    // Did THIS reservation empty the pool (ddd-xrug)? `cost > 0` keeps a zero-cost
+    // roll against an already-empty pool silent — the player emptied that one.
+    const emptiedByReservation = cost > 0 && poolAfter === 0
     const refund = () => { if (pools.value[stat] === pool) pool.current += cost }
     const rededuct = () => {
       const live = pools.value[stat]
@@ -352,10 +440,15 @@ const sheetStore = () => {
     // Card pool figures always come as a PAIR from the same snapshot (4th
     // audit F3): reservation-time by default, live-time whenever a branch
     // reports the live current — never reservation-max with live-current.
-    const cardFor = (interp, { refunded = false, shownAfter = poolAfter, shownMax = poolMax } = {}) => createRollTemplate({
+    //
+    // `emptied` joins them for the same reason and is never inferred from shownAfter:
+    // each branch answers "was it above 0 before this deduction and 0 after" for
+    // itself, so a branch that forgets defaults to no nudge rather than a wrong one.
+    const cardFor = (interp, { refunded = false, shownAfter = poolAfter, shownMax = poolMax, emptied = false } = {}) => createRollTemplate({
       guidedRoll: guidedRollTemplateData({
         statLabel, skill, attack, assets, effortLevels: levels, damageEffortLevels: damageLevels,
-        interp, cost, rawCost, edge, poolAfter: shownAfter, poolMax: shownMax, refunded
+        interp, cost, rawCost, edge, poolAfter: shownAfter, poolMax: shownMax, refunded,
+        damageTrack: trackOn, emptied
       })
     })
 
@@ -365,7 +458,7 @@ const sheetStore = () => {
       try {
         // Inside try: a SYNCHRONOUS throw from post() must refund like any
         // other failure — never escape with the reservation held (5th audit F3).
-        posting = post(cardFor(interp))
+        posting = post(cardFor(interp, { emptied: emptiedByReservation }))
         await withTimeout(posting)
       } catch (err) {
         refund()
@@ -390,7 +483,8 @@ const sheetStore = () => {
       if (refunded) refund()
       const live = pools.value[stat]
       const shown = refunded ? { shownAfter: live.current, shownMax: live.max } : {}
-      return post(cardFor(interpretGuidedRoll({ die, eased, difficulty: diff }), { refunded, ...shown }))
+      return post(cardFor(interpretGuidedRoll({ die, eased, difficulty: diff }),
+        { refunded, ...shown, emptied: emptiedByReservation }))
     }
 
     let rolling
@@ -411,10 +505,14 @@ const sheetStore = () => {
         rolling.then(({ results }) => {
           const lateDie = results[stat].results.rolls[0].results[0]
           const refunded = lateDie === 20 && cost > 0
+          // Read BEFORE the re-deduction (ddd-xrug). rededuct() floors at 0, so a
+          // live pool a concurrent hydrate already emptied shows 0 after a
+          // re-deduction that took nothing — no line for that one.
+          const liveBefore = pools.value[stat].current
           if (!refunded) rededuct()
           const live = pools.value[stat] // settlement-time pair (4th audit F3)
           return post(cardFor(interpretGuidedRoll({ die: lateDie, eased, difficulty: diff }),
-            { refunded, shownAfter: live.current, shownMax: live.max }))
+            { refunded, shownAfter: live.current, shownMax: live.max, emptied: liveBefore > 0 && live.current === 0 }))
         }, () => {}).catch(() => {})
         // ^ outer catch, not inner: a SYNCHRONOUS throw from post() rejects
         // the .then-returned promise, which an inner .catch on post's own
@@ -453,6 +551,11 @@ const sheetStore = () => {
     background: background.value,
     notes: notes.value,
     portraitUrl: portraitUrl.value,
+    rules: rules.value,
+    damageTrack: damageTrack.value,
+    luck: luck.value,
+    stress: stress.value,
+    wearingArmor: wearingArmor.value,
     ui: ui.value
   })
 
@@ -490,6 +593,12 @@ const sheetStore = () => {
     if (key === 'abilities' && out.cost && typeof out.cost === 'object' && out.cost.points === undefined) {
       out.cost = { ...out.cost, points: null }
     }
+    // stressCost is a nullable SCALAR inside a row, where `{ ...defaults, ...row }`
+    // preserves an incoming '' (ddd-wbc: Roll20 materializes the Firebase-dropped null as
+    // an empty string). An absent key already takes the factory's null above.
+    if (key === 'abilities' && out.stressCost !== null && !Number.isInteger(out.stressCost)) {
+      out.stressCost = null
+    }
     return out
   }
 
@@ -523,6 +632,54 @@ const sheetStore = () => {
     }
     return { bonus, slots: slots.length ? slots : defaultRecoverySlots() }
   }
+
+  // ddd-xrug. damageTrack, luck and stress are three more nullable objects in the ddd-wbc
+  // family, and they get a STRICTER heal than shield's in two ways. `typeof [] ===
+  // 'object'`, so shield's check accepts an array. A plain-object check alone also accepts
+  // a PARTIAL object, so `luck: { current: 1 }` would survive hydrate and reach the export
+  // validator with no way for the player to repair it from the sheet.
+  //
+  // So each is healed by SHAPE: every member present and of the right type, or null. And
+  // rebuilt member by member rather than passed through, so an extra key cannot reach an
+  // additionalProperties: false export either.
+  //
+  // `!Array.isArray(v)` inside isPlainObject is UNREACHABLE at all four call sites below.
+  // With the shape checks in place an array already fails every one of them: an array has
+  // no `step`, `current` or `points` when it came from JSON, and the rules branch rebuilds
+  // an array into a value identical to the default anyway. The clause stays as defence in
+  // depth for the fourth heal someone writes, because a shared helper named isPlainObject
+  // that says yes to an array is a trap, and it costs one token. It carries no test, and
+  // no test can be written that fails without it.
+  //
+  // Nulling a partial object does lose it, and that is still the right trade. hydrate
+  // HEALS persisted state, and a partial object cannot have come from this sheet's own
+  // dehydrate(). Neither dehydrate nor hydrate runs a validator, so no save is at stake
+  // here. The real choice is between silently dropping a field the sheet may give the
+  // player no control to rebuild, and an export refusal that names the missing member,
+  // because useImportExport.js validates the export and fieldLabels.js labels a
+  // `/luck/max` error by field.
+  //
+  // The stronger reason to null is that not one member of the three is nullable. They are
+  // one enum string, two booleans, five integers and two strings, every one required. So
+  // the only documented way a stored value loses a key, Firebase dropping a null on write,
+  // cannot produce a partial object here. The partial branch guards an undocumented
+  // corruption mode rather than a known one. shield sets the precedent by nulling.
+  const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
+  const int = (v) => Number.isInteger(v)
+  const healDamageTrack = (v) =>
+    isPlainObject(v) && DAMAGE_TRACK_STEPS.includes(v.step) &&
+    typeof v.hurtAvailable === 'boolean' && typeof v.hurt === 'boolean'
+      ? { step: v.step, hurtAvailable: v.hurtAvailable, hurt: v.hurt }
+      : null
+  const healLuck = (v) =>
+    isPlainObject(v) && int(v.current) && int(v.max) && int(v.edge) &&
+    typeof v.name === 'string' && typeof v.description === 'string'
+      ? { current: v.current, max: v.max, edge: v.edge, name: v.name, description: v.description }
+      : null
+  const healStress = (v) =>
+    isPlainObject(v) && int(v.points) && int(v.supernaturalLevels)
+      ? { points: v.points, supernaturalLevels: v.supernaturalLevels }
+      : null
 
   // ddd-7ub. Deep copy of a contract document: plain objects and arrays rebuilt,
   // everything else passed through. Deliberately not JSON.parse(JSON.stringify(...)),
@@ -584,6 +741,19 @@ const sheetStore = () => {
     genre.value = s.genre ?? genre.value
     subgenre.value = s.subgenre ?? subgenre.value
     portraitUrl.value = s.portraitUrl ?? portraitUrl.value
+    damageTrack.value = healDamageTrack(s.damageTrack)
+    luck.value = healLuck(s.luck)
+    stress.value = healStress(s.stress)
+    // rules and wearingArmor are not nullable, so they cannot arrive as the empty string a
+    // stored null does, and ?? against the default is right for the ABSENT case, matching
+    // advancement. But ?? also passes a malformed non-null value straight into the export
+    // validator, so both get a type check too. `=== true` rather than Boolean(...): the
+    // schema requires a real boolean, 'false' is truthy, and reading the string 'false' as
+    // true is a worse answer than reading it as false.
+    rules.value = isPlainObject(s.rules)
+      ? { damageTrack: s.rules.damageTrack === true, stress: s.rules.stress === true }
+      : v3Defaults().rules
+    wearingArmor.value = s.wearingArmor === true
     ARRAY_KEYS.forEach((k) => {
       if (s[k]) arrays[k].value = objectToArray(s[k]).map((row) => normalizeRow(k, row))
     })
@@ -599,9 +769,13 @@ const sheetStore = () => {
     sentence, tier, effort, xp, storyXp, resourcePoints, rank,
     advancement, pools, recovery, wounds, shield, armor, armorModifiers, cypherLimit,
     genre, subgenre, portraitUrl,
+    rules, damageTrack, luck, stress, wearingArmor,
     skills, abilities, attacks, equipment, cyphers, artifacts, powerShifts, currencies, arcs,
     background, notes, ui, hasStoredUi,
-    addRow, removeRow, postItem, rollStat, rollerStat, rollerSkillId, rollerAttackId, rollerSession, rollerOpen,
+    addRow, removeRow,
+    addDroppedRow, dropNotice, dropAnnouncement, dropHighlightId,
+    showDropNotice, dismissDropNotice, announceDrop, highlightDroppedRow,
+    postItem, rollStat, rollerStat, rollerSkillId, rollerAttackId, rollerSession, rollerOpen,
     rollIntent, rollSkill, rollAttack, rollGuided, rollRecovery, dehydrate, hydrate
   }
 }

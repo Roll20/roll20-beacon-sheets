@@ -22,6 +22,9 @@
   {{/if}}
   <div class="cypher-roll__detail">{{guidedRoll.eases}}</div>
   <div class="cypher-roll__detail">{{guidedRoll.spend}}</div>
+  {{#if guidedRoll.nudge}}
+  <div class="cypher-roll__nudge">{{guidedRoll.nudge}}</div>
+  {{/if}}
   {{#if guidedRoll.special}}
   <div class="cypher-roll__special">{{guidedRoll.special.label}}</div>
   {{/if}}

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://clockpunkstudios.com/cypher-contract/cypher-character.schema.json",
-  "title": "Cypher Character",
-  "description": "Canonical Cypher character document, schemaVersion 2. Contract between Cypher Tools (exporter), the Roll20 Beacon sheet (importer), and the compendium build (drag-drop payloads). v2 adopts the Cypher Tools (MCG) counter-proposal of 2026-08-24 — rationale per field cites section numbers of 2026-08-24-response-v2/cypher-tools-format-gap-audit.md; the acceptance decision record is handoff/2026-08-24-v2-acceptance.md. Conventions from v1 are preserved throughout: additionalProperties false everywhere, every field required, an absent value is an explicit \"\", [], or null rather than an omitted key. See docs/rules-verification.md for book-verified rule values.",
+  "$id": "https://clockpunkstudios.com/cypher-contract/cypher-character.schema.v3.json",
+  "title": "Cypher Character (v3)",
+  "description": "Canonical Cypher character document, schemaVersion 3. Additive over schemaVersion 2: five new root properties (rules, damageTrack, luck, stress, wearingArmor), one new ability property (stressCost), and $defs/dropPayload removed. Every other constraint, description and $def is carried over from cypher-character.schema.json unchanged, and test_cypher_contract.py asserts that rather than trusting it. Adopted for the Cypher System genres Old Gods of Appalachia and The Magnus Archives, per docs/superpowers/specs/2026-09-30-cypher-system-genres-design.md. The drop payload deliberately does not move with this version: $defs/dropPayload stays defined in the v2 file at contractVersion 2, because the compendium build pins that value and every already-published data-CypherItem would otherwise be invalidated for fields the drop path does not carry. Conventions from v1 and v2 are preserved throughout: additionalProperties false everywhere, every field required, an absent value is an explicit \"\", [], or null rather than an omitted key. See docs/rules-verification.md for book-verified rule values.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11,10 +11,11 @@
     "armor", "armorModifiers", "cypherLimit", "genre", "subgenre",
     "skills", "abilities", "attacks", "equipment", "cyphers", "artifacts",
     "powerShifts", "currencies", "arcs",
-    "background", "notes", "portraitUrl"
+    "background", "notes", "portraitUrl",
+    "rules", "damageTrack", "luck", "stress", "wearingArmor"
   ],
   "properties": {
-    "schemaVersion": { "const": 2 },
+    "schemaVersion": { "const": 3 },
     "kind": { "const": "cypher-character" },
     "name": { "type": "string", "minLength": 1 },
 
@@ -156,7 +157,27 @@
     "portraitUrl": {
       "type": "string",
       "description": "ADDED (§3.20). A fetchable URL for the character's portrait, or \"\" when there is none. Cypher Tools already serves portrait URLs to unauthenticated clients via its share-link endpoint, so this is an established path rather than a new exposure. Consumers should treat it as optional and degrade gracefully — it is served by the application rather than a CDN."
-    }
+    },
+
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["damageTrack", "stress"],
+      "properties": {
+        "damageTrack": { "type": "boolean" },
+        "stress": { "type": "boolean" }
+      }
+    },
+    "damageTrack": {
+      "anyOf": [{ "$ref": "#/$defs/damageTrack" }, { "type": "null" }]
+    },
+    "luck": {
+      "anyOf": [{ "$ref": "#/$defs/luck" }, { "type": "null" }]
+    },
+    "stress": {
+      "anyOf": [{ "$ref": "#/$defs/stress" }, { "type": "null" }]
+    },
+    "wearingArmor": { "type": "boolean" }
   },
 
   "$defs": {
@@ -239,7 +260,7 @@
     "ability": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "cost", "pools", "enabler", "activation", "source", "description"],
+      "required": ["name", "cost", "pools", "enabler", "activation", "source", "description", "stressCost"],
       "properties": {
         "name": { "type": "string", "minLength": 1 },
         "cost": {
@@ -277,7 +298,10 @@
           "description": "ADDED (§3.1). The ability's activation as printed, verbatim. `enabler` answers \"is this an enabler\" but discards WHEN IN THE ROUND the ability fires, which is what a VTT sheet needs for initiative-order UI. Across our 663-row catalog: \"Enabler\" (344), \"Action\" (143), \"Action to initiate\" (54), \"Last action\" (31), \"First action\" (8), plus ~25 long-form variants — e.g. \"Action when in your normal form; enabler when using Beast Form\", \"Ten minutes to prepare a cypher as a spell; action to cast a cypher as a spell\", \"First action, action, or Last action\". Deliberately a string and not an enum: the long-form tail is irreducible. \"\" when the source gives none."
         },
         "source": { "type": "string" },
-        "description": { "type": "string" }
+        "description": { "type": "string" },
+        "stressCost": {
+          "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }]
+        }
       }
     },
 
@@ -429,24 +453,36 @@
       }
     },
 
-    "dropPayload": {
+    "damageTrack": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["contractVersion", "kind", "item"],
-      "description": "contractVersion bumps in lockstep with schemaVersion, per your README.",
+      "required": ["step", "hurtAvailable", "hurt"],
       "properties": {
-        "contractVersion": { "const": 2 },
-        "kind": { "enum": ["skill", "ability", "equipment", "cypher", "artifact", "arc"] },
-        "item": { "type": "object" }
-      },
-      "oneOf": [
-        { "properties": { "kind": { "const": "skill" }, "item": { "$ref": "#/$defs/skill" } } },
-        { "properties": { "kind": { "const": "ability" }, "item": { "$ref": "#/$defs/ability" } } },
-        { "properties": { "kind": { "const": "equipment" }, "item": { "$ref": "#/$defs/equipment" } } },
-        { "properties": { "kind": { "const": "cypher" }, "item": { "$ref": "#/$defs/cypher" } } },
-        { "properties": { "kind": { "const": "artifact" }, "item": { "$ref": "#/$defs/artifact" } } },
-        { "properties": { "kind": { "const": "arc" }, "item": { "$ref": "#/$defs/arc" } } }
-      ]
+        "step": { "enum": ["hale", "impaired", "debilitated", "dead"] },
+        "hurtAvailable": { "type": "boolean" },
+        "hurt": { "type": "boolean" }
+      }
+    },
+    "luck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current", "max", "edge", "name", "description"],
+      "properties": {
+        "current": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 },
+        "edge": { "type": "integer", "minimum": 0 },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "stress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["points", "supernaturalLevels"],
+      "properties": {
+        "points": { "type": "integer", "minimum": 0 },
+        "supernaturalLevels": { "type": "integer", "minimum": 0 }
+      }
     }
   }
 }
