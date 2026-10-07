@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useTechniqueStore } from '@/stores/techniqueStore.js'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { NPC, CREATURE, NPC_SHIP, PC, STARSHIP } from '@/sheetTypes.js'
-import { creatureToken, tokenDimensions } from '@/rules/tokens.js'
+import { creatureToken, tokenDimensions, tokenFace } from '@/rules/tokens.js'
 import { pendingGrants, grantedNames } from '@/rules/featureEffects.js'
 
 export const dropNotice = ref(null)
@@ -48,23 +48,42 @@ export const useCompendiumDrops = () => {
     return { page, read: readPage(page) }
   }
 
-  const fillStatBlock = (kind, mapped) => {
+  const fillStatBlock = (kind, mapped, wait = 0) => {
     if (mapped.name) meta.name = mapped.name
     app.setSheetType(NPC)
     app.setNpcMode(kind === 'ship' ? NPC_SHIP : CREATURE)
     ;(kind === 'ship' ? npcShip : npc).importEntry(mapped)
-    if (kind === 'creature') sizeTokens()
+    const face = { name: meta.name }
+    setTokens(kind === 'ship'
+      ? (imgsrc) => tokenFace({ ...face, imgsrc, current: npcShip.hull.current, max: npcShip.hull.max, defense: npcShip.defense })
+      : (imgsrc) => creatureToken({
+          tokenSize: npc.tokenSize, size: npc.size, senses: npc.senses,
+          ...face, imgsrc, current: npc.hp.current, max: npc.hp.max, defense: npc.defense,
+        }), wait)
   }
 
-  const sizeTokens = (token = creatureToken({ tokenSize: npc.tokenSize, size: npc.size, senses: npc.senses })) => {
+  const avatar = async (characterId, dispatch) => {
+    if (initValues.character?.avatar) return initValues.character.avatar
+    if (typeof dispatch?.getAvailableCharacters !== 'function') return ''
+    return ((await dispatch.getAvailableCharacters()) ?? {})[characterId]?.avatar ?? ''
+  }
+
+  const MAP_DROP_WAIT = 2000
+  const setTokens = async (token, wait = 0) => {
     const characterId = initValues.character?.id
     const dispatch = dispatchRef.value
     if (!characterId || typeof dispatch?.updateTokensByCharacter !== 'function') return
-    Promise.resolve(dispatch.updateTokensByCharacter({ characterId, token })).catch(() => {})
+    try {
+      if (wait) await new Promise((resolve) => setTimeout(resolve, wait))
+      const imgsrc = await avatar(characterId, dispatch)
+      await dispatch.updateTokensByCharacter({ characterId, token: token(imgsrc) })
+    } catch {
+    }
   }
 
-  const sizeVehicleTokens = (mapped) => {
-    if (mapped.kind === 'vehicle' && mapped.stats?.size) sizeTokens(tokenDimensions(mapped.tokenSize, mapped.stats.size))
+  const sizeVehicleTokens = (mapped, wait = 0) => {
+    if (mapped.kind !== 'vehicle' || !mapped.stats?.size) return
+    setTokens((imgsrc) => ({ ...tokenDimensions(mapped.tokenSize, mapped.stats.size), ...tokenFace({ name: meta.name, imgsrc }) }), wait)
   }
 
   const blank = (kind) => (kind === 'ship' ? isBlankShip(npcShip) : isBlankCreature(npc))
@@ -213,13 +232,13 @@ export const useCompendiumDrops = () => {
         if (read.mapped.name) meta.name = read.mapped.name
         app.setSheetType(STARSHIP)
         starship.importEntry({ ...read.mapped, kind: vehicle ? 'vehicle' : 'starship' })
-        sizeVehicleTokens(read.mapped)
+        sizeVehicleTokens(read.mapped, MAP_DROP_WAIT)
         initValues.compendiumDrop = null
         return notify(`Imported ${read.mapped.name ?? 'the page'}.`)
       }
       if (read.kind !== 'creature' && read.kind !== 'ship') return
       if (!blank(read.kind)) return
-      fillStatBlock(read.kind, read.mapped)
+      fillStatBlock(read.kind, read.mapped, MAP_DROP_WAIT)
       initValues.compendiumDrop = null
       notify(`Imported ${read.mapped.name ?? 'the page'}.`)
     } catch {

@@ -21,7 +21,7 @@ const DARK_SENSES = /\b(darkvision|infravision|blindsight|tremorsense|truesight)
 
 export const visionFromSenses = (senses) => {
   const ranges = [...String(senses ?? '').matchAll(DARK_SENSES)].map((m) => Number(m[2]));
-  if (!ranges.length) return null;
+  if (!ranges.length) return { has_bright_light_vision: true };
   return {
     has_bright_light_vision: true,
     has_night_vision: true,
@@ -29,7 +29,15 @@ export const visionFromSenses = (senses) => {
   };
 };
 
-export const creatureToken = ({ tokenSize, size, senses }) => ({
+export const tokenFace = ({ name, imgsrc, current, max, defense }) => ({
+  ...(name ? { name } : {}),
+  ...(imgsrc ? { imgsrc } : {}),
+  ...(max > 0 ? { bar1_value: String(current ?? max), bar1_max: String(max) } : {}),
+  ...(defense != null && defense !== '' ? { bar2_value: String(defense) } : {}),
+});
+
+export const creatureToken = ({ tokenSize, size, senses, ...face }) => ({
   ...tokenDimensions(tokenSize, size),
-  ...(visionFromSenses(senses) ?? {}),
+  ...visionFromSenses(senses),
+  ...tokenFace(face),
 });
