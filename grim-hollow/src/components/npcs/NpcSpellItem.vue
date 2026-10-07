@@ -239,6 +239,10 @@ const damageRollArgs = computed((): DamageRollArgs => {
   return {
     rollName: props.spell.name,
     subtitle: t('rolls.damage-roll'),
+    abilityModifiers: Object.fromEntries(
+      Object.entries(store.getNpcModifiedAbilities(props.npcId).value)
+        .map(([ability, values]) => [ability, values.bonus.value.final]),
+    ),
     damageRolls: props.spell.damage.map(roll => ({
       ...roll,
       ability: resolveAbility(roll.ability, props.spell.spellSourceId, npc.spellSources),

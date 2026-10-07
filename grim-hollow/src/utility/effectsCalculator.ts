@@ -10,7 +10,7 @@ import type {
 import { createComponentsFromFormula, getDicePoolAverage } from '@/utility/diceParser';
 import type { DiceComponent } from '@/rolltemplates/rolltemplates';
 import { config } from '@/config';
-import { parseFormula, parseFormulaAndEvaluate } from '@/sheet/stores/formulas';
+import { parseFormula, parseFormulaAndEvaluate, type NpcFormulaContext } from '@/sheet/stores/formulas';
 import { type Spell, type SpellSource, useSpellsStore } from '@/sheet/stores/spells/spellsStore';
 import { type Action, useActionsStore } from '@/sheet/stores/actions/actionsStore';
 import { type Resource, useResourcesStore } from '@/sheet/stores/resources/resourcesStore';
@@ -351,6 +351,7 @@ function calculateModifiedValue(
   baseValue: number,
   validEffects: ExtendedSingleEffect[],
   constrainTo: number[] = [],
+  formulaContext?: NpcFormulaContext,
 ): { final: number; modifiers: ModifierBreakdown[] } {
   let finalValue = baseValue;
   const modifiers: ModifierBreakdown[] = [];
@@ -361,7 +362,7 @@ function calculateModifiedValue(
     const formulaRegex = /-formula$/g;
     const value = Number(
       formulaRegex.test(effect.operation)
-        ? parseFormulaAndEvaluate(getPicker(effect.formula as string, effect.pickers) as string)
+        ? parseFormulaAndEvaluate(getPicker(effect.formula as string, effect.pickers) as string, formulaContext)
         : effect.value,
     );
     const operation = effect.operation.replace(formulaRegex, '');
