@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import SheetHeader from '@/components/SheetHeader.vue'
 import PoolsRow from '@/components/PoolsRow.vue'
 import StatusRow from '@/components/StatusRow.vue'
@@ -14,6 +14,9 @@ import ArtifactsSegment from '@/components/ArtifactsSegment.vue'
 import GearSegment from '@/components/GearSegment.vue'
 import SettingsModal from '@/components/SettingsModal.vue'
 import RollerModal from '@/components/RollerModal.vue'
+import NpcSheet from '@/components/NpcSheet.vue'
+import NpcGmNotice from '@/components/NpcGmNotice.vue'
+import DropNotice from '@/components/DropNotice.vue'
 import {
   CHARACTER_SEGMENTS,
   KIT_SEGMENTS,
@@ -22,6 +25,8 @@ import {
 } from '@/components/segments.js'
 import { resolveTheme } from '@/components/themes.js'
 import { useSheetStore } from '@/stores/sheetStore.js'
+import { useMetaStore } from '@/stores/metaStore.js'
+import { useNpcStore } from '@/stores/npcStore.js'
 import { useAppStore } from '@/stores/index.js'
 
 // The relay's Pinia plugin only binds the store whose id is 'app'
@@ -29,6 +34,8 @@ import { useAppStore } from '@/stores/index.js'
 // persists, or wires dispatchRef in production.
 useAppStore()
 const sheet = useSheetStore()
+const meta = useMetaStore()
+const npc = useNpcStore()
 
 const CHARACTER_PANELS = {
   skills: SkillsSegment,
@@ -53,6 +60,42 @@ const theme = computed(() => resolveTheme(sheet.ui.theme))
 // persist to the character. updateCharacter deletes omitted keys (ddd-6qe), so
 // anything put on ui here would round-trip through the VTT.
 const settingsOpen = ref(false)
+
+// spec §7.5: on an NPC sheet a viewer without GM rights sees only the notice. A player
+// can already have Settings open when a GM's switch arrives, and the dialog would
+// otherwise outlive the sheet it belongs to. Closing it, rather than hiding it, keeps it
+// from popping back if the sheet returns to Character. A GM keeps the dialog, because a
+// GM switches from inside it.
+const showNotice = computed(() => npc.isNpc && !meta.permissions.isGM)
+watch(showNotice, (on) => {
+  if (on) settingsOpen.value = false
+})
+
+// ddd-wqx6: a brand-new character opens Settings once. useAppStore() above has already
+// run the relay's startup hydrate, so this reads the stored document, not defaults.
+// Only a viewer who can save gets it: for anyone else the seen flag never persists and
+// the dialog would reopen on every load. Writing settingsSeen changes the dehydrated
+// document, so the relay persists a ui branch and hasStoredUi is true from then on.
+if (!sheet.hasStoredUi && (meta.permissions.isOwner || meta.permissions.isGM) && !showNotice.value) {
+  settingsOpen.value = true
+  sheet.ui.settingsSeen = true
+}
+
+// spec §7.5: the guided roller belongs to Character mode. Roller state is transient and
+// hydrate never resets it (sheetStore.js rollerStat, rollerSkillId and rollerOpen), so a
+// roller open when the sheet becomes an NPC would survive the switch, for a GM and a
+// player alike. Closing it through the store rather than RollerModal's close() also ends
+// a session that is mid-roll. That is safe: rollGuided reserves the pool and posts the
+// card inside the store (sheetStore.js rollGuided), so the roll finishes without its
+// modal. The unmounted modal's continuation then calls close(), which clears roller state
+// only while the store's rollerSession is still its own, so it cannot close a roller
+// opened since.
+watch(() => npc.isNpc, (on) => {
+  if (!on) return
+  sheet.rollerStat = null
+  sheet.rollerSkillId = null
+  sheet.rollerAttackId = null // ddd-keb3: the attack entry is a third way in, and closes the same way
+})
 </script>
 
 <!-- ARCHITECTURE (spec ⑦ §4.1). Four regions, no global tab bar:
@@ -87,41 +130,56 @@ const settingsOpen = ref(false)
      .clusters all carry it. -->
 <template>
   <div class="cypher-sheet" :data-theme="theme">
-    <div class="play-strip">
-      <SheetHeader @open-settings="settingsOpen = true" />
-      <PoolsRow />
-    </div>
+    <!-- Mode branch (ddd-zm47.2, spec §7). Character mode is the four regions below,
+         unchanged. A <template> wrapper adds no element, so .cypher-sheet's direct grid
+         items, and the Notes-last source order App.test.js asserts, are untouched. -->
+    <template v-if="!npc.isNpc">
+      <div class="play-strip">
+        <SheetHeader @open-settings="settingsOpen = true" />
+        <PoolsRow />
+      </div>
 
-    <div class="pinned-rail">
-      <StatusRow />
-    </div>
+      <div class="pinned-rail">
+        <StatusRow />
+      </div>
 
-    <main class="clusters">
-      <SegmentCluster
-        label="Character"
-        :segments="CHARACTER_SEGMENTS"
-        :panels="CHARACTER_PANELS"
-        :active="characterSegment"
-        @select="sheet.ui.characterSegment = $event"
-      />
-      <SegmentCluster
-        label="Kit"
-        :segments="KIT_SEGMENTS"
-        :panels="KIT_PANELS"
-        :active="kitSegment"
-        @select="sheet.ui.kitSegment = $event"
-      />
-    </main>
+      <main class="clusters">
+        <SegmentCluster
+          label="Character"
+          :segments="CHARACTER_SEGMENTS"
+          :panels="CHARACTER_PANELS"
+          :active="characterSegment"
+          @select="sheet.ui.characterSegment = $event"
+        />
+        <SegmentCluster
+          label="Kit"
+          :segments="KIT_SEGMENTS"
+          :panels="KIT_PANELS"
+          :active="kitSegment"
+          @select="sheet.ui.kitSegment = $event"
+        />
+      </main>
 
-    <div class="pinned-rail pinned-rail--notes">
-      <NotesBlock />
-    </div>
+      <div class="pinned-rail pinned-rail--notes">
+        <NotesBlock />
+      </div>
+    </template>
+    <NpcSheet v-else-if="meta.permissions.isGM" @open-settings="settingsOpen = true" />
+    <NpcGmNotice v-else />
 
     <SettingsModal v-if="settingsOpen" @close="settingsOpen = false" />
     <!-- Session-keyed, not stat-keyed (ddd-669y): the modal's own pool select
          writes rollerStat mid-open, and a stat key would remount and wipe the
          half-configured roll on every pool change. rollerOpen covers the
-         poolless per-skill entry, where rollerStat is null while open. -->
-    <RollerModal v-if="sheet.rollerOpen" :key="sheet.rollerSession" />
+         poolless per-skill entry, where rollerStat is null while open.
+         !npc.isNpc: an NPC sheet never shows the roller (spec §7.5). The
+         watch in the script closes a roller that was open at the switch; this
+         gate covers any later opener while the sheet is an NPC. -->
+    <RollerModal v-if="sheet.rollerOpen && !npc.isNpc" :key="sheet.rollerSession" />
+    <!-- Compendium drop feedback (spec ⑥ decision 17). Outside the mode branch, so the
+         NPC refusal shows on an NPC sheet too. position: fixed, so it takes no grid
+         cell. Inside .cypher-sheet rather than teleported, because the skin tokens live
+         on this element's data-theme. Always rendered: see DropNotice.vue. -->
+    <DropNotice />
   </div>
 </template>

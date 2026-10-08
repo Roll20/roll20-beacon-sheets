@@ -6,7 +6,16 @@ import {
   RATINGS, WEAPON_CLASSES, WEAPON_CLASS_LABELS,
   WEAPON_RANGES, WEAPON_RANGE_LABELS, MODIFIER_DIRECTIONS, enumLabel, strayOptions
 } from '@/components/enums.js'
+import { useSheetStore } from '@/stores/sheetStore.js'
 import { clampInt, syncClamped } from '@/utility/clamp.js'
+
+const sheet = useSheetStore()
+
+// Per-attack roller entry (ddd-keb3): every attack row gets a d20 chip that opens
+// the guided roller on that attack, REGARDLESS of the guided-mode setting — the
+// SkillsSegment rule, an explicit per-row button being its own opt-in. No canRoll
+// gate: unlike skills, every attack is rollable.
+const rollRow = (row) => sheet.rollAttack(row._id)
 
 // v2 fields (ddd-5vb). range: null is LEGAL ("unspecified — treat as
 // immediate", schema note), so it collapses; a stray value degrades to its raw
@@ -48,7 +57,7 @@ const setModifierMode = (row, value) => {
 </script>
 
 <template>
-  <ItemList :contents="contents" store-key="attacks" title="Attacks" add-label="Add attack">
+  <ItemList :contents="contents" :roll="rollRow" store-key="attacks" title="Attacks" add-label="Add attack">
     <!-- spec ⑦ §4.2: name · damage · skill rating. `damage` is always an integer
          (factory default 0), so its cell never collapses. -->
     <template #summary="{ row }">
@@ -67,7 +76,7 @@ const setModifierMode = (row, value) => {
            would be a silent write of data the player never entered. -->
       <select class="row-pool field" v-model="row.pool" aria-label="Pool">
         <option
-          v-for="s in strayOptions(row.pool, POOL_NAMES, 'pool')"
+          v-for="s in strayOptions(row.pool, POOL_NAMES, 'pool', { nullable: false })"
           :key="s.text"
           :value="s.value"
           disabled
@@ -100,7 +109,7 @@ const setModifierMode = (row, value) => {
       </label>
       <select class="row-skill-rating field" v-model="row.skillRating" aria-label="Skill rating">
         <option
-          v-for="s in strayOptions(row.skillRating, RATINGS, 'skill rating')"
+          v-for="s in strayOptions(row.skillRating, RATINGS, 'skill rating', { nullable: false })"
           :key="s.text"
           :value="s.value"
           disabled

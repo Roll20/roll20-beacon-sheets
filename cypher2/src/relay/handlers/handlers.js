@@ -1,4 +1,5 @@
 import { initValues, beaconPulse } from '../relay'
+import { handleDrop } from '@/compendium/drop.js'
 
 // onInit is called when the Relay is first loaded. It is used to set up the initial values of the sheet.
 export const onInit = ({ character, settings, compendiumDropData }) => {
@@ -23,3 +24,9 @@ export const onSharedSettingsChange = () => {}
 export const onTranslationsRequest = () => ({})
 
 export const onDragOver = () => {}
+
+// Compendium drop (spec ⑥). The SDK does not await handlers, so a failure the
+// coordinator did not turn into a notice is logged here rather than left unhandled.
+export const onDropOver = (args, dispatch) => {
+  handleDrop(args, dispatch).catch((error) => console.error('[cypher-drop] drop failed', error))
+}
