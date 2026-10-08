@@ -1,0 +1,22 @@
+<div class='enyllion-template'>
+  <div class='enyllion-template__header'>
+    {{#if perso}}<div class='enyllion-template__perso'>{{perso}}</div>{{/if}}
+    {{#if name}}<div class='enyllion-template__name'>{{name}}</div>{{/if}}
+  </div>
+  <hr class='enyllion-template__sep' />
+  <div class='enyllion-template__body'>
+    {{#if hasEffect}}
+      <div class='enyllion-template__line'>Effet : <strong>{{effectName}}</strong></div>
+      {{#if triggered}}
+        <div class='enyllion-template__result enyllion-template__result--success'>Déclenché</div>
+        <div class='enyllion-template__line'>Nombre de tours : <strong>{{turns}}</strong></div>
+        <div class='enyllion-template__line'>Dégâts : <strong>{{totalDamage}}</strong></div>
+      {{else}}
+        <div class='enyllion-template__result enyllion-template__result--fail'>Non déclenché</div>
+        <div class='enyllion-template__line'>Dégâts : <strong>{{baseDamage}}</strong></div>
+      {{/if}}
+    {{else}}
+      <div class='enyllion-template__line'>Dégâts : <strong>{{baseDamage}}</strong></div>
+    {{/if}}
+  </div>
+</div>

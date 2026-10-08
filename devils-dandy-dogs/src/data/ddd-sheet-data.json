@@ -1,0 +1,224 @@
+[
+  {
+    "role": "The Beloved",
+    "traits": {
+      "devil": 1,
+      "dandy": 3,
+      "dog": 2
+    },
+    "drive": "Love",
+    "storytellingStyle": "<p>You are more likely to talk up your packmates’ actions than your own exploits. You might say something like, “Because the Vermillion was doing such a great job of keeping the zombies at bay, I was able to slip right by and grab the vial we needed.” Your packmates recognize what you’re doing, and are often quick to jump in and suggest ways your actions also contributed.</p>",
+    "description": "<p><span class=\"drop-cap\">Y</span>ou prefer never to talk alone. You find comfort and power in connection to others, even if they may not have your best interest at heart. Your kind-hearted, warm nature draws others to you, and you thrive when love is large, harmony reigns, and your pack is peaceful and content.</p>",
+    "tricks": [
+      {
+        "name": "A Little Help",
+        "text": "<p class=\"no-indent\">You can summon a small, useful creature, such as a rat, cat, bird, to act as your minion. You may only have one minion at a time. Minions must be (or have once been) living creatures, and they can only do things that they would normally be able to do, although they do so at your behest.</p>"
+      },
+      {
+        "name": "Guide Them Home",
+        "text": "<p class=\"no-indent\">You are able to guide lost or confused creatures (including your packmates) toward a previously unseen path, escape route, or safe place. Sometimes, these entities will be so grateful that they will help you in some small way now or in the future.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Dimmed",
+    "traits": {
+      "devil": 3,
+      "dandy": 2,
+      "dog": 1
+    },
+    "drive": "Discovery",
+    "storytellingStyle": "<p>You have seen and done so much that one thing can remind you of another, causing you to sometimes get off-topic, saying things like, “Which reminds me of that time we retrieved the soul of a mermaid—you all remember that?—and she sang the most beautiful songs and told us we were good dogs and gave us all fish.” Your packmates are sometimes willing to reminisce with you, but the Devil has already heard those old stories and may gently usher you back on track.</p>",
+    "description": "<p><span class=\"drop-cap\">Y</span>ou have seen and done much and are more jaded and stoic than you once were. While your experience lends you valuable insight and unique problem-solving skills, you yearn to encounter something exciting and new. You’re happiest when helping your pack discover or overcome a novel situation.</p>",
+    "tricks": [
+      {
+        "name": "Split the Night",
+        "text": "<p class=\"no-indent\">You call down a storm of thunder, lightning, and hail to a place near you, including inside a building or underground. You are the eye of the storm, and thus are not harmed by it, but you can’t do anything else while the storm rages. The storm ends when you wish it to or when you decide to take another action.</p>"
+      },
+      {
+        "name": "That Other Devil",
+        "text": "<p class=\"no-indent\">Each time you encounter a new adversary, roll 3d6 to see if you know anything about them—perhaps you’ve dealt with them before, or previously heard a story of their exploits. If you roll at least one 6, the Devil reminds you of an interesting fact, bit of lore, or previous exchange.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Dreamed",
+    "traits": {
+      "devil": 3,
+      "dandy": 1,
+      "dog": 2
+    },
+    "drive": "Understanding",
+    "storytellingStyle": "<p>Your version of the story doesn’t always jive with the rest of the pack’s. You’re not lying, exactly: you’ve just got your own unique way of seeing the world, saying things like, “And then I saw the flock of ghost ravens in the mural spelling out the word NORTH, so I started heading that way, though the wind kept telling me it was the wrong way.”</p>",
+    "description": "<p><span class=\"drop-cap\">A</span>re you real or are you the daydream of some otherworldly being? You are never sure. There are worlds and wolves other than these, and you never feel quite aligned with any of them. Your senses might sometimes deceive you, but you’re not lost, not quite. You see Signs everywhere: in the grey feather of the raven, the puddle in the pawprint, the cardface in the clouds. Your pack is real, that you are sure of, and the Devil too. Everything else? Time will tell.</p>",
+    "tricks": [
+      {
+        "name": "Dreamwalk",
+        "text": "<p class=\"no-indent\">You enter a creature’s dream while they are sleeping, drugged, hallucinating, or otherwise creating a mental landscape for you to move around in. You take actions, roll dice, and use Tricks just as you would in the real world, engaging with the dreamer and their dream landscape. Just like in the real world, bad things can happen to you here—so, be wary, dreamwalker.</p>"
+      },
+      {
+        "name": "Call the Crossroads",
+        "text": "<p class=\"no-indent\">You bring a replica of a specific place of magic that you are aware of, such as a crossroads, church, or burial ground, to your pack for a few minutes. While you can’t alter the original place, you can use the replica as you see fit—interact with an ally you met there previously, search for clues or ideas, try out a plan, or even engage in practice combat with a foe who resides there.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Exquisite",
+    "traits": {
+      "devil": 2,
+      "dandy": 3,
+      "dog": 1
+    },
+    "drive": "Beauty",
+    "storytellingStyle": "<p>You tell stories with a poetic flair, playing with language so beautifully that listeners can get lost in the sounds and vibrations and miss what you’re saying entirely. Every moment is an opportunity for a gorgeous turn of phrase, a delicious rhyme, or perhaps even (insert groans from your packmates) a perfectly placed pun.</p>",
+    "description": "<p><span class=\"drop-cap\">E</span>verywhere you look, there is beauty. You take great care with your appearance, sometimes to the detriment of your focus, and appreciate the smallest of details—the whoosh of wind against your ears, the scent of a perfectly prepared roast, the delicate weight of a safe soul. You shine brightest when you can bring beauty to bear in yourself, in others, or in the world.</p>",
+    "tricks": [
+      {
+        "name": "Walk Among",
+        "text": "<p class=\"no-indent\">You leave behind your shadow self to gain blood, bone, muscle, and mouth. You look, act, and talk like a human of your choosing. You stay in this form until someone falls in love with you or sees through you, or until you wish to change back.</p>"
+      },
+      {
+        "name": "Beautify",
+        "text": "<p class=\"no-indent\">You make yourself beautiful to the eye of a beholder that you choose. How you end up looking will depend on who you are trying to appeal to—you might appear to be a gorgeous work of art, a perfectly grilled steak, or a supermodel. You can choose who you want the illusion to affect, but illusions don’t always obey the wills of their makers.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Faithful",
+    "traits": {
+      "devil": 1,
+      "dandy": 3,
+      "dog": 2
+    },
+    "drive": "Protection",
+    "storytellingStyle": "<p>You tell every moment, every action, every experience exactly as it happened, without hyperbole or purple prose. This doesn’t mean you’re a dry narrator, of course, just that you are faithful to the truth. The only time you omit anything is if someone asked you to keep it a secret.</p>",
+    "description": "<p><span class=\"drop-cap\">Y</span>ou are a good dog, eternally at the service of the Devil and your pack. You do everything in your power to never break a promise or abandon someone in distress, even if it’s to the detriment of your own needs. It means everything when others trust and rely on you, and you honor that by standing steady and true.</p>",
+    "tricks": [
+      {
+        "name": "Speak",
+        "text": "<p class=\"no-indent\">You gain the power of human speech and are able to communicate clearly with humans. This works in any language, including sign language. Despite your fluency, many who communicate with you in this way find the experience disconcerting. </p>"
+      },
+      {
+        "name": "Confidante",
+        "text": "<p class=\"no-indent\">You are deeply trustworthy, and thus, many creatures, objects, and even places are willing to share a secret with you, if you take the time to get to know them. Sharing a meal or moment, partaking in a game of tug, asking questions, and even just appreciating the beauty of a thing can all lead to them sharing something hidden about themselves with you.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Frolic",
+    "traits": {
+      "devil": 2,
+      "dandy": 1,
+      "dog": 3
+    },
+    "drive": "Play",
+    "storytellingStyle": "<p>Your stories are here, there, and everywhere, zooming ahead with lots of speed and excitement. One moment you’re focusing on the weird flowers blooming from the zookeeper’s forehead, and then next you’re telling how you convinced the lion to play tug with you.</p>",
+    "description": "<p><span class=\"drop-cap\">W</span>hat great joy lies here. And here. And here. Everything is delight. That flower, that friend, that tiny sliver of sunlight through the window. Dangers are for another day; today, play is paramount. Wonder abounds, if only others could see it. No matter. They don’t have to. You will shine and laugh and frolic for them, until they too must rejoice.</p>",
+    "tricks": [
+      {
+        "name": "Become Dog",
+        "text": "<p class=\"no-indent\">You leave behind your shadow self to gain blood, bone, muscle, and a tongue and become a dog of your choosing. For all intents and purposes, you are no longer supernatural, and you look and act like a normal living dog (meaning, for example, that you can’t shadowwalk or use Tricks). You stay in this form until you wish to change back, or until someone captures you (including with a collar) or sees through your form.</p>"
+      },
+      {
+        "name": "These Violent Delights",
+        "text": "<p class=\"no-indent\">Whenever you engage in a social interaction with someone, you can choose instead to invite them to play a game, such as tug, chase, or some other game that seems appropriate for the context. If your opponent agrees, the game plays out as if it were a Dog action instead of a Dandy action (using the appropriate number of dice when applicable).</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Hearthed",
+    "traits": {
+      "devil": 2,
+      "dandy": 1,
+      "dog": 3
+    },
+    "drive": "Comfort",
+    "storytellingStyle": "<p>Your stories tend to focus on the good things that happened, to the point where you may even gloss over or skip the worst of it, saying things like, “And then that horrible monster whispered in my ear and told me the most . . .  well, we don’t have to tell that part, do we? Because after that, the woman on the white horse appeared and . . . ” The other dogs might jump in to fill in the parts you aren’t willing to tell.</p>",
+    "description": "<p><span class=\"drop-cap\">Y</span>ou are truly a creature of comfort, preferring the warmth and safety of home and hearth to the wonders of the world. In being with your pack, you find a different form of comfort, however small, and this is usually enough to carry you through. You delight in showing others the route to true contentment and peace, finding that sometimes giving another comfort is nearly as good as having it yourself.</p>",
+    "tricks": [
+      {
+        "name": "Inferno",
+        "text": "<p class=\"no-indent\">Your whole body turns to flame. You bring heat and light, ignite flammable objects that you touch, and neither water nor wind can snuff you out. You are flame until you wish to return to shadow.</p>"
+      },
+      {
+        "name": "This Old Thing",
+        "text": "<p class=\"no-indent\">You know just the thing to comfort someone who is sad, ailing, grieving, or otherwise in a bad way. From part of your shadow self, you can manifest an item up to the size of a cat and offer it to them. You may only give one part of yourself at a time, and once the item has helped the person, it returns to you as shadow. You may also call it back at any time.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Scrounger",
+    "traits": {
+      "devil": 2,
+      "dandy": 1,
+      "dog": 3
+    },
+    "drive": "Hunger",
+    "storytellingStyle": "<p>You’re always digging deeper, looking for just a little more from the stories you tell. Your stories focus on vivid, concrete details of sound, sight, touch, or scent, and you’re often asking your packmates questions like, “What did it look like, when I was pushed off that bridge, and fell toward the water?”</p>",
+    "description": "<p><span class=\"drop-cap\">E</span>verywhere there is secret treasure, waiting to be discovered. Your nose and ears and eyes sense everything—the crumbs beneath the chair, the note fallen from a pocket, the soul hidden inside the egg. Each new discovery feeds you. If there is a secret to be uncovered, a clue to be found, or a scrap of something tasty to unearth, you are at the ready.</p>",
+    "tricks": [
+      {
+        "name": "Mind Over Matter",
+        "text": "<p class=\"no-indent\">You are able to manipulate objects with your mind. You must be able to see the object, and all of your focus must remain on it for as long as you’re attempting to move it, hold it, or otherwise manipulate it. This Trick works best with objects that are smaller and weigh less than you, but who knows what will happen if you try?</p>"
+      },
+      {
+        "name": "Find It",
+        "text": "<p class=\"no-indent\">If you or a packmate is looking for a mundane item—“Is there something I can light on fire in here?”—you locate it if it’s present. If you’re searching for something more significant, you can get a sense of its general direction.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Veiled",
+    "traits": {
+      "devil": 3,
+      "dandy": 2,
+      "dog": 1
+    },
+    "drive": "Secrets",
+    "storytellingStyle": "<p>You might slip in a bit of a fib now and then, just to keep things as secretive and shadowy as you like them, saying things like, “And then three griffons came through the door and I ran up bravely and bit every single one of them” when in fact there were only two griffons, and you only bit one. The Devil (and your pack) sees through your lies, of course, but is willing to go along with them for the better story.</p>",
+    "description": "<p><span class=\"drop-cap\">Y</span>ou are more shadow than shadow itself. You never miss an opportunity to sneak into a moment, steal a jewel or a heart, or strike by surprise. Your values are your own and your pack knows better than to shine too bright a light on them or you, but they honor your sly ways and trust you to use your hidden magic for their betterment.</p>",
+    "tricks": [
+      {
+        "name": "Slink Into Shadow",
+        "text": "<p class=\"no-indent\">You can become part of a living creature’s shadow. You go where they go, traveling with them. This ability ends if the creature’s shadow disappears, if you take an action other than moving, or if someone discerns your presence.</p>"
+      },
+      {
+        "name": "The Key to Something",
+        "text": "<p class=\"no-indent\">Locked doors, hidden safes, and alarmed buildings mean nothing to you. You are able to turn your body into the shape of a key, slide between the tumblers, and even slip into advanced alarm systems to disable them.</p>"
+      }
+    ]
+  },
+  {
+    "role": "The Vermillion",
+    "traits": {
+      "devil": 2,
+      "dandy": 1,
+      "dog": 3
+    },
+    "drive": "Aggression",
+    "storytellingStyle": "<p>Sometimes you can be aggressive even in your storytelling, pushing your way into the story to correct those who get it wrong or interrupting when you think someone else would be better to tell something accurately. (While the Devil and your pack are understanding of your style, and accepting of what can seem like rudeness, this is a style best used lightly or with a lot of humor).</p>",
+    "description": "<p><span class=\"drop-cap\">P</span>eace and comfort mean little to you. Or perhaps it’s better to say that you find peace and comfort in tooth and claw instead of home and hearth. If there is way to fight your way into or out of things, you will find it and relish it. There are few things that bring you more joy than a battle well fought, a foe defeated, a friend protected.</p>",
+    "tricks": [
+      {
+        "name": "The Better to Eat You With",
+        "text": "<p class=\"no-indent\">You gain an additional head and can use each head to do something different. For example, you could attack two different creatures, attack one creature twice, look in two different directions, carry two different items, and so on.</p>"
+      },
+      {
+        "name": "What Dreams May Come",
+        "text": "<p class=\"no-indent\">You look into the eyes of a nearby creature and cause them to hallucinate. What they see is something dredged from the depths of their own mind, and thus you can’t control what they see or how they will act because of it. The hallucinations last until they are injured (from any source), removed from the area, or are otherwise brought out of the visions.</p>"
+      }
+    ]
+  },
+  {
+    "role": "Custom",
+    "traits": {
+      "devil": 0,
+      "dandy": 0,
+      "dog": 0
+    },
+    "drive": "",
+    "storytellingStyle": "",
+    "description": "",
+    "tricks": []
+  }
+]

@@ -1,0 +1,173 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Martel+Sans:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap");
+/* Thread of Fate roll-template fonts (match the sheet) */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap");
+html * {
+  --convergence-font-color: black;
+  --convergence-contrast-font-color: white;
+  --convergence-font-family: "Montserrat", "Verdana", sans-serif;
+  --convergence-input-border: 1px solid #452b52;
+  --convergence-button-background-color: #452b52;
+  --convergence-section-border: 1px solid #452b52;
+  --convergence-primary: #89018b;
+  --convergence-secondary: #ebd7ea;
+}
+
+/* ===========================================================================
+   The Thread of Fate - Roll20 chat roll-template theme.
+   Cosmic indigo/near-black card, gold headings, scarlet accents, and serif type
+   to match the character sheet's look and feel.
+   =========================================================================== */
+rolltemplate.convergence {
+  display: block;
+  max-width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: "Merriweather", Georgia, "Times New Roman", serif;
+  color: #f9e8d0;
+  background: linear-gradient(180deg, #171430 0%, #0b0b16 100%);
+  border: 1px solid rgba(235, 167, 46, 0.5);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55), 0 0 18px rgba(235, 167, 46, 0.12);
+}
+rolltemplate.convergence .header {
+  position: relative;
+  text-align: center;
+  padding: 0.4rem 0.55rem 0.45rem;
+  background: linear-gradient(180deg, rgba(44, 32, 74, 0.92), rgba(20, 16, 32, 0.96));
+  border-bottom: 1px solid rgba(235, 167, 46, 0.6);
+  box-shadow: inset 0 -1px 10px rgba(235, 167, 46, 0.12);
+}
+rolltemplate.convergence .header__character-name {
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #b6a6d8;
+  margin-bottom: 0.05rem;
+}
+rolltemplate.convergence .header__group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+rolltemplate.convergence .header__title {
+  font-family: "Cinzel Decorative", "Cinzel", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  color: #eba72e;
+  text-shadow: 0 0 10px rgba(235, 167, 46, 0.45), 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+rolltemplate.convergence .header__subtitle {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #f4dbb9;
+}
+rolltemplate.convergence .body {
+  padding: 0.55rem 0.6rem 0.6rem;
+  background: radial-gradient(120% 90% at 50% -25%, rgba(60, 30, 80, 0.35), transparent 70%);
+}
+rolltemplate.convergence .body hr {
+  border: none;
+  border-top: 1px solid rgba(235, 167, 46, 0.3);
+  margin: 0.5rem 0;
+}
+rolltemplate.convergence .body details {
+  margin: 0.15rem 0 0.1rem;
+  font-size: 0.78rem;
+  color: #c9c3da;
+}
+rolltemplate.convergence .body summary {
+  cursor: pointer;
+  color: #c79a52;
+  letter-spacing: 0.04em;
+}
+rolltemplate.convergence .roll__total {
+  text-align: center;
+  font-family: "Cinzel Decorative", "Cinzel", Georgia, serif;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.1;
+  color: #ffffff;
+  margin: 0.2rem 0 0.4rem;
+  text-shadow: 0 0 14px rgba(235, 167, 46, 0.6), 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+rolltemplate.convergence .roll__total--crit-success {
+  color: #b6f0bd;
+  text-shadow: 0 0 18px rgba(120, 220, 140, 0.85);
+}
+rolltemplate.convergence .roll__total--crit-fail {
+  color: #ff9aa6;
+  text-shadow: 0 0 18px rgba(200, 60, 70, 0.85);
+}
+rolltemplate.convergence .roll__components {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+rolltemplate.convergence .roll__components .component {
+  background: rgba(235, 167, 46, 0.12);
+  border: 1px solid rgba(235, 167, 46, 0.35);
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+  font-size: 0.78rem;
+}
+rolltemplate.convergence .roll__components .component__value {
+  font-weight: 700;
+  color: #eba72e;
+}
+rolltemplate.convergence .key-values__pair {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.85rem;
+}
+rolltemplate.convergence .key-values__key {
+  font-weight: 700;
+  color: #f4dbb9;
+}
+rolltemplate.convergence .trait-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+rolltemplate.convergence .trait-list .trait {
+  font-style: normal;
+  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #ffd7dd;
+  background: rgba(127, 32, 48, 0.42);
+  border: 1px solid rgba(153, 37, 56, 0.75);
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+}
+rolltemplate.convergence .hero-die {
+  text-align: center;
+  margin: 0.3rem 0 0.1rem;
+}
+rolltemplate.convergence .hero-die__button {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Cinzel Decorative", "Cinzel", Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #2a1d05;
+  background: linear-gradient(180deg, #eba72e, #c4861a);
+  border: 1px solid #e0b257;
+  box-shadow: 0 0 14px rgba(235, 167, 46, 0.45);
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+rolltemplate.convergence .hero-die__button:hover {
+  box-shadow: 0 0 22px rgba(235, 167, 46, 0.7);
+  transform: translateY(-1px);
+}

@@ -116,7 +116,9 @@ const itemNew = ref({
   slots: '',
   name: '',
   description: '',
-  quantity: 1
+  quantity: 1,
+  qualities: '',
+  flaws: '',
 })
 function resetItem(){
   itemNew.value = {
@@ -125,7 +127,9 @@ function resetItem(){
     slots: '',
     name: '',
     description: '',
-    quantity: 1
+    quantity: 1,
+	qualities: '',
+	flaws: '',
   }
 }
 

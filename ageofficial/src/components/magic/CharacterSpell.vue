@@ -4,7 +4,7 @@
             <div class="label" data-testid="test-spell-header" style="flex:1;">{{ spell.name }}<br />({{ spell.requirements }})</div>     
         </div>
         <div>
-            <img v-if="spell.arcanaType && settings.gameSystem !== 'blue rose'" :src="'/src/assets/arcana/' + spell.arcanaType.toLowerCase() + '.png'" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
+            <img v-if="arcanaIconSrc && settings.gameSystem !== 'blue rose'" :src="arcanaIconSrc" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
         </div>   
         <!-- <div class="age-cost-tn-number" v-tippy="{ content: 'Magic Point Cost'}">
             <span>{{ spell.mpCost }}</span>
@@ -64,7 +64,7 @@
                 <span>{{ spell.spellType }}</span>
               <span class="age-spell-details__label">Casting Time</span>
                 <span>{{ spell.castingTime + ' Action' }}</span>
-              <span class="age-spell-details__label">{{ magicPoints }} Cost</span>
+              <span class="age-spell-details__label">{{ magicPoints }} </span>
                 <span>{{ spell.mpCost }}</span>
               <span class="age-spell-details__label">Target Number</span>
                 <span>{{ spell.targetNumber }}</span>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore'
 import SpellModal from './SpellModal.vue';
@@ -125,8 +125,7 @@ const props = defineProps({
 
 const expanded = ref(false);
 
-const magicLabel = ref('Arcana');
-const magicPoints = ref('MP');
+
 
 const familiarity = ref(0);
 const familiarityOptions = ref([
@@ -137,20 +136,35 @@ const familiarityOptions = ref([
   { value: 8, label: 'Casually Familiar' },
   { value: 10, label: 'Slightly Familiar' }
 ]);
-switch(settings.gameSystem){
-  case 'mage':
-    magicLabel.value = 'Power';
-    if(settings.userPowerFatigue){
-      magicPoints.value = ' Power Cost';
-    } else {
-      magicPoints.value = 'PP';
-    }
-  break;
-  default:
-    magicLabel.value = 'Arcana';
-    magicPoints.value = 'MP';
-  break;
-}
+const magicLabel = computed(() =>
+  settings.gameSystem === 'mage' ? 'Power' : 'Arcana'
+);
+
+// Resolve arcana icons through Vite so they work in the built/hosted sheet.
+// A raw "/src/assets/arcana/x.png" path only resolves under the dev server;
+// import.meta.glob emits the bundled, base-prefixed URL for each file.
+const arcanaIconUrls = import.meta.glob('../../assets/arcana/*.png', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+const arcanaIconMap = Object.fromEntries(
+  Object.entries(arcanaIconUrls).map(([path, url]) => [
+    path.split('/').pop().replace(/\.png$/, '').toLowerCase(),
+    url,
+  ])
+);
+const arcanaIconSrc = computed(() =>
+  props.spell?.arcanaType
+    ? arcanaIconMap[props.spell.arcanaType.toLowerCase()]
+    : undefined
+);
+
+const magicPoints = computed(() => {
+  if (settings.gameSystem !== 'mage') return 'MP';
+
+  return settings.userPowerFatigue ? ' Power Cost' : 'PP';
+});
 const toggleExpand = () => {
   expanded.value = !expanded.value;
 };

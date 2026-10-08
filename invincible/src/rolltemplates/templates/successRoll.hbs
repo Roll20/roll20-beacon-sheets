@@ -1,0 +1,66 @@
+{{#> wrapper type="roll" keyValues=keyValues }}
+  {{#> header characterName=(or characterName ../characterName) title=(or title ../title) subtitle=(or subtitle ../subtitle)}}
+  {{/ header}}
+
+  <div class="roll-card-body space-y-3">
+    {{#if (isNumber totalSuccesses)}}
+      {{#if (isEqual totalSuccesses 0)}}
+        <div class="text-center py-2 my-1.5 flex flex-col items-center justify-center">
+          <svg viewBox="-2 -2 21 21" class="w-full max-w-[80px] h-20" style="filter: drop-shadow(4px 4px 0px rgba(0,0,0,1)); overflow: visible;" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.026,-0C6.944,-0 5.924,0.21 4.992,0.59L4.992,10.116L2.948,10.116L2.948,1.806C1.148,3.278 0,5.52 0,8.032C0,12.474 3.594,16.06 8.026,16.06C9.172,16.06 10.248,15.824 11.224,15.402L11.224,5.92L13.268,5.92L13.268,14.122C14.976,12.648 16.058,10.466 16.058,8.032C16.058,3.59 12.462,-0 8.026,-0M9.14,13.954L7.074,13.954L7.074,2.082L9.14,2.082L9.14,13.954Z" fill="rgb({{heroColorBlood}})" stroke="#000000" stroke-width="1.2" stroke-linejoin="miter" paint-order="stroke fill"/>
+          </svg>
+          <span class="mt-1 px-3 py-0.5 text-xs font-black uppercase tracking-wider bg-black text-white border-2 border-white rounded shadow-[2px_2px_0px_#000]">
+            Failure
+          </span>
+        </div>
+      {{else}}
+        <div class="text-center py-2 my-1.5 flex flex-col items-center justify-center">
+          <svg viewBox="-2 -2 16 21" class="w-full max-w-[80px] h-20" style="filter: drop-shadow(4px 4px 0px rgba(0,0,0,1)); overflow: visible;" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,7.084L0,11.996L5.816,16.26L11.568,11.996L11.568,7.084C11.568,7.084 9.048,9.044 5.816,9.044C2.584,9.044 0,7.084 0,7.084M0,3.682C0,5.706 2.606,7.364 5.816,7.364C9.026,7.364 11.632,5.706 11.632,3.682C11.632,1.658 9.026,0 5.816,0C2.606,0 0,1.658 0,3.682" fill="rgb({{heroColor}})" stroke="#000000" stroke-width="1.2" stroke-linejoin="miter" paint-order="stroke fill"/>
+          </svg>
+          <span class="mt-1 px-3 py-0.5 text-xs font-black uppercase tracking-wider bg-black text-white border-2 border-white rounded shadow-[2px_2px_0px_#000]">
+            {{#if (isEqual totalSuccesses 1)}}1 Success{{else}}{{totalSuccesses}} Successes{{/if}}
+          </span>
+        </div>
+      {{/if}}
+    {{else}}
+      {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
+    {{/if}}
+
+    {{#if description}}
+      <div class="roll-card-description">
+        {{{description}}}
+      </div>
+    {{/if}}
+
+    <details class="roll-card-details group">
+      <summary>
+        <span>Show Details</span>
+        <svg class="w-3.5 h-3.5 transform group-open:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </summary>
+      <div class="roll-card-details-content">
+        {{> rollComponents components=components }}
+      </div>
+    </details>
+
+    {{#if keyValues}}
+      {{> keyValues keyValues=keyValues }}
+    {{/if}}
+
+    {{#if textContent}}
+      {{> textContent textContent=textContent }}
+    {{/if}}
+
+    {{#if traits}}
+      <div class="roll-card-traits-wrapper">
+        {{#each traits as |trait|}}
+          <span class="roll-card-trait-badge">
+            {{capitalize trait}}
+          </span>
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+{{/ wrapper }}

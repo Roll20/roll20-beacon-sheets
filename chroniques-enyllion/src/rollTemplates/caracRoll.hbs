@@ -1,0 +1,13 @@
+<div class='enyllion-template'>
+  <div class='enyllion-template__header'>
+    {{#if perso}}<div class='enyllion-template__perso'>{{perso}}</div>{{/if}}
+    {{#if name}}<div class='enyllion-template__name'>{{name}}{{#if sub}} <span class='enyllion-template__sub'>({{sub}})</span>{{/if}}</div>{{/if}}
+  </div>
+  <hr class='enyllion-template__sep' />
+  <div class='enyllion-template__body'>
+    <div class='enyllion-template__line'>Carac : <strong>{{carac}}</strong></div>
+    <div class='enyllion-template__line'>Jet : <strong>{{roll}}</strong></div>
+    <div class='enyllion-template__result enyllion-template__result--{{resultClass}}'>{{resultText}}</div>
+    {{#if description}}<div class='enyllion-template__desc'>{{description}}</div>{{/if}}
+  </div>
+</div>

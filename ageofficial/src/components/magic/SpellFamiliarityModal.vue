@@ -1,109 +1,129 @@
 <template>
   <Transition name="modal">
     <div v-if="show" class="modal-mask">
-        <div class="modal-container age-modal age-familiarity-modal">
-          <div class="age-modal-header">
-              <slot name="header">default header</slot>
-              <button type="button" class="btn-close" @click="$emit('close')" aria-label="Close"></button>
-            </div>
-        <div class="modal-body">
-            <div class="age-spell-familiarity-modal">
-        <div class="age-spell-familiarity-header">
-            <select class="age-atk-select form-select"
-                    data-testid="test-spell-weaponGroup-input"
-                    v-model="familiarity">
-            <option v-for="op in familiarityOptions" :key="op.value" :value="op.value">{{op.label}}</option>
-            </select>
+      <div class="modal-container age-modal age-familiarity-modal">
+        <div class="age-modal-header">
+          <slot name="header">default header</slot>
+          <button
+            type="button"
+            class="btn-close"
+            @click="$emit('close')"
+            aria-label="Close"
+          ></button>
         </div>
-      
-        
-      </div>
-        </div>          
+        <div class="modal-body">
+          <div class="age-spell-familiarity-modal">
+            <div class="age-spell-familiarity-header">
+              <select
+                class="age-atk-select form-select"
+                data-testid="test-spell-weaponGroup-input"
+                v-model="familiarity"
+              >
+                <option
+                  v-for="op in familiarityOptions"
+                  :key="op.value"
+                  :value="op.value"
+                >
+                  {{ op.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div class="modal-footer-actions">
           <slot name="footer">
-              <button 
-                class="confirm-btn"
-                @click="handlePrint();$emit('close')"
-              >
-                OK
-              </button>   
+            <button
+              class="confirm-btn"
+              @click="
+                handlePrint();
+                $emit('close');
+              "
+            >
+              OK
+            </button>
           </slot>
-          </div>
+        </div>
       </div>
     </div>
   </Transition>
 </template>
 <script setup>
-import { useSpellStore } from '@/sheet/stores/magic/magicStore';
-import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
-import { brArcana, fageArcana, magePowers } from './magicTypes';
-import { ref } from 'vue';
-import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore'
-import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
+import { useSpellStore } from "@/sheet/stores/magic/magicStore";
+import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
+import { brArcana, fageArcana, magePowers } from "./magicTypes";
+import { ref } from "vue";
+import { useAbilityScoreStore } from "@/sheet/stores/abilityScores/abilityScoresStore";
+import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
 
 const props = defineProps({
   show: Boolean,
   spell: { type: Object },
   mode: String,
-  magicLabel:String
-})
+  magicLabel: String,
+});
 const qualitiesStore = useItemStore();
 const familiarity = ref(0);
 const familiarityOptions = ref([
-  { value: 0, label: 'Present (+0)' },
-  { value: 2, label: 'Very Familiar (+2)' },
-  { value: 4, label: 'Familiar (+4)' },
-  { value: 6, label: 'Somewhat Familiar (+6)' },
-  { value: 8, label: 'Casually Familiar (+8)' },
-  { value: 10, label: 'Slightly Familiar (+10)' }
+  { value: 0, label: "Present (+0)" },
+  { value: 2, label: "Very Familiar (+2)" },
+  { value: 4, label: "Familiar (+4)" },
+  { value: 6, label: "Somewhat Familiar (+6)" },
+  { value: 8, label: "Casually Familiar (+8)" },
+  { value: 10, label: "Slightly Familiar (+10)" },
 ]);
 const settings = useSettingsStore();
 const magicTypes = ref();
-switch(settings.gameSystem){
-  case 'fage2e':
+switch (settings.gameSystem) {
+  case "fage2e":
     magicTypes.value = fageArcana;
-  break;
-  case 'mage':
+    break;
+  case "mage":
     magicTypes.value = magePowers;
-  break;
-  case 'blue rose':
-    magicTypes.value = brArcana
-  break;
+    break;
+  case "blue rose":
+    magicTypes.value = brArcana;
+    break;
 }
-let toAttackRoll = 0
+let toAttackRoll = 0;
 
 const setAttackRoll = () => {
-  if(useAbilityScoreStore().abilityScores[props.spell.ability]){
-    toAttackRoll = useAbilityScoreStore().abilityScores[props.spell.ability].base;
+  if (useAbilityScoreStore().abilityScores[props.spell.ability]) {
+    toAttackRoll =
+      useAbilityScoreStore().abilityScores[props.spell.ability].base;
   }
-}
+};
 setAttackRoll();
-function focusBonus(){
-  const focusArray = qualitiesStore.items.filter(item => item.type === 'Ability Focus');
-  const obj = focusArray.find(obj => {
-    return (obj.name.toLowerCase() === props.spell.abilityFocus.toLowerCase());
+function focusBonus() {
+  const focusArray = qualitiesStore.items.filter(
+    (item) => item.type === "Ability Focus"
+  );
+  const obj = focusArray.find((obj) => {
+    return obj.name.toLowerCase() === props.spell.abilityFocus.toLowerCase();
   });
   if (!obj) {
     return 0; // Return 0 if no matching focus is found
   }
-  
-    // Check if the object has doubleFocus or focus properties
+
+  // Check if the object has doubleFocus or focus properties
   if (obj.doubleFocus) {
-      return 4; // Return 4 if doubleFocus is true
-    } else if (obj.focus) {
-      return 2; // Return 2 if only focus is true
-    } else {
-      return 0;
-    }
+    return 4; // Return 4 if doubleFocus is true
+  } else if (obj.focus) {
+    return 2; // Return 2 if only focus is true
+  } else {
+    return 0;
+  }
 }
 const handlePrint = () => {
-    const spellStore = useSpellStore();
-    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll) + focusBonus(), familiarity.value);
-    familiarity.value = 0; // Reset familiarity after printing
+  const spellStore = useSpellStore();
+  spellStore.printSpell(
+    props.spell._id,
+    parseInt(toAttackRoll) + focusBonus(),
+    familiarity.value
+  );
+  familiarity.value = 0; // Reset familiarity after printing
 };
 </script>
 <style>
-
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -164,6 +184,6 @@ const handlePrint = () => {
   transform: scale(1.1);
 }
 .age-atk-select {
-    height: auto;
+  height: auto;
 }
 </style>

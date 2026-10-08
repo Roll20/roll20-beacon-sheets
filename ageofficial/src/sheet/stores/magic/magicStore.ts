@@ -143,7 +143,7 @@ export const useSpellStore = defineStore('spells', () => {
     await rollToChat({
       characterName: useMetaStore().name,
       title: spell.name,
-      rollType:'spellDamage',
+      rollType: 'damage',
       components
     });
   }

@@ -19,6 +19,7 @@
               </button></div>
           </div>
         </div>
+		
         
       <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;"></div>
       <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;">
@@ -35,7 +36,26 @@
       <button type="button" class="config-btn age-icon-btn" @click="showModal = true" v-tippy="{ content: 'Edit Equipment'}">
           <font-awesome-icon :icon="['fa', 'gear']" />
       </button> 
+<div
+  v-if="item.qualities || item.flaws || item.damageQualities || item.damageFlaws"
+  class="age-speel-details"
+>
+  <div v-if="item.qualities">
+    <strong>Item Qualities:</strong> {{ item.qualities }}
+  </div>
 
+  <div v-if="item.flaws">
+    <strong>Item Flaws:</strong> {{ item.flaws }}
+  </div>
+
+  <div v-if="item.damageQualities">
+    <strong>Damage Qualities:</strong> {{ item.damageQualities }}
+  </div>
+
+  <div v-if="item.damageFlaws">
+    <strong>Damage Flaws:</strong> {{ item.damageFlaws }}
+  </div>
+</div>
         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapse' + index"  aria-expanded="true" aria-controls="collapseOne"></button>
     </div>
     <div :id="'collapse'+ index" class="accordion-collapse age-accordion-collapse collapsed collapse" data-bs-parent="#age-spell-accordion">

@@ -11,6 +11,7 @@
           <!-- <router-link to="/npcs">NPCs Tab</router-link> -->
         </div>
       </div>
+      
       <div class="npc-switch" v-if="isGM">
         {{ $t(`titles.npc-sheet`) }}
         <ToggleSwitch v-model="npcStore.isNpc" :disabled="false" />

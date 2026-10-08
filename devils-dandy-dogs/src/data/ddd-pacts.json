@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Ask the Devil",
+    "text": "<p>The pack can ask up to three questions of the Devil. A member of the pack rolls 1d6 per question. On a roll of 1–5, the Devil answers honestly. On a roll of 6, the Devil answers with a lie.</p>"
+  },
+  {
+    "name": "Call the Memory",
+    "text": "<p>The pack calls upon the dandy dogs that came before them. The dogs arrive in the form of memories and assist the pack with whatever they're currently working on. The memory dogs stay around until the pack changes locations, completes the current task, or dismisses them.</p>"
+  },
+  {
+    "name": "Chorus Howl",
+    "text": "<p>The pack releases a howl of deep emotion. Depending on the song you all sing, you may scare away foes, draw attention to yourselves, or receive aid from those who can hear you.</p>"
+  },
+  {
+    "name": "Lead Out of Temptation",
+    "text": "<p>The pack finds somewhere safe to rest together without being disturbed. Doing so removes one Temptation card from each of you.</p>"
+  },
+  {
+    "name": "Oracle",
+    "text": "<p>You hear a whisper in your ear, a voice on the wind, the slide of a card across a table. The next time three 1s are used, you tempt fate without drawing Fate's Eye. Fate's Folly is ignored, and you get a glimpse of the future. Although you know the future is never guaranteed, you can use this information as you choose to prepare for what might be coming.</p>"
+  },
+  {
+    "name": "Play Bow",
+    "text": "<p>The pack plays together in a way that heals your wounds and soothes your souls. One of your packmates is healed of a Shadow Rend.</p>"
+  },
+  {
+    "name": "Point the Way",
+    "text": "<p>Working as one, the pack designates an item, place, creature, or other things that they're searching for. Together, you're able to work collectively to get a sense of its direction and location—a path appears leading the pack to the general area of what you're seeking.</p>"
+  },
+  {
+    "name": "Portend Death",
+    "text": "<p>You are able to tell if a living creature near your pack is close to death. If so, the pack can act as a psychopomp to the dying, helping them make the journey to where they need to go next. Helping a creature in this way almost always leads to a gift from the dead or the living, such as Memory Shards, information, or a unique kindness.</p>"
+  },
+  {
+    "name": "Slip Into Shadow",
+    "text": "<p>Your entire pack slips into the shadows and is able to move unseen, unheard, and unsensed to a destination of your choosing. As long as there are shadows to hide within, the pack can move this way. Actions other than moving end the effect for the whole pack.</p>"
+  },
+  {
+    "name": "Through Time",
+    "text": "<p>Your pack steps out of time and place and finds itself in a safe, warm, comforting place. During this time, you can create a plan of action, prepare tools, or take other actions that may benefit the story when you return. When your pack returns, no time has passed and it's as if you never left.</p>"
+  },
+  {
+    "name": "True Form",
+    "text": "<p>All members of the pack come together to become a single, solid creature of your choosing. You have all the benefits and drawbacks of this creature but can't use any of your Tricks. The effect ends if the formed creature is injured, the creature needs to move to another location, or the dogs decide to disperse.</p>"
+  }
+]

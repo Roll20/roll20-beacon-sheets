@@ -87,15 +87,9 @@ switch(settings.gameSystem){
     magicTypes.value = brArcana;
   break;
 }
-const magicLabel = ref('Arcana');
-switch(settings.gameSystem){
-  case 'mage':
-    magicLabel.value = 'Power';
-  break;
-  default:
-    magicLabel.value = 'Arcana';
-  break;
-}
+const magicLabel = computed(() =>
+  settings.gameSystem === 'mage' ? 'Power' : 'Arcana'
+);
 // Debounce delay (in milliseconds)
 const debounceDelay = 600;
 let debounceTimer;

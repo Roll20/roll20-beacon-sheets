@@ -1,0 +1,847 @@
+/* ===========================================================================
+   The Thread of Fate, Convergence theme
+   Palette & fonts drawn from "Convergence Brand Theme.md".
+   Aesthetic: a starry "not yet taken form" cosmos that warms toward parchment
+   and gold as the character takes shape.
+   =========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Nunito:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  /* Brand colors */
+  --tof-cream: #f9e8d0;
+  --tof-gold: #eba72e;
+  --tof-gold-soft: #f4dbb9;
+  --tof-dark: #242424;
+  --tof-dark-2: #2e2e2e;
+  --tof-dark-3: #1a1a22;
+  --tof-silver: #777777;
+  --tof-accent-red: #7f2030;
+  --tof-accent-red-bright: #992538;
+  --tof-accent-blue: #5f6e78;
+  --tof-font-light: #ffffff;
+  --tof-font-dark: #252525;
+
+  /* Cosmic surface tones */
+  --tof-cosmos-1: #0b0b16;
+  --tof-cosmos-2: #161427;
+  --tof-panel: rgba(26, 24, 40, 0.72);
+  --tof-panel-border: rgba(235, 167, 46, 0.45);
+  --tof-panel-border-strong: rgba(235, 167, 46, 0.85);
+
+  --tof-font-heading: 'Cinzel Decorative', serif;
+  --tof-font-subheading: 'Merriweather', serif;
+  --tof-font-body: 'Nunito', system-ui, sans-serif;
+
+  --tof-radius: 10px;
+  --tof-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+
+  /* Recolor the black line-art UI kit (Design/Assets) toward brand gold. */
+  --ui-tint: invert(74%) sepia(38%) saturate(760%) hue-rotate(347deg) brightness(98%) contrast(90%);
+}
+
+.tof-app {
+  position: relative;
+  min-height: 100vh;
+  color: var(--tof-cream);
+  font-family: var(--tof-font-body);
+  background: radial-gradient(
+    ellipse at 20% -10%,
+    #241d3a 0%,
+    var(--tof-cosmos-2) 38%,
+    var(--tof-cosmos-1) 100%
+  );
+  overflow-x: hidden;
+}
+
+/* Animated starfield using layered radial gradients */
+.tof-stars,
+.tof-stars::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-repeat: repeat;
+  background-image: radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 90px 80px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 160px 120px, rgba(235, 167, 46, 0.6), transparent),
+    radial-gradient(1px 1px at 230px 60px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 300px 200px, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 320px 240px;
+  animation: tof-drift 120s linear infinite;
+  opacity: 0.7;
+}
+.tof-stars::after {
+  background-size: 220px 180px;
+  animation-duration: 80s;
+  opacity: 0.4;
+}
+@keyframes tof-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 320px 480px;
+  }
+}
+
+.tof-shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 4rem;
+}
+
+/* --- Header --- */
+.tof-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0 1rem;
+}
+.tof-header__logo {
+  height: 46px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+.tof-header__title {
+  font-family: var(--tof-font-heading);
+  font-weight: 700;
+  font-size: 1.9rem;
+  letter-spacing: 0.04em;
+  background: linear-gradient(180deg, #fff 0%, var(--tof-gold) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 18px rgba(235, 167, 46, 0.25);
+  margin: 0;
+}
+.tof-header__sub {
+  color: var(--tof-accent-blue);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* --- Layout grid --- */
+.tof-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .tof-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Panels --- */
+.tof-panel {
+  background: var(--tof-panel);
+  border: 1px solid var(--tof-panel-border);
+  border-radius: var(--tof-radius);
+  box-shadow: var(--tof-shadow);
+  backdrop-filter: blur(6px);
+  padding: 1.1rem 1.25rem;
+}
+.tof-panel + .tof-panel {
+  margin-top: 1rem;
+}
+
+.tof-h2 {
+  font-family: var(--tof-font-heading);
+  font-size: 1.5rem;
+  color: var(--tof-gold);
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.03em;
+}
+.tof-h3 {
+  font-family: var(--tof-font-subheading);
+  font-size: 1.1rem;
+  color: var(--tof-cream);
+  margin: 1rem 0 0.5rem;
+}
+.tof-muted {
+  color: #c9c3da;
+}
+.tof-small {
+  font-size: 0.82rem;
+}
+
+/* --- Buttons --- */
+.tof-btn {
+  font-family: var(--tof-font-subheading);
+  font-weight: 700;
+  border: 1px solid var(--tof-panel-border-strong);
+  background: linear-gradient(180deg, rgba(235, 167, 46, 0.2), rgba(235, 167, 46, 0.05));
+  color: var(--tof-cream);
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--tof-radius);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.tof-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(235, 167, 46, 0.4);
+  background: linear-gradient(180deg, rgba(235, 167, 46, 0.35), rgba(235, 167, 46, 0.1));
+}
+.tof-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.tof-btn--primary {
+  background: linear-gradient(180deg, var(--tof-gold), #c4861a);
+  color: #2a1d05;
+}
+.tof-btn--ghost {
+  background: transparent;
+}
+.tof-btn--danger {
+  border-color: var(--tof-accent-red-bright);
+  color: #ffd7dd;
+}
+
+/* --- Inputs --- */
+.tof-input,
+.tof-select,
+.tof-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: var(--tof-cream);
+  padding: 0.5rem 0.65rem;
+  font-family: var(--tof-font-body);
+  font-size: 0.95rem;
+}
+.tof-input:focus,
+.tof-select:focus,
+.tof-textarea:focus {
+  outline: none;
+  border-color: var(--tof-gold);
+  box-shadow: 0 0 0 2px rgba(235, 167, 46, 0.25);
+}
+.tof-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+.tof-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--tof-accent-blue);
+  margin: 0.6rem 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- Cards / selectable items --- */
+.tof-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+.tof-card:hover {
+  border-color: var(--tof-panel-border);
+  transform: translateY(-1px);
+}
+.tof-card--selected {
+  border-color: var(--tof-gold);
+  background: rgba(235, 167, 46, 0.12);
+  box-shadow: 0 0 14px rgba(235, 167, 46, 0.25);
+}
+
+.tof-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+.tof-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.tof-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 720px) {
+  .tof-grid--2,
+  .tof-grid--3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Warnings --- */
+.tof-warn {
+  color: #ff9aa6;
+  font-weight: 700;
+}
+.tof-warn--soft {
+  color: #ffd27d;
+}
+.tof-ok {
+  color: #9fe0a6;
+}
+
+.tof-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(95, 110, 120, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin: 0 0.25rem 0.25rem 0;
+}
+.tof-tag--todo {
+  background: rgba(127, 32, 48, 0.4);
+  border-color: var(--tof-accent-red-bright);
+  color: #ffd7dd;
+}
+
+/* --- Step transition: drift + fade --- */
+.tof-fade-enter-active {
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tof-fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.tof-fade-enter-from {
+  opacity: 0;
+  transform: translateY(14px) scale(0.99);
+}
+.tof-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* --- Panels rise in on mount --- */
+.tof-panel {
+  animation: tof-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes tof-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Stagger successive panels for a cascade */
+.tof-panel:nth-of-type(2) {
+  animation-delay: 0.06s;
+}
+.tof-panel:nth-of-type(3) {
+  animation-delay: 0.12s;
+}
+.tof-panel:nth-of-type(4) {
+  animation-delay: 0.18s;
+}
+.tof-panel:nth-of-type(5) {
+  animation-delay: 0.24s;
+}
+
+/* --- Card hover lift already exists; add selection pulse --- */
+.tof-card--selected {
+  animation: tof-pulse 1.8s ease-in-out infinite;
+}
+@keyframes tof-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(235, 167, 46, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(235, 167, 46, 0.5);
+  }
+}
+
+/* --- Button shimmer sweep on hover --- */
+.tof-btn {
+  position: relative;
+  overflow: hidden;
+}
+.tof-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+.tof-btn:hover:not(:disabled)::after {
+  left: 140%;
+}
+
+/* --- Banner slow zoom (Ken Burns) --- */
+.tof-banner {
+  animation: tof-rise 0.5s ease both;
+}
+.tof-banner::after {
+  content: '';
+}
+
+/* --- Attribute values flash gold when they change --- */
+.attr__score {
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+/* --- Naomi gentle float --- */
+.naomi__avatar {
+  animation: tof-float 5s ease-in-out infinite;
+}
+@keyframes tof-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* --- Step-tab node twinkle --- */
+.steptab--active .steptab__node {
+  animation: tof-twinkle 1.5s ease-in-out infinite;
+}
+@keyframes tof-twinkle {
+  0%,
+  100% {
+    box-shadow: 0 0 8px var(--tof-gold);
+  }
+  50% {
+    box-shadow: 0 0 16px var(--tof-gold), 0 0 26px rgba(235, 167, 46, 0.6);
+  }
+}
+
+/* --- Third star layer: slow twinkle --- */
+.tof-twinkle {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(2px 2px at 50px 160px, rgba(255, 255, 255, 0.95), transparent),
+    radial-gradient(2px 2px at 180px 40px, rgba(235, 167, 46, 0.9), transparent),
+    radial-gradient(2.5px 2.5px at 280px 220px, rgba(200, 220, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 360px 120px, rgba(255, 255, 255, 0.9), transparent);
+  background-size: 420px 320px;
+  animation: tof-twinklefade 4s ease-in-out infinite;
+}
+@keyframes tof-twinklefade {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* --- Shooting stars --- */
+.tof-shooting {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.tof-shooting span {
+  position: absolute;
+  width: 140px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+  border-radius: 2px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+  transform: rotate(18deg);
+  opacity: 0;
+}
+.tof-shooting span:nth-child(1) {
+  top: 12%;
+  left: -160px;
+  animation: tof-shoot 9s ease-in 1.5s infinite;
+}
+.tof-shooting span:nth-child(2) {
+  top: 32%;
+  left: -160px;
+  animation: tof-shoot 13s ease-in 6s infinite;
+}
+.tof-shooting span:nth-child(3) {
+  top: 8%;
+  left: -160px;
+  animation: tof-shoot 17s ease-in 11s infinite;
+}
+@keyframes tof-shoot {
+  0% {
+    transform: translate(0, 0) rotate(18deg);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  18% {
+    transform: translate(120vw, 38vh) rotate(18deg);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* --- Cosmic -> grounded progression (Review): warm the base, lift the flowers --- */
+.tof-app--grounded {
+  background: radial-gradient(
+    ellipse at 50% -10%,
+    #2a2340 0%,
+    #1a1730 30%,
+    #241a26 70%,
+    #2c1d1c 100%
+  );
+}
+.tof-app--grounded .tof-stars,
+.tof-app--grounded .tof-twinkle {
+  opacity: 0.35;
+}
+
+/* --- Field of red spider lilies (the "taken form" payoff) --- */
+.tof-flowers {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 230px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+  transform: translateY(18px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), height 0.8s ease;
+  /* dark soil so the lilies read as a thick carpet rising from the ground */
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(20, 10, 12, 0.55) 45%,
+    rgba(10, 6, 8, 0.92)
+  );
+}
+.tof-app--grounded .tof-flowers,
+.overture .tof-flowers {
+  opacity: 1;
+  transform: translateY(0);
+  height: 320px;
+}
+.tof-flower {
+  position: absolute;
+  bottom: 0;
+  left: var(--x);
+  transform-origin: bottom center;
+  animation: tof-sway var(--sway, 5s) ease-in-out var(--d, 0s) infinite alternate;
+}
+.tof-flower__stem {
+  width: 2px;
+  height: var(--h, 90px);
+  margin: 0 auto;
+  background: linear-gradient(180deg, #4e7c3a, #2f5226);
+  border-radius: 2px;
+}
+.tof-flower__bloom {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 50%;
+  /* spidery red lily: bright center, radiating filaments */
+  background: radial-gradient(
+      circle at 50% 50%,
+      #ffd27a 0%,
+      #ff5a4a 18%,
+      #c41e2a 55%,
+      transparent 70%
+    ),
+    conic-gradient(
+      from 0deg,
+      #e4202e 0deg 8deg,
+      transparent 8deg 30deg,
+      #e4202e 30deg 38deg,
+      transparent 38deg 60deg,
+      #e4202e 60deg 68deg,
+      transparent 68deg 90deg,
+      #e4202e 90deg 98deg,
+      transparent 98deg 120deg,
+      #e4202e 120deg 128deg,
+      transparent 128deg 150deg,
+      #e4202e 150deg 158deg,
+      transparent 158deg 180deg,
+      #e4202e 180deg 188deg,
+      transparent 188deg 210deg,
+      #e4202e 210deg 218deg,
+      transparent 218deg 240deg,
+      #e4202e 240deg 248deg,
+      transparent 248deg 270deg,
+      #e4202e 270deg 278deg,
+      transparent 278deg 300deg,
+      #e4202e 300deg 308deg,
+      transparent 308deg 330deg,
+      #e4202e 330deg 338deg,
+      transparent 338deg 360deg
+    );
+  filter: drop-shadow(0 0 6px rgba(228, 32, 46, 0.5));
+}
+@keyframes tof-sway {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
+}
+
+/* --- Respect reduced-motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* --- Keyboard focus visibility (a11y) --- */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--tof-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Don't show focus rings for mouse clicks, only keyboard. */
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- Drifting mist --- */
+.tof-mist {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.tof-mist span {
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(186, 196, 224, 0.12),
+    rgba(186, 196, 224, 0) 70%
+  );
+  filter: blur(22px);
+  animation: tof-mist-drift linear infinite;
+}
+.tof-mist span:nth-child(1) {
+  bottom: 3%;
+  opacity: 0.85;
+  animation-duration: 48s;
+}
+.tof-mist span:nth-child(2) {
+  bottom: 22%;
+  height: 180px;
+  opacity: 0.6;
+  animation-duration: 67s;
+  animation-direction: reverse;
+}
+.tof-mist span:nth-child(3) {
+  bottom: 42%;
+  height: 130px;
+  opacity: 0.4;
+  animation-duration: 85s;
+}
+@keyframes tof-mist-drift {
+  from {
+    transform: translateX(-6%);
+  }
+  to {
+    transform: translateX(6%);
+  }
+}
+
+/* --- Rising embers / spirit motes --- */
+.tof-embers {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.tof-embers i {
+  position: absolute;
+  bottom: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(235, 167, 46, 0.95), rgba(235, 167, 46, 0) 70%);
+  box-shadow: 0 0 6px rgba(235, 167, 46, 0.6);
+  animation-name: tof-ember-rise;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+@keyframes tof-ember-rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-96vh) translateX(24px);
+    opacity: 0;
+  }
+}
+
+/* --- Accessibility preference classes --- */
+.tof-a11y--text-large .tof-shell {
+  zoom: 1.12;
+}
+.tof-a11y--text-xl .tof-shell {
+  zoom: 1.25;
+}
+
+.tof-a11y--dyslexia,
+.tof-a11y--dyslexia button,
+.tof-a11y--dyslexia input,
+.tof-a11y--dyslexia textarea,
+.tof-a11y--dyslexia select,
+.tof-a11y--dyslexia :where(h1, h2, h3, h4, p, span, div, label, li, td, th) {
+  font-family: 'OpenDyslexic', 'Atkinson Hyperlegible', 'Comic Sans MS', Verdana, sans-serif !important;
+  letter-spacing: 0.02em;
+}
+
+.tof-a11y--contrast {
+  .tof-panel {
+    background: rgba(8, 7, 14, 0.94) !important;
+    border-color: rgba(255, 255, 255, 0.85) !important;
+  }
+  .tof-muted,
+  .tof-small {
+    color: #ece8f4 !important;
+  }
+  .tof-label {
+    color: #ffd98a !important;
+  }
+  .tof-banner__img {
+    filter: contrast(0.85) brightness(0.7);
+  }
+}
+/* Pull the busy background way down so foreground text stays legible */
+.tof-a11y--contrast .tof-stars,
+.tof-a11y--contrast .tof-twinkle,
+.tof-a11y--contrast .tof-mist,
+.tof-a11y--contrast .tof-embers {
+  opacity: 0.25;
+}
+
+.tof-a11y--reduced *,
+.tof-a11y--reduced *::before,
+.tof-a11y--reduced *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* ===========================================================================
+   Official Convergence sheet UI kit (Design/Assets), woven into the chrome.
+   Line-art PNGs are bound as CSS vars on .tof-app (App.vue) and tinted gold.
+   =========================================================================== */
+
+/* Crescent info-moon accent before major panel headings. */
+.tof-h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tof-h2::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 0.8em;
+  height: 0.8em;
+  background: var(--ui-moon) center / contain no-repeat;
+  filter: var(--ui-tint);
+  opacity: 0.9;
+}
+
+/* Framed boxes ,  the artwork sits behind the content via a pseudo-element. */
+.tof-frame {
+  position: relative;
+}
+.tof-frame > * {
+  position: relative;
+  z-index: 1;
+}
+.tof-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--ui-attr-box) center / 100% 100% no-repeat;
+  filter: var(--ui-tint) drop-shadow(0 0 1px rgba(235, 167, 46, 0.4));
+  opacity: 0.85;
+}
+.tof-frame--total::before {
+  background-image: var(--ui-total-box);
+}
+.tof-frame--menu::before {
+  background-image: var(--ui-menu-box);
+}
+.tof-frame--button::before {
+  background-image: var(--ui-attr-button);
+}
+
+/* Inline hourglass icon (e.g. the Stats heading). */
+.tof-hourglass {
+  display: inline-block;
+  width: 0.9em;
+  height: 1.1em;
+  vertical-align: -0.15em;
+  background: var(--ui-hourglass) center / contain no-repeat;
+  filter: var(--ui-tint);
+}
+
+/* Vertical diamond divider for header / column separators. */
+.tof-vdivider {
+  width: 10px;
+  align-self: stretch;
+  min-height: 1.6rem;
+  background: var(--ui-attr-divider) center / auto 100% no-repeat;
+  filter: var(--ui-tint);
+  opacity: 0.8;
+}
+
+/* Brand chevron on collapsible <details> summaries. */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details > summary::after {
+  content: '';
+  display: inline-block;
+  width: 0.8em;
+  height: 0.5em;
+  margin-left: 0.4rem;
+  background: var(--ui-chevron) center / contain no-repeat;
+  filter: var(--ui-tint);
+  transition: transform 0.2s ease;
+}
+details[open] > summary::after {
+  transform: rotate(180deg);
+}

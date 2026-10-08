@@ -1,0 +1,23 @@
+<div class="text-center py-2 my-1.5 flex flex-col items-center justify-center">
+  <svg viewBox="0 0 160 70" class="w-full max-w-[200px] h-20" style="filter: drop-shadow(4px 4px 0px rgba(0,0,0,1));" xmlns="http://www.w3.org/2000/svg">
+    {{#if (isEqual resultType 'crit-fail')}}
+      <text x="50%" y="52" text-anchor="middle" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-size="54" fill="rgb({{heroColorBlood}})" stroke="#000000" stroke-width="8" stroke-linejoin="miter" paint-order="stroke fill">
+        {{total}}
+      </text>
+    {{else}}
+      <text x="50%" y="52" text-anchor="middle" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-size="54" fill="rgb({{heroColor}})" stroke="#000000" stroke-width="8" stroke-linejoin="miter" paint-order="stroke fill">
+        {{total}}
+      </text>
+    {{/if}}
+  </svg>
+  {{#if (isEqual resultType 'crit-success')}}
+    <span class="mt-1 px-3 py-0.5 text-xs font-black uppercase tracking-wider bg-black text-white border-2 border-white rounded shadow-[2px_2px_0px_#000]">
+      Critical Success!
+    </span>
+  {{else}}{{#if (isEqual resultType 'crit-fail')}}
+    <span class="mt-1 px-3 py-0.5 text-xs font-black uppercase tracking-wider bg-black text-white border-2 border-white rounded shadow-[2px_2px_0px_#000]">
+      Critical Failure!
+    </span>
+  {{/if}}{{/if}}
+</div>
+

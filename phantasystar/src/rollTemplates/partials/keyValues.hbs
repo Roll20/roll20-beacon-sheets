@@ -1,0 +1,10 @@
+{{#if keyValues}}
+  <dl class="pstr-card__kv">
+    {{#each keyValues}}
+      {{#if this}}
+        <dt>{{@key}}</dt>
+        <dd>{{this}}</dd>
+      {{/if}}
+    {{/each}}
+  </dl>
+{{/if}}

@@ -49,14 +49,15 @@
           {{ (attackHit + trained > 0 ? `+` : '') + (attackHit + trained) }}
         </button>
       </div>
-      <div class="age-weapon-btn-container age-combat-damage" v-if="filteredDamageMods.length === 0">  
-        <button class="age-btn" @click="handlePrintDamage(modsBonus)">{{ modsBonus }}</button>
-      </div>
-      <div class="age-weapon-btn-container age-combat-damage" v-if="filteredDamageMods.length > 0">   
+      <div class="age-weapon-btn-container age-combat-damage" v-if="hasDamage && filteredDamageMods.length === 0"> 
+  <button class="age-btn" @click="handlePrintDamage(modsBonus)">{{ modsBonus }}</button>
+</div>
+      <div class="age-weapon-btn-container age-combat-damage" v-if="hasDamage && filteredDamageMods.length > 0">   
                
         <button class="age-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           Damage
         </button>
+		
         <!-- {{ totalBonus }} <br /> -->
         <!-- {{ useModifiersStore().getDamageBonus() || 'X'}}
         {{ useModifiersStore().damageMod || 'X'}} -->
@@ -155,7 +156,11 @@ const trained = computed(() => {
   }
   // return (settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose') ? char.weaponGroups.includes(props.attack.weaponGroup) ? 0 : props.attack.weaponType === 'Natural' ? 0: -2 : 0
 });
-
+const hasDamage = computed(() => {
+  return props.attack.damage !== undefined
+    && props.attack.damage !== null
+    && String(props.attack.damage).trim() !== '';
+});
 const attackHit = computed(() => attackToHit(props.attack).value);
 const modsBonus = computed(() => {
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';

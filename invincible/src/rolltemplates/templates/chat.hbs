@@ -1,0 +1,23 @@
+{{#> wrapper type="chat" }}
+  {{> header characterName=characterName title=title subtitle=subtitle}}
+  <div class="roll-card-body space-y-3">
+    {{#if keyValues}}
+      {{> keyValues keyValues=keyValues }}
+    {{/if}}
+
+    {{#if textContent}}
+      {{> textContent textContent=textContent }}
+    {{/if}}
+
+    {{#if traits}}
+      <div class="roll-card-traits-wrapper">
+        {{#each traits as |trait|}}
+          <span class="roll-card-trait-badge">
+            {{capitalize trait}}
+          </span>
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+{{/ wrapper }}
+

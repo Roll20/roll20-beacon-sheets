@@ -1,0 +1,10 @@
+<div class='key-values'>
+  {{#each keyValues}}
+    {{#if this}}
+      <div class='key-values__pair'>
+        <div class='key-values__key'>{{@key}}</div>
+        <div class='key-values__value'>{{this}}</div>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>

@@ -1,0 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Lexend:wght@300;400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+$palette-color-1: 156 33 19;
+$palette-color-2: 249 236 229;
+$palette-color-3: 1 75 67;
+$palette-color-4: 255 214 209;
+$palette-color-5: 9 144 120;
+
+$palette-color-background: 255 255 255;
+$palette-color-foreground: 0 0 0;
+
+.sheet {
+  --primary-color: rgb(#{$palette-color-foreground});
+  --secondary-color: rgb(#{$palette-color-foreground, 0.85});
+  --tertiary-color: rgb(#{$palette-color-foreground, 0.65});
+  --disabled-color: rgb(#{$palette-color-foreground, 0.35});
+}
+
+$font-space-grotesk: "Space Grotesk", sans-serif;
+$font-lexend: "Lexend", sans-serif;
+$font-be-vietnam-pro: "Be Vietnam Pro", sans-serif;
+$font-anton: "Anton", sans-serif;
+
+:root, :host, .sheet {
+  --font-space-grotesk: #{$font-space-grotesk};
+  --font-lexend: #{$font-lexend};
+  --font-be-vietnam-pro: #{$font-be-vietnam-pro};
+  --font-anton: #{$font-anton};
+}

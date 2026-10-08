@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import SheetView from '../views/SheetView.vue';
-import SettingsView from '../views/SettingsView.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import SheetView from "../views/SheetView.vue";
+import SettingsView from "../views/SettingsView.vue";
 
 /*
  * Vue Router is used for switching between the 2 different views in the sheet.
@@ -11,14 +11,14 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/sheet',
-      name: 'sheet',
+      path: "/sheet",
+      name: "sheet",
       component: SheetView,
-      alias: '/',
+      alias: "/",
     },
     {
-      path: '/settings',
-      name: 'settings',
+      path: "/settings",
+      name: "settings",
       component: SettingsView,
     },
   ],
