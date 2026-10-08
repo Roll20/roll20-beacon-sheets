@@ -1,0 +1,12 @@
+<div class="pstr-card__breakdown">
+  {{#each components}}
+    {{#if this.dropped}}
+      <span class="pstr-chip pstr-chip--dropped" title="Dropped">{{this.value}}</span>
+    {{else}}
+      <span class="pstr-chip{{#if this.natural}} pstr-chip--die{{/if}}">
+        {{#if this.label}}<span class="pstr-chip__label">{{this.label}}</span>{{/if}}
+        <span class="pstr-chip__value">{{this.display}}</span>
+      </span>
+    {{/if}}
+  {{/each}}
+</div>
