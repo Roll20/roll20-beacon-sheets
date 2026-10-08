@@ -52,8 +52,72 @@ export const effortCost = (levels, edge = 0) => Math.max(0, rawEffortCost(levels
 export const maxAffordableEffort = (effortStat, poolCurrent, edge = 0) =>
   Math.max(0, Math.min(effortStat, Math.floor((poolCurrent + edge - 1) / 2)))
 
-export const easedSteps = ({ skillRating = null, assets = 0, effortLevels = 0 }) =>
-  skillEase(skillRating) + Math.min(Math.max(assets, 0), 2) + Math.max(effortLevels, 0)
+// ---- Attack rolls (ddd-keb3) ----
+
+// Weapon class eases (book): a light weapon eases the attack one step; medium and
+// heavy do not. Object.hasOwn, never `??` — the fourth instance of the prototype-key
+// false guard after poolLabel (ddd-9ir), skillEase (ddd-c8f) and the roller's pool
+// (ddd-wc3). WEAPON_CLASS_EASES.constructor is a truthy Function, so a coalesce
+// never fires, and the NaN it returns reaches interpretGuidedRoll's
+// `base.beats >= effective`, where every comparison is false — reporting EVERY
+// attack as a miss, natural 20 included, after the Effort has left the pool.
+// A stray class contributes 0 and the card prints it verbatim beside that +0, so
+// the bad value degrades visibly rather than silently.
+export const WEAPON_CLASS_EASES = { light: 1, medium: 0, heavy: 0 }
+export const weaponClassEase = (weaponClass) =>
+  Object.hasOwn(WEAPON_CLASS_EASES, weaponClass) ? WEAPON_CLASS_EASES[weaponClass] : 0
+
+// An attack row's standing ease/hinder ({steps, direction}), folded in signed.
+// hydrate() validates nothing, so every off-schema shape — a bare string, a number,
+// fractional or string steps, steps below the schema's minimum of 1, an unknown or
+// prototype-key direction — contributes 0 rather than NaN or a flipped sign. The
+// card still prints the term at +0 next to the other eases, which is what makes a
+// hand-recorded duplicate of the light-weapon ease visible instead of mysterious.
+export const modifierEase = (modifier) => {
+  if (!modifier || typeof modifier !== 'object') return 0
+  const { steps, direction } = modifier
+  if (!Number.isInteger(steps) || steps < 1) return 0
+  if (direction === 'eased') return steps
+  if (direction === 'hindered') return -steps
+  return 0
+}
+
+// weaponClass/modifier default to null, so the skill-roll callers that pass neither
+// are unchanged — one ease function for both roll kinds means the modal preview,
+// the store and the chat card can never describe different numbers.
+export const easedSteps = ({ skillRating = null, weaponClass = null, modifier = null, assets = 0, effortLevels = 0 }) =>
+  skillEase(skillRating) + weaponClassEase(weaponClass) + modifierEase(modifier) +
+  Math.min(Math.max(assets, 0), 2) + Math.max(effortLevels, 0)
+
+// Effort applied to damage adds 3 damage per level (book). Area and explosive
+// attacks add only 2, but the contract carries no field marking an attack as
+// either, so the sheet does not model that case.
+export const DAMAGE_PER_EFFORT_LEVEL = 3
+
+// The book's attack-roll damage bonuses, which land only on a HIT: +1 on a 17 and
+// +2 on an 18, unconditionally; +3 on a 19 and +4 on a 20 only if the player gives
+// up the minor or major effect. That choice happens at the table and the sheet
+// cannot see it, so 19/20 stay OUT of the total and are reported as optional (D1) —
+// the posted number can then understate damage but never overstates it.
+export const ROLL_DAMAGE_BONUSES = { 17: 1, 18: 2 }
+export const OPTIONAL_ROLL_DAMAGE = { 19: 3, 20: 4 }
+
+// weaponDamage is a STORED value hydrate never validates. Anything that is not a
+// non-negative integer counts as 0 AND rides along raw, because the attack list
+// renders row.damage unvalidated: coercing silently would leave a row reading
+// "4 damage" in the list and rolling as 0 on the card with nothing to explain the
+// gap (round-1 plan audit). The card prints the stored value beside the 0.
+export const attackDamage = ({ weaponDamage, damageEffortLevels = 0, die = null }) => {
+  const weaponInvalid = !(Number.isInteger(weaponDamage) && weaponDamage >= 0)
+  const weapon = weaponInvalid ? 0 : weaponDamage
+  const effort = DAMAGE_PER_EFFORT_LEVEL * Math.max(damageEffortLevels, 0)
+  const roll = Object.hasOwn(ROLL_DAMAGE_BONUSES, die) ? ROLL_DAMAGE_BONUSES[die] : 0
+  const optional = Object.hasOwn(OPTIONAL_ROLL_DAMAGE, die) ? OPTIONAL_ROLL_DAMAGE[die] : 0
+  return {
+    weapon, rawWeapon: weaponDamage, weaponInvalid, effort, roll, optional,
+    total: weapon + effort + roll
+  }
+}
 
 export const interpretGuidedRoll = ({ die, eased, difficulty = null }) => {
   const base = interpretStatRoll(die)

@@ -7,6 +7,36 @@
 /* Docs mention class names as prose; don't let the scanner turn them into utilities. */
 @source not "../../README.md";
 @source not "../../docs";
+/* ddd-iax. Same reason, one directory the list had missed. scripts/capture.mjs is the
+   browser gate, so it is FULL of layout prose — it asserts about grids, blocks, flex and
+   columns, and says so in its comments. Tailwind 4's scanner reads a bare
+   class-name-shaped word out of a COMMENT and mints a real utility from it: adding the
+   word 'rounded' to one grew this bundle by exactly 30 B and a selector diff showed a
+   dead .rounded rule as the sole addition. Every future comment there was another
+   chance to do that silently, against a bundle already at 81% of its 165 kB cap. */
+@source not "../../scripts";
+/* Same hazard, proved the same way: a class-shaped word in an HTML comment in
+   design-explorations/ minted .rotate-45 into the bundle (+24 B). Mockups and capture
+   probes are exactly where class names get written as prose. */
+@source not "../../design-explorations";
+/* And the same hazard INSIDE src/. Test files are the densest prose about class names
+   in the repo — they quote selectors, list class names, and explain layout in comments —
+   and none of it ships. This file's own comments minted .rounded and .rotate-45 into the
+   bundle while it was being written, which is the tightest possible demonstration.
+
+   The leading `../` is load-bearing and was wrong at first (closeout audit F2): an
+   @source path resolves against THIS FILE, not the project root, so a `./`-rooted glob
+   reached only src/assets/__tests__ and left the other 45 test files in the scan — while
+   still looking right, and still passing a test that pinned its literal text. Rooting it
+   at src/ dropped a further 1,709 B and eight more dead utilities (blur, filter,
+   lowercase, shrink, border-b-accent, border-t-warn, and two border-x variants), none of
+   them carried by any element. source-scan.test.js now RESOLVES the glob and checks it
+   covers every test directory, so the same mis-rooting cannot pass again.
+
+   (Do not spell a glob out inside a CSS comment: the star-slash in it closes the comment
+   early and corrupts the rest of the file. That is why this paragraph describes the
+   pattern in words.) */
+@source not "../**/__tests__";
 
 /* ===========================================================================
    TOKENS. A skin is variable redefinition and NOTHING else — there is not one
@@ -360,7 +390,8 @@
   margin-bottom: 0.4rem;
 }
 .header__row--name { flex: 1 1 auto; margin-bottom: 0; }
-.header__settings {
+.header__settings,
+.npc-sheet__settings {
   flex: 0 0 auto;
   align-self: end;
   background: none;
@@ -513,7 +544,25 @@
    labels + pips only — maxima, shield add/remove and the bonus are edit-mode.
    Columns are FLEX, not grid: the shield column comes and goes (null shield,
    edit mode) and a fixed grid template would misplace recovery when it does. */
-.vitals__head { display: flex; justify-content: space-between; align-items: center; }
+/* wrap + gap carry the ddd-xrug rule toggles: the head gains a third child in edit
+   mode, and at 280px the banner, two checkboxes and the pencil cannot share one line. */
+.vitals__head { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: space-between; align-items: center; }
+/* The two rule checkboxes (damage track, stress). Edit-mode only, so they never widen
+   the play-view head. */
+.vitals__rules { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.vitals__rule {
+  display: flex; align-items: center; gap: 0.25rem;
+  font-family: var(--cy-font-cond);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cy-muted);
+  cursor: pointer;
+}
+/* Armed for a destructive untick, mirroring .shield__remove--armed. A modifier class, not
+   a compound: it ties with .vitals__rule on specificity and wins on source order, so it
+   must stay BELOW it. The warning span inherits the colour. */
+.vitals__rule--armed { color: var(--cy-warn); font-weight: 700; }
 /* Icon-only pencil toggle: the fill IS the mode indicator (aria-pressed carries
    it for the screen reader). */
 .vitals__edit--active { background: var(--cy-accent); color: var(--cy-accent-contrast); }
@@ -597,6 +646,30 @@
 /* Armed state: same two properties as .item-list__delete--armed, so "this cannot
    be undone" reads the same way everywhere. */
 .shield__remove--armed { color: var(--cy-warn); border-color: var(--cy-warn); }
+
+/* --- Damage track (ddd-xrug) ---
+   The column that replaces wounds when rules.damageTrack is on. It reuses .vitals__col,
+   .vitals__col--flush, .wounds__tier, .wounds__label, .wounds__label--toggle,
+   .wounds__caret, .wounds__note, .wounds__pips and .wound-pip wholesale, the way the
+   shield column does — one label, one pip and one disclosure per row is the same shape
+   the wounds column already solves, including its two wrap valves at 280px. Only these
+   two rules are its own, so the two injury models cannot drift apart visually.
+   The narrow-mode @container block needs no override here: this column is a
+   .vitals__col, so it takes the stacking reset already written for the other three. */
+/* One pip per row, and it must not shrink: the wounds column's pip runs fill the row and
+   absorb the pressure between the label and the max input, while this row has a single
+   pip with a wide label beside it. */
+.damage-track__step { flex: 0 0 auto; }
+/* The always-visible movement line. Same metrics as .wounds__note, which is the
+   disclosed copy above it, plus a rule separating reference text from the steps. */
+.damage-track__movement {
+  margin: 0.35rem 0 0;
+  padding: 0.35rem 0.25rem 0;
+  border-top: var(--cy-geo-rule) solid var(--cy-border);
+  font-size: 0.66rem;
+  line-height: 1.3;
+  color: var(--cy-muted);
+}
 
 /* --- Recovery ---
    The recovery column. Its header (.recovery__label) is the shared column-head
@@ -694,9 +767,46 @@
   display: flex; gap: 0.5rem; align-items: flex-start;
   padding: 0.4rem 0;
   border-top: var(--cy-geo-rule) solid var(--cy-border);
+  /* spec ⑥ §6.1: the dropped-row highlight fades out through these. A transparent
+     inset ring, not an outline: forced-colours mode paints a transparent outline but
+     removes box-shadow, so no row grows a stray border there. The widened box holds
+     until the fade ends, then snaps back, so the fading ring never crosses content. */
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: background-color 0.6s ease-out, box-shadow 0.6s ease-out,
+    padding-inline 0s linear 0.6s, margin-inline 0s linear 0.6s;
 }
 /* The mockup's first row has no rule above it — the banner already separates it. */
 .item-list__row:first-child { border-top: none; }
+/* A just-dropped row (spec ⑥ §6.1). It appears at once, then fades through the base
+   rule's transition when the class goes, about two seconds later.
+   29% is the most tint that keeps an opened row's --cy-muted source line at 4.5:1 in
+   fantasy (4.50:1, measured in Chromium). 45% measured 3.74:1 there and 4.49:1 in
+   scifi. Re-measure before raising it or changing a skin's accent-soft.
+   scroll-margin-block: Chromium truncates the scroll offset to a whole pixel, so a
+   row scrolled flush to the viewport edge left up to 1px of itself, and of its ring,
+   out of view. The margin lands the whole row inside.
+   Rows have no side padding, so a ring at the row's own edge sat under the caret and
+   the last chip. The row grows 4px each side into the panel's padding, and the
+   matching negative margin keeps every piece of content where it was. */
+.item-list__row--dropped {
+  background-color: color-mix(in srgb, var(--cy-accent-soft) 29%, var(--cy-surface));
+  box-shadow: inset 0 0 0 2px var(--cy-accent);
+  transition: none;
+  scroll-margin-block: var(--cy-gap);
+  padding-inline: 4px;
+  margin-inline: -4px;
+}
+/* Reduced motion: no tinted flash, only the steady ring, which still fades. */
+@media (prefers-reduced-motion: reduce) {
+  .item-list__row--dropped { background-color: transparent; }
+}
+/* Forced colours replace the tint and remove the ring, and the highlight is a drop's
+   only visible confirmation. An outline on the dropped row alone brings it back in a
+   system colour, inset like the ring. No other row carries an outline, so none grows a
+   stray border (ddd-aa7 closeout audit). */
+@media (forced-colors: active) {
+  .item-list__row--dropped { outline: 2px solid Highlight; outline-offset: -2px; }
+}
 .item-list__fields { display: flex; flex-wrap: wrap; gap: 0.5rem; flex: 1; min-width: 0; }
 .item-list__fields input, .item-list__fields select { min-width: 0; }
 .item-list__fields .row-name { flex: 1 1 9rem; }
@@ -926,6 +1036,171 @@
 .settings__hint { font-size: 0.78rem; color: var(--cy-muted); margin: 0 0 0.75rem; }
 .settings__toggle { display: flex; gap: var(--cy-gap); align-items: baseline; cursor: pointer; }
 
+/* --- NPC mode (ddd-zm47.2, spec §7) ---
+   Un-layered, like every BEM rule in this file. Inside @layer components these rules
+   would LOSE to the un-layered .btn and .field primitives whatever their specificity.
+   Single-class selectors only (tokens.test.js), so list items and text blocks carry
+   their own classes instead of being reached by descendant selectors. */
+/* No frame on the card itself (ddd-pqfl): the name line sits on the page, and the boxes
+   below it stack at the sheet's own gap, the way the character sheet lays out its panels. */
+.npc-card { display: grid; gap: var(--cy-gap); min-width: 0; }
+.npc-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem var(--cy-gap);
+}
+/* The preflight-reconciliation block reverts h3's UA margin and size, so the title
+   sets both itself. */
+.npc-card__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.5rem;
+  margin: 0;
+  min-width: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+/* "3 (9)", the book's level-and-target-number format, in the summary cells' face. */
+.npc-card__level {
+  font-family: var(--cy-font-cond);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--cy-accent);
+}
+/* The stack of boxes (ddd-pqfl), at the same gap as the card's own rows. */
+.npc-card__fields { display: grid; gap: var(--cy-gap); min-width: 0; }
+/* One banner-headed box. .banner is width: fit-content, so as a grid item it keeps its
+   tab width instead of stretching across the box. */
+.npc-card__group { display: grid; gap: 0.45rem; min-width: 0; }
+.npc-card__field { display: grid; gap: 0.1rem; min-width: 0; }
+/* Health and Armor share one row (owner amendment 2026-09-14). flex-wrap drops Armor
+   under Health when the card is too narrow for both. */
+.npc-card__vitals { display: flex; flex-wrap: wrap; align-items: start; gap: 0.45rem 1.5rem; min-width: 0; }
+/* One combat action: its paragraph, and from Task 5 its chat chip at the right. The
+   field's 0.1rem grid gap ran the actions together, 1 to 2px apart (ddd-o5vw), so each
+   action carries its own space above it, which also parts the first from the prelude. */
+.npc-card__action { display: flex; align-items: start; gap: 0.35rem; min-width: 0; margin-top: 0.4rem; }
+/* pre-wrap for the same reason as .npc-card__text. `p { margin: revert }` in the
+   preflight block puts UA margins back on paragraphs, hence the explicit 0. */
+.npc-card__action-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  color: var(--cy-ink);
+}
+/* The book prints ability names in italics. Stated outright rather than trusted to
+   the UA's em style. */
+.npc-card__action-title { font-style: italic; }
+/* pre-wrap: Combat and Description are multi-paragraph book text whose stored value
+   keeps its line breaks (spec §7.2). `p { margin: revert }` in the preflight block puts
+   UA margins back on paragraphs, hence the explicit 0. */
+.npc-card__text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  color: var(--cy-ink);
+}
+.npc-card__armor-note { color: var(--cy-muted); }
+/* Preflight strips list styling, so the bullets come back explicitly. */
+.npc-card__intrusions { display: grid; gap: 0.3rem; margin: 0; padding-left: 1.1rem; list-style: disc; }
+.npc-card__intrusion { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.45; }
+.npc-card__health-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+/* A definite width, not .field's 100% capped by max-width (ddd-9loy). Beside Armor the
+   Health field is a content-sized flex item, and a percentage width on the box is cyclic
+   there: Chromium undercounted the row's width and wrapped + onto a second line at every
+   sheet width. Measured 153px as built against the 176px the one-line row needs. */
+.npc-card__health-current { width: 4.5rem; }
+.npc-card__health-max { font-weight: 700; }
+/* Same fill as .banner--warn, whose text colour is also --cy-accent-contrast. */
+.npc-card__down {
+  padding: 0.1rem 0.5rem;
+  background: var(--cy-warn);
+  color: var(--cy-accent-contrast);
+  border-radius: var(--cy-geo-chip-radius);
+  font-family: var(--cy-font-cond);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* .npc-sheet and .npc-notice are direct grid items of .cypher-sheet, so min-width: 0
+   is load-bearing on both. See the ddd-2bv note on .play-strip. */
+.npc-sheet { display: grid; gap: var(--cy-gap); min-width: 0; }
+.npc-sheet__nameplate { display: flex; align-items: end; gap: var(--cy-gap); }
+.npc-sheet__name-row { display: grid; gap: 0.15rem; flex: 1 1 auto; min-width: 0; }
+/* The same type and width cap as .header__name. */
+.npc-sheet__name { max-width: 26rem; font-size: 1.05rem; font-weight: 700; }
+/* `p { margin: revert }` in the preflight block, hence the explicit 0. */
+.npc-notice { margin: 0; min-width: 0; color: var(--cy-muted); }
+/* margin-left: auto holds the actions at the right when the title wraps. */
+.npc-card__actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-left: auto; }
+/* Icon-only pencil toggle: the fill IS the mode indicator, exactly as on
+   .vitals__edit--active, and aria-pressed carries it for the screen reader. A single
+   class after .btn, so it wins on source order. */
+.npc-card__edit--active { background: var(--cy-accent); color: var(--cy-accent-contrast); }
+.npc-edit { display: grid; gap: 0.45rem; min-width: 0; }
+.npc-edit__row { display: grid; gap: 0.1rem; min-width: 0; }
+/* .field is width: 100%; the three numbers need a cap, not a full row. */
+.npc-edit__level, .npc-edit__health, .npc-edit__armor { max-width: 6rem; }
+.npc-edit__intrusions { display: grid; gap: 0.35rem; min-width: 0; }
+.npc-edit__intrusion-row { display: flex; align-items: start; gap: 0.35rem; min-width: 0; }
+.npc-edit__intrusion-add { justify-self: start; }
+/* Combat action rows (owner amendment 2026-09-14): title and description stacked
+   beside one ✕, the same shape as an intrusion row. */
+.npc-edit__actions { display: grid; gap: 0.35rem; min-width: 0; }
+.npc-edit__action-row { display: flex; align-items: start; gap: 0.35rem; min-width: 0; }
+.npc-edit__action-fields { display: grid; flex: 1 1 auto; gap: 0.2rem; min-width: 0; }
+.npc-edit__action-add { justify-self: start; }
+
+/* --- Compendium drop layer (spec ⑥ §6, decision 17) ---
+   position: fixed takes the layer out of .cypher-sheet's grid, as with the roller, so
+   it adds no row and no gap. pointer-events: none stops the empty layer swallowing
+   clicks along the top edge; the notice takes them back. Whether the fixed position
+   stays visible inside Roll20's dialog is walkthrough item 11, not something this can
+   prove. */
+.drop-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: calc(var(--cy-z-modal) + 1);
+  padding: var(--cy-gap);
+  pointer-events: none;
+}
+/* Carries .import__alert for its border and colour. Single class, later in the file,
+   so its margin and background win on source order. */
+.drop-layer__notice {
+  display: flex;
+  gap: var(--cy-gap);
+  align-items: flex-start;
+  margin: 0;
+  background: var(--cy-surface);
+  pointer-events: auto;
+}
+/* overflow-wrap: page names are host text, and one long unbroken name must wrap inside
+   the notice at 280px rather than spill out of it. */
+.drop-layer__message { flex: 1 1 auto; min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.drop-layer__dismiss { flex: 0 0 auto; }
+/* Visually hidden, still read (spec ⑥ §6.1). The sheet has no such utility today. */
+.drop-layer__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* --- Guided roller modal (spec ③) ---
    The overlay, panel, header and dialog contract are ModalShell's (.modal*, below);
    only the roller's body styling lives here (ddd-6hx). */
@@ -954,6 +1229,11 @@
   padding: 0.5rem;
   font-size: 0.85rem;
 }
+/* ddd-keb3: the attack-mode refusal — no usable pool on the row, or a row deleted
+   while the roller was open. It explains a condition rather than reporting a failed
+   roll, so it takes the muted colour rather than the warning one, and the zero
+   margin every other line in this grid uses. */
+.roller__note { margin: 0; font-size: 0.85rem; color: var(--cy-muted); }
 .roller__error { color: var(--cy-warn); margin: 0; font-size: 0.85rem; }
 .roller__buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
 .roller__buttons button {

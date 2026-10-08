@@ -17,8 +17,14 @@
   <div class="cypher-roll__die">{{guidedRoll.die}}</div>
   {{/if}}
   <div class="cypher-roll__verdict{{#if guidedRoll.tone}} cypher-roll__verdict--{{guidedRoll.tone}}{{/if}}">{{guidedRoll.verdict}}</div>
+  {{#if guidedRoll.damage}}
+  <div class="cypher-roll__detail cypher-roll__damage">{{guidedRoll.damage}}</div>
+  {{/if}}
   <div class="cypher-roll__detail">{{guidedRoll.eases}}</div>
   <div class="cypher-roll__detail">{{guidedRoll.spend}}</div>
+  {{#if guidedRoll.nudge}}
+  <div class="cypher-roll__nudge">{{guidedRoll.nudge}}</div>
+  {{/if}}
   {{#if guidedRoll.special}}
   <div class="cypher-roll__special">{{guidedRoll.special.label}}</div>
   {{/if}}

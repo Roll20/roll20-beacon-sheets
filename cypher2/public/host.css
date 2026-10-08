@@ -39,6 +39,11 @@
   font-size: 0.8rem;
   opacity: 0.75;
 }
+.cypher-roll__damage {
+  font-size: 0.9rem;
+  opacity: 1;
+  font-weight: 600;
+}
 .cypher-roll__special {
   margin-top: 0.25rem;
   font-weight: 600;
@@ -46,6 +51,13 @@
 }
 .cypher-roll__wounds {
   font-size: 0.85rem;
+  border-top: 1px solid #ddd;
+  padding-top: 0.25rem;
+  margin-top: 0.25rem;
+}
+.cypher-roll__nudge {
+  font-size: 0.85rem;
+  font-weight: 600;
   border-top: 1px solid #ddd;
   padding-top: 0.25rem;
   margin-top: 0.25rem;

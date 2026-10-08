@@ -16,7 +16,8 @@ const props = defineProps({
   contents: { type: Function, default: null },
   // Per-row roll entry (ddd-669y): row -> void, rendered as a d20 chip beside
   // the chat chip. canRoll gates it per row (Skills hides it on proficiencies —
-  // MCG §3.6). Only Skills supplies these today; the default hides the chip.
+  // MCG §3.6; Attacks supplies no gate, since every attack rolls — ddd-keb3).
+  // Skills and Attacks supply these; the default hides the chip.
   roll: { type: Function, default: null },
   canRoll: { type: Function, default: () => true }
 })
@@ -60,10 +61,28 @@ const listWhat = computed(() => props.title.replace(/\s*\(.*\)\s*$/, ''))
 // announced under the canonical name while the row shows the alias appears to
 // target a different item (ddd-2g8 closeout audit). Every other list's title
 // IS row.name, so this changes nothing for them.
-const rowWhat = (row, index) =>
+const rowTitle = (row, index) =>
   descriptors.value[index]?.title?.trim() ||
   row.name?.trim() ||
   `unnamed ${listWhat.value} row ${index + 1}`
+// ddd-lwl. Two rows may legitimately carry the SAME title — two "New skill" rows
+// straight off the add button are the ordinary case, and nothing stops a player naming
+// two artifacts alike — and then every control on both announced identically ("Remove
+// New skill" twice), which is the ddd-im9 defect arriving by a different route: the
+// unnamed fallback qualified by position, a DUPLICATE name did not. Only the ambiguous
+// ones are qualified, so the common single-match name stays clean.
+const titleCounts = computed(() => {
+  const counts = new Map()
+  rows.value.forEach((row, index) => {
+    const title = rowTitle(row, index)
+    counts.set(title, (counts.get(title) ?? 0) + 1)
+  })
+  return counts
+})
+const rowWhat = (row, index) => {
+  const title = rowTitle(row, index)
+  return titleCounts.value.get(title) > 1 ? `${title} (row ${index + 1})` : title
+}
 const editLabel = (row, index) => `Edit ${rowWhat(row, index)}`
 const removeLabel = (row, index) =>
   confirming.value === row._id
@@ -126,6 +145,20 @@ watch(liveIds, (ids) => {
   if (confirming.value !== null && !live.has(confirming.value)) confirming.value = null
 })
 
+// Compendium drop (spec ⑥ §6.1). The coordinator only names the new row. Scrolling is
+// this list's job, because the row is not in the DOM until Vue renders it, hence the
+// nextTick. Focus stays where it is. Every list runs this and only the one holding the
+// row finds it.
+const root = ref(null)
+watch(
+  () => sheet.dropHighlightId,
+  async (id) => {
+    await nextTick()
+    const rowEl = [...(root.value?.querySelectorAll('[data-row-id]') ?? [])].find((el) => el.dataset.rowId === id)
+    rowEl?.scrollIntoView({ block: 'nearest' })
+  }
+)
+
 const openEditor = (row) => {
   editingId.value = row._id
 }
@@ -162,7 +195,7 @@ const onRemove = (id) => {
 </script>
 
 <template>
-  <section class="item-list panel" :class="{ 'item-list--warn': warn }" :data-list="storeKey">
+  <section ref="root" class="item-list panel" :class="{ 'item-list--warn': warn }" :data-list="storeKey">
     <header class="item-list__head">
       <h3 class="banner" :class="{ 'banner--warn': warn }">{{ title }}</h3>
       <button
@@ -177,10 +210,20 @@ const onRemove = (id) => {
       </button>
     </header>
 
+    <!-- ddd-lwl. This duplicates the band "+" above, on purpose: an empty panel needs a
+         worded affordance rather than dead-end text. But both took their accessible name
+         from addLabel, so an empty list announced "Add skill button" twice in a row with
+         nothing to tell them apart — the reader cannot know whether they have already
+         passed the control. Neither can be dropped from the tree: the band button is the
+         focus park after deleting the last row (see onRemove), and hiding a focusable
+         element is its own defect. So the duplicate says why it exists. The visible text
+         is CONTAINED in the accessible name, which is what keeps speech input working
+         (WCAG 2.5.3): saying "Add skill" still matches this button. -->
     <button
       v-if="!rows.length"
       class="item-list__empty-add"
       type="button"
+      :aria-label="`${addLabel} (list is empty)`"
       @click="sheet.addRow(storeKey)"
     >
       {{ addLabel }}
@@ -191,7 +234,11 @@ const onRemove = (id) => {
         v-for="(row, index) in rows"
         :key="row._id"
         class="item-list__row"
-        :class="{ 'item-list__row--read': hasSummary }"
+        :class="{
+          'item-list__row--read': hasSummary,
+          'item-list__row--dropped': sheet.dropHighlightId === row._id
+        }"
+        :data-row-id="row._id"
       >
         <!-- READ-OPTIMIZED (spec ⑦ §4.2): a compact summary. The summary LINE is the
              disclosure toggle (item-contents spec §6 D3) rather than a separate caret
