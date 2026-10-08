@@ -3,7 +3,10 @@ import type { SingleEffect, Effect, EffectsHydrate } from "@/sheet/stores/modifi
 import type { EquipmentHydrate } from '@/sheet/stores/equipment/equipmentStore';
 import { indexedObjectToArray, objectToArray } from '@/utility/objectify';
 import { EffectsCalculator, type RequirementContext } from '@/utility/effectsCalculator';
-import { getLevel } from './computed';
+import { getAbilityModifier, getAbilityScore, getLevel, getProficiencyBonus } from './computed';
+import type { AbilityKey } from '@/sheet/stores/abilities/abilitiesStore';
+import type { ProgressionHydrate } from '@/sheet/stores/progression/progressionStore';
+import { config } from '@/config';
 
 const buildRequirementContext = (effect: Effect, character: Character): RequirementContext => {
   const equipment =
@@ -53,7 +56,8 @@ export const getModifiedValue = (
       : objectToArray((character.attributes.modifiers as EffectsHydrate).effects).map(e => {
         return {
           ...e,
-          required: indexedObjectToArray(e.required)
+          required: indexedObjectToArray(e.required),
+          pickers: indexedObjectToArray(e.pickers),
         }
       });
 
@@ -73,5 +77,26 @@ export const getModifiedValue = (
     (effect: Effect, singleEffect: SingleEffect) => isEffectSingleActive(effect, singleEffect, character),
   );
 
-  return EffectsCalculator.calculateModifiedValue(_baseValue, validEffects, constrainTo).final;
+  return EffectsCalculator.calculateModifiedValue(
+    _baseValue, validEffects, constrainTo, {
+      resolveHitDice: () => '0',
+      resolveVariable: (key) => {
+        const context = { character };
+        if (key === 'level') return getLevel(context);
+        if (key === 'pb') return getProficiencyBonus(context);
+        if (config.abilities.includes(key as AbilityKey)) return getAbilityScore(context, key as AbilityKey);
+        const ability = key.replace(/-modifier$/, '') as AbilityKey;
+        if (key.endsWith('-modifier') && config.abilities.includes(ability)) {
+          return getAbilityModifier(context, ability);
+        }
+        if (key.endsWith('-level')) {
+          const name = key.slice(0, -6).toLowerCase();
+          const progression = character.attributes?.progression as ProgressionHydrate | undefined;
+          const sources = [...Object.values(progression?.classes ?? {}), progression?.transformation];
+          const source = sources.find(source => source?.name?.toLowerCase().replace(/ /g, '-') === name);
+          return source ? source.level || 1 : undefined;
+        }
+      },
+    },
+  ).final;
 };
