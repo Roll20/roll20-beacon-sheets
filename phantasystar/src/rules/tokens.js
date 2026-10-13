@@ -29,6 +29,10 @@ export const visionFromSenses = (senses) => {
   };
 };
 
+export const characterVision = (range = 0) => (range > 0
+  ? { has_bright_light_vision: true, has_night_vision: true, night_vision_distance: range }
+  : { has_bright_light_vision: true, has_night_vision: false });
+
 export const tokenFace = ({ name, imgsrc, current, max, defense }) => ({
   ...(name ? { name } : {}),
   ...(imgsrc ? { imgsrc } : {}),

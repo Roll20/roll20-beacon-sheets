@@ -1,7 +1,7 @@
 import { ABILITY_IDS, resolveSkills } from './skills.js';
 import { normalizeProfessionStats, professionRow } from './profession.js';
 import { armorContribution } from './armor.js';
-import { featureMovement } from './featureEffects.js';
+import { featureMovement, featureDefense, featureNightVision } from './featureEffects.js';
 import { initiateNumbers } from './feats.js';
 import { normalizeProficiencies } from './proficiencies.js';
 import { clampLevel, saveBonus, maxSkillRank, levelFromXp, fatePoints } from './progression.js';
@@ -68,6 +68,13 @@ export const summarizeSheet = (sheet = {}) => {
     ability('strength'),
   );
 
+  const featureDefenseParts = featureDefense(sheet.features, {
+    level,
+    abilities: Object.fromEntries(ABILITY_IDS.map((id) => [id, ability(id)])),
+    armorType: defenseParts.armorType || 'none',
+    armorBonus: armor.armorBonus,
+  });
+
   const defenseValue = defense({
     base: 10,
     armorBonus: armor.armorBonus,
@@ -76,7 +83,7 @@ export const summarizeSheet = (sheet = {}) => {
     armorType: defenseParts.armorType,
     techniqueMod: num(defenseParts.techniqueMod),
     miscMod: num(defenseParts.itemMisc),
-  });
+  }) + featureDefenseParts.total;
 
   const movement = featureMovement(sheet.features, {
     level,
@@ -89,6 +96,14 @@ export const summarizeSheet = (sheet = {}) => {
   let defenseDexApplied = dex;
   if (defenseParts.armorType === 'medium') defenseDexApplied = Math.min(dex, 2);
   else if (defenseParts.armorType === 'heavy') defenseDexApplied = 0;
+
+  const speedValue = num(sheet.speed) + num(sheet.speedMisc) + movement.speed - armor.speedPenalty;
+  const halfSpeed = Math.max(0, Math.floor(speedValue / 10) * 5);
+
+  const agilityBase = movement.abilities.reduce(
+    (best, a) => (ability(a.ability) > best.value ? { value: ability(a.ability), ability: a.ability, feature: a.name } : best),
+    { value: dex, ability: 'dexterity', feature: '' },
+  );
 
   const saveOptions = normalizeSaveOptions(sheet.saveOptions);
   const saves = Object.fromEntries(
@@ -103,7 +118,7 @@ export const summarizeSheet = (sheet = {}) => {
   const skillTotals = Object.fromEntries(
     skillRoster.map((s) => {
       const entry = skills[s.id] || { ranks: 0, misc: 0 };
-      return [s.id, skillModifier(ability(s.ability), num(entry.ranks), num(entry.misc))];
+      return [s.id, skillModifier(ability(s.ability), num(entry.ranks), num(entry.misc), entry.doubled === true)];
     }),
   );
 
@@ -138,10 +153,15 @@ export const summarizeSheet = (sheet = {}) => {
     maxTP,
 
     defense: defenseValue,
+    featureDefense: featureDefenseParts,
+    nightVision: featureNightVision(sheet.features, { level }),
     defenseDexApplied,
     armor,
-    agility: agility(dex, num(sheet.agilityMisc) + movement.agility),
-    speed: num(sheet.speed) + num(sheet.speedMisc) + movement.speed - armor.speedPenalty,
+    agility: agility(agilityBase.value, num(sheet.agilityMisc) + movement.agility),
+    agilityBase,
+    speed: speedValue,
+    climb: Math.max(num(sheet.climbSpeed), movement.climb.length ? speedValue : halfSpeed),
+    swim: Math.max(num(sheet.swimSpeed), movement.swim.length ? speedValue : halfSpeed),
     movement,
 
     saves,

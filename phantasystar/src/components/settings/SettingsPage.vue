@@ -7,6 +7,7 @@ import { STARSHIP_KINDS } from '@/rules/index.js'
 import { useStarshipStore } from '@/stores/starshipStore.js'
 import SheetPanel from '@/components/shared/SheetPanel.vue'
 import CompendiumImport from './CompendiumImport.vue'
+import SettingOption from './SettingOption.vue'
 
 const isDev = import.meta.env.DEV
 const CompendiumProbe = isDev
@@ -18,7 +19,7 @@ const HostProbe = isDev
 const ChatThemeProbe = isDev
   ? defineAsyncComponent(() => import('@/components/dev/ChatThemeProbe.vue'))
   : null
-import { SHEET_OPTIONS, sharedSettings, saveSharedSettings } from '@/relay/sheetSettings.js'
+import { offeredOptions, sharedSettings, saveSharedSettings } from '@/relay/sheetSettings.js'
 import sheetComputed from '@/relay/handlers/computed.js'
 
 const meta = useMetaStore()
@@ -28,6 +29,11 @@ const ship = useStarshipStore()
 const isGM = computed(() => meta.permissions.isGM)
 
 const toggle = (key, value) => saveSharedSettings({ [key]: value })
+const offered = offeredOptions()
+
+const options = offered.filter((o) => !o.group && o.key !== 'characterBuilder')
+const builderSwitch = offered.find((o) => o.key === 'characterBuilder') ?? null
+const builderOptions = offered.filter((o) => o.group === 'builder')
 
 const barValues = Object.entries(sheetComputed)
   .filter(([, entry]) => entry.tokenBarValue)
@@ -101,18 +107,42 @@ const exampleName = computed(() => meta.name || 'Character Name')
         <SheetPanel title="Campaign Options">
           <p class="hint">Game-wide settings (set by the GM)</p>
 
-          <label v-for="option in SHEET_OPTIONS" :key="option.key" class="option">
-            <input
-              type="checkbox"
-              :checked="sharedSettings[option.key]"
+          <SettingOption
+            v-for="option in options"
+            :key="option.key"
+            :option="option"
+            :value="sharedSettings[option.key]"
+            :disabled="!isGM"
+            @change="toggle(option.key, $event)"
+          />
+        </SheetPanel>
+
+        <SheetPanel v-if="builderSwitch" title="Character Builder">
+          <template #actions>
+            <button
+              type="button"
+              role="switch"
+              class="switch"
+              :class="{ 'switch--on': sharedSettings.characterBuilder }"
+              :aria-checked="!!sharedSettings.characterBuilder"
               :disabled="!isGM"
-              @change="toggle(option.key, $event.target.checked)"
+              @click="toggle('characterBuilder', !sharedSettings.characterBuilder)"
+            >
+              <span class="switch__knob" />
+              <span class="switch__label">{{ sharedSettings.characterBuilder ? 'On' : 'Off' }}</span>
+            </button>
+          </template>
+          <p class="hint">{{ builderSwitch.hint }}</p>
+          <div v-if="sharedSettings.characterBuilder" class="nested">
+            <SettingOption
+              v-for="option in builderOptions"
+              :key="option.key"
+              :option="option"
+              :value="sharedSettings[option.key]"
+              :disabled="!isGM"
+              @change="toggle(option.key, $event)"
             />
-            <span class="option__body">
-              <strong>{{ option.name }}</strong>
-              <small>{{ option.hint }}</small>
-            </span>
-          </label>
+          </div>
         </SheetPanel>
 
         <CompendiumImport v-if="isGM" />
@@ -190,13 +220,57 @@ const exampleName = computed(() => meta.name || 'Character Name')
   &:last-child { border-bottom: none; }
 
   input { margin-top: 2px; }
-  input[type='checkbox'] { @include ps-pip-check(12px); }
   input[type='radio'] { @include ps-pip-radio(12px); }
 
   &__body { display: flex; flex-direction: column; min-width: 0; }
 
   strong { font-size: 12px; color: var(--ps-heading); }
-  small { font-size: 10px; color: var(--ps-text-muted); line-height: 1.45; }
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--ps-font);
+
+  &:disabled { cursor: default; opacity: 0.6; }
+
+  &__knob {
+    position: relative;
+    width: 30px;
+    height: 16px;
+    border-radius: 999px;
+    background: var(--ps-panel-alt);
+    border: var(--ps-border-thin);
+    transition: background 0.15s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--ps-heading-soft);
+      transition: transform 0.15s, background 0.15s;
+    }
+  }
+
+  &__label { @include ps-caption; font-size: 10px; min-width: 18px; text-align: left; }
+
+  &--on .switch__knob {
+    background: var(--ps-blue);
+    border-color: var(--ps-blue);
+
+    &::after { transform: translateX(14px); background: var(--ps-on-fill); }
+  }
+
+  &:focus-visible { outline: 2px solid var(--ps-blue); outline-offset: 2px; border-radius: 4px; }
 }
 
 .facts {

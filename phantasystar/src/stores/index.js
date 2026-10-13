@@ -12,6 +12,7 @@ import { useBioStore } from '@/stores/bioStore.js'
 import { useStarshipStore } from '@/stores/starshipStore.js'
 import { useNpcStore } from '@/stores/npcStore.js'
 import { useNpcShipStore } from '@/stores/npcShipStore.js'
+import { useBuilderStore } from '@/stores/builderStore.js'
 import {
   DEFAULT_SHEET_TYPE,
   DEFAULT_NPC_MODE,
@@ -35,6 +36,7 @@ export const useAppStore = defineStore('app', () => {
     starship: useStarshipStore(),
     npc: useNpcStore(),
     npcship: useNpcShipStore(),
+    build: useBuilderStore(),
   }
   const storeRegistry = Object.keys(stores)
 
@@ -118,6 +120,10 @@ export const useAppStore = defineStore('app', () => {
     sheet.species = mapped.name
     if (mapped.size) bio.size = mapped.size
     if (Number.isInteger(mapped.speed)) sheet.speed = mapped.speed
+    for (const [id, n] of Object.entries(mapped.skillRanks ?? {})) {
+      const skill = sheet.skills[id]
+      if (skill) skill.ranks = Math.min(sheet.skillRankCap, (parseInt(skill.ranks, 10) || 0) + n)
+    }
     const known = bio.languages.toLowerCase()
     const extra = mapped.languages.filter((l) => !known.includes(l.toLowerCase()))
     if (extra.length) bio.languages = [bio.languages.trim(), ...extra].filter(Boolean).join(', ')
@@ -203,6 +209,9 @@ export const useAppStore = defineStore('app', () => {
     const { sheet, bio } = stores
     if (!kit) return
     for (const item of kit.items ?? []) addItemFromCompendium(item, { wear: true })
+    for (const { name, quantity } of kit.gear ?? []) {
+      addItemFromCompendium({ equipment: { name, itemType: 'gear', grade: '', quantity, weight: '', text: '' } })
+    }
     bio.meseta = (Number(bio.meseta) || 0) + (kit.meseta || 0)
     sheet.startingEquipmentTaken = true
   }

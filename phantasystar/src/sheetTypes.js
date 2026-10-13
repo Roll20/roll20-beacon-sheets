@@ -39,7 +39,7 @@ export const isNpcShip = (character) =>
   sheetTypeOf(character) === NPC && npcModeOf(character) === NPC_SHIP
 
 export const BLOCKS_BY_TYPE = {
-  [PC]: ['sheet', 'techniques', 'bio'],
+  [PC]: ['sheet', 'techniques', 'bio', 'build'],
   [NPC]: ['npc'],
   [STARSHIP]: ['starship'],
 }

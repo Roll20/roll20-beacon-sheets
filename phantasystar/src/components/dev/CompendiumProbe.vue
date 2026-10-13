@@ -26,6 +26,12 @@ const PRESETS = [
       + '{ id name properties content cardHtml book { itemId shortName } }',
   },
   {
+    id: 'category',
+    label: 'Category listing',
+    hint: 'Every page in a category, as the character builder lists its options.',
+    query: 'category(name: "Professions") { id pages { id name book { itemId shortName } } }',
+  },
+  {
     id: 'byId',
     label: 'Page by id',
     hint: 'The other route, when an id is already in hand.',

@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { devCompendiumRequest } from './devCompendium.js'
 
 export const devChatLog = reactive([])
 
@@ -54,4 +55,5 @@ export default async () => ({
   },
   characters: {},
   updateTokensByCharacter: () => '',
+  ...(import.meta.env?.DEV ? { compendiumRequest: devCompendiumRequest } : {}),
 })

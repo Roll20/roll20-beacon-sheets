@@ -14,6 +14,7 @@ import {
   patchRepairFormula, PATCH_REPAIR_MAX_DICE, CREW_ROLES, crewSaveBonus,
   getNpcShipAbility, heavyDisadvantage, armorDisadvantage, attackAbility,
   describeCombo, comboTier, comboSaveDC, pickAllows, featureRollFormula, featureRollLines, riderFormula,
+  featurePicks,
 } from '@/rules/index.js'
 
 const options = reactive({
@@ -247,11 +248,12 @@ export const useSheetRolls = () => {
   const rollSkill = (skillId) => {
     const skill = sheet.skillRoster.find((s) => s.id === skillId) ?? getSkill(skillId)
     const ranks = sheet.skills[skillId]?.ranks ?? 0
+    const doubled = !!sheet.skills[skillId]?.doubled
     return rollD20({
       title: `${skill?.name ?? skillId} Check`,
       subtitle: abilityName(skill?.ability),
       modifier: sheet.skillTotals[skillId] ?? 0,
-      keyValues: ranks > 0 ? { Ranks: ranks } : undefined,
+      keyValues: ranks > 0 ? { Ranks: doubled ? `${ranks} ×2` : ranks } : undefined,
       disadvantage: untrainedArmor(skill?.ability),
     })
   }
@@ -345,6 +347,24 @@ export const useSheetRolls = () => {
       .split(/\n\s*\n/)
       .map((p) => p.trim())
       .filter(Boolean)
+  }
+
+  const postFeature = (feature) => {
+    const picks = featurePicks(feature)
+    const adds = feature.optionMode === 'add'
+    const picked = adds ? null : feature.options?.find((o) => o.name === picks[0])
+    const chosen = adds ? feature.options.filter((o) => picks.includes(o.name)) : []
+    const listed = adds ? (chosen.length ? chosen : feature.options) : []
+    const paragraphs = String(picked?.text ?? feature.text ?? '')
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+    return send('chat', {
+      characterName: characterName.value,
+      title: feature.name || 'Unnamed feature',
+      subtitle: adds ? undefined : picks.join(', ') || undefined,
+      textContent: [...paragraphs, ...listed.map((o) => `${o.name}. ${o.text ?? ''}`.trim())],
+    })
   }
 
   const useResource = async (resourceId) => {
@@ -1041,6 +1061,7 @@ export const useSheetRolls = () => {
     rollWeaponDamage,
     rollDamage,
     useResource,
+    postFeature,
     rollVehicleControl,
     rollVehicleSave,
     rollDeathSave,

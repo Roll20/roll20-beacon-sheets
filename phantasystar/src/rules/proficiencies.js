@@ -50,6 +50,8 @@ export const TOOLS = [
 
 export const TOOL_IDS = TOOLS.map((t) => t.id);
 
+export const ARTISAN_TOOL_IDS = TOOL_IDS.slice(0, TOOL_IDS.indexOf('tailoring_supplies') + 1);
+
 export const VEHICLES = [
   { id: 'beast_mounts', name: 'Beast Mounts' },
   { id: 'groundcraft', name: 'Groundcraft' },

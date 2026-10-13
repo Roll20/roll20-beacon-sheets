@@ -23,6 +23,21 @@ const rolls = useSheetRolls()
 
 const speedParts = computed(() => sheet.featureMovementParts.parts.filter((p) => p.speed))
 const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) => p.agility))
+
+const otherMoves = computed(() => {
+  const half = Math.max(0, Math.floor(sheet.speedValue / 10) * 5)
+  return [['climb', 'Climb', 'climbSpeed'], ['swim', 'Swim', 'swimSpeed']].map(([id, label, field]) => {
+    const features = sheet.featureMovementParts[id]
+    return {
+      id, label, field,
+      from: features.length ? features.join(', ') : 'Half Speed',
+      base: features.length ? sheet.speedValue : half,
+    }
+  })
+})
+
+const otherSpeeds = computed(() => [['Climb', sheet.climbValue], ['Swim', sheet.swimValue]]
+  .filter(([, v]) => v > 0).map(([label, v]) => `${label} ${v}`).join(' · '))
 </script>
 
 <template>
@@ -66,17 +81,29 @@ const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) 
                 <span>{{ p.name }}</span>
                 <output>+{{ p.speed }}</output>
               </div>
+              <template v-for="m in otherMoves" :key="m.id">
+                <hr class="part-rule" />
+                <div class="part">
+                  <span>{{ m.label }} ({{ m.from }})</span>
+                  <output>{{ m.base }}</output>
+                </div>
+                <label class="part">
+                  <span>{{ m.label }} (Other)</span>
+                  <input v-model.number="sheet[m.field]" type="number" />
+                </label>
+              </template>
             </StatDropdown>
             <div class="move-text">
               <strong>Speed</strong>
-              <small>Base Speed + Misc</small>
+              <small v-if="otherSpeeds">{{ otherSpeeds }}</small>
+              <small v-else>Base Speed + Misc</small>
             </div>
           </div>
           <div class="move">
             <StatDropdown :value="sheet.agilityValue" label="Agility">
               <div class="part">
-                <span>Base (DEX)</span>
-                <output>{{ formatModifier(sheet.abilities.dexterity) }}</output>
+                <span>Base ({{ sheet.agilityBase.ability.slice(0, 3).toUpperCase() }})<template v-if="sheet.agilityBase.feature">, {{ sheet.agilityBase.feature }}</template></span>
+                <output>{{ formatModifier(sheet.agilityBase.value) }}</output>
               </div>
               <label class="part">
                 <span>Misc</span>
@@ -177,6 +204,12 @@ const agilityParts = computed(() => sheet.featureMovementParts.parts.filter((p) 
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.part-rule {
+  border: none;
+  border-top: 1px solid var(--ps-line-soft);
+  margin: 2px 0;
 }
 
 .part {

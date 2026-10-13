@@ -5,6 +5,7 @@ import { computed, ref } from 'vue'
 import { sharedSettings } from '@/relay/sheetSettings.js'
 import { levelProgress } from '@/rules/index.js'
 import ProfessionOptionsModal from './ProfessionOptionsModal.vue'
+import { useLevelUp } from '@/composables/useLevelUp.js'
 
 const meta = useMetaStore()
 const sheet = useCharacterStore()
@@ -14,6 +15,9 @@ const broken = ref(false)
 const professionOptions = ref(false)
 
 const xpProgress = computed(() => levelProgress(sheet.xp, sheet.effectiveLevel))
+
+const { available: canLevelUp, start: startLevelUp } = useLevelUp()
+const levelWaiting = computed(() => !sharedSettings.milestone && sheet.levelForXp > sheet.effectiveLevel)
 </script>
 
 <template>
@@ -28,9 +32,13 @@ const xpProgress = computed(() => levelProgress(sheet.xp, sheet.effectiveLevel))
     </div>
 
     <div class="fields">
-      <label class="line wide">
+      <label class="line">
         <input v-model="meta.name" />
         <span>Character Name</span>
+      </label>
+      <label class="line">
+        <input v-model="sheet.concept" />
+        <span>Concept</span>
       </label>
 
       <label class="line">
@@ -62,6 +70,13 @@ const xpProgress = computed(() => levelProgress(sheet.xp, sheet.effectiveLevel))
         <input v-model.number="sheet.level" type="number" min="1" max="20" />
       </div>
       <div class="level-caption">Level</div>
+      <button
+        v-if="canLevelUp"
+        type="button"
+        class="level-up"
+        :class="{ 'level-up--waiting': levelWaiting }"
+        @click="startLevelUp"
+      >Level Up</button>
     </div>
 
     <div v-if="!sharedSettings.milestone" class="xp-block">
@@ -198,6 +213,20 @@ const xpProgress = computed(() => levelProgress(sheet.xp, sheet.effectiveLevel))
 .level-caption {
   @include ps-heading(15px);
   margin-top: 2px;
+}
+
+.level-up {
+  @include ps-heading(11.5px);
+  margin-top: 5px;
+  padding: 3px 10px;
+  border: 1.5px solid var(--ps-blue);
+  border-radius: var(--ps-radius-sm);
+  background: var(--ps-panel);
+  color: var(--ps-blue);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover, &--waiting { background: var(--ps-blue); color: var(--ps-on-fill); }
 }
 
 .xp-block { padding-top: 26px; }

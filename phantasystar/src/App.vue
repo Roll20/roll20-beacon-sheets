@@ -5,7 +5,7 @@ import { useMetaStore } from '@/stores/metaStore.js'
 import { initValues, dispatchRef } from '@/relay/relay.js'
 import { onSettingsChange } from '@/relay/handlers/handlers.js'
 import { applyTheme, themeOf } from '@/theme.js'
-import { useCompendiumDrops } from '@/composables/useCompendiumDrops.js'
+import { useCompendiumDrops, noticeMs } from '@/composables/useCompendiumDrops.js'
 import CharacterPage from '@/components/character/CharacterPage.vue'
 import TechniquesPage from '@/components/techniques/TechniquesPage.vue'
 import BioPage from '@/components/bio/BioPage.vue'
@@ -13,6 +13,14 @@ import ShipPage from '@/components/ship/ShipPage.vue'
 import NpcPage from '@/components/npc/NpcPage.vue'
 import SettingsPage from '@/components/settings/SettingsPage.vue'
 import StartingEquipmentModal from '@/components/shared/StartingEquipmentModal.vue'
+import BuilderLanding from '@/components/builder/BuilderLanding.vue'
+import BuilderShell from '@/components/builder/BuilderShell.vue'
+import LevelUpShell from '@/components/levelup/LevelUpShell.vue'
+import { useLevelUp } from '@/composables/useLevelUp.js'
+import { useBuilder } from '@/composables/useBuilder.js'
+import { useCatalog, loadCategory } from '@/composables/useCatalog.js'
+import { builderEnabled } from '@/relay/sheetSettings.js'
+import { isBlankCharacter } from '@/builder/steps.js'
 import { PC, NPC, STARSHIP } from '@/sheetTypes.js'
 import psLogo from '@/assets/img/ps-logo.webp'
 import { defineAsyncComponent } from 'vue'
@@ -21,6 +29,7 @@ const appStore = useAppStore()
 const meta = useMetaStore()
 
 const { dropNotice, equipmentOffer, takeStartingEquipment } = useCompendiumDrops()
+
 
 const TABS_BY_TYPE = {
   [PC]: [
@@ -41,6 +50,53 @@ const TABS_BY_TYPE = {
 
 const tabs = computed(() => TABS_BY_TYPE[appStore.sheetType] ?? TABS_BY_TYPE[PC])
 const activeTab = ref('character')
+
+const { builder, notice: buildNotice } = useBuilder()
+const showBuilder = computed(() => builder.open && meta.canEdit)
+
+const { store: levelUp, notice: levelUpNotice } = useLevelUp()
+const showLevelUp = computed(() => levelUp.open && meta.canEdit)
+const landingWanted = computed(() =>
+  !builder.open
+  && builderEnabled()
+  && appStore.sheetType === PC
+  && meta.canEdit
+  && !builder.draft.skipped
+  && !builder.draft.built
+  && isBlankCharacter(appStore.sheet))
+
+const { lists } = useCatalog()
+let speciesAsked = false
+watchEffect(() => {
+  if (!landingWanted.value || speciesAsked) return
+  speciesAsked = true
+  loadCategory('Species')
+})
+const compendiumAnswers = computed(() => lists.Species?.status === 'ok' && lists.Species.options.length > 0)
+const showLanding = computed(() => landingWanted.value && compendiumAnswers.value)
+
+watch(() => builder.open, (open, was) => {
+  if (!was || open || !builder.draft.built) return
+  activeTab.value = 'character'
+  window.scrollTo?.(0, 0)
+})
+
+const fades = (notice) => {
+  let timer = null
+  watch(notice, (shown) => {
+    clearTimeout(timer)
+    if (shown) timer = setTimeout(() => { if (notice.value === shown) notice.value = null }, noticeMs(shown.text))
+  })
+}
+fades(buildNotice)
+fades(levelUpNotice)
+
+watch(() => levelUp.open, (open, was) => {
+  if (open) buildNotice.value = null
+  if (!was || open) return
+  activeTab.value = 'character'
+  window.scrollTo?.(0, 0)
+})
 
 const tabBar = ref(null)
 let tabBarObserver = null
@@ -104,6 +160,12 @@ const DevChat = isDev
   <div class="ps-sheet" :class="{ 'has-dev-chat': isDev }">
     <SettingsPage v-if="isSettingsSheet" />
 
+    <BuilderShell v-else-if="showBuilder" />
+
+    <LevelUpShell v-else-if="showLevelUp" />
+
+    <BuilderLanding v-else-if="showLanding" />
+
     <template v-else>
     <nav ref="tabBar" class="tabs">
       <button
@@ -130,6 +192,12 @@ const DevChat = isDev
 
     <p v-if="dropNotice" class="drop-notice" :class="dropNotice.tone" role="status">
       {{ dropNotice.text }}
+    </p>
+    <p v-else-if="buildNotice" class="drop-notice" :class="buildNotice.tone" role="status">
+      {{ buildNotice.text }}
+    </p>
+    <p v-else-if="levelUpNotice" class="drop-notice" :class="levelUpNotice.tone" role="status">
+      {{ levelUpNotice.text }}
     </p>
     <StartingEquipmentModal :offer="equipmentOffer" @take="takeStartingEquipment" />
 

@@ -43,6 +43,7 @@ const abbrFor = (abilityId) => ABILITIES.find((a) => a.id === abilityId)?.abbr ?
           @click="rolls.rollSkill(skill.id)"
         >
           {{ skill.name }} <span class="abil">({{ abbrFor(skill.ability) }})</span>
+          <span v-if="sheet.skills[skill.id].doubled" class="doubled" title="Ranks doubled">&times;2</span>
         </button>
 
         <RankPips
@@ -109,6 +110,7 @@ const abbrFor = (abilityId) => ABILITIES.find((a) => a.id === abilityId)?.abbr ?
   overflow: hidden;
   text-overflow: ellipsis;
   .abil { color: var(--ps-text-muted); font-size: 11px; }
+  .doubled { color: var(--ps-blue); font-size: 11px; font-weight: 700; }
 }
 
 .mod {

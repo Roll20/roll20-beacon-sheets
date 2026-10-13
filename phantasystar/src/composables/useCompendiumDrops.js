@@ -23,7 +23,7 @@ export const dropNotice = ref(null)
 export const equipmentOffer = ref(null)
 
 const NOTICE_MS = 6000
-const noticeMs = (text) => Math.min(20000, NOTICE_MS + 60 * Math.max(0, text.length - 40))
+export const noticeMs = (text) => Math.min(20000, NOTICE_MS + 60 * Math.max(0, text.length - 40))
 let noticeTimer = null
 const notify = (text, tone = 'ok') => {
   dropNotice.value = { text, tone }
