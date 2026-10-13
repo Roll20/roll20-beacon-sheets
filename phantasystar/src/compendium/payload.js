@@ -624,13 +624,39 @@ const choiceLabels = (choice) =>
     .map((c) => (isObject(c) && typeof c.label === 'string' ? c.label : null))
     .filter(Boolean);
 
+const traitOptions = (choice) => {
+  const found = (Array.isArray(choice) ? choice : [choice])
+    .find((c) => isObject(c) && c.type === 'option' && Array.isArray(c.options) && c.options.length);
+  if (!found) return {};
+  const options = found.options
+    .filter((o) => isObject(o) && typeof o.name === 'string')
+    .map((o) => ({ name: o.name, text: typeof o.text === 'string' ? o.text : '' }));
+  const taught = Object.fromEntries(found.options
+    .filter((o) => isObject(o) && typeof o.name === 'string' && Array.isArray(o.techniques))
+    .map((o) => [o.name, o.techniques]));
+  return options.length
+    ? {
+      options, pick: '', pickCount: Number.isInteger(found.count) ? found.count : 1, optionMode: 'add',
+      ...(Object.keys(taught).length ? { optionTechniques: taught } : {}),
+    }
+    : {};
+};
+
 const originFeatures = (features, source) => {
   const rows = [];
   const choices = [];
   for (const entry of features?.['level-1'] ?? []) {
     if (!isObject(entry) || typeof entry.name !== 'string') continue;
     const text = Array.isArray(entry.text) ? entry.text.filter((p) => typeof p === 'string') : [];
-    rows.push({ name: entry.name, text: text.join('\n\n'), group: 'origin', level: null, source });
+    rows.push({
+      name: entry.name, text: text.join('\n\n'), group: 'origin', level: null, source,
+      ref: typeof entry.id === 'string' ? entry.id : '',
+      ...(Array.isArray(entry.techniques) ? { techniques: entry.techniques } : {}),
+      ...(isObject(entry.move) ? { move: entry.move } : {}),
+      ...(isObject(entry.defense) ? { defense: entry.defense } : {}),
+      ...(isObject(entry.sense) ? { sense: entry.sense } : {}),
+      ...traitOptions(entry.choice),
+    });
     choices.push(...choiceLabels(entry.choice));
   }
   return { rows, choices };
@@ -642,6 +668,9 @@ const toProficiencyList = (value, field, warnings) =>
     if (!ok) warnings.push(`${field}: skipped an entry without a kind and id.`);
     return ok;
   });
+
+const positiveRanks = (ranks) =>
+  Object.fromEntries(Object.entries(ranks ?? {}).filter(([, n]) => Number.isInteger(n) && n > 0));
 
 export const speciesFromPayload = (payload, page = {}, features = null) => {
   const warnings = [];
@@ -657,6 +686,8 @@ export const speciesFromPayload = (payload, page = {}, features = null) => {
     speed: check.int('speed', payload.speed),
     languages: (check.list('languages', payload.languages) ?? []).filter((l) => typeof l === 'string'),
     proficiencies: toProficiencyList(payload.proficiencies, 'proficiencies', warnings),
+    skillRanks: positiveRanks(check.object('skillRanks', payload.skillRanks)),
+    hpPerLevel: check.int('hpPerLevel', payload.hpPerLevel) ?? 0,
     features: rows,
     choices,
     warnings,
@@ -667,10 +698,7 @@ export const backgroundFromPayload = (payload, page = {}, features = null) => {
   const warnings = [];
   const check = checker(warnings);
   const id = check.text('id', payload.id) ?? '';
-  const ranks = check.object('skillRanks', payload.skillRanks) ?? {};
-  const skillRanks = Object.fromEntries(
-    Object.entries(ranks).filter(([, n]) => Number.isInteger(n) && n > 0),
-  );
+  const skillRanks = positiveRanks(check.object('skillRanks', payload.skillRanks));
   const { rows } = originFeatures(features, `background:${id}`);
   const choices = [
     ...choiceLabels(payload.skillChoice),
@@ -690,6 +718,7 @@ export const backgroundFromPayload = (payload, page = {}, features = null) => {
     proficiencies: toProficiencyList(payload.proficiencies, 'proficiencies', warnings),
     equipment,
     meseta: check.int('meseta', payload.meseta) ?? 0,
+    equipmentPicks: (Array.isArray(payload.equipmentPicks) ? payload.equipmentPicks : []).filter(isObject),
     features: rows,
     choices,
     warnings,
@@ -725,10 +754,13 @@ const levelFeatures = (features, prefix, warnings) => {
         rider: isObject(entry.rider) ? entry.rider : null,
         roll: isObject(entry.roll) ? entry.roll : null,
         move: isObject(entry.move) ? entry.move : null,
+        defense: isObject(entry.defense) ? entry.defense : null,
+        sense: isObject(entry.sense) ? entry.sense : null,
         techniques: Array.isArray(entry.techniques) ? entry.techniques : [],
         pickCount: Number.isInteger(entry.pickCount) ? entry.pickCount : 1,
         optionMode: entry.optionMode === 'add' ? 'add' : '',
         initiate: isObject(entry.initiate) ? entry.initiate : null,
+        ...(Number.isInteger(entry.maxHp) ? { maxHp: entry.maxHp } : {}),
         ...(typeof entry.extraUseOf === 'string' ? { extraUseOf: entry.extraUseOf } : {}),
       });
       for (const uses of Array.isArray(entry.uses) ? entry.uses : []) {
@@ -761,6 +793,12 @@ export const professionFromPayload = (payload, page = {}, features = null) => {
         .map((item) => itemFromPayload(item)),
       meseta: check.int(`startingEquipment.${key}.meseta`, box.meseta) ?? 0,
       choices: (Array.isArray(box.choices) ? box.choices : []).filter((c) => typeof c === 'string'),
+      picks: (Array.isArray(box.picks) ? box.picks : []).filter(isObject),
+      gear: (Array.isArray(box.picks) ? box.picks : [])
+        .filter((p) => isObject(p) && p.type === 'gear' && Array.isArray(p.items))
+        .flatMap((p) => p.items)
+        .filter((g) => isObject(g) && typeof g.name === 'string' && g.name.trim())
+        .map((g) => ({ name: g.name.trim(), quantity: Number.isInteger(g.quantity) ? g.quantity : 1 })),
     };
   };
   const a = option('a');

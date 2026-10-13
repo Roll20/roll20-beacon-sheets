@@ -27,6 +27,7 @@ const num = (v, fallback = 0) => {
 }
 
 const characterStore = () => {
+  const concept = ref('')
   const species = ref('')
   const background = ref('')
   const profession = ref('')
@@ -68,6 +69,8 @@ const characterStore = () => {
   const speed = ref(30)
   const speedMisc = ref(0)
   const agilityMisc = ref(0)
+  const climbSpeed = ref(0)
+  const swimSpeed = ref(0)
 
   const fateSpent = ref(0)
 
@@ -231,6 +234,8 @@ const characterStore = () => {
       speed: speed.value,
       speedMisc: speedMisc.value,
       agilityMisc: agilityMisc.value,
+      climbSpeed: climbSpeed.value,
+      swimSpeed: swimSpeed.value,
       fateSpent: fateSpent.value,
       features: features.value,
     }),
@@ -319,9 +324,15 @@ const characterStore = () => {
 
   const defenseDexApplied = computed(() => summary.value.defenseDexApplied)
 
+  const featureDefenseParts = computed(() => summary.value.featureDefense)
+
   const agilityValue = computed(() => summary.value.agility)
+  const agilityBase = computed(() => summary.value.agilityBase)
   const featureMovementParts = computed(() => summary.value.movement)
+  const nightVision = computed(() => summary.value.nightVision)
   const speedValue = computed(() => summary.value.speed)
+  const climbValue = computed(() => summary.value.climb)
+  const swimValue = computed(() => summary.value.swim)
 
   const fate = computed(() => summary.value.fate)
   const hitDice = computed(() => summary.value.hitDice)
@@ -338,6 +349,11 @@ const characterStore = () => {
   const setSkillMisc = (skillId, misc) => {
     const entry = skills.value[skillId]
     if (entry) entry.misc = num(misc)
+  }
+
+  const setSkillDoubled = (skillId, doubled) => {
+    const entry = skills.value[skillId]
+    if (entry) entry.doubled = !!doubled
   }
 
   const setSkillAbility = (skillId, abilityId) => {
@@ -404,6 +420,7 @@ const characterStore = () => {
   }
 
   const dehydrate = () => ({
+    concept: concept.value,
     species: species.value,
     background: background.value,
     profession: profession.value,
@@ -424,6 +441,8 @@ const characterStore = () => {
     speed: speed.value,
     speedMisc: speedMisc.value,
     agilityMisc: agilityMisc.value,
+    climbSpeed: climbSpeed.value,
+    swimSpeed: swimSpeed.value,
     fateSpent: fateSpent.value,
     features: arrayToObject(features.value.map(storeFeature)),
     resources: arrayToObject(resources.value),
@@ -437,6 +456,7 @@ const characterStore = () => {
   })
 
   const hydrate = (s = {}) => {
+    concept.value = s.concept ?? concept.value
     species.value = s.species ?? species.value
     background.value = s.background ?? background.value
     profession.value = s.profession ?? profession.value
@@ -470,6 +490,8 @@ const characterStore = () => {
     speed.value = s.speed ?? speed.value
     speedMisc.value = s.speedMisc ?? speedMisc.value
     agilityMisc.value = s.agilityMisc ?? agilityMisc.value
+    climbSpeed.value = s.climbSpeed ?? climbSpeed.value
+    swimSpeed.value = s.swimSpeed ?? swimSpeed.value
     fateSpent.value = s.fateSpent ?? fateSpent.value
     if (s.features) {
       features.value = objectToArray(s.features).map((f) => ({ _id: f._id, ...normalizeFeature(f) }))
@@ -498,10 +520,10 @@ const characterStore = () => {
   }
 
   return {
-    species, background, profession, professionStats, path, level, xp,
+    concept, species, background, profession, professionStats, path, level, xp,
     abilities, saveProficiencies, saveOptions, skills,
     hp, hitDiceUsed, deathSaves, tp, techOptions,
-    defenseParts, speed, speedMisc, agilityMisc, fateSpent,
+    defenseParts, speed, speedMisc, agilityMisc, climbSpeed, swimSpeed, fateSpent,
     features, resources, startingEquipmentTaken, resistances, proficiencies,
     attacksPerAction, attacks,
     hasProfessionTable, effectiveLevel, saveBonusValue, skillRankCap, levelForXp,
@@ -510,11 +532,13 @@ const characterStore = () => {
     techAttackPowerValue, techSaveDCValue,
     saves, deathSaveBonus, skillTotals, skillRoster, passivePerceptionValue, attackPowerFor,
     damageFor, resolveAttack,
-    defenseValue, defenseDexApplied, armorState, agilityValue, speedValue, featureMovementParts,
+    defenseValue, defenseDexApplied, featureDefenseParts, armorState, agilityValue, agilityBase, speedValue,
+    climbValue, swimValue,
+    featureMovementParts, nightVision,
     fate, hitDice, suggestedMaxHp,
     addFeature, removeFeature, addResource, removeResource, resourceMaxFor, extraUsesOf, setResourceUsed, restResources,
     diceContext, usesLeftFor, spendUse, riderFeatures, riderBlocked, setRider, ridersFor, spendRiders,
-    addAttack, removeAttack, setSkillRanks, setSkillMisc, setSkillAbility,
+    addAttack, removeAttack, setSkillRanks, setSkillMisc, setSkillDoubled, setSkillAbility,
     toggleSaveProficiency, toggleProficiency, addProficiency, removeCustomProficiency,
     toggleCustomMastery, toggleResistance, setDeathSave, clearDeathSaves,
     clearProfessionTable,

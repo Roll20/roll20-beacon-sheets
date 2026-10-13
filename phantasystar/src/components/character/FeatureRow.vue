@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
+import { useSheetRolls } from '@/composables/useSheetRolls.js'
 import { FEATURE_GROUPS, RECOVERIES, featureColumnValues, featurePicks, resourceMax } from '@/rules/index.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
 
@@ -12,6 +13,7 @@ const props = defineProps({
 const emit = defineEmits(['toggle-open', 'toggle-editing'])
 
 const sheet = useCharacterStore()
+const rolls = useSheetRolls()
 
 const feature = computed(() => sheet.features.find((f) => f._id === props.id) ?? null)
 
@@ -154,6 +156,9 @@ const levelInput = computed({
     </div>
 
     <div v-if="open" class="editbar">
+      <button type="button" class="mini" title="Post the feature to chat" @click="rolls.postFeature(feature)">
+        Show
+      </button>
       <button
         type="button"
         class="mini"
@@ -302,6 +307,7 @@ const levelInput = computed({
 .editbar {
   display: flex;
   justify-content: flex-end;
+  gap: 4px;
   padding: 0 4px 3px;
 }
 

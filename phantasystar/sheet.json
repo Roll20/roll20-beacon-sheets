@@ -6,7 +6,7 @@
   "compendium": "phantasystar",
   "requestedsize": "1080x810",
   "useroptions": [],
-  "instructions": "Phantasy Star Tabletop Roleplaying character sheet. Phantasy Star Tabletop Roleplaying © Skydawn Game Studios Inc. © SEGA. All rights reserved. ",
+  "instructions": "<p>The official sheet for Phantasy Star Tabletop Roleplaying by Skydawn Game Studios. Licensed by SEGA.</p>\n<ul>\n<li>Drag and drop species, backgrounds, professions, paths, feats, techniques, items, and monsters from the Phantasy Star Tabletop RPG compendium.</li>\n<li>Auto-calculated stats, skills, bonuses, hit points, and technique points.</li>\n<li>Roll buttons for checks, saves, attacks, damage, and techniques with rank boosting.</li>\n<li>Sheets for both PCs and NPCs, including starships and vehicles.</li>\n<li>Campaign options for the game's variant rules, such as Force Breach, Fate Pool, Combo Techniques, and Milestone Advancement.</li>\n</ul>\n<p>© Skydawn Game Studios Inc. © SEGA. All rights reserved.</p>\n",
   "legacy": false,
-  "tags": "Phantasy Star, SEGA, Skydawn Game Studios"
+  "tags": "Phantasy Star, SEGA, Skydawn Game Studios, Character Builder, Drag & Drop, Auto-Calculations, Automated Dice"
 }

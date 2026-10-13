@@ -5,8 +5,8 @@ const int = (v) => Math.trunc(Number(v) || 0);
 export const savingThrow = (abilityMod, level, proficient) =>
   int(abilityMod) + (proficient ? saveBonus(level) : 0);
 
-export const skillModifier = (abilityMod, ranks = 0, misc = 0) =>
-  int(abilityMod) + int(ranks) + int(misc);
+export const skillModifier = (abilityMod, ranks = 0, misc = 0, doubled = false) =>
+  int(abilityMod) + int(ranks) * (doubled ? 2 : 1) + int(misc);
 
 export const passivePerception = (perceptionModifier, misc = 0) =>
   10 + int(perceptionModifier) + int(misc);

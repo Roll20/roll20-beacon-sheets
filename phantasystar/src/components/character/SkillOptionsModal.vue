@@ -15,6 +15,7 @@ const sheet = useCharacterStore()
       <span>Skill</span>
       <span>Ability</span>
       <span>Other Bonus</span>
+      <span>Double Ranks</span>
     </div>
 
     <div class="rows">
@@ -45,6 +46,15 @@ const sheet = useCharacterStore()
           :value="sheet.skills[skill.id].misc"
           @input="sheet.setSkillMisc(skill.id, $event.target.value)"
         />
+
+        <label class="double">
+          <input
+            type="checkbox"
+            :aria-label="`${skill.name} double ranks`"
+            :checked="!!sheet.skills[skill.id].doubled"
+            @change="sheet.setSkillDoubled(skill.id, $event.target.checked)"
+          />
+        </label>
       </div>
     </div>
   </SheetModal>
@@ -56,7 +66,7 @@ const sheet = useCharacterStore()
 .head,
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(96px, 150px) 64px;
+  grid-template-columns: minmax(0, 1fr) minmax(96px, 150px) 64px 84px;
   gap: var(--ps-gap);
   align-items: center;
 }
@@ -82,11 +92,19 @@ const sheet = useCharacterStore()
 
 .misc { text-align: center; }
 
+.double {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+
+  input { cursor: pointer; }
+}
+
 @media (max-width: 520px) {
   .head { display: none; }
 
   .row {
-    grid-template-columns: minmax(0, 1fr) 64px;
+    grid-template-columns: minmax(0, 1fr) 64px 32px;
     row-gap: 2px;
     padding: 6px 4px;
   }

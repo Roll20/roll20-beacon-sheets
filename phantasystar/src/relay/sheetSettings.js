@@ -38,7 +38,49 @@ export const SHEET_OPTIONS = [
     default: false,
     hint: 'Removes XP tracking. Characters level during events or milestones set by the GM.',
   },
+  {
+    key: 'characterBuilder',
+    name: 'Character Builder',
+    default: false,
+    hint: 'Offers the character builder on new player characters.',
+  },
+  {
+    key: 'abilityRolling',
+    name: 'Rolling Ability Scores',
+    default: false,
+    hint: 'Variant rule: players may roll for abilities in the character builder (see ch. 2 of the core book)',
+    group: 'builder',
+  },
+  {
+    key: 'abilityBonusSingle',
+    name: 'Single Ability Bonus',
+    default: false,
+    hint: 'Players may add 2 to one ability instead of 1 to two (see ch. 2 of the core book)',
+    group: 'builder',
+  },
+  {
+    key: 'setting',
+    name: 'Setting',
+    default: 'classic',
+    choices: [
+      { id: 'classic', name: 'Classic' },
+      { id: 'pso', name: 'PSO' },
+      { id: 'any', name: 'Any' },
+    ],
+    hint: 'The Lore setting used by the character builder',
+    group: 'builder',
+  },
 ]
+
+const optionValue = (option, value) => {
+  if (option.choices) return option.choices.some((c) => c.id === value) ? value : option.default
+  return value === undefined ? option.default : !!value
+}
+
+export const offeredOptions = (dev = import.meta.env?.DEV) => SHEET_OPTIONS.filter((o) => !o.preview || !!dev)
+
+export const builderEnabled = (dev = import.meta.env?.DEV) =>
+  offeredOptions(dev).some((o) => o.key === 'characterBuilder') && !!sharedSettings.characterBuilder
 
 export const DEFAULT_SHEET_SETTINGS = Object.fromEntries(
   SHEET_OPTIONS.map((o) => [o.key, o.default]),
@@ -47,10 +89,7 @@ export const DEFAULT_SHEET_SETTINGS = Object.fromEntries(
 export const sharedSettings = reactive({ ...DEFAULT_SHEET_SETTINGS })
 
 export const applySharedSettings = (incoming = {}) => {
-  for (const option of SHEET_OPTIONS) {
-    const value = incoming?.[option.key]
-    sharedSettings[option.key] = value === undefined ? option.default : !!value
-  }
+  for (const option of SHEET_OPTIONS) sharedSettings[option.key] = optionValue(option, incoming?.[option.key])
   return sharedSettings
 }
 

@@ -85,6 +85,14 @@ const setArmorType = (type) => {
           <div class="lbl">Item/Misc<br />Modifier</div>
           <input v-model="sheet.defenseParts.itemMiscNote" class="note" placeholder="Source" />
         </div>
+
+        <div v-if="sheet.featureDefenseParts?.parts.length" class="part">
+          <div class="box readonly">{{ formatModifier(sheet.featureDefenseParts.total) }}</div>
+          <div class="lbl">Feature<br />Modifier</div>
+          <span class="note note--linked">
+            {{ sheet.featureDefenseParts.parts.map((p) => `${p.name} ${formatModifier(p.defense)}`).join(', ') }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
