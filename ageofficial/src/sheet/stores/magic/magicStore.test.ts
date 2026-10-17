@@ -55,4 +55,33 @@ describe("printSpell by cost model", () => {
     expect(test.components).toContainEqual({ label: "Focus", value: 2 });
     expect(char.powerFatigue).toBe(1);
   });
+
+  it("price: spends nothing and rolls a Willpower Price Test against the spell's Price Test TN", async () => {
+    const settings = useSettingsStore();
+    settings.useEldritchArcana = true;
+    const char = useCharacterStore();
+    char.setPoolCurrent("eldritch", 10);
+
+    const spell = addTestSpell({ sourceId: "eldritch", targetNumber: 13, priceTN: 15 });
+    await useSpellStore().printSpell(spell._id, 3);
+
+    expect(char.poolCurrent("eldritch")).toBe(10);
+    expect(rollToChat).toHaveBeenCalledTimes(2);
+    const test = vi.mocked(rollToChat).mock.calls[1][0];
+    expect(test).toMatchObject({
+      rollType: "priceTest",
+      subtitle: "Price Test",
+      targetNumber: 15,
+    });
+    expect(test.components.map((c: any) => c.label)).toEqual(["Base Roll", "Willpower"]);
+  });
+
+  it("price: rolls without a TN when the spell has no Price Test TN", async () => {
+    useSettingsStore().useEldritchArcana = true;
+
+    const spell = addTestSpell({ sourceId: "eldritch" });
+    await useSpellStore().printSpell(spell._id, 3);
+
+    expect(vi.mocked(rollToChat).mock.calls[1][0].targetNumber).toBeUndefined();
+  });
 });

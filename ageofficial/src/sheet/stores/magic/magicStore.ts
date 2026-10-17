@@ -82,6 +82,22 @@ export const useSpellStore = defineStore('spells', () => {
     if (indexToRemove >= 0) spells.value.splice(indexToRemove, 1);
   };
 
+  const rollPriceTest = async (spell: Spell) => {
+    const ability = useAbilityScoreStore();
+    await rollToChat({
+      characterName: useMetaStore().name,
+      title: spell.name,
+      subtitle: 'Price Test',
+      rollType: 'priceTest',
+      // Optional per-spell TN; without one the card shows the Stunt Die for the player to judge.
+      targetNumber: Number(spell.priceTN) || undefined,
+      components: [
+        { label: 'Base Roll', sides: 6, count: 3, alwaysShowInBreakdown: true },
+        { label: 'Willpower', value: Number(ability.WillpowerBase) },
+      ],
+    });
+  };
+
   const printSpell = async (_id: string, bonus?: number, familiarity: number = 0, powerFocus: number = 0) => {
     const settings = useSettingsStore();
     const char = useCharacterStore();
@@ -118,6 +134,9 @@ export const useSpellStore = defineStore('spells', () => {
 
     if (costModel === 'fatigue') {
       await char.rollPowerFatigueTest(Number(spell.mpCost), powerFocus);
+    }
+    if (costModel === 'price') {
+      await rollPriceTest(spell);
     }
   };
   const printSpellDamage = async(spell: any)=> {
