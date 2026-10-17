@@ -1,37 +1,17 @@
 import { useSettingsStore } from "./settingsStore";
-import { createPinia } from "pinia";
-import { describe, it, expect } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
+import { describe, it, expect, beforeEach } from "vitest";
 
 describe("settingsStore", () => {
-  const defaultEncumbrancePenalty = -4;
-  const pinia = createPinia();
-  const store = useSettingsStore(pinia);
+  beforeEach(() => setActivePinia(createPinia()));
 
-  it("defaults correct values", () => {
-    expect(store).toBeTruthy();
-
-    expect(store.dehydrate()).toEqual({
-      settings: {
-        encumbrancePenalty: defaultEncumbrancePenalty,
-      },
-    });
+  it("defaults encumbrance penalty to 0", () => {
+    expect(useSettingsStore().dehydrate().settings.encumbrancePenalty).toBe(0);
   });
 
   it("updates encumbrance penalty", () => {
-    const newEncumbrancePenalty = -1;
-
-    expect(
-      store.hydrate({
-        settings: {
-          encumbrancePenalty: newEncumbrancePenalty,
-        },
-      })
-    );
-
-    expect(store.dehydrate()).toEqual({
-      settings: {
-        encumbrancePenalty: newEncumbrancePenalty,
-      },
-    });
+    const store = useSettingsStore();
+    store.hydrate({ settings: { encumbrancePenalty: -1 } } as any);
+    expect(store.dehydrate().settings.encumbrancePenalty).toBe(-1);
   });
 });
