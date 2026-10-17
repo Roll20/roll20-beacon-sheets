@@ -10,12 +10,14 @@ import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useAbilityScoreStore } from '../abilityScores/abilityScoresStore';
 import { useCharacterStore } from '../character/characterStore';
 import { powerFatiguePenalty } from '@/utility/arcanaPower';
+import type { PowerSourceId } from '@/utility/powerSources';
 
 // See "inventoryStore.ts" for an explanation of how to use list/repeating sections
 interface Spell {
   _id: string;
   name: string;
   arcanaType: string;
+  sourceId?: PowerSourceId;
   requirements:string;
   shortDescription: string;
   description: string;
@@ -26,6 +28,8 @@ interface Spell {
   mpCost:number;
   castingTime:string;
   targetNumber:number;
+  // Optional TN for the Price Test of price-based powers; 0 means none set.
+  priceTN?: number;
   spellTest:string;
   extendable:boolean;
   damageHit:string;
@@ -49,6 +53,7 @@ export const useSpellStore = defineStore('spells', () => {
       _id: uuidv4(),
       name: spell ? spell?.name : '',
       arcanaType: spell ? spell?.arcanaType : '',
+      sourceId: spell?.sourceId ?? 'arcana',
       requirements:spell ? spell?.requirements : '',
       shortDescription: spell ? spell?.shortDescription : '',
       description: spell ? spell?.description : '',
@@ -59,6 +64,7 @@ export const useSpellStore = defineStore('spells', () => {
       mpCost:spell ? spell?.mpCost : 0,
       castingTime:spell ? spell?.castingTime : '',
       targetNumber:spell ? spell?.targetNumber : 0,
+      priceTN: Number(spell?.priceTN) || 0,
       spellTest:spell ? spell?.spellTest : '',
       spellResistance:spell ? spell?.spellResistance : '',
       extendable:spell ? spell?.extendable : false,
