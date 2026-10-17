@@ -3,7 +3,38 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 
 vi.mock("@/utility/rollToChat", () => ({ default: vi.fn() }));
 
+import rollToChat from "@/utility/rollToChat";
 import { useCharacterStore } from "./characterStore";
+
+describe("rollPowerFatigueTest", () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.mocked(rollToChat).mockReset();
+  });
+
+  it("rolls against 9 + half the cost", async () => {
+    vi.mocked(rollToChat).mockResolvedValue(20);
+    await useCharacterStore().rollPowerFatigueTest(5, 2);
+    expect(vi.mocked(rollToChat).mock.calls[0][0]).toMatchObject({
+      rollType: "powerFatigue",
+      targetNumber: 11,
+    });
+  });
+
+  it("adds a level of Power Fatigue on a failure", async () => {
+    vi.mocked(rollToChat).mockResolvedValue(10);
+    const char = useCharacterStore();
+    await char.rollPowerFatigueTest(4, 0);
+    expect(char.powerFatigue).toBe(1);
+  });
+
+  it("adds nothing on a success", async () => {
+    vi.mocked(rollToChat).mockResolvedValue(11);
+    const char = useCharacterStore();
+    await char.rollPowerFatigueTest(4, 0);
+    expect(char.powerFatigue).toBe(0);
+  });
+});
 
 describe("characterStore power pools", () => {
   beforeEach(() => {

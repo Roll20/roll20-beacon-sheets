@@ -12,7 +12,7 @@ import { useSettingsStore } from "../settings/settingsStore";
 import { useMetaStore } from "../meta/metaStore";
 import { arrayToObject, objectToArray } from "@/utility/objectify";
 import { v4 as uuidv4 } from "uuid";
-import { MAX_POWER_FATIGUE, POWER_SOURCE_IDS } from "@/utility/powerSources";
+import { MAX_POWER_FATIGUE, POWER_SOURCE_IDS, fatigueTestTN } from "@/utility/powerSources";
 import type { PowerSourceId } from "@/utility/powerSources";
 
 export type CharacterHydrate = {
@@ -392,20 +392,22 @@ export const useCharacterStore = defineStore("character", () => {
 
   const rollPowerFatigueTest = async (powerCost: number, focus: number) => {
     const ability = useAbilityScoreStore();
-    const halfPower = Math.floor(powerCost / 2);
+    const targetNumber = fatigueTestTN(powerCost);
     const components = [
       { label: `Base Roll`, sides: 6, count: 3, alwaysShowInBreakdown: true },
       { label: "Willpower", value: ability.WillpowerBase },
       { label: "Focus", value: focus ? focus : 0 },
     ];
-    await rollToChat({
+    const total = await rollToChat({
       characterName: useMetaStore().name,
       title: "",
       subtitle: "Power Fatigue Test",
       rollType: "powerFatigue",
-      targetNumber: 9 + halfPower,
+      targetNumber,
       components,
     });
+    if (total < targetNumber) addPowerFatigue();
+    return total;
   };
   // const rollSpell = async () => {
   //   const abilityScoreStore = useAbilityScoreStore();
