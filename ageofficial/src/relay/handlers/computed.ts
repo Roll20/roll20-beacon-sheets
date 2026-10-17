@@ -119,47 +119,48 @@ export const setHealth = (
     },
   });
 };
-export const getMagicPoints = ({ character }: { character: Character }) => {
-  if (!character.attributes?.character) return {};
-  const current = (character.attributes.character as CharacterHydrate).character
-    .magic;
-  const max = (character.attributes.character as CharacterHydrate).character
-    .magicMax;
-  return {
-    current,
-    max,
-  };
-};
-export const setMagic = (
-  {
-    character,
-    dispatch,
-  }: {
-    character: Character;
-    dispatch: Dispatch;
+type PoolKey = "magic" | "eldritchPoints" | "psychicPoints";
+type PoolMaxKey = "magicMax" | "eldritchPointsMax" | "psychicPointsMax";
+
+const poolAccessors = (currentKey: PoolKey, maxKey: PoolMaxKey) => ({
+  get: ({ character }: { character: Character }) => {
+    if (!character.attributes?.character) return {};
+    const stored = (character.attributes.character as CharacterHydrate).character;
+    return { current: stored[currentKey], max: stored[maxKey] };
   },
-  ...args: any[]
-) => {
-  const newValue = args[0];
-  const oldValue =
-    (character.attributes?.character as CharacterHydrate | undefined)?.character
-      ?.magic ?? 0;
-  const characterId = character.id;
-  const finalValue = applyChange(oldValue, newValue);
-  dispatch.update({
-    character: {
-      id: characterId,
-      attributes: {
-        updateId: "TOKENCHANGE",
-        character: {
+  set: (
+    { character, dispatch }: { character: Character; dispatch: Dispatch },
+    ...args: any[]
+  ) => {
+    const oldValue =
+      (character.attributes?.character as CharacterHydrate | undefined)?.character?.[
+        currentKey
+      ] ?? 0;
+    dispatch.update({
+      character: {
+        id: character.id,
+        attributes: {
+          updateId: "TOKENCHANGE",
           character: {
-            magic: finalValue,
+            character: {
+              [currentKey]: applyChange(oldValue, args[0]),
+            },
           },
         },
       },
-    },
-  });
-};
+    });
+  },
+});
+
+const magicPool = poolAccessors("magic", "magicMax");
+export const getMagicPoints = magicPool.get;
+export const setMagic = magicPool.set;
+const eldritchPool = poolAccessors("eldritchPoints", "eldritchPointsMax");
+export const getEldritchPoints = eldritchPool.get;
+export const setEldritchPoints = eldritchPool.set;
+const psychicPool = poolAccessors("psychicPoints", "psychicPointsMax");
+export const getPsychicPoints = psychicPool.get;
+export const setPsychicPoints = psychicPool.set;
 export const getStuntPoints = ({ character }: { character: Character }) => {
   if (!character.attributes?.character) return {};
   const current = (character.attributes.character as CharacterHydrate).character
