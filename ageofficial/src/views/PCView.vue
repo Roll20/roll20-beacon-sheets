@@ -8,10 +8,8 @@
             <div>
               <HPView />
             </div>
-            <div>
-              <MPView />
-            </div>
-            <div>
+            <MPView />
+            <div class="bio-sub-fixed">
               <StuntPointsView />
             </div>
           </div>

@@ -273,9 +273,16 @@ body {
         border-top: 3px solid;
       }
       & .bio-sub-section {
-        display: grid;
-        grid-template-columns: 1fr 1fr 80px;
+        // One column per header resource: HP, each power widget, then Stunts.
+        display: flex;
         flex: 1 1 auto;
+        & > * {
+          flex: 1 1 0;
+          min-width: 0;
+        }
+        & > .bio-sub-fixed {
+          flex: 0 0 80px;
+        }
         gap: 20px;
         padding: 0 22px;
         margin-bottom: -6px;
