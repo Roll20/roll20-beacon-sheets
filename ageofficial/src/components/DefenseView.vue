@@ -15,11 +15,11 @@
         class="age-defense"
         :class="{
           'age-actions-magic-fage':
-            settings.showArcana && settings.gameSystem === 'fage2e',
+            settings.anyPowerSource && settings.gameSystem === 'fage2e',
           'age-actions-magic-mage':
-            settings.showArcana && settings.gameSystem === 'mage',
+            settings.anyPowerSource && settings.gameSystem === 'mage',
           'age-actions-magic-br':
-            settings.showArcana && settings.gameSystem === 'blue rose',
+            settings.anyPowerSource && settings.gameSystem === 'blue rose',
         }"
       >
         <!-- <div class="age-actions" :class="{ 'age-actions-mage': settings.gameSystem === 'mage' || bio.profession === 'Mage', 'age-actions-fage': settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'}"> -->
@@ -43,7 +43,7 @@
           <div class="age-container-content-corner-top-right"></div>
           <div class="age-container-content-corner-bottom-left"></div>
         </div>
-        <div class="age-container-content" v-if="settings.showArcana">
+        <div class="age-container-content" v-if="settings.anyPowerSource">
           <div class="age-container-heading">
             <span
               v-if="
