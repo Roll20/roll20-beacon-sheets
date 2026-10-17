@@ -27,9 +27,26 @@
                   aria-describedby="basic-addon1"
                 />
               </div>
+              <div class="mb-3 col" v-if="settings.enabledPowerSources.length > 1">
+                <span class="age-input-label">Source</span>
+                <select
+                  class="age-atk-select form-select"
+                  v-model="spell.sourceId"
+                  @change="onSourceChange"
+                  aria-label="Power source"
+                >
+                  <option
+                    v-for="id in settings.enabledPowerSources"
+                    :key="id"
+                    :value="id"
+                  >
+                    {{ sourceLabel(id, settings.gameSystem) }}
+                  </option>
+                </select>
+              </div>
               <div class="mb-3 col">
                 <span class="age-input-label" id="basic-addon1">{{
-                  magicLabel
+                  typeLabel
                 }}</span>
                 <select
                   class="age-atk-select form-select"
@@ -101,9 +118,19 @@
                   aria-describedby="basic-addon1"
                 />
               </div>
-              <div class="mb-3 col" v-if="settings.gameSystem !== 'blue rose'">
+              <div class="mb-3 col" v-if="isPriceSource">
+                <span class="age-input-label">Price Test TN</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="Optional"
+                  aria-label="Price Test TN"
+                  v-model.number="spell.priceTN"
+                />
+              </div>
+              <div class="mb-3 col" v-if="costFieldLabel">
                 <span class="age-input-label" id="basic-addon1"
-                  >{{ magicPoints }} Cost</span
+                  >{{ costFieldLabel }}</span
                 >
                 <input
                   type="number"
@@ -397,9 +424,16 @@
 <script setup>
 import { useSpellStore } from "@/sheet/stores/magic/magicStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
-import { brArcana, fageArcana, magePowers, magePsychicPowers } from "./magicTypes";
+import { brArcana, fageArcana, magePowers } from "./magicTypes";
 import { computed, ref } from "vue";
 import { bluerose, cthulhu, fage1e, fage2e, mage } from "../modifiers/focuses";
+import {
+  costLabel,
+  pointsLabel,
+  sourceLabel,
+  sourceTypeList,
+  spellSourceId,
+} from "@/utility/powerSources";
 
 const props = defineProps({
   show: Boolean,
@@ -409,28 +443,18 @@ const props = defineProps({
 });
 
 const settings = useSettingsStore();
-const magicPoints = computed(() =>
-  settings.gameSystem === "mage"
-    ? settings.usesPowerFatigue
-      ? "Power"
-      : "PP"
-    : "MP"
+if (!props.spell.sourceId) props.spell.sourceId = spellSourceId(props.spell);
+const sourceId = computed(() => spellSourceId(props.spell));
+const magicPoints = computed(() => pointsLabel(sourceId.value, settings.gameSystem));
+const costFieldLabel = computed(() =>
+  costLabel(sourceId.value, settings.costModelFor(sourceId.value), settings.gameSystem)
 );
-const magicTypes = computed(() => {
-  switch (settings.gameSystem) {
-    case "fage1e":
-    case "fage2e":
-      return fageArcana;
-    case "mage":
-      return settings.threefold
-        ? [...new Set([...magePowers, ...magePsychicPowers])].sort()
-        : magePowers;
-    case "blue rose":
-      return brArcana;
-    default:
-      return [];
-  }
-});
+const isPriceSource = computed(() => settings.costModelFor(sourceId.value) === "price");
+const typeLabel = computed(() => sourceLabel(sourceId.value, settings.gameSystem));
+const magicTypes = computed(() => sourceTypeList(sourceId.value, settings));
+const onSourceChange = () => {
+  props.spell.arcanaType = "";
+};
 const selected = ref(
   props.spell.ability
     ? `${props.spell.ability} (${props.spell.abilityFocus})`
