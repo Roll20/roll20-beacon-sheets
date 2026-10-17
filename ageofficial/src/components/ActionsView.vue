@@ -190,9 +190,7 @@ const onRest = (type) => {
         char.health + 10 + ability.ConstitutionBase + char.level,
         char.healthMax
       );
-      if (settings.showArcana) {
-        char.magic = char.magicMax;
-      }
+      char.refillPools();
       if (settings.usesPowerFatigue) {
         char.powerFatigue = 0;
       }

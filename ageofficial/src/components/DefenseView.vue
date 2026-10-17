@@ -104,7 +104,6 @@ import { useInventoryStore } from "@/sheet/stores/inventory/inventoryStore";
 import { computed, ref, watch } from "vue";
 import { useConditionsStore } from "@/sheet/stores/conditions/conditionsStore";
 import { objectToArray } from "@/utility/objectify";
-import { useBioStore } from "@/sheet/stores/bio/bioStore";
 import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 import {
@@ -132,7 +131,6 @@ const { rollAbilityInitiative } = useAbilityScoreStore();
 const char = useCharacterStore();
 const ability = useAbilityScoreStore();
 const inventory = useInventoryStore();
-const bio = useBioStore();
 const settings = useSettingsStore();
 // const armorMod = ref(0);
 // armorMod.value = armorRatingMod();
@@ -216,25 +214,6 @@ const speedModifiers = computed(() => {
     return 0;
   }
 });
-const onRest = (type) => {
-  switch (type) {
-    case "Breather":
-      char.health = Math.min(
-        char.health + 5 + ability.ConstitutionBase + char.level,
-        char.healthMax
-      );
-      break;
-    case "Total Rest":
-      char.health = Math.min(
-        char.health + 10 + ability.ConstitutionBase + char.level,
-        char.healthMax
-      );
-      if (bio.profession === "Mage") {
-        char.magic = char.magicMax;
-      }
-      break;
-  }
-};
 // Reference to the SlidingSidebar component
 const sidebarRef = ref(null);
 
