@@ -411,7 +411,7 @@ const props = defineProps({
 const settings = useSettingsStore();
 const magicPoints = computed(() =>
   settings.gameSystem === "mage"
-    ? settings.userPowerFatigue
+    ? settings.usesPowerFatigue
       ? "Power"
       : "PP"
     : "MP"

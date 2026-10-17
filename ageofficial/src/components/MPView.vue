@@ -1,7 +1,7 @@
 <template>
   <div v-if="settings.showArcana">
     <div
-      v-if="settings.userPowerFatigue"
+      v-if="settings.usesPowerFatigue"
       tabindex="0"
       class="mp-pf-container"
       @mouseenter="pfHover = true"

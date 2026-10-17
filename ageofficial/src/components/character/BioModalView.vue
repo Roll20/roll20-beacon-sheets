@@ -252,7 +252,7 @@
             </div>
             <div
               class="mb-3 col age-form-field"
-              v-if="settings.showArcana && !settings.userPowerFatigue"
+              v-if="settings.showArcana && !settings.usesPowerFatigue"
             >
               <span id="basic-addon1" class="age-input-label"
                 >Max

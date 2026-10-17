@@ -91,7 +91,7 @@ export const useSpellStore = defineStore('spells', () => {
         { label: 'Aim', value: useSettingsStore().aimValue  }
       )  
     }
-    if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
+    if( powerFatiguePenalty.value > 0 && settings.usesPowerFatigue){
       components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
     }
     // if (familiarity) {

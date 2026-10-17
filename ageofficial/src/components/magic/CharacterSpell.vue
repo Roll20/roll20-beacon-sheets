@@ -20,8 +20,8 @@
                 data-bs-backdrop="static" 
                 v-tippy="{ content: settings.gameSystem === 'blue rose' ? 'Cast '+magicLabel : 'Cast '+magicLabel+' (' + spell.mpCost + ''+magicPoints+')' }"
                 @click="handlePrint"
-                :disabled="(settings.userPowerFatigue ? false : char.magic < spell.mpCost)"
-                :class="{ 'spell-btn-disabled':(settings.userPowerFatigue ? false : char.magic < spell.mpCost)}">
+                :disabled="(settings.usesPowerFatigue ? false : char.magic < spell.mpCost)"
+                :class="{ 'spell-btn-disabled':(settings.usesPowerFatigue ? false : char.magic < spell.mpCost)}">
             <div class="age-spell-cast"></div>
         </button>
         <div>
@@ -163,7 +163,7 @@ const arcanaIconSrc = computed(() =>
 const magicPoints = computed(() => {
   if (settings.gameSystem !== 'mage') return 'MP';
 
-  return settings.userPowerFatigue ? ' Power Cost' : 'PP';
+  return settings.usesPowerFatigue ? ' Power Cost' : 'PP';
 });
 const toggleExpand = () => {
   expanded.value = !expanded.value;

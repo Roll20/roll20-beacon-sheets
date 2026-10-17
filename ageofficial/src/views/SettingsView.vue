@@ -250,16 +250,6 @@
                 </label>
                 <span class="age-toggle-label">Display Enhancements</span>
               </div>
-              <div
-                class="input-group"
-                v-if="settings.gameSystem === 'mage' && settings.showArcana"
-              >
-                <label class="age-checkbox-toggle age-checkbox-label">
-                  <input type="checkbox" v-model="settings.userPowerFatigue" />
-                  <span class="slider round"></span>
-                </label>
-                <span class="age-toggle-label">Use Power Fatigue</span>
-              </div>
               <div class="input-group">
                 <label class="age-checkbox-toggle age-checkbox-label">
                   <input type="checkbox" v-model="settings.showAfterMastery" />

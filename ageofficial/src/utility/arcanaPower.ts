@@ -7,6 +7,6 @@ export const powerFatiguePenalty = computed(() => {
   const char = useCharacterStore();
   const penalty = ref(0);
   penalty.value =
-    settings.userPowerFatigue && char.powerFatigue ? char.powerFatigue : 0;
+    settings.usesPowerFatigue && char.powerFatigue ? char.powerFatigue : 0;
   return penalty.value;
 });
