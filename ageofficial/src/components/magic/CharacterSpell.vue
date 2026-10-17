@@ -211,7 +211,8 @@ const handlePrint = () => {
   if(settings.gameSystem === 'blue rose'){
     showFamiliarityModal.value = true;
   } else {
-    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll) + focusBonus());
+    const focus = focusBonus();
+    spellStore.printSpell(props.spell._id, parseInt(toAttackRoll) + focus, 0, focus);
   }
 };
 const handleDamagePrint = () => {
