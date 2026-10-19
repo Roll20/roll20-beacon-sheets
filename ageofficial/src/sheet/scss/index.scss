@@ -274,17 +274,23 @@ body {
       }
       & .bio-sub-section {
         // One column per header resource: HP, each power widget, then Stunts.
+        // Wraps so extra power pools move to a new line instead of overlapping.
         display: flex;
+        flex-wrap: wrap;
         flex: 1 1 auto;
-        gap: 20px;
+        gap: 10px 20px;
         padding: 0 22px;
         margin-bottom: -6px;
-        & > * {
-          flex: 1 1 0;
-          min-width: 0;
+        // MPView uses display: contents, so its widgets are flex items too.
+        & > *,
+        & > .mp-view > * {
+          flex: 1 1 110px;
+          min-width: 110px;
         }
-        & > .bio-sub-fixed {
+        & > .bio-sub-fixed,
+        & > .mp-view > .bio-sub-fixed {
           flex: 0 0 80px;
+          min-width: 80px;
         }
         & .age-subsection-header {
           text-align: center;
