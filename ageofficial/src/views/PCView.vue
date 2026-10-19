@@ -1,15 +1,22 @@
 <template>
   <div class="age-sheet">
     <div class="player-sheet-wrapper">
-      <section class="header-section">
+      <section
+        class="header-section"
+        :class="{ 'header-section--wide': powerWidgetCount > 1 }"
+      >
         <div class="section-card">
           <BioSection :show="showSelectPulpyModal" />
           <div class="bio-sub-section">
             <div>
               <HPView />
             </div>
-            <MPView />
-            <div class="bio-sub-fixed">
+            <MPView :show-eldritch-price="false" />
+            <div
+              class="bio-sub-fixed"
+              :class="{ 'bio-sub-counters': settings.tracksEldritchPrice }"
+            >
+              <EldritchPriceView v-if="settings.tracksEldritchPrice" />
               <StuntPointsView />
             </div>
           </div>
@@ -124,7 +131,7 @@
   </Teleport>
 </template>
 <script setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useMetaStore } from "@/sheet/stores/meta/metaStore";
 import { useBioStore } from "@/sheet/stores/bio/bioStore";
 import { useCharacterStore } from "@/sheet/stores/character/characterStore";
@@ -146,9 +153,17 @@ import QualityTalentSection from "@/components/qualities/QualitiesTalentSection.
 import DefenseView from "@/components/DefenseView.vue";
 import MovementView from "@/components/MovementView.vue";
 import StuntPointsView from "@/components/StuntPointsView.vue";
+import EldritchPriceView from "@/components/magic/EldritchPriceView.vue";
 import CombatTabsView from "@/components/tabs/CombatTabsView.vue";
 import QualitiesTabsView from "@/components/tabs/QualitiesTabsView.vue";
 const settings = useSettingsStore();
+// Header widgets beyond HP and Stunts: one per points pool, the fatigue tracker, Eldritch Price.
+const powerWidgetCount = computed(
+  () =>
+    settings.pointsPowerSources.length +
+    (settings.usesPowerFatigue ? 1 : 0) +
+    (settings.tracksEldritchPrice ? 1 : 0)
+);
 const meta = useMetaStore();
 const bio = useBioStore();
 const char = useCharacterStore();

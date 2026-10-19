@@ -139,6 +139,11 @@ body {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 24px;
+      // Several power widgets in the header: give the details card more room.
+      // Abilities never drops below 360px (or half, on narrow sheets) so its labels fit.
+      &.header-section--wide {
+        grid-template-columns: minmax(0, 3fr) minmax(min(360px, 50%), 2fr);
+      }
     }
     & .section-card {
       background-color: rgba(255, 255, 255, 0.75);
@@ -305,14 +310,41 @@ body {
             margin: 0 auto;
           }
         }
+        // Eldritch Price and Stunts stacked as two compact rows: box, then label.
+        & > .bio-sub-fixed.bio-sub-counters {
+          display: grid;
+          // Label column is capped so "Eldritch Price" wraps instead of squeezing the bars.
+          grid-template-columns: auto minmax(0, clamp(60px, 7vw, 110px));
+          align-items: center;
+          gap: 12px 8px;
+          max-width: none;
+          & .sp-bar-container,
+          & .eldritch-price-container {
+            height: auto;
+          }
+          & .age-container-content {
+            width: clamp(40px, 4.5vw, 52px);
+            margin: 0;
+          }
+          & .age-num-input {
+            padding: 2px 0;
+            font-size: clamp(14px, 1.8vw, 20px);
+          }
+          & .age-subsection-header {
+            margin: 0;
+            text-align: left;
+            font-size: clamp(11px, 1.3vw, 14px);
+          }
+        }
         & .hpmp-container,
         & .age-input {
-          font-size: clamp(15px, 2.2vw, 24px);
+          font-size: clamp(13px, 2.2vw, 24px);
         }
         & .age-input {
           width: 100%;
           max-width: 55px;
           min-width: 0;
+          padding: 0;
         }
         // Hide number spinners so values centre without the old padding offset.
         & input[type="number"] {
@@ -510,6 +542,8 @@ body {
         font-weight: 600;
         display: grid;
         grid-template-columns: minmax(0, 1fr) min-content minmax(0, 1fr);
+        // The current value is an <input>; align on text baselines so it lines up with max.
+        align-items: baseline;
         & .hpmp-current {
           display: flex;
           justify-content: center;

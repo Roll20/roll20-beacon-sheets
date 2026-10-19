@@ -7,13 +7,18 @@
       :source-id="id"
     />
     <PowerFatigueTracker v-if="settings.usesPowerFatigue" />
-    <div v-if="settings.tracksEldritchPrice" class="bio-sub-fixed">
+    <div v-if="showEldritchPrice && settings.tracksEldritchPrice" class="bio-sub-fixed">
       <EldritchPriceView />
     </div>
   </div>
 </template>
 <script setup>
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
+
+// The PC header stacks Eldritch Price beside Stunts itself, so it opts out here.
+defineProps({
+  showEldritchPrice: { type: Boolean, default: true },
+});
 import PowerPoolBar from "@/components/magic/PowerPoolBar.vue";
 import PowerFatigueTracker from "@/components/magic/PowerFatigueTracker.vue";
 import EldritchPriceView from "@/components/magic/EldritchPriceView.vue";
