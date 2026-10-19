@@ -2,7 +2,10 @@
 import { computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useSheetRolls } from '@/composables/useSheetRolls.js'
-import { FEATURE_GROUPS, RECOVERIES, featureColumnValues, featurePicks, resourceMax } from '@/rules/index.js'
+import {
+  FEATURE_GROUPS, RECOVERIES, ABILITIES, featureColumnValues, featurePicks, resourceMax,
+  normalizeFeatureRoll, rollActs, pickAllows, featureSaveDC, diceAt, featureReached,
+} from '@/rules/index.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
 
 const props = defineProps({
@@ -62,6 +65,58 @@ const setMaxOverride = (row, value) => {
   row.maxOverride = value === '' || !Number.isFinite(n) ? null : Math.max(0, Math.trunc(n))
 }
 
+const roll = computed(() => feature.value?.roll ?? null)
+const acts = computed(() => !!feature.value && rollActs(roll.value) && pickAllows(roll.value, feature.value))
+const rollsDice = computed(() => !!roll.value && (!!roll.value.dice || roll.value.plus.length > 0 || roll.value.lines.length > 0))
+const abbr = (id) => ABILITIES.find((a) => a.id === id)?.abbr ?? id
+
+const dcLabel = computed(() => {
+  if (!acts.value || !roll.value?.save) return ''
+  const dc = featureSaveDC(roll.value.save, { ...sheet.diceContext(), techSaveDC: sheet.techSaveDCValue })
+  return [roll.value.save.ability ? abbr(roll.value.save.ability) : '', `DC ${dc ?? '-'}`].filter(Boolean).join(' ')
+})
+
+const setRoll = (patch) => {
+  feature.value.roll = normalizeFeatureRoll({ ...(feature.value.roll ?? {}), ...patch })
+}
+
+const bookDice = computed(() => !!roll.value && (typeof roll.value.dice === 'object' || roll.value.lines.length > 0))
+const diceText = computed(() => {
+  if (!roll.value) return ''
+  if (roll.value.lines.length) return roll.value.lines.map((l) => l.label).join(' / ')
+  return typeof roll.value.dice === 'object' ? diceAt(roll.value.dice, sheet.diceContext()) : roll.value.dice
+})
+
+const PLUS = [
+  { id: 'level', name: 'Level' },
+  { id: 'halfLevel', name: 'Half Level' },
+  ...ABILITIES.map((a) => ({ id: a.id, name: a.name })),
+]
+const plusAt = (i) => roll.value?.plus?.[i] ?? ''
+const setPlus = (i, value) => {
+  const next = [...(roll.value?.plus ?? [])]
+  next[i] = value
+  setRoll({ plus: next.filter(Boolean) })
+}
+
+const saveChoice = computed(() => (roll.value?.save ? roll.value.save.ability || 'any' : ''))
+const setSave = (choice) => setRoll({
+  save: choice ? { ability: choice === 'any' ? '' : choice, dc: roll.value?.save?.dc || 'tech' } : null,
+})
+const dcKind = computed(() => {
+  const dc = roll.value?.save?.dc ?? ''
+  return /^\d+$/.test(dc) ? 'number' : dc
+})
+const setDcKind = (kind) => setRoll({ save: { ...roll.value.save, dc: kind === 'number' ? '13' : kind } })
+const setDcNumber = (value) => {
+  const n = Math.trunc(Number(value))
+  if (n > 0) setRoll({ save: { ...roll.value.save, dc: String(n) } })
+}
+
+const spendable = computed(() => sheet.features
+  .filter((f) => f._id !== props.id && featureReached(f, sheet.effectiveLevel) && sheet.usesLeftFor(f._id) !== null)
+  .map((f) => ({ value: f.ref || f._id, name: f.name || 'Unnamed feature' })))
+
 const levelInput = computed({
   get: () => feature.value?.level ?? '',
   set: (value) => {
@@ -98,7 +153,16 @@ const levelInput = computed({
           <option v-for="o in offered(i)" :key="o.name" :value="o.name">{{ o.name }}</option>
         </select>
       </template>
+      <span v-if="dcLabel" class="value">{{ dcLabel }}</span>
       <span v-if="feature.level" class="level">Level {{ feature.level }}</span>
+      <button
+        v-if="acts"
+        type="button"
+        class="act"
+        :disabled="!rolls.canUseFeature(feature)"
+        :title="`${rollsDice ? 'Roll' : 'Use'} ${feature.name || 'this feature'}`"
+        @click="rolls.useFeature(feature)"
+      >{{ rollsDice ? 'Roll' : 'Use' }}</button>
       <ConfirmDelete class="del" title="Remove" @confirm="sheet.removeFeature(feature._id)" />
     </div>
 
@@ -146,6 +210,64 @@ const levelInput = computed({
           <ConfirmDelete class="del" title="Remove uses" @confirm="sheet.removeResource(row._id)" />
         </div>
         <button type="button" class="mini" @click="sheet.addResource(feature._id)">+ Uses</button>
+      </div>
+      <div class="roll f--full">
+        <label class="f">
+          <span>Dice</span>
+          <input
+            :value="diceText"
+            :disabled="bookDice"
+            placeholder="1d8"
+            @change="setRoll({ dice: $event.target.value.trim() })"
+          />
+        </label>
+        <label v-for="i in [0, 1]" :key="i" class="f">
+          <span>Plus</span>
+          <select :value="plusAt(i)" @change="setPlus(i, $event.target.value)">
+            <option value="">&mdash;</option>
+            <option v-for="p in PLUS" :key="p.id" :value="p.id">{{ p.name }}</option>
+          </select>
+        </label>
+        <label class="f">
+          <span>Effect</span>
+          <select :value="roll?.heal ?? ''" @change="setRoll({ heal: $event.target.value })">
+            <option value="">Roll</option>
+            <option value="self">Heal Self</option>
+            <option value="target">Heal Target</option>
+          </select>
+        </label>
+        <label v-if="!roll?.heal" class="f">
+          <span>Type</span>
+          <input :value="roll?.type ?? ''" placeholder="Fire" @change="setRoll({ type: $event.target.value.trim() })" />
+        </label>
+        <label class="f">
+          <span>Save</span>
+          <select :value="saveChoice" @change="setSave($event.target.value)">
+            <option value="">&mdash;</option>
+            <option value="any">Any</option>
+            <option v-for="a in ABILITIES" :key="a.id" :value="a.id">{{ a.name }}</option>
+          </select>
+        </label>
+        <label v-if="roll?.save" class="f">
+          <span>Save DC</span>
+          <select :value="dcKind" @change="setDcKind($event.target.value)">
+            <option value="tech">Tech Save DC</option>
+            <option v-for="a in ABILITIES" :key="a.id" :value="a.id">{{ a.name }}</option>
+            <option value="strength|dexterity">Strength or Dexterity</option>
+            <option value="number">Number</option>
+          </select>
+        </label>
+        <label v-if="dcKind === 'number'" class="f f--narrow">
+          <span>DC</span>
+          <input type="number" min="1" :value="roll.save.dc" @change="setDcNumber($event.target.value)" />
+        </label>
+        <label v-if="!uses.length && spendable.length" class="f">
+          <span>Spends</span>
+          <select :value="roll?.spends ?? ''" @change="setRoll({ spends: $event.target.value })">
+            <option value="">&mdash;</option>
+            <option v-for="s in spendable" :key="s.value" :value="s.value">{{ s.name }}</option>
+          </select>
+        </label>
       </div>
     </div>
 
@@ -243,6 +365,28 @@ const levelInput = computed({
 }
 
 .picked { font-weight: 700; }
+
+.act {
+  @include ps-caption;
+  flex: 0 0 auto;
+  background: var(--ps-field);
+  border: var(--ps-border-thin);
+  border-radius: var(--ps-radius-sm);
+  padding: 1px 6px;
+  font-size: 9px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: var(--ps-panel-alt); color: var(--ps-blue); }
+  &:disabled { opacity: 0.45; cursor: default; }
+}
+
+.roll {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 5px 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(var(--ps-line-soft-rgb), 0.3);
+}
 
 .uses {
   display: flex;

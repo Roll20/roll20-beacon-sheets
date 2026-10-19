@@ -14,7 +14,7 @@ import {
   patchRepairFormula, PATCH_REPAIR_MAX_DICE, CREW_ROLES, crewSaveBonus,
   getNpcShipAbility, heavyDisadvantage, armorDisadvantage, attackAbility,
   describeCombo, comboTier, comboSaveDC, pickAllows, featureRollFormula, featureRollLines, riderFormula,
-  featurePicks,
+  featurePicks, featureSaveDC, featureReached,
 } from '@/rules/index.js'
 
 const options = reactive({
@@ -367,16 +367,37 @@ export const useSheetRolls = () => {
     })
   }
 
-  const useResource = async (resourceId) => {
-    const row = sheet.resources.find((r) => r._id === resourceId)
-    const feature = row && sheet.features.find((f) => f._id === row.feature)
-    if (!feature || sheet.usesLeftFor(feature._id) === 0) return null
-    const title = row.name || feature.name
+  const spenderFor = (feature) => {
+    if (sheet.usesLeftFor(feature._id) !== null) return feature
+    const ref = feature.roll?.spends
+    if (!ref) return null
+    return sheet.features.find((f) => (f.ref === ref || f._id === ref) && f._id !== feature._id
+      && featureReached(f, sheet.effectiveLevel) && sheet.usesLeftFor(f._id) !== null) ?? null
+  }
+
+  const canUseFeature = (feature) => {
+    const spender = feature && spenderFor(feature)
+    return !!feature && (!spender || sheet.usesLeftFor(spender._id) > 0)
+  }
+
+  const saveLine = (roll) => {
+    if (!roll?.save) return {}
+    const dc = featureSaveDC(roll.save, { ...sheet.diceContext(), techSaveDC: sheet.techSaveDCValue })
+    if (!roll.save.ability) return { 'Save DC': dc === null ? '-' : String(dc) }
+    return { [`${abilityName(roll.save.ability)} Save`]: dc === null ? '-' : `DC ${dc}` }
+  }
+
+  const useFeature = async (feature, title = feature?.name) => {
+    if (!canUseFeature(feature)) return null
+    const spender = spenderFor(feature)
+    const spend = () => (spender ? sheet.spendUse(spender._id) : true)
+    title = title || feature.name
     const rolls = feature.roll && pickAllows(feature.roll, feature)
+    const save = rolls ? saveLine(feature.roll) : {}
     const lines = rolls ? featureRollLines(feature.roll, sheet.diceContext()) : []
     if (lines.length) {
       const results = await getRollResult(lines.map((l, i) => ({ key: `line${i}`, formula: l.formula })))
-      sheet.spendUse(feature._id)
+      spend()
       const type = feature.roll.type
       await send('roll', {
         characterName: characterName.value,
@@ -387,6 +408,7 @@ export const useSheetRolls = () => {
           const value = results[`line${i}`]?.total ?? 0
           return { label: `${l.label}: ${l.formula}`, display: String(value), value }
         }),
+        keyValues: Object.keys(save).length ? save : undefined,
       })
       return null
     }
@@ -402,19 +424,20 @@ export const useSheetRolls = () => {
       })
     }
     if (!roll?.formula) {
-      sheet.spendUse(feature._id)
+      spend()
       return send('chat', {
         characterName: characterName.value,
         title,
         subtitle: feature.pick || undefined,
+        keyValues: Object.keys(save).length ? save : undefined,
         textContent: featureText(feature),
       })
     }
     const results = await getRollResult([{ key: 'use', formula: roll.formula }])
     const rolled = results.use?.total ?? 0
     const total = roll.min !== null ? Math.max(roll.min, rolled) : rolled
-    sheet.spendUse(feature._id)
-    const keyValues = {}
+    spend()
+    const keyValues = { ...save }
     if (feature.roll.heal === 'self') {
       const before = Number(sheet.hp.current) || 0
       sheet.hp.current = healHp(before, sheet.hp.max, total)
@@ -423,12 +446,19 @@ export const useSheetRolls = () => {
     await send('roll', {
       characterName: characterName.value,
       title,
-      subtitle: feature.roll.heal ? 'Healing' : feature.pick || undefined,
+      subtitle: feature.roll.heal ? 'Healing' : feature.roll.type || feature.pick || undefined,
       total,
       components: [{ label: roll.formula, display: String(total), value: total }],
       keyValues,
     })
     return total
+  }
+
+  const useResource = async (resourceId) => {
+    const row = sheet.resources.find((r) => r._id === resourceId)
+    const feature = row && sheet.features.find((f) => f._id === row.feature)
+    if (!feature) return null
+    return useFeature(feature, row.name || feature.name)
   }
 
   const rollDeathSave = async () => {
@@ -902,8 +932,11 @@ export const useSheetRolls = () => {
       return total
     }
 
-    const post = (entry, heading = '') =>
-      send('chat', {
+    const post = (entry, heading = '') => {
+      const save = entry.saveAbility
+        ? { [`${abilityName(entry.saveAbility)} Save`]: entry.saveDC ? `DC ${entry.saveDC}` : '-' }
+        : {}
+      return send('chat', {
         characterName: characterName.value,
         title: entry.name || 'Entry',
         subtitle: heading || undefined,
@@ -912,10 +945,12 @@ export const useSheetRolls = () => {
               'To Hit': formatModifier(entry.attackPower),
               Range: entry.range || undefined,
               Damage: damageText(entry) || undefined,
+              ...save,
             }
-          : { Damage: damageText(entry) || undefined },
+          : { Damage: damageText(entry) || undefined, ...save },
         textContent: entry.text || undefined,
       })
+    }
 
     return { attack, damage, post }
   }
@@ -1061,6 +1096,8 @@ export const useSheetRolls = () => {
     rollWeaponDamage,
     rollDamage,
     useResource,
+    useFeature,
+    canUseFeature,
     postFeature,
     rollVehicleControl,
     rollVehicleSave,

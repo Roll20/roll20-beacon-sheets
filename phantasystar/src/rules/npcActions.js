@@ -33,6 +33,8 @@ export const normalizeEntry = (row = {}) => ({
   damageType: str(row.damageType),
   cost: Math.max(1, int(row.cost, 1)),
   technique: str(row.technique),
+  saveAbility: str(row.saveAbility),
+  saveDC: row.saveDC === '' || row.saveDC == null ? '' : int(row.saveDC, 0) || '',
 });
 
 export const normalizeLegendary = (value = {}) => ({
