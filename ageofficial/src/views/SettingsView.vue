@@ -184,22 +184,33 @@
           <div class="row age-modal-row" v-if="settings.gameSystem !== 'expanse'">
             <h4>Powers</h4>
             <div class="settings-toggle-grid">
-              <div class="input-group" v-for="row in sourceRows" :key="row.id">
-                <label class="age-checkbox-toggle age-checkbox-label">
-                  <input type="checkbox" v-model="settings[row.enabledKey]" />
-                  <span class="slider round"></span>
-                </label>
-                <span class="age-toggle-label">Use {{ row.label }}</span>
-                <select
+              <div class="settings-source" v-for="row in sourceRows" :key="row.id">
+                <div class="input-group">
+                  <label class="age-checkbox-toggle age-checkbox-label">
+                    <input type="checkbox" v-model="settings[row.enabledKey]" />
+                    <span class="slider round"></span>
+                  </label>
+                  <span class="age-toggle-label">Use {{ row.label }}</span>
+                </div>
+                <div
                   v-if="settings[row.enabledKey]"
-                  class="form-select settings-cost-model"
-                  v-model="settings[row.costKey]"
+                  class="settings-cost-model"
+                  role="radiogroup"
                   :aria-label="`${row.label} cost`"
                 >
-                  <option v-for="m in COST_MODELS" :key="m" :value="m">
+                  <button
+                    v-for="m in COST_MODELS"
+                    :key="m"
+                    type="button"
+                    role="radio"
+                    class="settings-cost-option"
+                    :class="{ active: settings[row.costKey] === m }"
+                    :aria-checked="settings[row.costKey] === m"
+                    @click="settings[row.costKey] = m"
+                  >
                     {{ COST_MODEL_LABELS[m] }}
-                  </option>
-                </select>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -597,11 +608,35 @@ const updateExpanseFaction = () => {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
+.settings-source {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
 .settings-cost-model {
-  width: auto;
-  margin-left: 8px;
-  padding-top: 0;
-  padding-bottom: 0;
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid var(--theme-primary);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.settings-cost-option {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 2px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.settings-cost-option + .settings-cost-option {
+  border-left: 1px solid var(--theme-primary);
+}
+.settings-cost-option.active {
+  background: var(--theme-primary);
+  color: #fff;
 }
 .settings-legal-grid {
   display: grid;
