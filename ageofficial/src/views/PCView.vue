@@ -14,7 +14,7 @@
             </div>
           </div>
         </div>
-        <div class="section-card">
+        <div class="section-card age-abilities-card">
           <AbilitiesView />
         </div>
       </section>

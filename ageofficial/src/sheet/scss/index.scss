@@ -149,6 +149,10 @@ body {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      // When the header card grows (several power pools), keep abilities under their title.
+      &.age-abilities-card {
+        justify-content: flex-start;
+      }
       & .age-character-bio-container {
         & .age-character-bio-value {
           font-size: clamp(14px, 1.15rem, 1rem);
@@ -275,8 +279,10 @@ body {
       & .bio-sub-section {
         // One column per header resource: HP, each power widget, then Stunts.
         // Wraps so extra power pools move to a new line instead of overlapping.
+        // Bars (HP and power pools) share the first line; counters wrap, centred, below.
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         flex: 1 1 auto;
         gap: 10px 20px;
         padding: 0 22px;
@@ -284,7 +290,11 @@ body {
         // MPView uses display: contents, so its widgets are flex items too.
         & > *,
         & > .mp-view > * {
-          flex: 1 1 110px;
+          flex: 1 1 90px;
+          min-width: 90px;
+        }
+        & > .mp-view > .mp-pf-container {
+          flex: 0 0 110px;
           min-width: 110px;
         }
         & > .bio-sub-fixed,
