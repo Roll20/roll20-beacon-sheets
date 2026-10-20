@@ -330,6 +330,8 @@ const characterStore = () => {
 
   const featureDefenseParts = computed(() => summary.value.featureDefense)
 
+  const accessoryBonus = computed(() => summary.value.accessory)
+
   const agilityValue = computed(() => summary.value.agility)
   const agilityBase = computed(() => summary.value.agilityBase)
   const featureMovementParts = computed(() => summary.value.movement)
@@ -566,7 +568,7 @@ const characterStore = () => {
     techAttackPowerValue, techSaveDCValue,
     saves, deathSaveBonus, skillTotals, skillRoster, passivePerceptionValue, attackPowerFor,
     damageFor, resolveAttack,
-    defenseValue, defenseDexApplied, featureDefenseParts, armorState, agilityValue, agilityBase, speedValue,
+    defenseValue, defenseDexApplied, featureDefenseParts, accessoryBonus, armorState, agilityValue, agilityBase, speedValue,
     climbValue, swimValue,
     featureMovementParts, nightVision,
     fate, hitDice, suggestedMaxHp,

@@ -569,6 +569,7 @@ export const itemFromPayload = (payload, page = {}) => {
     weight: check.text('item.weight', item.weight) ?? '',
     text: check.prose('description', payload.description) ?? '',
   });
+  if (isObject(payload.bonus)) equipment.bonus = payload.bonus;
   if (itemType === 'armor') {
     const armor = check.object('armor', payload.armor) ?? {};
     equipment.category = check.oneOf('armor.armorType', armor.armorType, ARMOR_CATEGORY_IDS) ?? 'light';
