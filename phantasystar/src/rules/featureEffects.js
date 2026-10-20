@@ -48,6 +48,21 @@ export const normalizeDefense = (defense) => {
   };
 };
 
+export const normalizeFate = (fate) => levelled(fate);
+
+export const featureFate = (features, { level = 1 } = {}) => {
+  const list = Array.isArray(features) ? features : Object.values(features ?? {});
+  const l = clampLevel(level);
+  const parts = [];
+  for (const f of list) {
+    const held = /^(profession|path):/.test(f?.source ?? '') && f.level != null && f.level > l;
+    if (held) continue;
+    const bonus = atLevel(normalizeFate(f?.fate), l);
+    if (bonus) parts.push({ name: f.name, bonus });
+  }
+  return { bonus: parts.reduce((sum, p) => sum + p.bonus, 0), parts };
+};
+
 export const normalizeSense = (sense) => {
   if (!isObject(sense)) return null;
   const range = levelled(sense.range);

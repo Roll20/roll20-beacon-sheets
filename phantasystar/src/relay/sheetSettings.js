@@ -41,7 +41,7 @@ export const SHEET_OPTIONS = [
   {
     key: 'characterBuilder',
     name: 'Character Builder',
-    default: false,
+    default: true,
     hint: 'Offers the character builder on new player characters.',
   },
   {

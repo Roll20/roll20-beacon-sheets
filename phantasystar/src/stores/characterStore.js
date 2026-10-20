@@ -70,6 +70,7 @@ const characterStore = () => {
   const speed = ref(30)
   const speedMisc = ref(0)
   const agilityMisc = ref(0)
+  const fateMisc = ref(0)
   const climbSpeed = ref(0)
   const swimSpeed = ref(0)
 
@@ -236,6 +237,7 @@ const characterStore = () => {
       speed: speed.value,
       speedMisc: speedMisc.value,
       agilityMisc: agilityMisc.value,
+      fateMisc: fateMisc.value,
       climbSpeed: climbSpeed.value,
       swimSpeed: swimSpeed.value,
       fateSpent: fateSpent.value,
@@ -469,6 +471,7 @@ const characterStore = () => {
     speed: speed.value,
     speedMisc: speedMisc.value,
     agilityMisc: agilityMisc.value,
+    fateMisc: fateMisc.value,
     climbSpeed: climbSpeed.value,
     swimSpeed: swimSpeed.value,
     fateSpent: fateSpent.value,
@@ -520,6 +523,7 @@ const characterStore = () => {
     speed.value = s.speed ?? speed.value
     speedMisc.value = s.speedMisc ?? speedMisc.value
     agilityMisc.value = s.agilityMisc ?? agilityMisc.value
+    fateMisc.value = s.fateMisc ?? fateMisc.value
     climbSpeed.value = s.climbSpeed ?? climbSpeed.value
     swimSpeed.value = s.swimSpeed ?? swimSpeed.value
     fateSpent.value = s.fateSpent ?? fateSpent.value
@@ -553,7 +557,7 @@ const characterStore = () => {
     concept, species, background, profession, professionStats, path, level, xp,
     abilities, saveProficiencies, saveOptions, skills, customSkills,
     hp, hitDiceUsed, deathSaves, tp, techOptions,
-    defenseParts, speed, speedMisc, agilityMisc, climbSpeed, swimSpeed, fateSpent,
+    defenseParts, speed, speedMisc, agilityMisc, fateMisc, climbSpeed, swimSpeed, fateSpent,
     features, resources, startingEquipmentTaken, resistances, proficiencies,
     attacksPerAction, attacks,
     hasProfessionTable, effectiveLevel, saveBonusValue, skillRankCap, levelForXp,

@@ -4,7 +4,7 @@ import { useCharacterStore } from '@/stores/characterStore.js'
 import { useSheetRolls } from '@/composables/useSheetRolls.js'
 import {
   FEATURE_GROUPS, RECOVERIES, ABILITIES, featureColumnValues, featurePicks, resourceMax,
-  normalizeFeatureRoll, rollActs, pickAllows, featureSaveDC, diceAt, featureReached,
+  normalizeFeatureRoll, rollActs, pickAllows, featureSaveDC, diceAt, featureReached, atLevel,
 } from '@/rules/index.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
 
@@ -78,6 +78,15 @@ const dcLabel = computed(() => {
 
 const setRoll = (patch) => {
   feature.value.roll = normalizeFeatureRoll({ ...(feature.value.roll ?? {}), ...patch })
+}
+
+const fateByLevel = computed(() => typeof feature.value.fate === 'object' && feature.value.fate !== null)
+const fateText = computed(() => (fateByLevel.value
+  ? atLevel(feature.value.fate, sheet.effectiveLevel)
+  : feature.value.fate || ''))
+const setFate = (value) => {
+  const n = parseInt(value, 10)
+  feature.value.fate = Number.isFinite(n) ? n : 0
 }
 
 const bookDice = computed(() => !!roll.value && (typeof roll.value.dice === 'object' || roll.value.lines.length > 0))
@@ -180,6 +189,10 @@ const levelInput = computed({
       <label class="f f--narrow">
         <span>Level</span>
         <input v-model="levelInput" type="number" min="1" max="20" />
+      </label>
+      <label class="f f--narrow">
+        <span>Fate</span>
+        <input type="number" :value="fateText" :disabled="fateByLevel" @change="setFate($event.target.value)" />
       </label>
       <label class="f f--full">
         <span>Description</span>

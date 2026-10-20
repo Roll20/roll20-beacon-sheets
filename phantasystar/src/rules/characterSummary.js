@@ -1,7 +1,7 @@
 import { ABILITY_IDS, resolveSkills } from './skills.js';
 import { normalizeProfessionStats, professionRow } from './profession.js';
 import { armorContribution } from './armor.js';
-import { featureMovement, featureDefense, featureNightVision } from './featureEffects.js';
+import { featureMovement, featureDefense, featureNightVision, featureFate } from './featureEffects.js';
 import { initiateNumbers } from './feats.js';
 import { normalizeProficiencies } from './proficiencies.js';
 import { clampLevel, saveBonus, maxSkillRank, levelFromXp, fatePoints } from './progression.js';
@@ -122,7 +122,9 @@ export const summarizeSheet = (sheet = {}) => {
     }),
   );
 
-  const { points: fateMax, die: fateDie } = fatePoints(level);
+  const { points: fateBase, die: fateDie } = fatePoints(level);
+  const fateFeatures = featureFate(sheet.features, { level });
+  const fateMax = Math.max(0, fateBase + fateFeatures.bonus + num(sheet.fateMisc));
 
   return {
     professionStats,
@@ -173,6 +175,9 @@ export const summarizeSheet = (sheet = {}) => {
 
     fate: {
       max: fateMax,
+      base: fateBase,
+      misc: num(sheet.fateMisc),
+      features: fateFeatures.parts,
       die: fateDie,
       remaining: Math.max(0, fateMax - num(sheet.fateSpent)),
     },

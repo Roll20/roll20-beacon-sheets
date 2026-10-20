@@ -655,6 +655,7 @@ const originFeatures = (features, source) => {
       ...(isObject(entry.move) ? { move: entry.move } : {}),
       ...(isObject(entry.defense) ? { defense: entry.defense } : {}),
       ...(isObject(entry.sense) ? { sense: entry.sense } : {}),
+      ...(Number.isInteger(entry.fate) || isObject(entry.fate) ? { fate: entry.fate } : {}),
       ...traitOptions(entry.choice),
     });
     choices.push(...choiceLabels(entry.choice));
@@ -756,6 +757,7 @@ const levelFeatures = (features, prefix, warnings) => {
         move: isObject(entry.move) ? entry.move : null,
         defense: isObject(entry.defense) ? entry.defense : null,
         sense: isObject(entry.sense) ? entry.sense : null,
+        fate: Number.isInteger(entry.fate) || isObject(entry.fate) ? entry.fate : 0,
         techniques: Array.isArray(entry.techniques) ? entry.techniques : [],
         pickCount: Number.isInteger(entry.pickCount) ? entry.pickCount : 1,
         optionMode: entry.optionMode === 'add' ? 'add' : '',
