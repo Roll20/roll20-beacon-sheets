@@ -93,6 +93,8 @@ export const createRelay = async ({ devMode = false, primaryStore = 'app', logMo
       if (logMode) console.log('🔓🔴 locking changes')
       const { attributes, ...profile } = dispatch.characters[characterId]
       if (attributes.updateId === sheetId.value) {
+        if (profile.avatar !== undefined) store.hydrateStore(null, { avatar: profile.avatar })
+        await nextTick()
         blockUpdate.value = false
         return
       }

@@ -1,7 +1,7 @@
 import { ABILITY_IDS, resolveSkills } from './skills.js';
 import { normalizeProfessionStats, professionRow } from './profession.js';
-import { armorContribution } from './armor.js';
-import { featureMovement, featureDefense, featureNightVision } from './featureEffects.js';
+import { armorContribution, accessoryContribution } from './armor.js';
+import { featureMovement, featureDefense, featureNightVision, featureFate } from './featureEffects.js';
 import { initiateNumbers } from './feats.js';
 import { normalizeProficiencies } from './proficiencies.js';
 import { clampLevel, saveBonus, maxSkillRank, levelFromXp, fatePoints } from './progression.js';
@@ -68,6 +68,8 @@ export const summarizeSheet = (sheet = {}) => {
     ability('strength'),
   );
 
+  const accessory = accessoryContribution(defenseParts, armor);
+
   const featureDefenseParts = featureDefense(sheet.features, {
     level,
     abilities: Object.fromEntries(ABILITY_IDS.map((id) => [id, ability(id)])),
@@ -83,7 +85,7 @@ export const summarizeSheet = (sheet = {}) => {
     armorType: defenseParts.armorType,
     techniqueMod: num(defenseParts.techniqueMod),
     miscMod: num(defenseParts.itemMisc),
-  }) + featureDefenseParts.total;
+  }) + featureDefenseParts.total + (accessory?.defense ?? 0);
 
   const movement = featureMovement(sheet.features, {
     level,
@@ -109,7 +111,7 @@ export const summarizeSheet = (sheet = {}) => {
   const saves = Object.fromEntries(
     ABILITY_IDS.map((id) => [
       id,
-      savingThrow(ability(id), level, !!saveProficiencies[id]) + saveOptions.bonus[id],
+      savingThrow(ability(id), level, !!saveProficiencies[id]) + saveOptions.bonus[id] + (accessory?.saves ?? 0),
     ]),
   );
 
@@ -122,7 +124,9 @@ export const summarizeSheet = (sheet = {}) => {
     }),
   );
 
-  const { points: fateMax, die: fateDie } = fatePoints(level);
+  const { points: fateBase, die: fateDie } = fatePoints(level);
+  const fateFeatures = featureFate(sheet.features, { level });
+  const fateMax = Math.max(0, fateBase + fateFeatures.bonus + num(sheet.fateMisc));
 
   return {
     professionStats,
@@ -154,6 +158,7 @@ export const summarizeSheet = (sheet = {}) => {
 
     defense: defenseValue,
     featureDefense: featureDefenseParts,
+    accessory,
     nightVision: featureNightVision(sheet.features, { level }),
     defenseDexApplied,
     armor,
@@ -166,13 +171,16 @@ export const summarizeSheet = (sheet = {}) => {
 
     saves,
     saveOptions,
-    deathSaveBonus: saveOptions.deathSave,
+    deathSaveBonus: saveOptions.deathSave + (accessory?.saves ?? 0),
     skillRoster,
     skillTotals,
     passivePerception: passivePerception(skillTotals.perception ?? 0, saveOptions.passivePerception),
 
     fate: {
       max: fateMax,
+      base: fateBase,
+      misc: num(sheet.fateMisc),
+      features: fateFeatures.parts,
       die: fateDie,
       remaining: Math.max(0, fateMax - num(sheet.fateSpent)),
     },

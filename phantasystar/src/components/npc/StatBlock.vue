@@ -46,6 +46,8 @@ const canAfford = (section, entry) =>
   (section.pool.used || 0) + (entry.cost || 1) <= poolTotal(section)
 
 const linkedTechnique = (entry) => findCreatureTechnique(npc.techniques, entry.technique)
+
+const saveLabel = (entry) => [entry.saveDC ? `DC ${entry.saveDC}` : '', ABILITIES.find((a) => a.id === entry.saveAbility)?.name ?? entry.saveAbility].filter(Boolean).join(' ')
 </script>
 
 <template>
@@ -178,6 +180,7 @@ const linkedTechnique = (entry) => findCreatureTechnique(npc.techniques, entry.t
           >
             {{ npc.damageEntry(entry) }}
           </button>
+          <span v-if="entry.saveAbility" class="range">{{ saveLabel(entry) }}</span>
           <button
             v-if="linkedTechnique(entry)"
             type="button"

@@ -82,6 +82,14 @@ export const itemWeight = (value) => {
   return m ? Number(m[1]) : '';
 };
 
+export const normalizeItemBonus = (bonus) => {
+  if (!bonus || typeof bonus !== 'object' || Array.isArray(bonus)) return null;
+  const defense = int(bonus.defense);
+  const saves = int(bonus.saves);
+  if (!defense && !saves) return null;
+  return { defense, saves, unarmored: bonus.unarmored === true };
+};
+
 export const normalizeItem = (item = {}) => ({
   ...item,
   weight: itemWeight(item.weight),
@@ -91,6 +99,7 @@ export const normalizeItem = (item = {}) => ({
   stealthDisadvantage: !!item.stealthDisadvantage,
   attackId: typeof item.attackId === 'string' ? item.attackId : '',
   text: typeof item.text === 'string' ? item.text : '',
+  bonus: normalizeItemBonus(item.bonus),
 });
 
 export const defensePartsFromEquipment = (equipment = [], parts = {}) => {
@@ -123,5 +132,32 @@ export const defensePartsFromEquipment = (equipment = [], parts = {}) => {
     Object.assign(patch, { shieldItemId: '', shieldGrade: 0, shieldName: '' });
   }
 
-  return Object.fromEntries(Object.entries(patch).filter(([key, value]) => parts[key] !== value));
+  const best = equipment
+    .filter((i) => i?.equipped)
+    .map((i) => ({ item: i, bonus: normalizeItemBonus(i.bonus) }))
+    .filter((w) => w.bonus)
+    .sort((a, b) => (b.bonus.defense - a.bonus.defense) || (b.bonus.saves - a.bonus.saves))[0];
+  Object.assign(patch, best
+    ? {
+      accessoryName: best.item.name ?? '',
+      accessoryDefense: best.bonus.defense,
+      accessorySaves: best.bonus.saves,
+      accessoryUnarmored: best.bonus.unarmored,
+    }
+    : { accessoryName: '', accessoryDefense: 0, accessorySaves: 0, accessoryUnarmored: false });
+
+  return Object.fromEntries(Object.entries(patch).filter(([key, value]) => (parts[key] ?? defaultPart(key)) !== value));
+};
+
+const defaultPart = (key) => ({ accessoryName: '', accessoryDefense: 0, accessorySaves: 0, accessoryUnarmored: false })[key];
+
+export const accessoryContribution = (parts = {}, armor = {}) => {
+  const name = String(parts.accessoryName ?? '');
+  const defense = int(parts.accessoryDefense);
+  const saves = int(parts.accessorySaves);
+  if (!defense && !saves) return null;
+  const armored = (parts.armorType && parts.armorType !== 'none') || int(armor.armorBonus) > 0 || int(armor.shieldBonus) > 0
+    || !!parts.armorItemId || !!parts.shieldItemId;
+  const active = !(parts.accessoryUnarmored === true && armored);
+  return { name, defense: active ? defense : 0, saves: active ? saves : 0, active };
 };

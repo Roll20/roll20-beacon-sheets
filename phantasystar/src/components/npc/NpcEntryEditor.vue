@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useNpcStore } from '@/stores/npcStore.js'
-import { allCreatureTechniques } from '@/rules/index.js'
+import { allCreatureTechniques, ABILITIES } from '@/rules/index.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
 
 const props = defineProps({
@@ -42,6 +42,17 @@ const techniqueOptions = computed(() =>
     <div v-if="entry.isAttack || entry.damage" class="entry__attack">
       <label><span>Damage</span><input v-model="entry.damage" /></label>
       <label><span>Type</span><input v-model="entry.damageType" /></label>
+    </div>
+
+    <div class="entry__attack">
+      <label>
+        <span>Save</span>
+        <select v-model="entry.saveAbility">
+          <option value="">&mdash;</option>
+          <option v-for="a in ABILITIES" :key="a.id" :value="a.id">{{ a.name }}</option>
+        </select>
+      </label>
+      <label v-if="entry.saveAbility"><span>Save DC</span><input v-model.number="entry.saveDC" type="number" min="1" /></label>
     </div>
 
     <label v-if="techniqueOptions.length" class="entry__tech">

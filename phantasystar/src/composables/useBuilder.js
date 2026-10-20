@@ -52,7 +52,7 @@ export const useBuilder = () => {
     building.value = true
     try {
       const { failed } = await buildCharacter({ draft: builder.draft, app, fetchPage })
-      await updateCharacterTokens(characterVision(app.sheet.nightVision?.range ?? 0))
+      updateCharacterTokens(characterVision(app.sheet.nightVision?.range ?? 0))
       builder.draft = { ...builder.draft, built: true }
       builder.close()
       notice.value = failed.length

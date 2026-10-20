@@ -159,7 +159,7 @@ export const useLevelUp = () => {
         hasLevelRow: (level) => !!normalizeProfessionStats(sheet.professionStats).levels?.[`lv${level}`],
       })
       const sight = sheet.nightVision?.range ?? 0
-      if (sight !== sightBefore) await updateCharacterTokens(characterVision(sight))
+      if (sight !== sightBefore) updateCharacterTokens(characterVision(sight))
       keep(null)
       store.close()
       notice.value = failed.length

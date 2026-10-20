@@ -2,6 +2,7 @@
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { formatModifier } from '@/rules/index.js'
 import CircularGauge from '@/components/shared/CircularGauge.vue'
+import StatDropdown from '@/components/shared/StatDropdown.vue'
 import saveBonusFrame from '@/assets/img/save-bonus-frame.webp'
 import saveBonusFrameDark from '@/assets/img/save-bonus-frame-dark.webp'
 import perceptionFrame from '@/assets/img/perception-frame.webp'
@@ -36,7 +37,20 @@ const sheet = useCharacterStore()
       <div class="fate-row">
         <div class="die">{{ sheet.fate.die }}</div>
         <div class="cell">
-          <div class="box readonly">{{ sheet.fate.max }}</div>
+          <StatDropdown class="max" :value="sheet.fate.max" label="Max fate points">
+            <div class="part">
+              <span>Level {{ sheet.effectiveLevel }}</span>
+              <output>{{ sheet.fate.base }}</output>
+            </div>
+            <div v-for="p in sheet.fate.features" :key="p.name" class="part">
+              <span>{{ p.name }}</span>
+              <output>+{{ p.bonus }}</output>
+            </div>
+            <label class="part">
+              <span>Misc</span>
+              <input v-model.number="sheet.fateMisc" type="number" />
+            </label>
+          </StatDropdown>
           <span>Max</span>
         </div>
         <div class="cell">
@@ -109,6 +123,38 @@ const sheet = useCharacterStore()
     &.readonly { background: var(--ps-panel-alt); color: var(--ps-derived, var(--ps-text)); }
   }
   > span { @include ps-caption; font-size: 9px; }
+}
+
+.max :deep(.stat-dropdown__box) {
+  width: auto;
+  min-width: 34px;
+  height: 30px;
+  font-size: var(--ps-fs-value);
+}
+
+.part {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  span { @include ps-caption; font-size: 9px; white-space: nowrap; }
+
+  input, output {
+    @include ps-well;
+    width: 44px;
+    height: 24px;
+    font-size: 12px;
+    font-weight: 700;
+    &:focus { outline: 2px solid var(--ps-blue); outline-offset: -1px; }
+  }
+
+  output {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ps-panel-alt);
+  }
 }
 
 .spend {

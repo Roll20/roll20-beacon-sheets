@@ -1,7 +1,7 @@
 <script setup>
 import { useMetaStore } from '@/stores/metaStore.js'
 import { useCharacterStore } from '@/stores/characterStore.js'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { sharedSettings } from '@/relay/sheetSettings.js'
 import { levelProgress } from '@/rules/index.js'
 import ProfessionOptionsModal from './ProfessionOptionsModal.vue'
@@ -11,6 +11,7 @@ const meta = useMetaStore()
 const sheet = useCharacterStore()
 
 const broken = ref(false)
+watch(() => meta.avatar, () => { broken.value = false })
 
 const professionOptions = ref(false)
 

@@ -1,3 +1,5 @@
+import { objectToArray } from '../utility/objectify.js';
+
 export const SKILLS = [
   { id: 'acrobatics',      name: 'Acrobatics',      ability: 'dexterity' },
   { id: 'astrophysics',    name: 'Astrophysics',    ability: 'intelligence' },
@@ -43,10 +45,39 @@ export const resolveSkillAbility = (skillId, entry) => {
   return override && ABILITY_IDS.includes(override) ? override : base;
 };
 
+export const MAX_CUSTOM_SKILLS = 5;
+
+export const normalizeCustomSkill = (entry = {}) => ({
+  name: String(entry?.name ?? ''),
+  ability: ABILITY_IDS.includes(entry?.ability) ? entry.ability : 'intelligence',
+});
+
+export const customSkillList = (stored) =>
+  (Array.isArray(stored) ? stored : objectToArray(stored))
+    .filter((c) => c && c._id)
+    .map((c) => ({ _id: c._id, ...normalizeCustomSkill(c) }));
+
+export const skillMacroKey = (name) =>
+  String(name ?? '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+
 export const resolveSkills = (sheet = {}) => {
   const stored = sheet.skills || {};
-  return SKILLS.map((skill) => {
+  const book = SKILLS.map((skill) => {
     const ability = resolveSkillAbility(skill.id, stored[skill.id]);
     return { ...skill, ability, baseAbility: skill.ability, overridden: ability !== skill.ability };
   });
+  const custom = customSkillList(sheet.customSkills).map((c) => ({
+    id: c._id, name: c.name || 'New Skill', ability: c.ability, baseAbility: c.ability, overridden: false, custom: true,
+  }));
+  return [...book, ...custom];
+};
+
+export const skillMacroTotals = (roster = [], totals = {}) => {
+  const out = {};
+  for (const s of roster) {
+    const key = s.custom ? skillMacroKey(s.name) : s.id;
+    if (!key || key in out) continue;
+    out[key] = totals[s.id] ?? 0;
+  }
+  return out;
 };

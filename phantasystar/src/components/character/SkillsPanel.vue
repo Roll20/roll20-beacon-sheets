@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useSheetRolls } from '@/composables/useSheetRolls.js'
 import { ABILITIES, formatModifier } from '@/rules/index.js'
@@ -11,6 +11,8 @@ const sheet = useCharacterStore()
 const rolls = useSheetRolls()
 
 const options = ref(false)
+
+const roster = computed(() => [...sheet.skillRoster].sort((a, b) => a.name.localeCompare(b.name)))
 
 const abbrFor = (abilityId) => ABILITIES.find((a) => a.id === abilityId)?.abbr ?? ''
 </script>
@@ -31,7 +33,7 @@ const abbrFor = (abilityId) => ABILITIES.find((a) => a.id === abilityId)?.abbr ?
 
     <div class="rows">
       <div
-        v-for="(skill, i) in sheet.skillRoster"
+        v-for="(skill, i) in roster"
         :key="skill.id"
         class="row"
         :class="{ odd: i % 2 === 1 }"

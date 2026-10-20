@@ -1,4 +1,4 @@
-import { clampLevel } from './progression.js';
+import { clampLevel, saveBonus } from './progression.js';
 import { ABILITY_IDS } from './skills.js';
 
 export const RIDER_MODES = ['once', 'mark', 'always'];
@@ -30,11 +30,38 @@ export const normalizeRider = (rider) => {
   };
 };
 
+export const ROLL_HEALS = ['self', 'target'];
+
+const normalizeDcSource = (dc) => {
+  const text = String(dc ?? '').trim();
+  if (text === 'tech') return 'tech';
+  if (/^\d+$/.test(text)) return text;
+  const abilities = text.split('|').filter((a) => ABILITY_IDS.includes(a));
+  return abilities.join('|');
+};
+
+export const normalizeRollSave = (save) => {
+  if (!isObject(save)) return null;
+  const ability = ABILITY_IDS.includes(save.ability) ? save.ability : '';
+  const dc = normalizeDcSource(save.dc);
+  if (!ability && !dc) return null;
+  return { ability, dc };
+};
+
+export const featureSaveDC = (save, ctx = {}) => {
+  const s = normalizeRollSave(save);
+  if (!s || !s.dc) return null;
+  if (s.dc === 'tech') return Number.isFinite(Number(ctx.techSaveDC)) && ctx.techSaveDC !== null ? Number(ctx.techSaveDC) : null;
+  if (/^\d+$/.test(s.dc)) return Number(s.dc);
+  const mods = s.dc.split('|').map((a) => Math.trunc(Number(ctx.abilities?.[a]) || 0));
+  return 8 + Math.max(...mods) + saveBonus(clampLevel(ctx.level));
+};
+
 export const normalizeFeatureRoll = (roll) => {
   if (!isObject(roll)) return null;
   const plus = (Array.isArray(roll.plus) ? roll.plus : isObject(roll.plus) ? Object.values(roll.plus) : [])
     .filter((p) => p === 'level' || p === 'halfLevel' || ABILITY_IDS.includes(p));
-  const min = Number(roll.min);
+  const min = roll.min === null || roll.min === undefined || roll.min === '' ? NaN : Number(roll.min);
   const lines = (Array.isArray(roll.lines) ? roll.lines : isObject(roll.lines) ? Object.values(roll.lines) : [])
     .filter(isObject)
     .map((l) => ({ label: typeof l.label === 'string' ? l.label : '', dice: normalizeDice(l.dice) }));
@@ -44,9 +71,16 @@ export const normalizeFeatureRoll = (roll) => {
     type: typeof roll.type === 'string' ? roll.type : '',
     plus,
     min: Number.isFinite(min) ? Math.trunc(min) : null,
-    heal: roll.heal === 'self' ? 'self' : '',
+    heal: ROLL_HEALS.includes(roll.heal) ? roll.heal : '',
+    save: normalizeRollSave(roll.save),
+    spends: typeof roll.spends === 'string' ? roll.spends : '',
     pick: typeof roll.pick === 'string' ? roll.pick : '',
   };
+};
+
+export const rollActs = (roll) => {
+  const r = normalizeFeatureRoll(roll);
+  return !!r && (!!r.dice || r.plus.length > 0 || r.lines.length > 0 || !!r.save);
 };
 
 export const diceAt = (dice, { level = 1, professionStats = null } = {}) => {

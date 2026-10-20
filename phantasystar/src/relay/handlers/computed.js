@@ -1,4 +1,5 @@
 import { summarizeSheet } from '../../rules/characterSummary.js'
+import { skillMacroTotals } from '../../rules/skills.js'
 import {
   maxHullPoints,
   maxStructuralIntegrity,
@@ -232,7 +233,8 @@ export const getSkills = ({ character }) => {
   if (type === NPC && !isShip) return npcOf(character).skills ?? {}
   if (type === STARSHIP) return {}
   if (isShip) return namedBonuses(npcShipOf(character).skills)
-  return summaryOf(character).skillTotals
+  const { skillRoster, skillTotals } = summaryOf(character)
+  return skillMacroTotals(skillRoster, skillTotals)
 }
 
 export const getLevel = ({ character }) =>
