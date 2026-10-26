@@ -103,6 +103,20 @@ export const noSpendLine = (rawCost, surchargeTotal = 0) =>
 //
 // The Luck Pool's resulting STATE is not here: it belongs to luckLine, because this
 // line's refund wording would imply the Luck came back on the same terms as the Pool.
+// The cost's ATTRIBUTION, shared by this card's spend line and the modal's live preview
+// (ddd-h25n). The two lines differ in their verb and in the pool tail only, and before this
+// builder existed the preview spelled the no-split form itself: it went on saying
+// `Costs 3 Might` while the card said `Spent 3 — 1 Might, 2 Luck`, naming a payer for the
+// whole cost that had paid a third of it. The figures were right in both halves of the
+// store and the player read two different claims about where the points came from.
+//
+// `detail` arrives built, because the parenthetical's own rule — a surcharge earns it with
+// or without Edge — is the caller's and is already shared through rawCostTerms.
+export const costAttribution = ({ verb, cost, detail, statLabel, poolCost, luckCharged, luckLabel }) =>
+  luckCharged > 0
+    ? `${verb} ${cost}${detail} — ${poolCost} ${statLabel}, ${luckCharged} ${luckLabel}`
+    : `${verb} ${cost} ${statLabel}${detail}`
+
 export const spendLine = ({ cost, rawCost, edge, statLabel, poolAfter, poolMax, refunded = false, surchargeTotal = 0, luckCharged = 0, poolCost = cost - luckCharged, luckLabel = 'Luck' }) => {
   if (cost === 0) return noSpendLine(rawCost, surchargeTotal)
   // The stat Pool's own figures, on every form of this line.
@@ -125,9 +139,7 @@ export const spendLine = ({ cost, rawCost, edge, statLabel, poolAfter, poolMax, 
   // The total keeps the head of the line, because the total is what the action cost; the
   // two shares follow it. The stat label moves off the total in the split form for the
   // same reason the figures changed — `Spent 3 Might` is not true of a cost Luck helped pay.
-  return luckCharged > 0
-    ? `Spent ${cost}${detail} — ${poolCost} ${statLabel}, ${luckCharged} ${luckLabel}${poolTail}`
-    : `Spent ${cost} ${statLabel}${detail}${poolTail}`
+  return `${costAttribution({ verb: 'Spent', cost, detail, statLabel, poolCost, luckCharged, luckLabel })}${poolTail}`
 }
 
 // `attack` swaps the book's attack vocabulary in (D2): a creature's level in place

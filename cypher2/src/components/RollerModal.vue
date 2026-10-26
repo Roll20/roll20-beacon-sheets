@@ -3,7 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import ModalShell from '@/components/ModalShell.vue'
 import { useSheetStore } from '@/stores/sheetStore.js'
 import { attackDamage, easedSteps, effortCost, maxAffordableEffort, rawEffortCost, stressLevels } from '@/dice/rolls.js'
-import { attackLabel, damageLine, easesLine, noSpendLine, rawCostTerms } from '@/rollTemplates/guidedCard.js'
+import { attackLabel, costAttribution, damageLine, easesLine, noSpendLine, rawCostTerms } from '@/rollTemplates/guidedCard.js'
 import { POOL_NAMES, poolLabel } from '@/components/pools.js'
 import { clampInt } from '@/utility/clamp.js'
 
@@ -420,21 +420,32 @@ const damagePreview = computed(() => {
 // because `Costs 4 Might` for one level reads as a bug to a player who knows the book
 // price is 3.
 //
-// What this line mirrors is spendLine's NO-LUCK form only, and since ddd-xrug.1 that is
-// the narrower claim it used to be: spendLine now decomposes a split cost into the stat
-// Pool's share and Luck's (`Spent 3 — 1 Might, 2 Luck`), while this summary still
-// attributes the whole cost to the stat Pool (`Costs 3 Might`) however much Luck the
-// player has moved onto the roll. The parenthetical and the cost figure agree with the
-// card; the ATTRIBUTION does not. Giving this line the same split is an open owner
-// decision, recorded in the project queue — player-facing copy, so it is a choice rather
-// than a defect to fix in passing.
+// The ATTRIBUTION is shared too, since ddd-h25n: costAttribution is the same builder, so a
+// split cost names the same payers here as on the card (`Costs 3 — 1 Might, 2 Luck`
+// against `Spent 3 — 1 Might, 2 Luck`). It spelled the no-split form itself until then,
+// and went on crediting the whole cost to the stat Pool however much Luck the player had
+// moved onto the roll — the figures agreed with the card and the payers did not.
+//
+// poolShare and luckShare, never resolvedLuckSpend: the allocation is a ceiling, and a
+// cost of 1 with 3 allocated takes 1. They are the same pair the two after-lines read, so
+// the three figures in this box cannot disagree about one split.
 const costSummary = computed(() => {
   if (cost.value === 0) return noSpendLine(rawCost.value, surchargeTotal.value)
   const terms = rawCostTerms(rawCost.value, surchargeTotal.value)
   const detail = pool.value.edge > 0
     ? ` (${terms} − ${pool.value.edge} Edge)`
     : surchargeTotal.value > 0 ? ` (${terms})` : ''
-  return `Costs ${cost.value} ${statLabel.value}${detail}`
+  return costAttribution({
+    verb: 'Costs',
+    cost: cost.value,
+    detail,
+    statLabel: statLabel.value,
+    poolCost: poolShare.value,
+    luckCharged: luckShare.value,
+    // Never the literal: a renamed Pool must not be called Luck here while the card calls
+    // it Fortune. Null-safe because this computed outlives a hydrate that clears the Pool.
+    luckLabel: sheet.luck?.name ?? 'Luck'
+  })
 })
 
 // Write the clamp back into the input so the player never SEES a difficulty

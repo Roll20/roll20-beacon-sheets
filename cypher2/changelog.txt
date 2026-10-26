@@ -13,9 +13,10 @@ Cypher System 2 Character Sheet - Changelog
   can cost, so a level of Effort your stat Pool could not pay for on its own
   becomes available. Nothing is spent until you roll, and a line near the bottom
   shows what your Luck will be afterwards.
-- The chat card names both halves of what you spent, as in "1 Might, 1 Luck",
-  with your Edge coming off the whole cost once rather than off either share. A
-  line below it gives your Luck after the roll.
+- The roller's cost line and the chat card both name the two halves of what an
+  action costs, as in "1 Might, 1 Luck", with your Edge coming off the whole cost
+  once rather than off either share. A line below the card's gives your Luck
+  after the roll.
 - Luck reaching 0 does not move you down the damage track. Only the three stat
   Pools do that.
 - A recovery roll's card states the rule that Luck refreshes by the same number
