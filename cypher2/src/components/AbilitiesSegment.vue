@@ -21,6 +21,22 @@ const costLabel = (row) => {
   return c === 'Variable' ? 'Variable cost' : `Cost ${c}`
 }
 
+// The Magnus Archives Stress half of a cost the book prints as "4 Intellect points and
+// 3 Stress" (schema v3: abilities[].stressCost, integer >= 0 or null). It is its OWN
+// cell/field after the pool cost and is never folded into it: one term per source
+// (ddd-keb3), and a combined string would make a 0-point ability with a Stress cost
+// unreadable. The sheet displays and edits it — nothing SPENDS it, because there is no
+// activation flow for pools either.
+//
+// `== null`, not a truthiness check, and that is the whole point of these two helpers:
+// stressCost 0 is meaningful data (exporter.test.js treats it as version-3 content), and
+// both consumers below drop falsy values on purpose — summaryCells ends in
+// filter(Boolean), itemCard drops falsy fields. A `row.stressCost && ...` here would lose
+// a legal 0 twice over. Both helpers therefore return null or a NON-EMPTY string, the
+// same invariant costText carries.
+const stressCostText = (row) => (row.stressCost == null ? null : `${row.stressCost} Stress`)
+const stressCostLabel = (row) => (row.stressCost == null ? null : `Stress ${row.stressCost}`)
+
 // activation is verbatim book text with a long-form tail ("Action to initiate;
 // one hour to complete"), no enum (contract §3.1) — card and editor only, the
 // summary row has no room for it. Every enabler in the catalog spells its
@@ -33,13 +49,15 @@ const activationText = (row) =>
 // One pass over the cells rather than `v-if="costText(row)"` + `{{ costText(row) }}`,
 // which computed the cell twice per render (ddd-0k1, finished here by ddd-psi). Same
 // shape as artifacts, cyphers and equipment; filter(Boolean) is the collapse rule the
-// v-if enforced. Safe here, and the reason is the trap ddd-psi flagged: costText
-// returns null or a NON-EMPTY string, so a 0-point cost arrives as '0' and survives.
-const summaryCells = (row) => [costText(row), row.enabler && 'Enabler'].filter(Boolean)
+// v-if enforced. Safe here, and the reason is the trap ddd-psi flagged: costText and
+// stressCostText both return null or a NON-EMPTY string, so a 0-point cost arrives as
+// '0' and a 0 Stress cost as '0 Stress', and both survive.
+const summaryCells = (row) =>
+  [costText(row), stressCostText(row), row.enabler && 'Enabler'].filter(Boolean)
 
 const contents = (row) => ({
   title: row.name,
-  fields: [costLabel(row), row.enabler && 'Enabler', activationText(row)],
+  fields: [costLabel(row), stressCostLabel(row), row.enabler && 'Enabler', activationText(row)],
   source: row.source,
   prose: row.description
 })
@@ -47,7 +65,7 @@ const contents = (row) => ({
 
 <template>
   <ItemList :contents="contents" store-key="abilities" title="Abilities" add-label="Add ability">
-    <!-- spec ⑦ §4.2: name · cost · Enabler marker when set. -->
+    <!-- spec ⑦ §4.2: name · cost · Stress cost when set · Enabler marker when set. -->
     <template #summary="{ row }">
       <span class="summary-name">{{ row.name }}</span>
       <span v-for="(cell, i) in summaryCells(row)" :key="i" class="summary-cell">{{ cell }}</span>

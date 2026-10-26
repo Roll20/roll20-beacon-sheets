@@ -1,9 +1,37 @@
 <script setup>
 import { computed } from 'vue'
+import { useSheetStore } from '@/stores/sheetStore.js'
 import { clampInt, syncClamped } from '@/utility/clamp.js'
 
 const props = defineProps({ row: { type: Object, required: true } })
 const POOL_KEYS = ['might', 'speed', 'intellect']
+const sheet = useSheetStore()
+
+// The Magnus Archives Stress half of an ability's cost (schema v3: integer >= 0 or null).
+//
+// The gate's SECOND clause is load-bearing and not a convenience: a Magnus character
+// imported into a game whose Stress rule is off would otherwise have its ability costs
+// silently uneditable while the export carried them anyway. `!= null` rather than a
+// truthiness check, because a carried 0 is a value, not an absence.
+//
+// A CONSEQUENCE, not a bug: with the rule off, clearing the box to null makes the second
+// clause false and unmounts this control in the same tick. That is deliberate — the gate
+// is a live read of the row, not a latch taken at mount — and it is recoverable, because
+// the Stress rule toggle in the vitals panel (StatusRow.vue) brings the box straight back.
+// Since ddd-houn that recovery carries a destructive confirm. Over a live non-empty
+// `stress` object the first tick only ARMS: the box snaps back unchecked and a warning
+// label appears. A second click turns the rule on and reseeds `stress` to zeros, which is
+// the loss the warning names. The path is still real, it just costs two clicks and the
+// character's stored Stress points and supernatural levels.
+// A latch would also keep the box in front of a player who has just said they do not want
+// it, so the simpler rule wins until someone reports otherwise.
+const stressEditable = computed(() => sheet.rules.stress === true || props.row.stressCost != null)
+
+// The '' -> null arm is ours, in code, exactly as RowLevel's is: clampInt('') is 0, so
+// without it a cleared box would store a meaningful 0 — and the row's empty state is
+// null. It must not store '' either: that is the Firebase readback shape normalizeRow's
+// targeted heal exists to REPAIR, and the editor has no business creating it.
+const toStressCost = (v) => (v === '' ? null : clampInt(v))
 
 // The three schema-legal cost shapes (oneOf invariant): null,
 // fixed {points:int, plus, variable:false}, variable {points:null, plus:false, variable:true}.
@@ -69,5 +97,18 @@ const togglePool = (pool, checked) => {
         {{ p.charAt(0).toUpperCase() + p.slice(1) }}
       </label>
     </span>
+    <!-- Visible label, not an aria-label: a bare number box beside the pool checkboxes
+         would be inscrutable. `?? ''` renders the empty value="" attribute as well as the
+         empty property (ddd-bti, RowLevel's note). -->
+    <label v-if="stressEditable" class="cost-stress-label">
+      <span>Stress</span>
+      <input
+        class="cost-stress field"
+        type="number"
+        min="0"
+        :value="row.stressCost ?? ''"
+        @change="row.stressCost = syncClamped($event, toStressCost($event.target.value))"
+      />
+    </label>
   </div>
 </template>

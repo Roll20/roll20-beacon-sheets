@@ -1,6 +1,84 @@
 Cypher System 2 Character Sheet - Changelog
 ============================================
 
+2026-10-26
+- A character with the Lucky descriptor now gets a Luck Pool. It sits as a
+  fourth panel below the three pool cards, with a Pool box, a Max box and the
+  descriptor's rule. Luck is never rolled on its own, so the panel has no d20
+  button.
+- The Luck Pool has a checkbox in the gear menu. Turning it off clears the Pool,
+  so the checkbox asks twice before it does anything.
+- The guided roller has a "Luck toward this roll" stepper above the Effort
+  steppers. You take the points from Luck first, and they raise what the action
+  can cost, so a level of Effort your stat Pool could not pay for on its own
+  becomes available. Nothing is spent until you roll, and a line near the bottom
+  shows what your Luck will be afterwards.
+- The chat card names both halves of what you spent, as in "1 Might, 1 Luck",
+  with your Edge coming off the whole cost once rather than off either share. A
+  line below it gives your Luck after the roll.
+- Luck reaching 0 does not move you down the damage track. Only the three stat
+  Pools do that.
+- A recovery roll's card states the rule that Luck refreshes by the same number
+  of points you restore to your other Pools, up to its maximum. The sheet does
+  not know how you split a recovery roll, so that arithmetic stays yours.
+- If your character file renames the Pool, the new name is used everywhere: the
+  panel, the roller's stepper and after-line, and every chat card.
+- The book's longer rules now sit behind a small arrow instead of being printed
+  in full. That covers the worn armor rule, the lines about moving on the damage
+  track, and the restrictions on burning a Stress level. Click the arrow to read
+  them, and click it again to put them away.
+- The checkbox behind the pencil that grants the Hurt step is now labelled HURT
+  STEP, to match the other labels in that panel. The two things that grant the
+  step, the Tough ability and the Never Says Die focus, moved into the Hurt
+  step's own note. Click the word Hurt to read it.
+
+2026-10-12
+- A game that uses The Magnus Archives Stress rules now gets a Stress column in
+  the Damage & Recovery panel. Click the pencil and tick Stress to turn it on.
+  The column has a Points row and a Supernatural levels row. Each has a minus
+  button, a box you can type in, and a plus button. Click a row's name to read
+  the book's rules for that row.
+- Ticking the Damage track or Stress checkbox on now asks twice as well. Before,
+  only switching one off did. A character can arrive from another sheet carrying
+  Stress points while the Stress rule is off, and turning the rule on there sets
+  those points back to zero. So the first click turns the label red and says what
+  it is about to clear, and only a second click turns the rule on. The 2026-09-30
+  entry below says this happens when you switch a rule off. It now happens in
+  both directions. It still asks only when that rule is holding something you
+  could lose, so a checkbox with nothing behind it flips on the first click.
+- The Points row also has a -3 button. Three points is one hour of rest, and
+  also exactly one Stress level.
+- A line under the Points row gives your Stress level and says how many steps
+  your actions are hindered. Every 3 points is one level. From four levels a
+  second line says each further level is also a serious injury and the character
+  moves one step down the damage track. The sheet never moves the track for you.
+  From ten supernatural levels a line says the character can take supernatural
+  type abilities and become an Avatar.
+- The Stress column has a Worn armor checkbox with the book's rule printed
+  beside it. Ticking it gives the character the Hurt step on the damage track,
+  and it hinders Speed tasks in the guided roller.
+- The damage track now has a Hurt step above Impaired. It appears when the
+  character wears armor, or when you tick the checkbox behind the pencil that
+  reads "Has the Hurt step: the Tough ability, or the Never Says Die focus".
+  Hurt imposes no penalties. Most characters skip it and go straight to
+  Impaired.
+- With the Stress rule on, the guided roller gains a Hindrances group. It holds
+  a stepper for how many Stress levels hinder this roll, capped at the levels
+  the character has. It holds a checkbox for worn armor hindering a Speed task,
+  ticked by default. It holds a checkbox to burn a Stress level, which eases the
+  roll one step, costs 3 points and lowers the hindrance cap. The GM owes you an
+  intrusion for a burn, and the roller says so beside the box.
+- The chat card names each of those terms, so you can see what hindered the roll
+  and what the burn cost. A burn also prints your Stress points and level after
+  the roll.
+- An ability row can carry a Stress cost. It shows beside the ability's Pool
+  cost, on the row and on the ability's chat card. The sheet records the cost and
+  does not spend it for you.
+- An impaired character now pays the damage track's extra Effort point per
+  level. One level costs 4 instead of 3, and two cost 7 instead of 5. The chat
+  card breaks the cost out, as in "5 + 2 impaired". A game with the damage track
+  off is unchanged.
+
 2026-09-30
 - The sheet now reads character files that use the Old Gods of Appalachia and
   The Magnus Archives rules. Import one from Cypher Tools the same way you

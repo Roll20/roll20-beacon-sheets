@@ -537,6 +537,18 @@
    INSIDE the input. Measured at 480px: 39.3px available vs 42px needed. */
 .pool-card__fields { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .pool-card__fields label { display: grid; gap: 0.1rem; min-width: 0; flex: 1 0 2.8rem; }
+/* ddd-xrug.1. LuckPool reuses .pool-card__fields, and the basis above was tuned for
+   THREE boxes wrapping 2+1 inside a 147px third-width card. The Luck panel is instead a
+   full-width child of the single-column .play-strip carrying only TWO labels, so
+   `flex-grow: 1` hands each `.field` (width: 100%) half the sheet to show one or two
+   digits. Scoped by the container class, the way `.header__numbers .field` scopes the
+   number row's cap, so PoolCard's own cards are untouched.
+   shrink stays 0 for the reason the comment above gives: a flex item shrinks before it
+   wraps, and the clipping happens INSIDE the input where no assertion can see it. Two
+   4rem boxes and the gap come to ~134px, well inside the panel at the 280px floor, so
+   nothing is forced to wrap there either. Layout only, and no test can see it — the
+   owner settles the figure at walkthrough. */
+.luck-pool .pool-card__fields label { flex: 0 0 4rem; }
 
 /* --- Vitals panel (ddd-2g8 variant A, owner-picked) ---
    ONE "Damage & Recovery" panel: wounds / shield / recovery as rule-divided
@@ -545,10 +557,11 @@
    Columns are FLEX, not grid: the shield column comes and goes (null shield,
    edit mode) and a fixed grid template would misplace recovery when it does. */
 /* wrap + gap carry the ddd-xrug rule toggles: the head gains a third child in edit
-   mode, and at 280px the banner, two checkboxes and the pencil cannot share one line. */
+   mode, and at 280px the banner, the checkboxes and the pencil cannot share one line. */
 .vitals__head { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: space-between; align-items: center; }
-/* The two rule checkboxes (damage track, stress). Edit-mode only, so they never widen
-   the play-view head. */
+/* The two rule checkboxes (damage track, Stress). Edit-mode only, so they never widen the
+   play-view head. The Luck Pool toggle was a third here until 2026-10-26 and now lives in
+   SettingsModal, which is why the wrap valve below still earns its keep at 280px. */
 .vitals__rules { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .vitals__rule {
   display: flex; align-items: center; gap: 0.25rem;
@@ -625,6 +638,13 @@
   line-height: 1.3;
   color: var(--cy-muted);
 }
+/* ddd-xrug.1. The Luck panel's rule prose borrows .wounds__note for its metrics, but not
+   that negative top margin: there the copy tucks under its own disclosure row, while here
+   it sits directly beneath two number boxes and read as if it were their caption (owner,
+   walkthrough item 1). A modifier-style override rather than a compound selector, for the
+   single-class policy, and it lives HERE rather than in the Luck section above because it
+   ties with .wounds__note on specificity and only wins by coming after it. */
+.luck-pool__rule { margin-top: 0.5rem; }
 .wound-pip {
   width: 1.05rem; height: 1.05rem; padding: 0;
   background: var(--cy-field);
@@ -660,16 +680,160 @@
    absorb the pressure between the label and the max input, while this row has a single
    pip with a wide label beside it. */
 .damage-track__step { flex: 0 0 auto; }
-/* The always-visible movement line. Same metrics as .wounds__note, which is the
-   disclosed copy above it, plus a rule separating reference text from the steps. */
+/* The Hurt pip (ddd-xrug phase 3). Needs exactly what a step pip needs, and cannot share
+   its rule: Hurt is a fifth position the schema's four-value step enum does not contain,
+   and contract-enums.test.js counts .damage-track__step against that enum. A separate
+   single-class rule rather than a grouped selector, so each class keeps its own rule to
+   read off (spec §4.1). */
+.damage-track__hurt { flex: 0 0 auto; }
+/* The movement copy, behind a caret since the owner's walkthrough of 2026-10-26 (item 15):
+   under the Stress rule it is 902 characters in a 243px column. Same metrics as
+   .wounds__note, which is the disclosed copy above it. The rule that separates reference
+   text from the steps moved to the toggle below, because the toggle is now what sits
+   against the last step whether the copy is open or shut. */
 .damage-track__movement {
   margin: 0.35rem 0 0;
-  padding: 0.35rem 0.25rem 0;
-  border-top: var(--cy-geo-rule) solid var(--cy-border);
+  padding: 0 0.25rem;
   font-size: 0.66rem;
   line-height: 1.3;
   color: var(--cy-muted);
 }
+/* The caret that opens it. It carries its OWN button reset rather than borrowing
+   .wounds__label--toggle: that class marks a TIER ROW's label, and four assertions across
+   this suite read the set of those buttons as the set of rows. A column-level toggle
+   wearing it put "Moving on the track" into every one of them. It is in skin-coverage's
+   self-styled list for the same reason the row toggles are.
+   Spans the column and left-aligns, since nothing sits beside it, and takes the condensed
+   uppercase treatment its neighbours use. */
+.damage-track__movement-toggle {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-top: 0.35rem;
+  padding: 0.35rem 0.25rem 0;
+  background: none;
+  border: 0;
+  border-top: var(--cy-geo-rule) solid var(--cy-border);
+  font-family: var(--cy-font-cond);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cy-muted);
+  cursor: pointer;
+}
+.damage-track__movement-toggle:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: 2px; }
+/* The sheet's own sentence under the Hurt row's book note (item 9): what the checkbox
+   label used to say before it was shortened to a microlabel. Same metrics as the note it
+   follows, tucked against it rather than reading as a second disclosure. */
+.damage-track__hurt-grants {
+  margin: -0.1rem 0 0.3rem;
+  padding: 0 0.25rem;
+  font-size: 0.66rem;
+  line-height: 1.3;
+  color: var(--cy-muted);
+}
+/* The hurtAvailable checkbox's row, rendered only in edit mode. Takes .stress__armor-row's
+   shape — a label wrapping a checkbox is a flex row, not .wounds__label's fixed-width
+   cell — AND since 2026-10-26 its uppercase microlabel treatment too: the label was a
+   wrapped sentence beside three condensed uppercase ones, which the owner read as two
+   designs rather than one (walkthrough item 9). align-items: center now that it is one
+   short line; the detail it dropped is in the Hurt row's disclosure. */
+.damage-track__available-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0 0.25rem;
+  font-family: var(--cy-font-cond);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+/* --- Stress (ddd-xrug phase 3) ---
+   The Magnus column, mounted between the injury columns and recovery when rules.stress is
+   on. Like the damage track it reuses .vitals__col, .vitals__col--rule, .wounds__tier,
+   .wounds__label, .wounds__label--toggle, .wounds__caret, .wounds__note and .wounds__pips
+   wholesale, so the columns of the panel cannot drift apart visually. The rules below are
+   the only ones it owns, and the narrow-mode @container block needs no entry: this is a
+   .vitals__col, so it takes the stacking reset already written for the other columns. */
+/* The label takes the whole row and left-aligns: "Supernatural levels" cannot sit in the
+   5rem basis a one-word wound tier uses, and these rows carry four controls rather than a
+   pip run. A modifier class on the same element, NOT a compound — it ties with
+   .wounds__label--toggle on specificity and so must stay BELOW it, which it does. */
+.stress__label { flex-basis: 100%; text-align: left; }
+.stress__points,
+.stress__supernatural { flex: 0 0 3.4rem; }
+/* The two steppers and the −3 relief button, shaped like the roller's steppers — the
+   sheet's other pair of ±1 controls. The preflight-reconciliation block REVERTS UA chrome
+   onto `button`, so without these they ship bare. */
+.stress__step-down,
+.stress__step-up,
+.stress__relieve {
+  min-width: 1.75rem; min-height: 1.75rem; padding: 0 0.35rem;
+  border: var(--cy-geo-rule) solid var(--cy-accent);
+  border-radius: var(--cy-geo-corner);
+  background: none; color: inherit; cursor: pointer; font: inherit;
+}
+/* A disabled button must LOOK disabled, not merely be inert — opt-in on top of the opt-in
+   skin, which is the ModalShell ✕ class of bug (ddd-6hx), and there is no .btn:disabled to
+   inherit. Grouped across all three: only the two floors bind :disabled today, and a
+   ceiling added to the plus later must not be the next control to go out looking clickable
+   while inert. */
+.stress__step-down:disabled,
+.stress__step-up:disabled,
+.stress__relieve:disabled { opacity: 0.4; cursor: not-allowed; }
+/* The derived level readout. Louder than the reference lines below it: it is the number
+   both the player and the roller act on. */
+.stress__level {
+  margin: 0.1rem 0 0.2rem;
+  padding: 0 0.25rem;
+  font-family: var(--cy-font-cond);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+/* Always-visible reference copy: the two threshold lines and the worn-armor note. Same
+   metrics as .wounds__note, the disclosed copy it sits among. */
+.stress__line {
+  margin: -0.1rem 0 0.3rem;
+  padding: 0 0.25rem;
+  font-size: 0.66rem;
+  line-height: 1.3;
+  color: var(--cy-muted);
+}
+/* The worn-armor toggle's row. Takes .wounds__label's metrics without its 4.2rem basis:
+   the label wraps a checkbox, so it is a flex row rather than a fixed-width cell. */
+.stress__armor-row {
+  display: flex; align-items: center; gap: 0.35rem;
+  margin-top: 0.35rem;
+  font-family: var(--cy-font-cond);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+/* ddd-xrug, owner 2026-10-26. The label keeps wrapping its own checkbox so clicking the
+   words still toggles the armor; the caret beside it is a separate button, which is why
+   this row is a div now and the label is its own element. The two rows above can use their
+   label AS the toggle precisely because no checkbox claims it. */
+.stress__armor-label { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+/* Caret-only, so aria-label is the whole of its accessible name. Its own button reset
+   rather than .wounds__label--toggle's, for the reason .damage-track__movement-toggle
+   gives: that class marks a tier row's LABEL and assertions count the set of them. */
+.stress__armor-toggle {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.stress__armor-toggle:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: 2px; }
 
 /* --- Recovery ---
    The recovery column. Its header (.recovery__label) is the shared column-head
@@ -1031,10 +1195,30 @@
 .ability-cost { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
 .cost-points { flex: 0 0 4rem; }
 .cost-pools { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: baseline; }
+/* The Stress-cost box sits in the same wrapping flex row, so it needs the same explicit
+   basis .cost-points has. The LABEL has to become a flex container of its own for that
+   basis to mean anything: .cost-stress is the label's child, not an item of .ability-cost,
+   so without this it keeps .field's width:100% and the caption stacks above a full-width
+   box. Two facts make the 4rem hold, and neither of them is cascade order. First,
+   `flex-basis` supersedes the used `width` for a flex item's main size, so
+   `.field { width: 100% }` at line 256 cannot win here however the rules are ordered.
+   Second, `.field` supplies `min-width: 0` at line 258, and without it the input's
+   automatic minimum size would clamp the used size above the basis even under
+   `flex-shrink: 0`. `.cost-points` just above rests on those same two facts. Source
+   order would have been the mechanism only for a `width: 4rem` variant, and that is
+   not what shipped (corrected 2026-10-12, was ddd-93d source-order reasoning). */
+.cost-stress-label { display: flex; align-items: center; gap: 0.35rem; flex: 0 0 auto; }
+.cost-stress { flex: 0 0 4rem; }
 
 .settings__row { display: grid; gap: 0.15rem; margin-bottom: 0.5rem; }
 .settings__hint { font-size: 0.78rem; color: var(--cy-muted); margin: 0 0 0.75rem; }
 .settings__toggle { display: flex; gap: var(--cy-gap); align-items: baseline; cursor: pointer; }
+/* ddd-xrug.1. Armed for a destructive untick, mirroring .vitals__rule--armed: the Luck Pool
+   toggle is the one control in this dialog whose off position throws play state away. A
+   modifier class, not a compound — it ties with .settings__toggle on specificity and wins on
+   source order, so it must stay BELOW it. The label text swaps to the warning itself, so
+   the colour is carried by the whole row. */
+.settings__toggle--armed { color: var(--cy-warn); font-weight: 700; }
 
 /* --- NPC mode (ddd-zm47.2, spec §7) ---
    Un-layered, like every BEM rule in this file. Inside @layer components these rules
@@ -1208,7 +1392,10 @@
 .roller__pool { margin: 0; font-size: 0.85rem; color: var(--cy-muted); }
 .roller__field { display: flex; flex-direction: column; gap: 0.25rem; }
 .roller__label { font-size: 0.75rem; color: var(--cy-muted); }
-.roller__show-all { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+/* .roller__check is the Hindrances group's checkbox rows (ddd-xrug), sharing the
+   show-all row's shape — one rule, so the modal's checkboxes cannot drift apart. */
+.roller__show-all,
+.roller__check { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
 .roller__steppers { display: flex; flex-wrap: wrap; gap: var(--cy-gap); }
 .roller__steppers > .roller__field { flex: 1 1 8rem; min-width: 0; }
 .roller__stepper { display: flex; align-items: center; gap: 0.5rem; }
@@ -1222,6 +1409,28 @@
 }
 .roller__step-down:disabled,
 .roller__step-up:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ddd-xrug: the Magnus Hindrances group. Its own grid rather than another
+   .roller__steppers cell, because the flex row above stretches every child to a
+   stepper's 8rem basis and a checkbox row stretched that way reads as a fourth stepper.
+   The Stress stepper inside keeps .roller__field / .roller__stepper, so it is skinned
+   and spaced exactly like Assets and Effort. The burn note carries .roller__note for its
+   muted treatment and .roller__burn-note purely as a hook. */
+.roller__hindrances { display: grid; gap: 0.4rem; }
+/* Owner, 2026-10-26: the burn's book copy sits behind a caret now. The label goes on
+   wrapping its own checkbox so clicking the words still toggles the burn, so the caret is
+   a sibling button and this row is a div — the shape .stress__armor-row already uses. */
+.roller__burn-row { display: flex; align-items: center; gap: 0.35rem; }
+/* Caret-only, so aria-label is the whole of its accessible name. Its own button reset for
+   the reason .stress__armor-toggle gives, and in skin-coverage's self-styled list. */
+.roller__burn-toggle {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.roller__burn-toggle:disabled { opacity: 0.4; cursor: not-allowed; }
+.roller__burn-toggle:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: 2px; }
 .roller__summary {
   display: grid; gap: 0.25rem;
   border: var(--cy-geo-rule) solid var(--cy-border);

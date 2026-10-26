@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import SheetHeader from '@/components/SheetHeader.vue'
 import PoolsRow from '@/components/PoolsRow.vue'
+import LuckPool from '@/components/LuckPool.vue'
 import StatusRow from '@/components/StatusRow.vue'
 import NotesBlock from '@/components/NotesBlock.vue'
 import SegmentCluster from '@/components/SegmentCluster.vue'
@@ -137,6 +138,15 @@ watch(() => npc.isNpc, (on) => {
       <div class="play-strip">
         <SheetHeader @open-settings="settingsOpen = true" />
         <PoolsRow />
+        <!-- The Luck Pool (ddd-xrug phase 2, spec §3.1). The object IS the switch: there
+             is no rules.luck flag, so a character without the Lucky descriptor — every
+             current-edition and Magnus character, and every Old Gods character who took
+             another descriptor — sees nothing. Here rather than in the pinned rail,
+             because Luck is not an injury model, and beside PoolsRow rather than inside
+             it, because that component's three-card template and order are a pinned UX
+             decision. This v-if is the panel's only gate, which is why LuckPool reads
+             sheet.luck without optional chaining. -->
+        <LuckPool v-if="sheet.luck !== null" />
       </div>
 
       <div class="pinned-rail">

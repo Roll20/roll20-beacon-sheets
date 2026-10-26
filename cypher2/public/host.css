@@ -55,6 +55,10 @@
   padding-top: 0.25rem;
   margin-top: 0.25rem;
 }
+.cypher-roll__stress {
+  opacity: 1;
+  font-weight: 600;
+}
 .cypher-roll__nudge {
   font-size: 0.85rem;
   font-weight: 600;
