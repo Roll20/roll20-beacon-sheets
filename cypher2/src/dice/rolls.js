@@ -40,17 +40,31 @@ export const skillEase = (rating) =>
   Object.hasOwn(SKILL_EASES, rating) ? Math.min(SKILL_EASES[rating], 3) : 0
 
 // Effort ladder before Edge: 3 for the first level, +2 per additional (book).
-export const rawEffortCost = (levels) => (levels <= 0 ? 0 : 3 + 2 * (levels - 1))
+// surchargePerLevel is the impaired damage-track surcharge (ddd-khaj): the book
+// charges an impaired character one extra point PER LEVEL of Effort, so it
+// multiplies levels and an L = 0 action still costs nothing. It goes HERE, in
+// the pre-Edge figure, and not into effortCost's deduction alone, because
+// rawCost is what the chat card and the modal preview PRINT — guidedCard's
+// spendLine renders `(${rawCost} − ${edge} Edge)`. Surcharge the deduction
+// without surcharging this figure and the card posts `Spent 4 Might
+// (3 − 1 Edge)`, a line that reads as 2. Every consumer of rawCost must see the
+// same number the pool actually paid. Defaults to 0, so an unimpaired character
+// and every existing call site price exactly as before.
+export const rawEffortCost = (levels, surchargePerLevel = 0) =>
+  (levels <= 0 ? 0 : 3 + 2 * (levels - 1) + surchargePerLevel * levels)
 
-export const effortCost = (levels, edge = 0) => Math.max(0, rawEffortCost(levels) - edge)
+export const effortCost = (levels, edge = 0, surchargePerLevel = 0) =>
+  Math.max(0, rawEffortCost(levels, surchargePerLevel) - edge)
 
 // Closed form, not a loop: schemaVersion 2 dropped the effort maximum, so
 // effortStat is arbitrary valid input and a 1..effortStat scan can freeze the
-// sheet (ddd-aqm audit). Affordable ⇔ effortCost(L, edge) ≤ poolCurrent, and
-// with rawEffortCost affine (2L + 1) that is L ≤ (poolCurrent + edge − 1) / 2 —
-// the max(0, …) branch folds in because poolCurrent is never negative here.
-export const maxAffordableEffort = (effortStat, poolCurrent, edge = 0) =>
-  Math.max(0, Math.min(effortStat, Math.floor((poolCurrent + edge - 1) / 2)))
+// sheet (ddd-aqm audit). Affordable ⇔ effortCost(L, edge, per) ≤ poolCurrent,
+// and with rawEffortCost affine ((2 + per)L + 1) that is
+// L ≤ (poolCurrent + edge − 1) / (2 + per) — the surcharge steepens the ladder,
+// so it changes the divisor and nothing else; the max(0, …) branch folds in
+// because poolCurrent is never negative here.
+export const maxAffordableEffort = (effortStat, poolCurrent, edge = 0, surchargePerLevel = 0) =>
+  Math.max(0, Math.min(effortStat, Math.floor((poolCurrent + edge - 1) / (2 + surchargePerLevel))))
 
 // ---- Attack rolls (ddd-keb3) ----
 
@@ -82,12 +96,39 @@ export const modifierEase = (modifier) => {
   return 0
 }
 
+// ---- The Magnus Archives: Stress (ddd-xrug) ----
+
+// The book's level is every 3 points (Magnus, page 128), derived and never stored.
+// The guard is the fifth member of the ddd-9ir family: `points` is a stored value
+// hydrate never validates, and an unguarded floor() hands NaN to easedSteps, where
+// interpretGuidedRoll's `base.beats >= effective` makes every comparison false and
+// the card calls every roll a failure — natural 20 included — after the Effort has
+// already left the pool. A bad value contributes 0 and still degrades VISIBLY,
+// because the Stress column prints the stored points beside this level.
+export const stressLevels = (points) =>
+  Number.isInteger(points) && points > 0 ? Math.floor(points / 3) : 0
+
 // weaponClass/modifier default to null, so the skill-roll callers that pass neither
 // are unchanged — one ease function for both roll kinds means the modal preview,
-// the store and the chat card can never describe different numbers.
-export const easedSteps = ({ skillRating = null, weaponClass = null, modifier = null, assets = 0, effortLevels = 0 }) =>
+// the store and the chat card can never describe different numbers. The three
+// Magnus terms default to no-ops for the same reason, and this is the ONLY place
+// they are summed: every consumer reads the total from here and prints its own
+// terms from the same inputs, so the card and the math cannot disagree.
+// stressHindrance is clamped at 0 — the caller clamps too, and a negative must
+// never turn a hindrance into a free ease.
+export const easedSteps = ({
+  skillRating = null,
+  weaponClass = null,
+  modifier = null,
+  assets = 0,
+  effortLevels = 0,
+  stressHindrance = 0,
+  armorHindered = false,
+  burnedStress = false
+}) =>
   skillEase(skillRating) + weaponClassEase(weaponClass) + modifierEase(modifier) +
-  Math.min(Math.max(assets, 0), 2) + Math.max(effortLevels, 0)
+  Math.min(Math.max(assets, 0), 2) + Math.max(effortLevels, 0) -
+  Math.max(stressHindrance, 0) - (armorHindered ? 1 : 0) + (burnedStress ? 1 : 0)
 
 // Effort applied to damage adds 3 damage per level (book). Area and explosive
 // attacks add only 2, but the contract carries no field marking an attack as

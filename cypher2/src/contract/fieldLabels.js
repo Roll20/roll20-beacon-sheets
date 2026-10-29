@@ -76,11 +76,18 @@ const PLACES = {
   genre: TOP_OF_SHEET,
   subgenre: TOP_OF_SHEET,
   pools: 'the pool cards at the top of the sheet',
+  // The fourth Pool's own panel, in the play strip right under those cards (ddd-xrug
+  // phase 2). Three of its five members have no control there and are suppressed below.
+  luck: 'the Luck Pool panel below the pool cards',
   recovery: 'Damage & Recovery',
   wounds: 'Damage & Recovery',
   shield: 'Damage & Recovery',
   rules: 'Damage & Recovery',
   damageTrack: 'Damage & Recovery',
+  // The Stress column of the same panel (ddd-xrug phase 3). `wearingArmor` is a root key
+  // rather than a member of `stress`, and its toggle sits in that column too.
+  stress: 'Damage & Recovery',
+  wearingArmor: 'Damage & Recovery',
   skills: 'Character › Skills',
   abilities: 'Character › Abilities',
   advancement: 'Character › Advancement',
@@ -106,12 +113,15 @@ export const NO_EDITOR_PATTERNS = [
   'portraitUrl',
   'sentence/secondDescriptor',
   'sentence/secondFocus',
-  // schemaVersion 3, phase 1 (ddd-xrug): the sheet carries these three but renders none of
-  // them, and a line must not send the player to a control that does not exist. Phase 2
-  // removes luck; phase 3 removes stress and wearingArmor.
-  'luck',
-  'stress',
-  'wearingArmor'
+  // schemaVersion 3 (ddd-xrug). Phase 3 removed stress and wearingArmor, which are now
+  // edited in the Stress column, and phase 2 removed the broad 'luck' entry: the panel
+  // edits current and max, so those two name it. These three have no control behind them
+  // and a line must not send the player to one that does not exist — edge is a read-only
+  // figure by design (spec §3.3), and the name and description render as the panel's
+  // heading and its rule prose.
+  'luck/edge',
+  'luck/name',
+  'luck/description'
 ]
 
 // Field words that read badly humanized.

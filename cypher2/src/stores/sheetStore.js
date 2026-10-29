@@ -2,11 +2,12 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { arrayToObject, objectToArray } from '@/utility/objectify'
+import { clampInt } from '@/utility/clamp.js'
 // Import cycle (relay.js → handlers.js → drop.js → stores → relay.js): read relay bindings only inside functions, never at module top level.
 import { dispatchRef } from '@/relay/relay.js'
 import { post } from '@/utility/post.js'
 import { createRollTemplate } from '@/rollTemplates/index.js'
-import { interpretStatRoll, interpretGuidedRoll, easedSteps, effortCost, rawEffortCost } from '@/dice/rolls.js'
+import { interpretStatRoll, interpretGuidedRoll, easedSteps, effortCost, rawEffortCost, stressLevels } from '@/dice/rolls.js'
 import { guidedRollTemplateData } from '@/rollTemplates/guidedCard.js'
 import { recoveryRollTemplateData } from '@/rollTemplates/recoveryCard.js'
 import { itemCardTemplateData } from '@/rollTemplates/itemCard.js'
@@ -44,6 +45,12 @@ export const defaultRecoverySlots = () =>
 
 // How long a dropped row stays highlighted (spec ⑥ §4.4, "about two seconds").
 export const DROP_HIGHLIGHT_MS = 2000
+
+// What burning a Stress level costs (Magnus, page 128, spec §6.4). It is the price of
+// exactly ONE derived level, which is why a single deduction produces both of the
+// burn's effects: the task eases a step and the level that would have hindered it is
+// gone. Named because four places charge or return it and they must never disagree.
+const STRESS_BURN_COST = 3
 
 // The five schemaVersion 3 root fields at their defaults (ddd-xrug, spec §7). A factory,
 // not a shared constant: rules is an object the checkboxes mutate in place.
@@ -231,11 +238,27 @@ const sheetStore = () => {
   // nothing is mutated — the slot checkboxes stay player-owned manual state —
   // and the bonus is snapshotted BEFORE the await so a mid-flight edit cannot
   // rewrite the card.
+  //
+  // ddd-xrug.1: the Lucky descriptor refreshes the Luck Pool alongside a recovery, and
+  // the card carries that rule rather than applying it, because this function learns no
+  // number — the player distributes the points. See recoveryCard.js, and ddd-aqh3 for
+  // the bead that would give the line a figure to report.
+  //
+  // Snapshotted BESIDE the bonus and for the same reason: the card describes the
+  // character who rolled, so a hydrate that renames or removes the Pool mid-flight
+  // cannot reword a card for a recovery already made. Both fields come from ONE read of
+  // the live object, so a hydrate replacing it cannot pair one document's name with
+  // another's maximum, and null for a character with no Luck Pool — which is every
+  // current-edition one, and the card renders it as no line at all.
   const rollRecovery = async () => {
     const bonus = recovery.value.bonus
+    const liveLuck = luck.value
+    const luckSnapshot = liveLuck ? { name: liveLuck.name, max: liveLuck.max } : null
     const { results } = await dispatchRef.value.roll({ rolls: { recovery: '1d6' } })
     const die = results.recovery.results.rolls[0].results[0]
-    return post(createRollTemplate({ recoveryRoll: recoveryRollTemplateData({ die, bonus }) }))
+    return post(createRollTemplate({
+      recoveryRoll: recoveryRollTemplateData({ die, bonus, luck: luckSnapshot })
+    }))
   }
 
   // Guided roller (spec ③ + ddd-669y). rollerStat / rollerSkillId /
@@ -322,9 +345,17 @@ const sheetStore = () => {
   // never go stale and the card reports reservation-time truth. Affordability
   // is checked against min(current, max): PoolCard clamps its fields
   // independently, so current > max sheets exist and must not fund Effort
-  // with phantom points (3rd audit F2). Reservation and refund are exact
-  // ±cost on the SAME pool object — never negative (cost ≤ current by the
-  // check). The refund is an exact reversal, but an upward edit of that same
+  // with phantom points (3rd audit F2). Since ddd-xrug.1 that domain is widened
+  // by the Luck allocated to this action, and the reservation takes only the stat
+  // Pool's SHARE of the cost — still never negative, on BOTH branches of the split
+  // and for two different reasons. Where the cost exceeds the allocation, poolCost
+  // is cost − luckAllocated and the refusal above has already established
+  // cost ≤ available + luckAllocated, so poolCost ≤ available. Where it does not,
+  // poolCost is 0 and the subtraction moves nothing — which is the branch that keeps
+  // the property true of a corrupt sheet whose `available` is itself negative, where
+  // poolCost ≤ available is FALSE and nothing is written anyway. The refund and the
+  // re-deduction move that same share, and Luck's own two helpers move Luck's.
+  // The refund is an exact reversal, but an upward edit of that same
   // object mid-flight can leave current above max afterward — tolerated,
   // like any hand-edited overfull pool. If a mid-flight hydrate replaced
   // the pools graph, the refund is SKIPPED — the newer write wins, like any
@@ -333,7 +364,13 @@ const sheetStore = () => {
   // auto-success card) settling late re-deduct and finish, keeping "dice
   // rolled ⇔ points spent" eventually consistent (3rd audit F1). A natural
   // 20 refunds the spend (book rule, 3rd audit F3); a failed post after real
-  // dice undoes nothing — the dice hit the table. (Known, out of scope: the
+  // dice undoes nothing — the dice hit the table. A burned Stress level (ddd-xrug)
+  // rides this same reservation and parts company on two of the six paths: a natural
+  // 20 never returns it, so the late-settlement re-deduction is unconditional where
+  // the pool's is gated. Luck (ddd-xrug.1) rides it too and does the OPPOSITE — its
+  // points are Effort points, so it follows the pool on every row, the natural 20
+  // included. The full matrix sits beside the six helpers below.
+  // (Known, out of scope: the
   // spec ② relay debounce can persist a stale pre-hydrate snapshot — a
   // sheet-wide pre-existing race tracked as ddd-ej2; these writes ride that
   // path by design, like every other field.)
@@ -347,7 +384,7 @@ const sheetStore = () => {
     ]).finally(() => clearTimeout(timer))
   }
 
-  const rollGuided = async ({ stat, skillId = null, attackId = null, assets = 0, effortLevels = 0, damageEffortLevels = 0, difficulty = null }) => {
+  const rollGuided = async ({ stat, skillId = null, attackId = null, assets = 0, effortLevels = 0, damageEffortLevels = 0, difficulty = null, stressHindrance = 0, armorHindered = false, burnStress = false, luckSpend = 0 }) => {
     // Resolution-boundary clamps (the modal mirrors both, but no caller may
     // exceed them): Effort ≤ the character's Effort stat; difficulty 0–10.
     // Policy: silent normalization — the card is built from the clamped
@@ -362,6 +399,67 @@ const sheetStore = () => {
       ? 0
       : Math.min(Math.max(damageEffortLevels, 0), Math.max(effort.value - levels, 0))
     const diff = difficulty === null ? null : Math.min(Math.max(Math.floor(difficulty) || 0, 0), 10)
+
+    // ---- Old Gods of Appalachia: the Luck Pool (ddd-xrug.1, spec §4) ----
+    //
+    // "When spending points from any other Pool, you can take one, some, or all of the
+    // points from your Luck Pool first" (the Lucky descriptor). THREE names, one concept,
+    // on purpose, exactly as the Stress burn below keeps burnStress / burn / burnedStress
+    // apart: `luckSpend` is the allocation a caller ASKED for, `luckAllocated` is the
+    // store's resolved answer, and `luckCharged` further down is what Luck actually paid.
+    // Keeping them distinct is what makes an over-ask impossible to deduct. Do not unify.
+    //
+    // The OBJECT is captured by reference here, like stressObj below, and both deductions
+    // are made through it: everything from this clamp to the two deductions is
+    // synchronous, so a concurrent hydrate can neither make them land on different
+    // documents nor make the clamp disagree with the charge.
+    const luckObj = luck.value
+    // The affordability domain the stat Pool already uses, min(current, max), plus the
+    // floor the stat Pool does not need: `luck` is a stored object hydrate heals only to
+    // the schema's types, so 9 of 3 must read 3, and −4 of 3 must read 0 — without the
+    // Math.max a corrupt stored value would SUBTRACT from what the action can be paid
+    // with and hand the stat Pool a bill larger than the cost. The modal's own
+    // luckAvailable (RollerModal.vue) computes the same min/max domain, and neither side
+    // may restate THAT differently. The integer guard below is this side's alone, and the
+    // paragraph introducing it says why. The modal carries one gate this cannot need — a
+    // stat naming no real pool — because this function THROWS `rollGuided: unknown pool`
+    // below, above every deduction, where the modal has no refusal to fall back on and its
+    // ceiling of 0 is the whole guard.
+    //
+    // luck.edge enters nothing, here or anywhere: Edge is subtracted once, from the STAT
+    // Pool's own edge, before the split (spec §3.3).
+    //
+    // Number.isInteger on BOTH numbers this expression reads, STORE-SIDE ONLY. The
+    // asymmetry is named here rather than denied: the modal's own luckAvailable carries no
+    // integer guard at all, which makes Luck the one resource in this reservation guarded
+    // on a single side. Its Stress twin really is mirrored — the burn's Number.isInteger a
+    // few lines below has its counterpart in the modal's hindranceCeiling, which puts the
+    // same unvalidated `points` through stressLevels.
+    //
+    // The guard is here because every clamp in this expression propagates a NaN rather than
+    // stopping it — Math.min and Math.max both do — so a NaN on either field would run
+    // through luckAllocated and luckCharged into `poolCost`, be subtracted from the STAT
+    // Pool, and be written to the stored document. `luck` is a stored object, which is the
+    // same reason the Stress guard exists.
+    //
+    // One side is enough, and the modal must NOT gain a second copy. The path is
+    // unreachable from production: healLuck nulls the whole object unless current, max and
+    // edge are all integers, LuckPool.vue normalizes every field through clampInt, and the
+    // import path only ever writes a document the generated validator accepted. Forced
+    // anyway, nothing is mischarged — a guard reading 0 puts the reservation on exactly the
+    // path a null Luck Pool already takes, where Luck is never touched and the stat Pool is
+    // charged either the whole real cost or nothing at all. Adding the guard to the modal
+    // would be a behaviour change on an unreachable path made to keep a comment true,
+    // which is backwards.
+    const luckAvailable = luckObj === null ||
+      !Number.isInteger(luckObj.current) || !Number.isInteger(luckObj.max)
+      ? 0
+      : Math.max(0, Math.min(luckObj.current, Math.max(luckObj.max, 0)))
+    // Normalized by clampInt's own convention (utility/clamp.js), the project's shared
+    // numeric rule, and THEN bounded: Infinity survives the floor and is stopped by the
+    // bound, so both steps are load-bearing. The contract requires integers on all three
+    // Luck number fields, and a fractional or NaN charge would reach the stored document.
+    const luckAllocated = Math.min(clampInt(luckSpend), luckAvailable)
 
     // Resolved ABOVE the unknown-pool throw below (round-1 plan audit): a stale
     // attack id arriving with an unusable stat must return this structured refusal,
@@ -390,6 +488,9 @@ const sheetStore = () => {
     // mid-roll strip the nudge off a spend that really did empty a Pool, or add one
     // to a roll made under the other rules. The card reports commit-time truth.
     const trackOn = rules.value.damageTrack
+    // The Stress rule is snapshotted for the same reason, and used the same way: a table
+    // toggling it mid-roll must not rewrite a card for a spend already made.
+    const stressRule = rules.value.stress
     const available = Math.min(pool.current, Math.max(poolMax, 0))
     // Attack mode ignores skillId — the attack row's own skillRating is its
     // training term, and the modal shows no skill picker.
@@ -411,32 +512,242 @@ const sheetStore = () => {
           damage: attackRow.damage
         }
       : null
+    // ---- The Magnus Archives: Stress (ddd-xrug, spec §6) ----
+    //
+    // THREE names, one concept, on purpose. `burnStress` is what a caller ASKED for and
+    // may be refused; `burn` is the store's resolved answer; `burnedStress` is what
+    // easedSteps and the card are TOLD happened. Keeping them distinct is what makes a
+    // refused request impossible to print as a spent level. Do not unify them.
+    //
+    // The stress OBJECT is snapshotted like the pool: the refunds below are guarded by
+    // its identity, so they need the object this roll actually charged, not whatever a
+    // concurrent hydrate has put in its place.
+    const stressObj = stress.value
+    // Refused silently — the existing normalization policy — when the rule is off, when
+    // there is no object to charge, or when the stored points cannot pay a whole level.
+    // The card is built from what was actually charged, so an unhonoured request leaves
+    // no trace. `points` is a stored value hydrate never validates, hence Number.isInteger
+    // here as well as inside stressLevels.
+    const burn = burnStress === true && stressRule && stressObj !== null &&
+      Number.isInteger(stressObj.points) && stressObj.points >= STRESS_BURN_COST
+    // The ceiling is a LEVEL count, and the burn is subtracted from the level rather than
+    // its 3 points from the points: stressLevels is the guard that keeps an unvalidated
+    // stored value out of the arithmetic (an inline Math.floor('9' / 3) reads 3, and
+    // Math.floor('x' / 3) reaches easedSteps as NaN, where interpretGuidedRoll calls every
+    // roll — natural 20 included — a failure after the Effort has left the pool), and
+    // doing the subtraction in points would hand it a coerced number instead.
+    //
+    // Gated on the rule, so the ceiling is 0 while it is off. The modal only renders the
+    // stepper under the rule, which makes this read as redundant — it is not. This is the
+    // resolution boundary, where the standing policy is that the modal mirrors the clamps
+    // and no caller may exceed them, and `rules.stress` false beside a live `stress`
+    // object is schema-legal data (exporter.test.js:145).
+    const hindranceCeiling = stressRule
+      ? Math.max(0, stressLevels(stressObj?.points) - (burn ? 1 : 0))
+      : 0
+    // Clamped like `levels` above. The inner Math.max is defence in depth only: easedSteps
+    // and easesLine both clamp a negative themselves, so no test here can tell the two
+    // spellings apart — that proof lives in rolls.test.js and guidedCard.test.js, which
+    // own the clamp. The Math.min is this layer's own rule and is proven here.
+    const hindrance = Math.min(Math.max(stressHindrance, 0), hindranceCeiling)
+    // Worn armor hinders Speed-based tasks (Magnus). Gated on the rule too: the toggle
+    // lives in the Stress column and the book rule comes with it.
+    const armor = armorHindered === true && stressRule && wearingArmor.value === true && stat === 'speed'
     const eased = easedSteps({
       skillRating: attack ? attack.skillRating : (skill?.rating ?? null),
       weaponClass: attack?.weaponClass ?? null,
       modifier: attack?.modifier ?? null,
       assets,
-      effortLevels: levels
+      effortLevels: levels,
+      stressHindrance: hindrance,
+      armorHindered: armor,
+      burnedStress: burn
     })
+    // The impaired damage-track surcharge (ddd-khaj): one extra point PER LEVEL of Effort.
+    // Gated on the FLAG, not on the object — the column is hidden while the flag is false
+    // and charging for an invisible state would be a mystery. A direct comparison, never a
+    // map lookup: all three cost functions propagate NaN (maxAffordableEffort included,
+    // because Math.min and Math.max both do), and there is no benign fallback downstream
+    // — a NaN cost is deducted from the pool and written to the stored document.
+    const surcharge = trackOn && damageTrack.value?.step === 'impaired' ? 1 : 0
     // One ladder for the whole action, Edge subtracted once (book): two levels
     // split between hitting and damage cost 5, not 3 + 3.
-    const rawCost = rawEffortCost(levels + damageLevels)
-    const cost = effortCost(levels + damageLevels, edge)
-    if (cost > available) return { ok: false, reason: 'insufficient-pool' }
+    const rawCost = rawEffortCost(levels + damageLevels, surcharge)
+    const cost = effortCost(levels + damageLevels, edge, surcharge)
+    // The card needs the TOTAL surcharge, never the per-level rate, and takes the base as
+    // rawCost - surchargeTotal. Derived by difference from the one function that owns the
+    // ladder, so the printed decomposition can never disagree with what the pool paid —
+    // including rawEffortCost's own `levels <= 0` branch, where both figures are 0.
+    const surchargeTotal = rawCost - rawEffortCost(levels + damageLevels)
+    // What this action can be PAID WITH: the stat Pool's affordable points plus the Luck
+    // put toward it (ddd-xrug.1). Raising this refusal and splitting the reservation below
+    // are ONE change: this alone would charge a whole cost to a Pool that cannot cover it
+    // and drive current negative, and the split alone would leave a modal promising Effort
+    // this refuses.
+    if (cost > available + luckAllocated) return { ok: false, reason: 'insufficient-pool' }
 
-    // Reserve — synchronous with the check above; nothing can interleave.
-    pool.current -= cost
+    // The split, in the book's own order — Luck first, the Pool for what is left — with
+    // `poolCost + luckCharged === cost` as the invariant every path below depends on.
+    // Math.min, because the allocation is a CEILING on what Luck may contribute and not a
+    // promise to spend it: a cost of 1 with 3 allocated takes 1. Deducting the allocation
+    // instead would take 3 points of Luck to pay a cost of 1.
+    const luckCharged = Math.min(luckAllocated, cost)
+    const poolCost = cost - luckCharged
+
+    // Reserve — synchronous with the check above; nothing can interleave. The before and
+    // after figures bracket the one subtraction, so the pair below can only ever describe
+    // this reservation's own effect on the Pool.
+    const poolBefore = pool.current
+    pool.current -= poolCost
     const poolAfter = pool.current
-    // Did THIS reservation empty the pool (ddd-xrug)? `cost > 0` keeps a zero-cost
-    // roll against an already-empty pool silent — the player emptied that one.
-    const emptiedByReservation = cost > 0 && poolAfter === 0
-    const refund = () => { if (pools.value[stat] === pool) pool.current += cost }
-    const rededuct = () => {
-      const live = pools.value[stat]
-      live.current = Math.max(0, live.current - cost) // pool floor 0, whatever happened meanwhile
+    // The Luck half of the SAME reservation, in the same synchronous window and through
+    // the object captured at the boundary, so the two deductions can never land on
+    // different documents. Gated on the CHARGE rather than on `luckObj !== null`, which
+    // buys two things: a positive charge implies a positive allocation, which implies a
+    // live object with points in it, so the dereference is safe without naming null at
+    // all; and a roll that allocated nothing leaves the object untouched instead of
+    // writing the same value back into a reactive field the relay would then persist.
+    if (luckCharged > 0) luckObj.current -= luckCharged
+    // The burn is spent in the SAME synchronous window and BELOW every refusal above: an
+    // insufficient-pool or attack-missing return must leave the points untouched.
+    if (burn) stressObj.points -= STRESS_BURN_COST
+    // Did THIS reservation empty the stat Pool (ddd-xrug)? The card turns the answer into
+    // an INSTRUCTION — move one step down the damage track — so it is about what left the
+    // Pool and never about what the action cost.
+    //
+    // `poolCost`, not `cost` (ddd-xrug.1): Luck may have paid the whole cost, and such a
+    // roll leaves the Pool exactly as it found it. `cost > 0 && poolAfter === 0` was
+    // correct only while `cost > available` refused first, which made a nonzero cost
+    // against an empty Pool unreachable and so made `poolAfter === 0` mean this spend did
+    // it; widening that refusal by `luckAllocated` removed the guarantee, and the old
+    // spelling then told an Old Gods player to take a step they do not owe on an honoured
+    // roll. A zero-cost roll stays silent through the same term, since poolCost ≤ cost.
+    //
+    // `poolBefore > 0` does not change the VALUE here and is not where the fix lives: the
+    // subtraction a line above is exact, so `poolAfter === 0` beside a positive `poolCost`
+    // already means the Pool held exactly that share. It is written so both deduction sites
+    // ask the same question — above 0 before, 0 after — and because at the OTHER site that
+    // term is the load-bearing one: redeductPool floors at 0, so a before-less
+    // `poolCost > 0 && current === 0` would fire there for a Pool a concurrent hydrate had
+    // already emptied. Keeping it here is also what leaves this site correct if it ever
+    // gains that floor.
+    //
+    // Luck is absent from this answer on purpose, and that absence is the whole of the
+    // book's exemption: a Luck Pool at 0 does not count against the damage track. The
+    // exemption is only that. It does not suppress a line the stat Pool earned — a roll
+    // that empties both prints one line, for the Pool — because read wider it would hand a
+    // free step down the track to anyone who spent a single point of Luck.
+    const emptiedByReservation = poolCost > 0 && poolBefore > 0 && poolAfter === 0
+    // SIX helpers, not three extended ones, because a refund and a re-deduction follow
+    // opposite rules and the three resources do not agree about which paths do which.
+    //
+    // A refund is guarded by object IDENTITY: a concurrent hydrate replaced the object, so
+    // the newer write wins and crediting a stranger is worse than skipping (3rd audit F5).
+    //
+    // `poolCost`, never `cost`: only the stat Pool's SHARE ever left it, and crediting the
+    // whole cost back would mint the points Luck paid — on a cost of 3 with 2 from Luck,
+    // Might 16 of 13 beside Luck 0 of 3, permanently, on a natural 20.
+    const refundPool = () => { if (pools.value[stat] === pool) pool.current += poolCost }
+    // Luck's own refund. The PRESENCE of the charge test is what makes this safe for the
+    // ordinary no-Luck roll, and its position is incidental — neither operand dereferences
+    // anything, `luck.value !== luckObj` compares two possibly-null values and cannot
+    // throw, so the two tests may be written in either order. Do not remove it: the default
+    // `luck` is null, so for a character with no Luck Pool `luckObj` and `luck.value` are
+    // both null, identity SUCCEEDS, and an identity-ONLY guard would reach `luckObj.current`
+    // below and dereference null on every natural 20 rolled by a current-edition character
+    // — the common case, not an edge one. The identity half is the pool's rule verbatim.
+    // `luckCharged`, never `luckAllocated` or `luckSpend`: the allocation is a ceiling, and
+    // returning it would hand back points the roll never took.
+    const refundLuck = () => {
+      if (luckCharged <= 0 || luck.value !== luckObj) return
+      luckObj.current += luckCharged
     }
+    const refundStress = () => {
+      if (burn && stress.value === stressObj) stressObj.points += STRESS_BURN_COST
+    }
+    // A re-deduction is NOT guarded: late settlement means the roll really happened, so
+    // the charge lands on whatever object is live, floored at 0. An identity guard here
+    // would make a completed roll free after a timeout plus a hydrate.
+    //
+    // SIX paths, not four, because the two posting paths fail differently:
+    //
+    //   path                              pool        luck        stress
+    //   auto-success post failure         refund      refund      refund
+    //   dice dispatch failure             refund      refund      refund
+    //   dice card-post failure            nothing     nothing     nothing
+    //   on-time natural 20                refund      REFUND      nothing
+    //   late settlement, no natural 20    re-deduct   re-deduct   re-deduct
+    //   late settlement, late die 20      nothing     nothing     re-deduct
+    //
+    // LUCK FOLLOWS THE POOL'S COLUMN, every row. Nothing about it is inferable from the
+    // Stress column, which is why it is spelled out here: Luck's points ARE Effort points,
+    // the book's natural-20 rule refunds the Effort, and part of that Effort came out of
+    // Luck, so row 4 — the one row where the two resources visibly disagree — puts those
+    // points back where they were taken from. A burned Stress level is a different kind of
+    // thing: the burn happened, and no refund rule reaches it. Reading row 4 the Stress way
+    // is the expensive mistake, because it eats a player's Luck silently on the single roll
+    // they watch most closely.
+    //
+    // Row 3 is the one most easily got wrong in the other direction: once the dice have
+    // landed the spend stands whatever happens to the card. Row 4 is why the shared
+    // refund cannot carry Stress, and row 6 is that same asymmetry on the timeout path —
+    // the timeout refunded all three, and only the pool and Luck have a natural-20 refund
+    // to net against.
+    const redeductPool = () => {
+      const live = pools.value[stat]
+      // `poolCost`, matching the refund: the share this roll took is the share it owes.
+      live.current = Math.max(0, live.current - poolCost) // pool floor 0, whatever happened meanwhile
+    }
+    // The mirror image of refundLuck: UNGUARDED on identity, exactly like the pool's, so
+    // Luck's share lands on whatever object is live, floored at 0 against that object's own
+    // value. Returns early when nothing was charged or a hydrate nulled the object — the
+    // first of those matters on its own, because `Math.max(0, …)` applied to a roll Luck
+    // never paid for would silently REPAIR a corrupt stored negative, and the floor is a
+    // floor on the charge, not a correction to the document.
+    const redeductLuck = () => {
+      const live = luck.value
+      if (luckCharged <= 0 || !live) return
+      live.current = Math.max(0, live.current - luckCharged)
+    }
+    const redeductStress = () => {
+      const live = stress.value
+      // Nothing to charge when a hydrate nulled it — the burn still happened, and
+      // stressLine prints the level alone rather than dereferencing the absent figures.
+      if (!burn || !live) return
+      live.points = Math.max(0, live.points - STRESS_BURN_COST)
+    }
+    // The card's Stress figures, points and level always from ONE read so they can never
+    // disagree. null unless a level was burned, and null when no live object is left.
+    const stressPair = () => {
+      const live = stress.value
+      return burn && live ? { points: live.points, levels: stressLevels(live.points) } : null
+    }
+    // Reservation-time pair, the pool's own pairing rule (4th audit F3): every card but
+    // the late dice one reports this, and that one takes a fresh pair after its own
+    // re-deduction, because a reservation-time snapshot there would print points a
+    // concurrent edit has already changed.
+    const stressAfter = stressPair()
+    // The card's Luck figures, current and max always from ONE read of the live object so
+    // the two can never come from different snapshots — the pool's own pairing rule (4th
+    // audit F3), which `live.current` beside `luckObj.max` would break by reporting a
+    // replacement's points against the reservation's maximum. null unless Luck really paid,
+    // and null when a hydrate left no live object to report, which luckLine prints as the
+    // charge alone rather than dereferencing.
+    const luckPair = () => {
+      const live = luck.value
+      return luckCharged > 0 && live ? { current: live.current, max: live.max } : null
+    }
+    // Reservation-time pair, like the Stress one: every card but the refunded and late ones
+    // reports this, and those take their own fresh pair after the operation that moved Luck.
+    const luckAfter = luckPair()
 
     const statLabel = stat.charAt(0).toUpperCase() + stat.slice(1)
+    // The Pool's STORED name, snapshotted here like every other figure the card renders: a
+    // player who renamed Luck to Fortune must not read "Luck" in chat, and a rename landing
+    // mid-roll must not reword a card for a spend already made. `undefined` when there is no
+    // Luck object, which lets the builders' own default stand — and nothing reads it at all
+    // unless luckCharged is positive, which implies a live object.
+    const luckLabel = luckObj?.name
     // Card pool figures always come as a PAIR from the same snapshot (4th
     // audit F3): reservation-time by default, live-time whenever a branch
     // reports the live current — never reservation-max with live-current.
@@ -444,11 +755,16 @@ const sheetStore = () => {
     // `emptied` joins them for the same reason and is never inferred from shownAfter:
     // each branch answers "was it above 0 before this deduction and 0 after" for
     // itself, so a branch that forgets defaults to no nudge rather than a wrong one.
-    const cardFor = (interp, { refunded = false, shownAfter = poolAfter, shownMax = poolMax, emptied = false } = {}) => createRollTemplate({
+    const cardFor = (interp, { refunded = false, shownAfter = poolAfter, shownMax = poolMax, emptied = false, shownStress = stressAfter, shownLuck = luckAfter } = {}) => createRollTemplate({
       guidedRoll: guidedRollTemplateData({
         statLabel, skill, attack, assets, effortLevels: levels, damageEffortLevels: damageLevels,
         interp, cost, rawCost, edge, poolAfter: shownAfter, poolMax: shownMax, refunded,
-        damageTrack: trackOn, emptied
+        damageTrack: trackOn, emptied, surchargeTotal, stressRule,
+        stressHindrance: hindrance, armorHindered: armor, burnedStress: burn,
+        stressAfter: shownStress,
+        // `poolCost`, never `cost`: the stat Pool's share is what left the Pool, and a
+        // card claiming the whole cost is the defect these four inputs exist to fix.
+        poolCost, luckCharged, luckAfter: shownLuck, luckLabel
       })
     })
 
@@ -461,15 +777,19 @@ const sheetStore = () => {
         posting = post(cardFor(interp, { emptied: emptiedByReservation }))
         await withTimeout(posting)
       } catch (err) {
-        refund()
+        refundPool()
+        refundLuck() // matrix row 1
+        refundStress()
         // The card may still land after a timeout refund — spend re-applies.
         // Accepted exception (5th audit F2): the card's HTML left with the
         // post at reservation time; late settlement re-deducts the pool but
         // cannot rewrite an already-submitted card — its figures stay the
         // (internally consistent) reservation-time pair.
         // Outer .catch for the same reason as the dice path below: a sync
-        // throw from rededuct() rejects the .then-returned promise.
-        if (err === TIMEOUT_ERROR) posting.then(() => rededuct(), () => {}).catch(() => {})
+        // throw from either re-deduction rejects the .then-returned promise.
+        // No dice on this path, so there is no natural 20 to net against: all three
+        // resources re-deduct unconditionally (matrix row 5).
+        if (err === TIMEOUT_ERROR) posting.then(() => { redeductPool(); redeductLuck(); redeductStress() }, () => {}).catch(() => {})
         return { ok: false, reason: 'post-failed' }
       }
       return { ok: true }
@@ -480,9 +800,24 @@ const sheetStore = () => {
     // (documented policy); the nat-20 card reports the pool after its refund.
     const finishRoll = (die) => {
       const refunded = die === 20 && cost > 0
-      if (refunded) refund()
+      // The pool and Luck, never Stress (matrix row 4). The book's refund rule is about
+      // Effort points: Luck's share of this cost WAS Effort points and comes back, while
+      // the burned level has no equivalent — which is why the shared helper cannot carry
+      // Stress, and why Luck cannot be left out of the pair.
+      if (refunded) { refundPool(); refundLuck() }
       const live = pools.value[stat]
-      const shown = refunded ? { shownAfter: live.current, shownMax: live.max } : {}
+      // Pool figures AND the Luck pair, both taken after the two refunds above, because
+      // both resources were just credited: a reservation-time Luck pair here would report
+      // points refundLuck has already given back as still spent. Each is read from whatever
+      // object is live — a mid-flight hydrate makes that resource's refund a no-op, and the
+      // newer document is what the card should describe.
+      //
+      // The Stress pair stays the reservation-time one even here, because nothing on this
+      // path changed the Stress — the only branch that takes a fresh one is the one that
+      // re-deducts.
+      const shown = refunded
+        ? { shownAfter: live.current, shownMax: live.max, shownLuck: luckPair() }
+        : {}
       return post(cardFor(interpretGuidedRoll({ die, eased, difficulty: diff }),
         { refunded, ...shown, emptied: emptiedByReservation }))
     }
@@ -497,7 +832,9 @@ const sheetStore = () => {
       const { results } = await withTimeout(rolling)
       die = results[stat].results.rolls[0].results[0]
     } catch (err) {
-      refund()
+      refundPool()
+      refundLuck() // matrix row 2
+      refundStress()
       if (err === TIMEOUT_ERROR) {
         // Dice may still land after the timeout refund. Re-deduct and post
         // then — except a late natural 20, which nets to zero: the timeout
@@ -505,14 +842,28 @@ const sheetStore = () => {
         rolling.then(({ results }) => {
           const lateDie = results[stat].results.rolls[0].results[0]
           const refunded = lateDie === 20 && cost > 0
-          // Read BEFORE the re-deduction (ddd-xrug). rededuct() floors at 0, so a
+          // Read BEFORE the re-deduction (ddd-xrug). redeductPool floors at 0, so a
           // live pool a concurrent hydrate already emptied shows 0 after a
           // re-deduction that took nothing — no line for that one.
           const liveBefore = pools.value[stat].current
-          if (!refunded) rededuct()
+          // Luck shares the pool's gate, not Stress's (matrix rows 5 and 6): the timeout
+          // refunded Luck too, so a late natural 20 nets to zero for it as well.
+          if (!refunded) { redeductPool(); redeductLuck() }
+          // UNCONDITIONAL, unlike the pool's (matrix row 6). For the pool a timeout refund
+          // plus a natural-20 refund net to zero, so the gate is right there; Stress has no
+          // natural-20 refund to net against, and the same skip would leave the burned level
+          // RETURNED — contradicting the rule one branch up.
+          redeductStress()
           const live = pools.value[stat] // settlement-time pair (4th audit F3)
           return post(cardFor(interpretGuidedRoll({ die: lateDie, eased, difficulty: diff }),
-            { refunded, shownAfter: live.current, shownMax: live.max, emptied: liveBefore > 0 && live.current === 0 }))
+            {
+              refunded, shownAfter: live.current, shownMax: live.max,
+              emptied: liveBefore > 0 && live.current === 0,
+              // Both resources take a FRESH pair here, after their own re-deduction above:
+              // a reservation-time pair on this branch would print figures a concurrent
+              // edit, a replacement or this very re-deduction has already changed.
+              shownStress: stressPair(), shownLuck: luckPair()
+            }))
         }, () => {}).catch(() => {})
         // ^ outer catch, not inner: a SYNCHRONOUS throw from post() rejects
         // the .then-returned promise, which an inner .catch on post's own

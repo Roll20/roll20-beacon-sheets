@@ -22,6 +22,12 @@
   {{/if}}
   <div class="cypher-roll__detail">{{guidedRoll.eases}}</div>
   <div class="cypher-roll__detail">{{guidedRoll.spend}}</div>
+  {{#if guidedRoll.stress}}
+  <div class="cypher-roll__detail cypher-roll__stress">{{guidedRoll.stress}}</div>
+  {{/if}}
+  {{#if guidedRoll.luck}}
+  <div class="cypher-roll__detail cypher-roll__luck">{{guidedRoll.luck}}</div>
+  {{/if}}
   {{#if guidedRoll.nudge}}
   <div class="cypher-roll__nudge">{{guidedRoll.nudge}}</div>
   {{/if}}
@@ -35,6 +41,9 @@
   <div class="cypher-roll__stat">{{recoveryRoll.title}}</div>
   <div class="cypher-roll__die">{{recoveryRoll.total}}</div>
   <div class="cypher-roll__detail">{{recoveryRoll.breakdown}}</div>
+  {{#if recoveryRoll.luck}}
+  <div class="cypher-roll__detail cypher-roll__luck">{{recoveryRoll.luck}}</div>
+  {{/if}}
   <div class="cypher-roll__wounds">
     <div><b>10 min:</b> Remove <em>all</em> minor wounds</div>
     <div><b>1 hr:</b> Remove one moderate wound or <em>all</em> minor wounds</div>

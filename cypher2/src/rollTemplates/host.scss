@@ -55,6 +55,14 @@
     padding-top: 0.25rem;
     margin-top: 0.25rem;
   }
+  // The burned Stress level (ddd-xrug, spec §6.4). It carries __detail for the
+  // eases/spend rhythm, but a spent resource must not dim into the noise beside
+  // them, so it keeps full opacity and the damage line's weight. Below __detail
+  // so the single-class source-order tie-break goes this way (ddd-93d).
+  &__stress {
+    opacity: 1;
+    font-weight: 600;
+  }
   // The damage-track nudge (ddd-xrug, spec §9). Instruction, not detail, so it is
   // body-sized and rule-separated like __wounds rather than dimmed like the spend
   // line it follows. Below __detail so a source-order tie-break goes this way.

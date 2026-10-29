@@ -13,7 +13,14 @@ published by **Monte Cook Games**. Built with Vue 3, Pinia, and the Beacon SDK.
   attack's own modifier applied as ease, and effort spendable on damage
 - Wound boxes, recovery rolls, shield and armor tracking. A game that uses the
   damage track gets the four-step track in place of the wound boxes, set from
-  the Damage & Recovery panel
+  the Damage & Recovery panel, and an impaired character pays the track's extra
+  effort point per level
+- A game that uses The Magnus Archives Stress rules gets a Stress column with
+  points, levels and worn armor, a Hurt step on the damage track, Stress
+  hindrances and burning a Stress level in the guided roller, and a Stress cost
+  on an ability's row
+- A character with the Lucky descriptor gets a Luck Pool, with points
+  allocatable toward a roll's cost from the guided roller
 - Reads character files for the Old Gods of Appalachia and The Magnus Archives
   rules as well as Cypher 2, and exports whichever format the character needs
 - Skills (with proficiencies), abilities, attacks, cyphers, artifacts, gear,
