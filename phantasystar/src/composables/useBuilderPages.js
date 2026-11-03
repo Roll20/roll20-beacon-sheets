@@ -28,20 +28,21 @@ export const useBuilderPages = () => {
 
   const pages = computed(() => {
     const d = builder.draft
+    const picks = Object.fromEntries(['species', 'background', 'profession', 'path'].map((k) => [k, d[k]?.choices ?? {}]))
     const held = new Set(['profession', 'path'].flatMap((kind) =>
       Object.values(d[kind]?.choices ?? {}).flatMap((v) => String(v).split('|')).filter(Boolean)))
     const ctx = {
       level: d.level,
       profession: picked.value.profession,
       professions: lists.Professions?.options ?? [],
-      mastery: weaponProficiencies(picked.value).map((w) => ({ id: w.id, name: w.name })),
+      mastery: weaponProficiencies({ ...picked.value, picks }).map((w) => ({ id: w.id, name: w.name })),
       held,
     }
     const taken = Object.entries(currentFeats(d)).flatMap(([slotKey, name]) => {
       const option = feats.value.find((f) => f.pageName === name)
       return option ? [{ slotKey, option, choices: featChoices(option, slotKey, ctx) }] : []
     })
-    return { ...picked.value, feats: taken }
+    return { ...picked.value, feats: taken, picks }
   })
 
   const featPickOf = (f) => builder.draft.abilities.featPicks?.[featPrefix(f.slotKey, f.option.pageName)] ?? ''

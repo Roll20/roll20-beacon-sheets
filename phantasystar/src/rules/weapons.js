@@ -1,4 +1,4 @@
-import { isWeaponProficient, hasWeaponMastery } from './proficiencies.js';
+import { isWeaponProficient, hasWeaponMastery, WEAPON_TYPES } from './proficiencies.js';
 import { weaponAbility } from './equipment.js';
 
 const int = (v) => {
@@ -145,6 +145,7 @@ export const normalizeWeaponText = (value) => {
         text: e.text.trim(),
         ...(Number.isInteger(grade) ? { minGrade: grade } : {}),
         ...(e.requires === 'mastery' ? { requires: 'mastery' } : {}),
+        ...(e.variant === true ? { variant: true } : {}),
       };
     });
 };
@@ -170,5 +171,57 @@ export const migrateAttackRow = (row = {}) => {
     ...current,
     properties: normalizeWeaponProperties(current.properties),
     text: normalizeWeaponText(current.text),
+    variantOf: normalizeVariantOf(current.variantOf),
+  };
+};
+
+export const weaponVariants = (typeId) => WEAPON_TYPES.filter((t) => t.parent && t.parent === typeId);
+
+const normalizeVariantOf = (value) => {
+  if (!value || typeof value !== 'object' || typeof value.type !== 'string' || !value.type) return null;
+  return {
+    type: value.type,
+    properties: normalizeWeaponProperties(value.properties),
+    mastery: typeof value.mastery === 'string' ? value.mastery : '',
+    range: typeof value.range === 'string' ? value.range : '',
+    thrownRange: typeof value.thrownRange === 'string' ? value.thrownRange : '',
+  };
+};
+
+export const variantChoosable = (row = {}) => !!row.variantOf || weaponVariants(row.type).length > 0;
+
+export const applyWeaponVariant = (row = {}, variant = {}) => {
+  const base = row.variantOf ? removeWeaponVariant(row) : row;
+  const had = new Set(normalizeWeaponText(base.text).map((e) => e.text));
+  const added = normalizeWeaponText(variant.text)
+    .filter((e) => !had.has(e.text))
+    .map((e) => ({ ...e, variant: true }));
+  const properties = normalizeWeaponProperties(variant.properties);
+  return {
+    ...base,
+    variantOf: {
+      type: base.type ?? '',
+      properties: normalizeWeaponProperties(base.properties),
+      mastery: base.mastery ?? '',
+      range: base.range ?? '',
+      thrownRange: base.thrownRange ?? '',
+    },
+    type: variant.id,
+    properties,
+    mastery: variant.mastery ?? '',
+    range: variant.range || base.range || '',
+    thrownRange: properties.thrown ? (variant.thrownRange || base.thrownRange || '') : '',
+    text: [...normalizeWeaponText(base.text), ...added],
+  };
+};
+
+export const removeWeaponVariant = (row = {}) => {
+  const was = normalizeVariantOf(row.variantOf);
+  if (!was) return row;
+  return {
+    ...row,
+    ...was,
+    variantOf: null,
+    text: normalizeWeaponText(row.text).filter((e) => !e.variant),
   };
 };

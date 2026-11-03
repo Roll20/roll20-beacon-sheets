@@ -1,4 +1,5 @@
 import { featuresOf } from './choices.js';
+import { featurePrimes } from '../rules/featureEffects.js';
 import { compendiumUrl } from './catalog.js';
 
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -23,13 +24,15 @@ export const techniqueInfo = (option) => {
 export const levelRow = (profession, level) =>
   (profession?.payload?.professionStats?.levels ?? []).find((r) => r?.level === level) ?? null;
 
-export const techniquePools = ({ profession, path, feats = [] } = {}, level = 1) => {
+export const techniquePools = ({ profession, path, feats = [], picks = {} } = {}, level = 1) => {
   if (!profession) return [];
   const row = levelRow(profession, level);
   const pools = [];
   const base = `profession:${profession.pageName}`;
+  const extra = featurePrimes([['profession', profession], ['path', path]].flatMap(([kind, option]) =>
+    (option ? featuresOf(option, level) : []).map((f) => ({ primes: f.entry.primes, pick: picks[kind]?.[`feature:${f.id}`] ?? '' }))), { level });
   const primes = Number(row?.columns?.prime_techniques?.value);
-  if (primes > 0) pools.push({ key: `${base}:prime`, label: 'Prime Techniques', count: primes, minRank: 0, maxRank: 0 });
+  if (primes > 0) pools.push({ key: `${base}:prime`, label: 'Prime Techniques', count: primes + extra, minRank: 0, maxRank: 0 });
   if (row?.techniquesKnown > 0) {
     pools.push({ key: `${base}:known`, label: 'Techniques', count: row.techniquesKnown, minRank: 1, maxRank: row.maxTechRank ?? 1 });
   }

@@ -73,7 +73,8 @@ watchEffect(() => {
   loadCategory('Species')
 })
 const compendiumAnswers = computed(() => lists.Species?.status === 'ok' && lists.Species.options.length > 0)
-const showLanding = computed(() => landingWanted.value && compendiumAnswers.value)
+const compendiumChecked = computed(() => ['ok', 'error'].includes(lists.Species?.status))
+const showLanding = computed(() => landingWanted.value && compendiumChecked.value)
 
 watch(() => builder.open, (open, was) => {
   if (!was || open || !builder.draft.built) return
@@ -164,7 +165,7 @@ const DevChat = isDev
 
     <LevelUpShell v-else-if="showLevelUp" />
 
-    <BuilderLanding v-else-if="showLanding" />
+    <BuilderLanding v-else-if="showLanding" :available="compendiumAnswers" />
 
     <template v-else>
     <nav ref="tabBar" class="tabs">

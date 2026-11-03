@@ -9,7 +9,7 @@ export const FEATURE_GROUP_IDS = FEATURE_GROUPS.map((g) => g.id);
 export const DEFAULT_FEATURE_GROUP = 'profession';
 
 import { normalizeRider, normalizeFeatureRoll } from './riders.js';
-import { normalizeMove, normalizeDefense, normalizeSense, normalizeFate, normalizeGrants, storeGrants } from './featureEffects.js';
+import { normalizeMove, normalizeDefense, normalizeSense, normalizeFate, normalizeSkillBonus, normalizePrimes, normalizeGrants, storeGrants } from './featureEffects.js';
 import { normalizeInitiate, normalizeAddUses } from './feats.js';
 
 const toLevel = (value) => {
@@ -62,6 +62,8 @@ export const normalizeFeature = (row = {}) => {
     defense: normalizeDefense(row.defense),
     sense: normalizeSense(row.sense),
     fate: normalizeFate(row.fate),
+    skillBonus: normalizeSkillBonus(row.skillBonus),
+    primes: normalizePrimes(row.primes),
     techniques: normalizeGrants(row.techniques),
     granted: typeof row.granted === 'string' ? row.granted : '',
     addUses: normalizeAddUses(row.addUses),

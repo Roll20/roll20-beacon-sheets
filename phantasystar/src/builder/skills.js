@@ -2,7 +2,7 @@ import { SKILLS, SKILL_IDS } from '../rules/skills.js';
 import { maxSkillRank } from '../rules/progression.js';
 import { TOOLS, VEHICLES, WEAPON_TYPES } from '../rules/proficiencies.js';
 import { backgroundRanks } from '../compendium/drops.js';
-import { featuresOf } from './choices.js';
+import { featuresOf, pickedOptionEffects } from './choices.js';
 
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const asList = (choice) => (Array.isArray(choice) ? choice : choice ? [choice] : []).filter(isObject);
@@ -117,6 +117,9 @@ export const weaponProficiencies = (pages = {}) => {
   for (const option of [pages.species, pages.background, pages.profession]) {
     for (const p of option?.payload?.proficiencies ?? []) if (p?.kind === 'weapon') ids.add(p.id);
   }
+  for (const e of pickedOptionEffects(pages, 1)) {
+    for (const p of e.proficiencies ?? []) if (p?.kind === 'weapon') ids.add(p.id);
+  }
   return WEAPON_TYPES.filter((w) => ids.has(w.id)).map((w) => ({ kind: 'mastery', id: w.id, name: w.name }));
 };
 
@@ -163,6 +166,11 @@ export const proficiencyChoices = (pages = {}, level = 1, picks = {}) => {
     fromFeatures(kind, option);
   }
   if (path) fromFeatures('path', path);
+  for (const e of pickedOptionEffects(pages, level)) {
+    if (isObject(e.choice)) {
+      add(`${e.kind}:${e.pageName}:${e.id}:option:${e.option}`, e.pageName, { ...e.choice, label: `${e.option}: ${e.choice.label ?? ''}` });
+    }
+  }
   for (const f of pages.feats ?? []) out.push(...(f.choices?.picks ?? []));
   return out;
 };

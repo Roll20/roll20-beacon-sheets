@@ -3,10 +3,14 @@ import { ref, computed } from 'vue'
 import { useCharacterStore } from '@/stores/characterStore.js'
 import { useSheetRolls } from '@/composables/useSheetRolls.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
+import { dispatchRef } from '@/relay/relay.js'
+import { fetchEntry } from '@/compendium/fetchEntry.js'
+import { readPage } from '@/compendium/payload.js'
 import {
   ABILITIES, critRange, CRIT_RANGE_MIN, formatModifier,
   WEAPON_KINDS, MASTERY_FEATURES, distanceLabel,
   weaponTypesFor, rowProficiency,
+  weaponVariants, variantChoosable, applyWeaponVariant, removeWeaponVariant,
   WEAPON_PROPERTIES, attackAbility, heavyDisadvantage, activeWeaponText,
 } from '@/rules/index.js'
 
@@ -74,6 +78,39 @@ const autoAbility = computed(() => {
 })
 
 const typeOptions = computed(() => weaponTypesFor(sheet.proficiencies))
+
+const variantOptions = computed(() => weaponVariants(attack.value?.variantOf?.type || attack.value?.type))
+const variantValue = computed(() => (attack.value?.variantOf ? attack.value.type : ''))
+const setType = (type) => {
+  attack.value.type = type
+  attack.value.variantOf = null
+  variantError.value = ''
+}
+const variantBusy = ref(false)
+const variantError = ref('')
+const setVariant = async (id) => {
+  variantError.value = ''
+  if (!id) {
+    Object.assign(attack.value, removeWeaponVariant(attack.value))
+    return
+  }
+  const name = variantOptions.value.find((v) => v.id === id)?.name ?? id
+  variantBusy.value = true
+  try {
+    const fetched = await fetchEntry(dispatchRef.value, { pageName: name, categoryName: 'Proficiencies' })
+    const read = fetched.ok ? readPage(fetched.pages[0], 'proficiency') : null
+    const variant = read?.ok ? read.mapped.variant : null
+    if (!variant) {
+      variantError.value = `${name} needs its compendium page.`
+      return
+    }
+    Object.assign(attack.value, applyWeaponVariant(attack.value, variant))
+  } catch {
+    variantError.value = `${name} needs its compendium page.`
+  } finally {
+    variantBusy.value = false
+  }
+}
 
 const gradeLabel = computed(() => {
   const { grade, gradeInUse } = dmg.value
@@ -202,13 +239,21 @@ const damageParts = computed(() => {
       </label>
       <label class="f">
         <span>Type</span>
-        <select v-model="attack.type">
+        <select :value="attack.type" @change="setType($event.target.value)">
           <option value="">None</option>
           <option v-for="w in typeOptions" :key="w.id" :value="w.id">
             {{ w.parent ? `\u00a0\u00a0${w.name}` : w.name }}
           </option>
         </select>
       </label>
+      <label v-if="variantChoosable(attack)" class="f">
+        <span>Variant</span>
+        <select :value="variantValue" :disabled="variantBusy" @change="setVariant($event.target.value)">
+          <option value="">None</option>
+          <option v-for="v in variantOptions" :key="v.id" :value="v.id">{{ v.name }}</option>
+        </select>
+      </label>
+      <p v-if="variantError" class="f f--full variant-error">{{ variantError }}</p>
       <label class="f f--narrow">
         <span>Grade</span>
         <input v-model="attack.grade" type="number" min="0" />
@@ -383,6 +428,12 @@ const damageParts = computed(() => {
 }
 
 .stat--warn > b { color: var(--ps-red); }
+
+.variant-error {
+  margin: 0;
+  font-size: 10px;
+  color: var(--ps-red);
+}
 
 .text {
   margin: 2px 0 0;

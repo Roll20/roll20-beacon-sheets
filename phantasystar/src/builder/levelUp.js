@@ -9,6 +9,7 @@ import { featChoices, featOptionDone, featPrefix, initiateGrowth, parseFeatKey, 
 import { SKILLS, SKILL_IDS } from '../rules/skills.js';
 import { maxSkillRank } from '../rules/progression.js';
 import { averageHpPerLevel } from '../rules/derived.js';
+import { featurePrimes } from '../rules/featureEffects.js';
 
 export const MAX_LEVEL = 20;
 
@@ -296,7 +297,7 @@ export const levelUpPools = (ctx, lu, paths = []) => {
   if (!row) return feats;
   const known = ctx.known ?? [];
   const pools = [];
-  const primes = Number(row.columns?.prime_techniques?.value) || 0;
+  const primes = (Number(row.columns?.prime_techniques?.value) || 0) + featurePrimes(ctx.features, { level: lu.to });
   const primeLeft = primes - counted(known, 0, 0);
   if (primeLeft > 0) pools.push({ key: 'level:prime', label: 'Prime Techniques', count: primeLeft, minRank: 0, maxRank: 0 });
   const knownLeft = (row.techniquesKnown ?? 0) - counted(known, 1, 5);

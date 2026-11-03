@@ -4,7 +4,7 @@ import { useCharacterStore } from '@/stores/characterStore.js'
 import { useSheetRolls } from '@/composables/useSheetRolls.js'
 import {
   FEATURE_GROUPS, RECOVERIES, ABILITIES, featureColumnValues, featurePicks, resourceMax,
-  normalizeFeatureRoll, rollActs, pickAllows, featureSaveDC, diceAt, featureReached, atLevel,
+  normalizeFeatureRoll, rollActs, pickAllows, featureSaveDC, diceAt, featureReached, atLevel, featurePrimes,
 } from '@/rules/index.js'
 import ConfirmDelete from '@/components/shared/ConfirmDelete.vue'
 
@@ -48,11 +48,12 @@ const setPick = (i, name) => {
 }
 const offered = (i) => feature.value.options.filter((o) => !picks.value.some((p, j) => j !== i && p === o.name))
 
-const values = computed(() =>
-  feature.value?.source?.startsWith('profession:')
-    ? featureColumnValues(sheet.professionStats, sheet.effectiveLevel, feature.value.ref)
-    : [],
-)
+const values = computed(() => {
+  if (!feature.value?.source?.startsWith('profession:')) return []
+  const extra = featurePrimes(sheet.features, { level: sheet.effectiveLevel })
+  return featureColumnValues(sheet.professionStats, sheet.effectiveLevel, feature.value.ref)
+    .map((c) => (c.id === 'prime_techniques' && extra ? { ...c, value: String(Number(c.value) + extra) } : c))
+})
 
 const uses = computed(() => sheet.resources.filter((r) => r.feature === props.id))
 const ruleMax = (row) =>

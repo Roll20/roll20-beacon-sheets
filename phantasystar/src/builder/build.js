@@ -23,6 +23,18 @@ const setPicks = (app, prefix, draftPick) => {
   }
 };
 
+const applyOptionProficiencies = (app, rows = [], draftPick) => {
+  for (const row of rows) {
+    for (const name of picksOf(draftPick, `feature:${row.ref}`)) {
+      for (const p of row.optionEffects?.[name]?.proficiencies ?? []) {
+        const held = app.sheet.proficiencies?.[p.kind];
+        if (held && p.id in held) held[p.id] = true;
+        else if (p.kind && p.id) app.sheet.addProficiency(p.kind, { id: p.id });
+      }
+    }
+  }
+};
+
 const PAGES = [
   {
     key: 'species',
@@ -56,6 +68,7 @@ const PAGES = [
     apply: (app, mapped, draftPick, context) => {
       app.applyProfession(mapped);
       setPicks(app, `profession:${mapped.id}:`, draftPick);
+      applyOptionProficiencies(app, mapped.features, draftPick);
       context.pathLevel = mapped.pathLevel;
       context.hitDie = mapped.professionStats?.hitDie ?? null;
       context.kit = mapped.startingEquipment ?? null;
