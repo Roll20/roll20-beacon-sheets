@@ -31,6 +31,8 @@ import spellTN from "./partials/spellTN.hbs?raw";
 // @ts-ignore
 import pfTest from "./partials/pfTest.hbs?raw";
 // @ts-ignore
+import priceTest from "./partials/priceTest.hbs?raw";
+// @ts-ignore
 import stuntDie from "./partials/stuntDie.hbs?raw";
 
 import { isGreater } from "./expressions/isGreater";
@@ -43,6 +45,7 @@ import { isArray } from "./expressions/isArray";
 import { capitalize } from "./expressions/capitalize";
 import { hasDuplicates } from "./expressions/hasDuplicates";
 import { getStunt } from "./expressions/getStunt";
+import { stuntFace } from "./expressions/stuntFace";
 /* All custom chat templates (called "roll templates" are created at run-time through handlebars based on this config */
 
 // Re-usable handlebars HTML partials.
@@ -59,6 +62,7 @@ handlebars.registerPartial("stuntDie", stuntDie);
 handlebars.registerPartial("rollResults", rollResults);
 handlebars.registerPartial("spellTN", spellTN);
 handlebars.registerPartial("pfTest", pfTest);
+handlebars.registerPartial("priceTest", priceTest);
 
 // Helper functions for math/transformations
 handlebars.registerHelper("sumComponents", sumComponents);
@@ -71,6 +75,7 @@ handlebars.registerHelper("capitalize", capitalize);
 handlebars.registerHelper("hasDuplicates", hasDuplicates);
 handlebars.registerHelper("getStunt", getStunt);
 handlebars.registerHelper("isEqualGreater", isEqualGreater);
+handlebars.registerHelper("stuntFace", stuntFace);
 handlebars.registerHelper("not", (v) => !v);
 handlebars.registerHelper("or", (a, b) => a || b);
 handlebars.registerHelper("and", (a, b) => a && b);

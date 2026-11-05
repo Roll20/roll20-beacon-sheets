@@ -12,6 +12,8 @@ import { useSettingsStore } from "../settings/settingsStore";
 import { useMetaStore } from "../meta/metaStore";
 import { arrayToObject, objectToArray } from "@/utility/objectify";
 import { v4 as uuidv4 } from "uuid";
+import { MAX_POWER_FATIGUE, POWER_SOURCE_IDS, fatigueTestTN } from "@/utility/powerSources";
+import type { PowerSourceId } from "@/utility/powerSources";
 
 export type CharacterHydrate = {
   character: {
@@ -28,6 +30,11 @@ export type CharacterHydrate = {
     healthMax: number;
     magic: number;
     magicMax: number;
+    eldritchPoints?: number;
+    eldritchPointsMax?: number;
+    psychicPoints?: number;
+    psychicPointsMax?: number;
+    eldritchPrice?: number;
     weaponGroups: string;
     peril: number;
     daring: number;
@@ -98,6 +105,34 @@ export const useCharacterStore = defineStore("character", () => {
   const healthMax = ref(0);
   const magic = ref(0);
   const magicMax = ref(0);
+  const eldritchPoints = ref(0);
+  const eldritchPointsMax = ref(0);
+  const psychicPoints = ref(0);
+  const psychicPointsMax = ref(0);
+  // Eldritch Price stacks between castings; the player records it by hand.
+  const eldritchPrice = ref(0);
+  // Arcana keeps the original magic/magicMax fields so the magicPoints token bar keeps working.
+  const pools: Record<PowerSourceId, { current: typeof magic; max: typeof magic }> = {
+    arcana: { current: magic, max: magicMax },
+    eldritch: { current: eldritchPoints, max: eldritchPointsMax },
+    psychic: { current: psychicPoints, max: psychicPointsMax },
+  };
+  const poolCurrent = (id: PowerSourceId) => Number(pools[id].current.value) || 0;
+  const poolMax = (id: PowerSourceId) => Number(pools[id].max.value) || 0;
+  const setPoolCurrent = (id: PowerSourceId, value: number) => {
+    pools[id].current.value = value;
+  };
+  const setPoolMax = (id: PowerSourceId, value: number) => {
+    pools[id].max.value = value;
+  };
+  const spendPool = (id: PowerSourceId, amount: number) => {
+    pools[id].current.value = Math.max(0, poolCurrent(id) - (Number(amount) || 0));
+  };
+  const refillPools = () => {
+    POWER_SOURCE_IDS.forEach((id) => {
+      pools[id].current.value = poolMax(id);
+    });
+  };
   const weaponGroups = ref("");
   // const defense = computed(
   //   () =>
@@ -225,6 +260,12 @@ export const useCharacterStore = defineStore("character", () => {
   const resetPowerFatigue = () => {
     powerFatigue.value = 0;
   };
+  const addPowerFatigue = () => {
+    powerFatigue.value = Math.min(powerFatigue.value + 1, MAX_POWER_FATIGUE);
+  };
+  const resetEldritchPrice = () => {
+    eldritchPrice.value = 0;
+  };
 
   const addMovement = () => {
     customMovements.value.push({ _id: uuidv4(), name: "", speed: 0 });
@@ -245,6 +286,11 @@ export const useCharacterStore = defineStore("character", () => {
         healthMax: healthMax.value,
         magic: magic.value,
         magicMax: magicMax.value,
+        eldritchPoints: eldritchPoints.value,
+        eldritchPointsMax: eldritchPointsMax.value,
+        psychicPoints: psychicPoints.value,
+        psychicPointsMax: psychicPointsMax.value,
+        eldritchPrice: eldritchPrice.value,
         weaponGroups: weaponGroups.value,
         peril: peril.value,
         daring: daring.value,
@@ -272,6 +318,14 @@ export const useCharacterStore = defineStore("character", () => {
     healthMax.value = hydrateStore.character.healthMax ?? healthMax.value;
     magic.value = hydrateStore.character.magic ?? magic.value;
     magicMax.value = hydrateStore.character.magicMax ?? magicMax.value;
+    eldritchPoints.value =
+      hydrateStore.character.eldritchPoints ?? eldritchPoints.value;
+    eldritchPointsMax.value =
+      hydrateStore.character.eldritchPointsMax ?? eldritchPointsMax.value;
+    psychicPoints.value = hydrateStore.character.psychicPoints ?? psychicPoints.value;
+    psychicPointsMax.value =
+      hydrateStore.character.psychicPointsMax ?? psychicPointsMax.value;
+    eldritchPrice.value = hydrateStore.character.eldritchPrice ?? eldritchPrice.value;
     weaponGroups.value =
       hydrateStore.character.weaponGroups ?? weaponGroups.value;
     peril.value = hydrateStore.character.peril ?? peril.value;
@@ -338,20 +392,22 @@ export const useCharacterStore = defineStore("character", () => {
 
   const rollPowerFatigueTest = async (powerCost: number, focus: number) => {
     const ability = useAbilityScoreStore();
-    const halfPower = Math.floor(powerCost / 2);
+    const targetNumber = fatigueTestTN(powerCost);
     const components = [
       { label: `Base Roll`, sides: 6, count: 3, alwaysShowInBreakdown: true },
       { label: "Willpower", value: ability.WillpowerBase },
       { label: "Focus", value: focus ? focus : 0 },
     ];
-    await rollToChat({
+    const total = await rollToChat({
       characterName: useMetaStore().name,
       title: "",
       subtitle: "Power Fatigue Test",
       rollType: "powerFatigue",
-      targetNumber: 9 + halfPower,
+      targetNumber,
       components,
     });
+    if (total < targetNumber) addPowerFatigue();
+    return total;
   };
   // const rollSpell = async () => {
   //   const abilityScoreStore = useAbilityScoreStore();
@@ -392,6 +448,19 @@ export const useCharacterStore = defineStore("character", () => {
     healthMax,
     magic,
     magicMax,
+    eldritchPoints,
+    eldritchPointsMax,
+    psychicPoints,
+    psychicPointsMax,
+    eldritchPrice,
+    resetEldritchPrice,
+    poolCurrent,
+    poolMax,
+    setPoolCurrent,
+    setPoolMax,
+    spendPool,
+    refillPools,
+    addPowerFatigue,
     weaponGroups,
     peril,
     daring,

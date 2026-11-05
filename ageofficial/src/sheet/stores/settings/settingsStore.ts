@@ -1,5 +1,8 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import type { Ref } from "vue";
+import { POWER_SOURCE_IDS, legacyArcanaCostModel } from "@/utility/powerSources";
+import type { CostModel, PowerSourceId } from "@/utility/powerSources";
 
 export type SettingsHydrate = {
   settings: {
@@ -41,6 +44,11 @@ export type SettingsHydrate = {
     showCybernetics: boolean;
     useFortune?: boolean;
     userPowerFatigue?: boolean;
+    arcanaCostModel?: CostModel;
+    useEldritchArcana?: boolean;
+    eldritchCostModel?: CostModel;
+    usePsychic?: boolean;
+    psychicCostModel?: CostModel;
     optionalMovements?: boolean;
     incomeMode: string;
     showAfterMastery?: boolean;
@@ -81,7 +89,37 @@ export const useSettingsStore = defineStore("settings", () => {
   const showAlienation = ref(false);
   const showCybernetics = ref(false);
   const useFortune = ref(false);
-  const userPowerFatigue = ref(false);
+  const arcanaCostModel = ref<CostModel>("points");
+  const useEldritchArcana = ref(false);
+  const eldritchCostModel = ref<CostModel>("price");
+  const usePsychic = ref(false);
+  const psychicCostModel = ref<CostModel>("points");
+
+  const sourceEnabled: Record<PowerSourceId, Ref<boolean>> = {
+    arcana: showArcana,
+    eldritch: useEldritchArcana,
+    psychic: usePsychic,
+  };
+  const sourceCostModel: Record<PowerSourceId, Ref<CostModel>> = {
+    arcana: arcanaCostModel,
+    eldritch: eldritchCostModel,
+    psychic: psychicCostModel,
+  };
+  const costModelFor = (id: PowerSourceId) => sourceCostModel[id].value;
+  const enabledPowerSources = computed(() =>
+    POWER_SOURCE_IDS.filter((id) => sourceEnabled[id].value)
+  );
+  const pointsPowerSources = computed(() =>
+    enabledPowerSources.value.filter((id) => costModelFor(id) === "points")
+  );
+  const anyPowerSource = computed(() => enabledPowerSources.value.length > 0);
+  const usesPowerFatigue = computed(() =>
+    enabledPowerSources.value.some((id) => costModelFor(id) === "fatigue")
+  );
+  // Eldritch Price stacks; Psychic Price (Cthulhu Awakens) does not build up.
+  const tracksEldritchPrice = computed(
+    () => useEldritchArcana.value && eldritchCostModel.value === "price"
+  );
   const optionalMovements = ref(false);
   const incomeMode = ref("");
   const showAfterMastery = ref(false);
@@ -122,7 +160,11 @@ export const useSettingsStore = defineStore("settings", () => {
         showAlienation: showAlienation.value,
         showCybernetics: showCybernetics.value,
         useFortune: useFortune.value,
-        userPowerFatigue: userPowerFatigue.value,
+        arcanaCostModel: arcanaCostModel.value,
+        useEldritchArcana: useEldritchArcana.value,
+        eldritchCostModel: eldritchCostModel.value,
+        usePsychic: usePsychic.value,
+        psychicCostModel: psychicCostModel.value,
         optionalMovements: optionalMovements.value,
         incomeMode: incomeMode.value,
         showAfterMastery: showAfterMastery.value,
@@ -174,12 +216,22 @@ export const useSettingsStore = defineStore("settings", () => {
       hydrateStore.settings.showAlienation ?? showAlienation.value;
     showCybernetics.value =
       hydrateStore.settings.showCybernetics ?? showCybernetics.value;
-    (useFortune.value = hydrateStore.settings.useFortune ?? useFortune.value),
-      (userPowerFatigue.value =
-        hydrateStore.settings.userPowerFatigue ?? userPowerFatigue.value),
-      (optionalMovements.value =
-        hydrateStore.settings.optionalMovements ?? optionalMovements.value),
-      (incomeMode.value = hydrateStore.settings.incomeMode || incomeMode.value);
+    useFortune.value = hydrateStore.settings.useFortune ?? useFortune.value;
+    optionalMovements.value =
+      hydrateStore.settings.optionalMovements ?? optionalMovements.value;
+    incomeMode.value = hydrateStore.settings.incomeMode || incomeMode.value;
+    arcanaCostModel.value = legacyArcanaCostModel({
+      stored: hydrateStore.settings.arcanaCostModel,
+      userPowerFatigue: hydrateStore.settings.userPowerFatigue,
+      gameSystem: gameSystem.value,
+    });
+    useEldritchArcana.value =
+      hydrateStore.settings.useEldritchArcana ?? useEldritchArcana.value;
+    eldritchCostModel.value =
+      hydrateStore.settings.eldritchCostModel ?? eldritchCostModel.value;
+    usePsychic.value = hydrateStore.settings.usePsychic ?? usePsychic.value;
+    psychicCostModel.value =
+      hydrateStore.settings.psychicCostModel ?? psychicCostModel.value;
     showAfterMastery.value =
       hydrateStore.settings.showAfterMastery ?? showAfterMastery.value;
     theme.value = hydrateStore.settings.theme || theme.value;
@@ -218,7 +270,17 @@ export const useSettingsStore = defineStore("settings", () => {
     showAlienation,
     showCybernetics,
     useFortune,
-    userPowerFatigue,
+    arcanaCostModel,
+    useEldritchArcana,
+    eldritchCostModel,
+    usePsychic,
+    psychicCostModel,
+    costModelFor,
+    enabledPowerSources,
+    pointsPowerSources,
+    anyPowerSource,
+    usesPowerFatigue,
+    tracksEldritchPrice,
     optionalMovements,
     showAfterMastery,
     theme,

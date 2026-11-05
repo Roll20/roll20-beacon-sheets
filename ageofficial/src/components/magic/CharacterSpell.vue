@@ -18,10 +18,10 @@
                 data-bs-target="#spellDetailsModal" 
                 data-bs-dismiss="showModal = false" 
                 data-bs-backdrop="static" 
-                v-tippy="{ content: settings.gameSystem === 'blue rose' ? 'Cast '+magicLabel : 'Cast '+magicLabel+' (' + spell.mpCost + ''+magicPoints+')' }"
+                v-tippy="{ content: castTooltip }"
                 @click="handlePrint"
-                :disabled="(settings.userPowerFatigue ? false : char.magic < spell.mpCost)"
-                :class="{ 'spell-btn-disabled':(settings.userPowerFatigue ? false : char.magic < spell.mpCost)}">
+                :disabled="castDisabled"
+                :class="{ 'spell-btn-disabled': castDisabled }">
             <div class="age-spell-cast"></div>
         </button>
         <div>
@@ -33,9 +33,7 @@
                 data-bs-dismiss="showModal = false" 
                 data-bs-backdrop="static" 
                 v-tippy="{ content: magicLabel+ ' Damage' }"
-                @click="handleDamagePrint"
-                :disabled="(char.magic < spell.mpCost)"
-                :class="{ 'spell-btn-disabled':(char.magic < spell.mpCost)}">
+                @click="handleDamagePrint">
             <div class="age-spell-damage"></div>
         </button>
         </div>
@@ -64,10 +62,12 @@
                 <span>{{ spell.spellType }}</span>
               <span class="age-spell-details__label">Casting Time</span>
                 <span>{{ spell.castingTime + ' Action' }}</span>
-              <span class="age-spell-details__label">{{ magicPoints }} </span>
-                <span>{{ spell.mpCost }}</span>
+              <span class="age-spell-details__label" v-if="costModel !== 'price'">{{ magicPoints }} </span>
+                <span v-if="costModel !== 'price'">{{ spell.mpCost }}</span>
               <span class="age-spell-details__label">Target Number</span>
                 <span>{{ spell.targetNumber }}</span>
+              <span class="age-spell-details__label" v-if="costModel === 'price' && spell.priceTN">Price Test TN</span>
+                <span v-if="costModel === 'price' && spell.priceTN">{{ spell.priceTN }}</span>
               <span class="age-spell-details__label" v-if="spell.spellTest">Test</span>
                 <span v-if="spell.spellTest">{{  spell.spellTest + ' vs. Spellpower' }}</span>
             </div>
@@ -106,6 +106,7 @@ import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
 import SpellFamiliarityModal from './SpellFamiliarityModal.vue';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
+import { pointsLabel, sourceLabel, spellSourceId } from '@/utility/powerSources';
 
 const bio = useBioStore();
 const char = useCharacterStore();
@@ -136,9 +137,20 @@ const familiarityOptions = ref([
   { value: 8, label: 'Casually Familiar' },
   { value: 10, label: 'Slightly Familiar' }
 ]);
-const magicLabel = computed(() =>
-  settings.gameSystem === 'mage' ? 'Power' : 'Arcana'
+const sourceId = computed(() => spellSourceId(props.spell));
+const costModel = computed(() => settings.costModelFor(sourceId.value));
+const magicLabel = computed(() => sourceLabel(sourceId.value, settings.gameSystem));
+const magicPoints = computed(() =>
+  costModel.value === 'points' ? pointsLabel(sourceId.value, settings.gameSystem) : 'Power Cost'
 );
+const castDisabled = computed(
+  () => costModel.value === 'points' && char.poolCurrent(sourceId.value) < Number(props.spell.mpCost)
+);
+const castTooltip = computed(() => {
+  if (costModel.value === 'price') return `Cast ${magicLabel.value} (Price Test)`;
+  if (costModel.value === 'fatigue') return `Cast ${magicLabel.value} (Fatigue Test)`;
+  return `Cast ${magicLabel.value} (${props.spell.mpCost} ${magicPoints.value})`;
+});
 
 // Resolve arcana icons through Vite so they work in the built/hosted sheet.
 // A raw "/src/assets/arcana/x.png" path only resolves under the dev server;
@@ -159,12 +171,6 @@ const arcanaIconSrc = computed(() =>
     ? arcanaIconMap[props.spell.arcanaType.toLowerCase()]
     : undefined
 );
-
-const magicPoints = computed(() => {
-  if (settings.gameSystem !== 'mage') return 'MP';
-
-  return settings.userPowerFatigue ? ' Power Cost' : 'PP';
-});
 const toggleExpand = () => {
   expanded.value = !expanded.value;
 };
@@ -205,7 +211,8 @@ const handlePrint = () => {
   if(settings.gameSystem === 'blue rose'){
     showFamiliarityModal.value = true;
   } else {
-    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll) + focusBonus());
+    const focus = focusBonus();
+    spellStore.printSpell(props.spell._id, parseInt(toAttackRoll) + focus, 0, focus);
   }
 };
 const handleDamagePrint = () => {

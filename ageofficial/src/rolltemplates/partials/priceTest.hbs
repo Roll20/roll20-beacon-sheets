@@ -1,0 +1,31 @@
+<div>
+  {{#if priceTN}}
+    {{#if (isEqualGreater total priceTN)}}
+      <div class="age-spell-success">Price Test passed. No price is paid.</div>
+    {{else}}
+      <div class="age-spell-failure">Price Test failed. The price must be paid!</div>
+      <div class="age-price-effect">Stunt Die {{stuntDie}}: see the Price Effects table.</div>
+    {{/if}}
+  {{else}}
+    <div class="age-price-effect">Stunt Die {{stuntDie}}. If the test failed, see the Price Effects table.</div>
+  {{/if}}
+</div>
+<style>
+    .age-spell-success {
+        color:green;
+        text-align: center;
+        font-weight: 600;
+    }
+    .age-spell-failure {
+        color:red;
+        text-align: center;
+        font-weight: 600;
+    }
+    .age-price-effect {
+        text-align: center;
+        margin-top: 6px;
+    }
+    .age-test-body {
+        margin-top: 14px;
+    }
+</style>

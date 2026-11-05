@@ -27,6 +27,11 @@
             <span>{{ wg }}</span>
           </div>
         </div>
+        <div class="modal-footer-actions">
+          <slot name="footer">
+            <button class="confirm-btn" @click="$emit('close')">OK</button>
+          </slot>
+        </div>
       </div>
     </div>
   </Transition>

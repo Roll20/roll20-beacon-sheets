@@ -115,10 +115,12 @@ function focusBonus() {
 }
 const handlePrint = () => {
   const spellStore = useSpellStore();
+  const focus = focusBonus();
   spellStore.printSpell(
     props.spell._id,
-    parseInt(toAttackRoll) + focusBonus(),
-    familiarity.value
+    parseInt(toAttackRoll) + focus,
+    familiarity.value,
+    focus
   );
   familiarity.value = 0; // Reset familiarity after printing
 };

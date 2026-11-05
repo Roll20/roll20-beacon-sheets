@@ -48,7 +48,7 @@
   {{/if}}
 </div>
 {{/if}}
-{{#if (isEqual "powerFatigue" rollType)}}
+{{#if (or (isEqual "powerFatigue" rollType) (isEqual "priceTest" rollType))}}
 <div class="header">
   {{#if characterName}}
     <div class="header__character-name">{{characterName}}</div>

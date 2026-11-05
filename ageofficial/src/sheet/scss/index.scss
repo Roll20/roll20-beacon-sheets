@@ -139,6 +139,11 @@ body {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 24px;
+      // Several power widgets in the header: give the details card more room.
+      // Abilities never drops below 360px (or half, on narrow sheets) so its labels fit.
+      &.header-section--wide {
+        grid-template-columns: minmax(0, 3fr) minmax(min(360px, 50%), 2fr);
+      }
     }
     & .section-card {
       background-color: rgba(255, 255, 255, 0.75);
@@ -149,6 +154,10 @@ body {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      // When the header card grows (several power pools), keep abilities under their title.
+      &.age-abilities-card {
+        justify-content: flex-start;
+      }
       & .age-character-bio-container {
         & .age-character-bio-value {
           font-size: clamp(14px, 1.15rem, 1rem);
@@ -273,15 +282,89 @@ body {
         border-top: 3px solid;
       }
       & .bio-sub-section {
-        display: grid;
-        grid-template-columns: 1fr 1fr 80px;
+        // One row for every header resource: HP, each power widget, then Stunts.
+        // Sizes clamp down with the sheet width so up to six widgets fit side by side.
+        display: flex;
+        align-items: flex-start;
         flex: 1 1 auto;
-        gap: 20px;
-        padding: 0 22px;
+        gap: clamp(6px, 1.4vw, 20px);
+        padding: 0 clamp(4px, 1.6vw, 22px);
         margin-bottom: -6px;
+        // MPView uses display: contents, so its widgets are flex items too.
+        & > *,
+        & > .mp-view > * {
+          flex: 1 1 0;
+          min-width: 0;
+        }
+        & > .mp-view > .mp-pf-container {
+          flex: 0 0 clamp(80px, 9vw, 110px);
+        }
+        // Counter columns size to their label; the box keeps a clamped width, centred.
+        & > .bio-sub-fixed,
+        & > .mp-view > .bio-sub-fixed {
+          flex: 0 0 auto;
+          min-width: clamp(50px, 6.5vw, 80px);
+          max-width: clamp(56px, 7vw, 90px);
+          & .age-container-content {
+            width: clamp(50px, 6.5vw, 80px);
+            margin: 0 auto;
+          }
+        }
+        // Eldritch Price and Stunts stacked as two compact rows: box, then label.
+        & > .bio-sub-fixed.bio-sub-counters {
+          display: grid;
+          // Label column is capped so "Eldritch Price" wraps instead of squeezing the bars.
+          grid-template-columns: auto minmax(0, clamp(60px, 7vw, 110px));
+          align-items: center;
+          gap: 12px 8px;
+          max-width: none;
+          & .sp-bar-container,
+          & .eldritch-price-container {
+            height: auto;
+          }
+          & .age-container-content {
+            width: clamp(40px, 4.5vw, 52px);
+            margin: 0;
+          }
+          & .age-num-input {
+            padding: 2px 0;
+            font-size: clamp(14px, 1.8vw, 20px);
+          }
+          & .age-subsection-header {
+            margin: 0;
+            text-align: left;
+            font-size: clamp(11px, 1.3vw, 14px);
+          }
+        }
+        & .hpmp-container,
+        & .age-input {
+          font-size: clamp(13px, 2.2vw, 24px);
+        }
+        & .age-input {
+          width: 100%;
+          max-width: 55px;
+          min-width: 0;
+          padding: 0;
+        }
+        // Hide number spinners so values centre without the old padding offset.
+        & input[type="number"] {
+          -moz-appearance: textfield;
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+        }
+        & .age-num-input {
+          padding: 8px 0;
+          margin-left: 0;
+        }
+        // margin-top clears the counter boxes' corner diamonds, which hang below the box.
         & .age-subsection-header {
           text-align: center;
-          margin-bottom: 0;
+          margin: 8px 0 0;
+          font-size: clamp(11px, 1.6vw, 16.7px);
+          line-height: 1.2;
         }
       }
       & .age-activity-accordon-row {
@@ -459,6 +542,8 @@ body {
         font-weight: 600;
         display: grid;
         grid-template-columns: minmax(0, 1fr) min-content minmax(0, 1fr);
+        // The current value is an <input>; align on text baselines so it lines up with max.
+        align-items: baseline;
         & .hpmp-current {
           display: flex;
           justify-content: center;
@@ -853,6 +938,18 @@ body {
       text-transform: lowercase;
       & h3 {
         font-size: 2rem;
+      }
+      & .btn-close {
+        flex-shrink: 0;
+        width: 1em;
+        height: 1em;
+        padding: 0.25em;
+        background: transparent var(--bs-btn-close-bg) center / 1em auto
+          no-repeat;
+        opacity: 0.5;
+        &:hover {
+          opacity: 0.75;
+        }
       }
     }
     & .age-modal-container {

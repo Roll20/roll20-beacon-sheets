@@ -31,7 +31,7 @@
           <li
             class="nav-item age-tab"
             role="presentation"
-            v-if="settings.showArcana"
+            v-if="settings.anyPowerSource"
           >
             <button
               class="nav-link"
@@ -44,10 +44,7 @@
               aria-selected="false"
             >
               <div class="age-tab-icon age-spells-magic-icon"></div>
-              <span class="age-tab-label" v-if="settings.gameSystem === 'mage'"
-                >Powers</span
-              >
-              <span class="age-tab-label" v-else>Arcana</span>
+              <span class="age-tab-label">{{ powersTab }}</span>
             </button>
           </li>
           <li class="nav-item age-tab" role="presentation">
@@ -99,7 +96,7 @@
                                             <span>Combat</span>                                
                                         </button>
                                     </li>
-                                    <li class="nav-item age-tab" role="presentation" v-if="settings.showArcana">
+                                    <li class="nav-item age-tab" role="presentation" v-if="settings.anyPowerSource">
                                         <button class="nav-link" id="spells" data-bs-toggle="tab" data-bs-target="#spells-pane" type="button" role="tab" aria-controls="spells-pane" aria-selected="false">
                                             <div class="age-tab-icon age-spells-magic-icon"></div>
                                             <span v-if="settings.gameSystem === 'mage'">Powers</span>
@@ -206,6 +203,7 @@ import InventorySection from "@/components/inventory/InventorySection.vue";
 import SidebarSection from "@/components/SidebarSection.vue";
 import { attackGearList } from "@/system/attackGear";
 import EnhancementsSection from "@/components/enhancements/EnhancementsSection.vue";
+import { powersTabLabel } from "@/utility/powerSources";
 const settings = useSettingsStore();
 const gameSystem = ref("fage");
 switch (settings.gameSystem) {
@@ -217,15 +215,18 @@ switch (settings.gameSystem) {
     gameSystem.value = "mage";
     break;
 }
+const powersTab = computed(() =>
+  powersTabLabel(settings.enabledPowerSources, settings.gameSystem)
+);
 const filteredSections = computed(() => {
   return attackGearList.filter((section) => {
-    if (gameSystem.value === "fage" && settings.showArcana) {
+    if (gameSystem.value === "fage" && settings.anyPowerSource) {
       return ["Combat", "Arcana", "Inventory"].includes(section.label);
-    } else if (gameSystem.value === "fage" && !settings.showArcana) {
+    } else if (gameSystem.value === "fage" && !settings.anyPowerSource) {
       return ["Combat", "Inventory"].includes(section.label);
-    } else if (gameSystem.value === "mage" && settings.showArcana) {
+    } else if (gameSystem.value === "mage" && settings.anyPowerSource) {
       return ["Combat", "Powers", "Inventory"].includes(section.label);
-    } else if (gameSystem.value === "mage" && !settings.showArcana) {
+    } else if (gameSystem.value === "mage" && !settings.anyPowerSource) {
       return ["Combat", "Inventory"].includes(section.label);
     }
     return false;
