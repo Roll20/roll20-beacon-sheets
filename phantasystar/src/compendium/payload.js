@@ -610,13 +610,31 @@ const PROFICIENCY_KINDS = ['weapon', 'armor', 'tool', 'vehicle', 'language'];
 export const proficiencyFromPayload = (payload, page = {}) => {
   const warnings = [];
   const check = checker(warnings);
+  const id = check.text('id', payload.id);
+  const parent = check.text('parent', payload.parent) ?? '';
   return {
     source: 'payload',
     kind: check.oneOf('kind', payload.kind, PROFICIENCY_KINDS),
-    id: check.text('id', payload.id),
+    id,
     name: check.text('name', page.name) ?? '',
-    parent: check.text('parent', payload.parent) ?? '',
+    parent,
+    ...(parent && isObject(payload.attack) ? { variant: variantFromPayload(id, payload, check, warnings) } : {}),
     warnings,
+  };
+};
+
+const variantFromPayload = (id, payload, check, warnings) => {
+  const a = payload.attack;
+  const properties = (check.list('attack.properties', a.properties) ?? []).filter((p) => WEAPON_PROPERTY_IDS.includes(p));
+  const mastery = check.text('attack.mastery', a.mastery);
+  if (mastery && !MASTERY_NAMES[mastery.toLowerCase()]) warnings.push(`attack.mastery: ${mastery} not known - left out.`);
+  return {
+    id,
+    properties,
+    mastery: mastery ? MASTERY_NAMES[mastery.toLowerCase()] ?? '' : '',
+    range: check.text('attack.range', a.range) ?? '',
+    thrownRange: check.text('attack.thrownRange', a.thrownRange) ?? '',
+    text: normalizeWeaponText(check.list('text', payload.text) ?? []),
   };
 };
 
@@ -657,6 +675,7 @@ const originFeatures = (features, source) => {
       ...(isObject(entry.defense) ? { defense: entry.defense } : {}),
       ...(isObject(entry.sense) ? { sense: entry.sense } : {}),
       ...(Number.isInteger(entry.fate) || isObject(entry.fate) ? { fate: entry.fate } : {}),
+      ...(isObject(entry.skillBonus) ? { skillBonus: entry.skillBonus } : {}),
       ...traitOptions(entry.choice),
     });
     choices.push(...choiceLabels(entry.choice));
@@ -759,6 +778,9 @@ const levelFeatures = (features, prefix, warnings) => {
         defense: isObject(entry.defense) ? entry.defense : null,
         sense: isObject(entry.sense) ? entry.sense : null,
         fate: Number.isInteger(entry.fate) || isObject(entry.fate) ? entry.fate : 0,
+        skillBonus: isObject(entry.skillBonus) ? entry.skillBonus : null,
+        primes: isObject(entry.primes) ? entry.primes : null,
+        ...(isObject(entry.optionEffects) ? { optionEffects: entry.optionEffects } : {}),
         techniques: Array.isArray(entry.techniques) ? entry.techniques : [],
         pickCount: Number.isInteger(entry.pickCount) ? entry.pickCount : 1,
         optionMode: entry.optionMode === 'add' ? 'add' : '',

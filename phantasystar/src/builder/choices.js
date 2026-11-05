@@ -18,6 +18,25 @@ export const featuresOf = (option, level = 1) => {
       })));
 };
 
+export const pickedOptionEffects = (pages = {}, level = 1) => {
+  const out = [];
+  for (const kind of ['species', 'background', 'profession', 'path']) {
+    const option = pages[kind];
+    if (!option) continue;
+    const picks = pages.picks?.[kind] ?? {};
+    for (const f of featuresOf(option, kind === 'species' || kind === 'background' ? 1 : level)) {
+      const effects = f.entry.optionEffects;
+      if (!isObject(effects)) continue;
+      for (const name of String(picks[`feature:${f.id}`] ?? '').split('|').filter(Boolean)) {
+        if (isObject(effects[name])) {
+          out.push({ ...effects[name], kind, pageName: option.pageName, id: f.id, feature: f.name, option: name });
+        }
+      }
+    }
+  }
+  return out;
+};
+
 const SIZE_NAMES = { tiny: 'Tiny', small: 'Small', medium: 'Medium', large: 'Large', huge: 'Huge', gargantuan: 'Gargantuan' };
 
 const named = (list) =>

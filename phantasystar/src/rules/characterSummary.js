@@ -1,7 +1,7 @@
 import { ABILITY_IDS, resolveSkills } from './skills.js';
 import { normalizeProfessionStats, professionRow } from './profession.js';
 import { armorContribution, accessoryContribution } from './armor.js';
-import { featureMovement, featureDefense, featureNightVision, featureFate } from './featureEffects.js';
+import { featureMovement, featureDefense, featureNightVision, featureFate, featureSkillBonus } from './featureEffects.js';
 import { initiateNumbers } from './feats.js';
 import { normalizeProficiencies } from './proficiencies.js';
 import { clampLevel, saveBonus, maxSkillRank, levelFromXp, fatePoints } from './progression.js';
@@ -117,10 +117,15 @@ export const summarizeSheet = (sheet = {}) => {
 
   const skillRoster = resolveSkills(sheet);
 
+  const skillFeatureBonus = featureSkillBonus(sheet.features, {
+    level,
+    abilities: Object.fromEntries(ABILITY_IDS.map((id) => [id, ability(id)])),
+  });
   const skillTotals = Object.fromEntries(
     skillRoster.map((s) => {
       const entry = skills[s.id] || { ranks: 0, misc: 0 };
-      return [s.id, skillModifier(ability(s.ability), num(entry.ranks), num(entry.misc), entry.doubled === true)];
+      const fromFeatures = (skillFeatureBonus[s.id] ?? []).reduce((sum, p) => sum + p.bonus, 0);
+      return [s.id, skillModifier(ability(s.ability), num(entry.ranks), num(entry.misc), entry.doubled === true) + fromFeatures];
     }),
   );
 
@@ -174,6 +179,7 @@ export const summarizeSheet = (sheet = {}) => {
     deathSaveBonus: saveOptions.deathSave + (accessory?.saves ?? 0),
     skillRoster,
     skillTotals,
+    skillFeatureBonus,
     passivePerception: passivePerception(skillTotals.perception ?? 0, saveOptions.passivePerception),
 
     fate: {

@@ -63,6 +63,50 @@ export const featureFate = (features, { level = 1 } = {}) => {
   return { bonus: parts.reduce((sum, p) => sum + p.bonus, 0), parts };
 };
 
+export const normalizeSkillBonus = (bonus) => {
+  if (!isObject(bonus) || !ABILITY_IDS.includes(bonus.ability)) return null;
+  const skills = (Array.isArray(bonus.skills) ? bonus.skills : []).filter((s) => typeof s === 'string' && s);
+  if (!skills.length) return null;
+  return { skills, ability: bonus.ability, min: int(bonus.min), pick: typeof bonus.pick === 'string' ? bonus.pick : '' };
+};
+
+export const featureSkillBonus = (features, { level = 1, abilities = {} } = {}) => {
+  const list = Array.isArray(features) ? features : Object.values(features ?? {});
+  const l = clampLevel(level);
+  const out = {};
+  for (const f of list) {
+    const bonus = normalizeSkillBonus(f?.skillBonus);
+    if (!bonus) continue;
+    const held = /^(profession|path):/.test(f.source ?? '') && f.level != null && f.level > l;
+    if (held) continue;
+    if (bonus.pick && !String(f.pick ?? '').split('|').includes(bonus.pick)) continue;
+    const value = Math.max(bonus.min, int(abilities[bonus.ability]));
+    if (!value) continue;
+    for (const id of bonus.skills) (out[id] ??= []).push({ name: f.name, bonus: value });
+  }
+  return out;
+};
+
+export const normalizePrimes = (primes) => {
+  if (!isObject(primes) || !(int(primes.count) > 0)) return null;
+  return { count: int(primes.count), pick: typeof primes.pick === 'string' ? primes.pick : '' };
+};
+
+export const featurePrimes = (features, { level = 1 } = {}) => {
+  const list = Array.isArray(features) ? features : Object.values(features ?? {});
+  const l = clampLevel(level);
+  let total = 0;
+  for (const f of list) {
+    const primes = normalizePrimes(f?.primes);
+    if (!primes) continue;
+    const held = /^(profession|path):/.test(f.source ?? '') && f.level != null && f.level > l;
+    if (held) continue;
+    if (primes.pick && !String(f.pick ?? '').split('|').includes(primes.pick)) continue;
+    total += primes.count;
+  }
+  return total;
+};
+
 export const normalizeSense = (sense) => {
   if (!isObject(sense)) return null;
   const range = levelled(sense.range);

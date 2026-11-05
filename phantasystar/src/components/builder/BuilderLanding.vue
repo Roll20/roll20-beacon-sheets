@@ -4,6 +4,8 @@ import { useBuilder } from '@/composables/useBuilder.js'
 import { NPC } from '@/sheetTypes.js'
 import psLogo from '@/assets/img/ps-logo.webp'
 
+defineProps({ available: { type: Boolean, default: true } })
+
 const app = useAppStore()
 const { builder, start } = useBuilder()
 
@@ -20,7 +22,10 @@ const makeNpc = () => {
       <img :src="psLogo" class="landing__logo" alt="Phantasy Star Tabletop Roleplaying" />
       <h1 class="landing__title">Press Start!</h1>
       <p class="landing__lead">Design a new hero step by step, or fill in the sheet yourself.</p>
-      <button type="button" class="landing__build" @click="start">Build a Character</button>
+      <button type="button" class="landing__build" :disabled="!available" @click="start">Build a Character</button>
+      <p v-if="!available" class="landing__needs">
+        The character builder requires the <em>Phantasy Star Tabletop Roleplaying</em> core book on Roll20.
+      </p>
     </div>
 
     <h2 class="landing__heading">Other Options</h2>
@@ -67,6 +72,10 @@ const makeNpc = () => {
   padding: 9px 28px;
   font-size: 16px;
 }
+
+.landing__build:disabled { opacity: 0.45; cursor: default; }
+
+.landing__needs { margin: 0; color: var(--ps-text-muted); font-size: 12px; }
 
 .landing__heading { @include ps-heading(16px); margin: 18px 0 8px; }
 

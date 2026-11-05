@@ -118,6 +118,7 @@ const characterStore = () => {
     mastery: '',
     notes: '',
     text: [],
+    variantOf: null,
   })
 
   const addFeature = (group = DEFAULT_FEATURE_GROUP) => {
