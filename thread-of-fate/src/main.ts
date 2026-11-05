@@ -1,6 +1,5 @@
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
-import { createI18n } from 'vue-i18n';
 
 import App from './App.vue';
 
@@ -23,7 +22,6 @@ const isDevEnvironment = ['development', 'test'].includes(env) || isStandalone;
 
 const main = async () => {
   const pinia = createPinia();
-  const i18n = createI18n({});
   const app = createApp(App);
   const { relayPinia, relayVue } = await createRelay({
     devMode: isDevEnvironment,
@@ -31,7 +29,6 @@ const main = async () => {
   });
 
   app.use(pinia);
-  app.use(i18n);
   app.use(relayVue);
   pinia.use(relayPinia);
 
