@@ -15,11 +15,11 @@
         class="age-defense"
         :class="{
           'age-actions-magic-fage':
-            settings.showArcana && settings.gameSystem === 'fage2e',
+            settings.anyPowerSource && settings.gameSystem === 'fage2e',
           'age-actions-magic-mage':
-            settings.showArcana && settings.gameSystem === 'mage',
+            settings.anyPowerSource && settings.gameSystem === 'mage',
           'age-actions-magic-br':
-            settings.showArcana && settings.gameSystem === 'blue rose',
+            settings.anyPowerSource && settings.gameSystem === 'blue rose',
         }"
       >
         <!-- <div class="age-actions" :class="{ 'age-actions-mage': settings.gameSystem === 'mage' || bio.profession === 'Mage', 'age-actions-fage': settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'}"> -->
@@ -43,7 +43,7 @@
           <div class="age-container-content-corner-top-right"></div>
           <div class="age-container-content-corner-bottom-left"></div>
         </div>
-        <div class="age-container-content" v-if="settings.showArcana">
+        <div class="age-container-content" v-if="settings.anyPowerSource">
           <div class="age-container-heading">
             <span
               v-if="
@@ -104,7 +104,6 @@ import { useInventoryStore } from "@/sheet/stores/inventory/inventoryStore";
 import { computed, ref, watch } from "vue";
 import { useConditionsStore } from "@/sheet/stores/conditions/conditionsStore";
 import { objectToArray } from "@/utility/objectify";
-import { useBioStore } from "@/sheet/stores/bio/bioStore";
 import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 import {
@@ -132,7 +131,6 @@ const { rollAbilityInitiative } = useAbilityScoreStore();
 const char = useCharacterStore();
 const ability = useAbilityScoreStore();
 const inventory = useInventoryStore();
-const bio = useBioStore();
 const settings = useSettingsStore();
 // const armorMod = ref(0);
 // armorMod.value = armorRatingMod();
@@ -216,25 +214,6 @@ const speedModifiers = computed(() => {
     return 0;
   }
 });
-const onRest = (type) => {
-  switch (type) {
-    case "Breather":
-      char.health = Math.min(
-        char.health + 5 + ability.ConstitutionBase + char.level,
-        char.healthMax
-      );
-      break;
-    case "Total Rest":
-      char.health = Math.min(
-        char.health + 10 + ability.ConstitutionBase + char.level,
-        char.healthMax
-      );
-      if (bio.profession === "Mage") {
-        char.magic = char.magicMax;
-      }
-      break;
-  }
-};
 // Reference to the SlidingSidebar component
 const sidebarRef = ref(null);
 

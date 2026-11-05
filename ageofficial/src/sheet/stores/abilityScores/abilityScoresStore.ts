@@ -237,7 +237,7 @@ export const useAbilityScoreStore = defineStore("abilityScores", () => {
       const encumbrancePenalty = useSettingsStore().encumbrancePenalty;
       components.push({ label: "Overencumbered", value: encumbrancePenalty });
     }
-    if (powerFatiguePenalty.value > 0 && settings.userPowerFatigue) {
+    if (powerFatiguePenalty.value > 0 && settings.usesPowerFatigue) {
       components.push({
         label: "Power Fatigue",
         value: powerFatiguePenalty.value * -1,

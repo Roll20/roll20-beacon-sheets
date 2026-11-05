@@ -252,22 +252,19 @@
             </div>
             <div
               class="mb-3 col age-form-field"
-              v-if="settings.showArcana && !settings.userPowerFatigue"
+              v-for="id in settings.pointsPowerSources"
+              :key="id"
             >
-              <span id="basic-addon1" class="age-input-label"
-                >Max
-                {{
-                  settings.gameSystem === "mage" ? "Power" : "Magic"
-                }}
-                Points</span
+              <span class="age-input-label"
+                >Max {{ poolHeading(id, settings.gameSystem) }} Points</span
               >
               <div>
                 <input
                   type="number"
                   class="form-control"
-                  aria-label="Character Name"
-                  v-model="char.magicMax"
-                  aria-describedby="basic-addon1"
+                  :aria-label="`Max ${poolHeading(id, settings.gameSystem)} Points`"
+                  :value="char.poolMax(id)"
+                  @input="char.setPoolMax(id, Number($event.target.value) || 0)"
                 />
               </div>
             </div>
@@ -302,6 +299,7 @@ import { useCharacterStore } from "@/sheet/stores/character/characterStore";
 import { useAttackStore } from "@/sheet/stores/attack/attackStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 import { blueroseClasses, fage1eClasses, fage2eClasses } from "./classes";
+import { poolHeading } from "@/utility/powerSources";
 const props = defineProps({
   show: Boolean,
 });

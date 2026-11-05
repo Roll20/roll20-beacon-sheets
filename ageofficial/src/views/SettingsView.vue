@@ -181,25 +181,42 @@
               </div>
             </div>
           </div>
+          <div class="row age-modal-row" v-if="settings.gameSystem !== 'expanse'">
+            <h4>Powers</h4>
+            <div class="settings-toggle-grid">
+              <div class="settings-source" v-for="row in sourceRows" :key="row.id">
+                <div class="input-group">
+                  <label class="age-checkbox-toggle age-checkbox-label">
+                    <input type="checkbox" v-model="settings[row.enabledKey]" />
+                    <span class="slider round"></span>
+                  </label>
+                  <span class="age-toggle-label">Use {{ row.label }}</span>
+                </div>
+                <div
+                  v-if="settings[row.enabledKey]"
+                  class="settings-cost-model"
+                  role="radiogroup"
+                  :aria-label="`${row.label} cost`"
+                >
+                  <button
+                    v-for="m in COST_MODELS"
+                    :key="m"
+                    type="button"
+                    role="radio"
+                    class="settings-cost-option"
+                    :class="{ active: settings[row.costKey] === m }"
+                    :aria-checked="settings[row.costKey] === m"
+                    @click="settings[row.costKey] = m"
+                  >
+                    {{ COST_MODEL_LABELS[m] }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row age-modal-row">
             <h4>System Options</h4>
             <div class="settings-toggle-grid">
-              <div class="input-group" v-if="settings.gameSystem !== 'expanse'">
-                <label class="age-checkbox-toggle age-checkbox-label">
-                  <input type="checkbox" v-model="settings.showArcana" />
-                  <span class="slider round"></span>
-                </label>
-                <span class="age-toggle-label"
-                  >Display
-                  {{
-                    settings.gameSystem === "fage1e" ||
-                    settings.gameSystem === "fage2e" ||
-                    settings.gameSystem === "blue rose"
-                      ? "Arcana"
-                      : "Powers"
-                  }}</span
-                >
-              </div>
               <!-- <div class=" input-group" v-if="settings.gameSystem === 'fage1e' || settings.gameSystem === 'fage2e'">
                 <label class="age-checkbox-toggle age-checkbox-label">
                     <input type="checkbox"  v-model="settings.peril" />
@@ -249,16 +266,6 @@
                   <span class="slider round"></span>
                 </label>
                 <span class="age-toggle-label">Display Enhancements</span>
-              </div>
-              <div
-                class="input-group"
-                v-if="settings.gameSystem === 'mage' && settings.showArcana"
-              >
-                <label class="age-checkbox-toggle age-checkbox-label">
-                  <input type="checkbox" v-model="settings.userPowerFatigue" />
-                  <span class="slider round"></span>
-                </label>
-                <span class="age-toggle-label">Use Power Fatigue</span>
               </div>
               <div class="input-group">
                 <label class="age-checkbox-toggle age-checkbox-label">
@@ -446,6 +453,11 @@ import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 import { productLineStyle } from "@/utility/productLineStyle";
 import { useThemeArgs } from "@/utility/useThemeArgs";
 import { computed } from "vue";
+import {
+  COST_MODELS,
+  COST_MODEL_LABELS,
+  sourcePluralLabel,
+} from "@/utility/powerSources";
 
 const props = defineProps({
   show: Boolean,
@@ -454,6 +466,14 @@ const props = defineProps({
 const settings = useSettingsStore();
 const char = useCharacterStore();
 const themeArgs = useThemeArgs();
+// The cost model is a campaign rule per source, so it lives here rather than on each spell.
+const sourceRows = computed(() =>
+  [
+    { id: "arcana", enabledKey: "showArcana", costKey: "arcanaCostModel" },
+    { id: "eldritch", enabledKey: "useEldritchArcana", costKey: "eldritchCostModel" },
+    { id: "psychic", enabledKey: "usePsychic", costKey: "psychicCostModel" },
+  ].map((row) => ({ ...row, label: sourcePluralLabel(row.id, settings.gameSystem) }))
+);
 
 if (!settings.theme) {
   settings.theme = "basic";
@@ -587,6 +607,36 @@ const updateExpanseFaction = () => {
 .settings-toggle-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+}
+.settings-source {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.settings-cost-model {
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid var(--theme-primary);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.settings-cost-option {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 2px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.settings-cost-option + .settings-cost-option {
+  border-left: 1px solid var(--theme-primary);
+}
+.settings-cost-option.active {
+  background: var(--theme-primary);
+  color: #fff;
 }
 .settings-legal-grid {
   display: grid;

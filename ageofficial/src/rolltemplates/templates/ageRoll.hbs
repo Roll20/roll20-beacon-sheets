@@ -105,6 +105,35 @@
     </div>
   {{/if}}
 
+  {{!-- Price Test Roll --}}
+  {{#if (isEqual "priceTest" rollType)}}
+    {{#> header characterName=characterName title=title subtitle=subtitle}}{{/ header}}
+
+    <div class="body">
+      {{> rollDie dice=(getDice ../components multiplier) resultType=resultType }}
+
+      <div class="age-test-body">
+        <hr>
+
+        <div class="age-roll-row">
+          <span>Total</span>
+          <span class="showtip tipsy-n-right" original-title="{{> rollResults}}">
+            {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
+          </span>
+        </div>
+
+        {{#if targetNumber}}
+          <div class="age-roll-row">
+            <span>TN</span>
+            <span>{{targetNumber}}</span>
+          </div>
+        {{/if}}
+
+        {{> priceTest total=(sumComponents ../components multiplier) priceTN=targetNumber stuntDie=(stuntFace ../components)}}
+      </div>
+    </div>
+  {{/if}}
+
   {{!-- Damage Roll --}}
   {{#if (isEqual "damage" rollType)}}
     {{#> header characterName=characterName title=title subtitle=subtitle}}{{/ header}}

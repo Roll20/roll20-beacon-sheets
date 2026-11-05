@@ -36,7 +36,7 @@
         class="age-container-content"
         :class="{
           'age-power-fatigue':
-            char.powerFatigue > 0 && settings.gameSystem === 'mage',
+            char.powerFatigue > 0 && settings.usesPowerFatigue,
         }"
         v-tippy="{
           content:
@@ -65,7 +65,7 @@
         class="age-container-content"
         :class="{
           'age-power-fatigue':
-            char.powerFatigue > 0 && settings.gameSystem === 'mage',
+            char.powerFatigue > 0 && settings.usesPowerFatigue,
         }"
         v-tippy="{
           content:
@@ -187,7 +187,6 @@ import { useInventoryStore } from "@/sheet/stores/inventory/inventoryStore";
 import { computed, ref } from "vue";
 import { useConditionsStore } from "@/sheet/stores/conditions/conditionsStore";
 import { objectToArray } from "@/utility/objectify";
-import { useBioStore } from "@/sheet/stores/bio/bioStore";
 import { useItemStore } from "@/sheet/stores/character/characterQualitiesStore";
 import { useSettingsStore } from "@/sheet/stores/settings/settingsStore";
 import { armorRatingMod } from "@/sheet/stores/modifiersCheck/armorRating";
@@ -205,7 +204,6 @@ const { rollAbilityInitiative } = useAbilityScoreStore();
 const char = useCharacterStore();
 const ability = useAbilityScoreStore();
 const inventory = useInventoryStore();
-const bio = useBioStore();
 const settings = useSettingsStore();
 // const armorMod = ref(0);
 // armorMod.value = armorRatingMod();
@@ -297,29 +295,10 @@ const characterSpeed = computed(() => {
       : 0);
   return Math.ceil(
     baseSpeed /
-      (char.powerFatigue > 1 && settings.gameSystem === "mage" ? 2 : 1)
+      (char.powerFatigue > 1 && settings.usesPowerFatigue ? 2 : 1)
   );
 });
 
-const onRest = (type) => {
-  switch (type) {
-    case "Breather":
-      char.health = Math.min(
-        char.health + 5 + ability.ConstitutionBase + char.level,
-        char.healthMax
-      );
-      break;
-    case "Total Rest":
-      char.health = Math.min(
-        char.health + 10 + ability.ConstitutionBase + char.level,
-        char.healthMax
-      );
-      if (bio.profession === "Mage") {
-        char.magic = char.magicMax;
-      }
-      break;
-  }
-};
 // Reference to the SlidingSidebar component
 const sidebarRef = ref(null);
 

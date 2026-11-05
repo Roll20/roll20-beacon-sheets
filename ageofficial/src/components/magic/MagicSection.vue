@@ -21,27 +21,29 @@
           </div>   
           </div>
             
-          <button class="link-btn age-icon-btn" @click="showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;" v-tippy="{ content: 'Add ' + magicLabel }">
+          <button class="link-btn age-icon-btn" @click="resetSpell(); showModal = true" style="background: none; font-weight: bold;border:none; font-size: 1.5rem;" v-tippy="{ content: 'Add ' + magicLabel }">
             <font-awesome-icon :icon="['fa', 'circle-plus']" />
           </button>
         </div>
-      <div class="accordion">
-        <transition-group name="filtered-list" tag="div">
-        <div class="accordion-item" v-for="(spell, index) in filteredSpells" :key="spell._id">
-          <CharacterSpell
-            :key="spell._id"
-            :spell="spell"
-            :index="index"
-            :aim="aim"
-            :aimValue="aimValue"
-            :aimOption="aimOption"
-          />
+      <div class="power-group-section" v-for="group in spellGroups" :key="group.id">
+        <h3 class="age-bio-header" v-if="showGroupHeadings">{{ group.label }}</h3>
+        <div class="accordion">
+          <transition-group name="filtered-list" tag="div">
+            <div class="accordion-item" v-for="spell in group.spells" :key="spell._id">
+              <CharacterSpell
+                :spell="spell"
+                :index="rowIndex(spell)"
+                :aim="aim"
+                :aimValue="aimValue"
+                :aimOption="aimOption"
+              />
+            </div>
+          </transition-group>
         </div>
-        </transition-group>
-        <div v-if="filteredSpells.length === 0 && spellStore.spells.length > 0" class="no-results">
-            No results found.
-          </div> 
-      </div>                    
+      </div>
+      <div v-if="filteredSpells.length === 0 && spellStore.spells.length > 0" class="no-results">
+        No results found.
+      </div>
     </div>
   </div>
   <Teleport to="body">
@@ -59,7 +61,7 @@ import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import CharacterSpell from '@/components/magic/CharacterSpell.vue';
 import SpellModal from './SpellModal.vue';
 import { computed, ref, watch } from 'vue';
-import { fageArcana, magePowers, brArcana } from './magicTypes';
+import { sourcePluralLabel, sourceTypeList, spellSourceId } from '@/utility/powerSources';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 const props = defineProps({
   aim: { type: Boolean },
@@ -75,18 +77,13 @@ const spellStore = useSpellStore();
 const debouncedSearchQuery = ref('');
 const debouncedItemSource = ref('');
 
-const magicTypes = ref();
-switch(settings.gameSystem){
-  case 'fage2e':
-    magicTypes.value = fageArcana;
-  break;
-  case 'mage':
-    magicTypes.value = magePowers;
-  break
-  case 'blue rose':
-    magicTypes.value = brArcana;
-  break;
-}
+const magicTypes = computed(() =>
+  [
+    ...new Set(
+      settings.enabledPowerSources.flatMap((id) => sourceTypeList(id, settings))
+    ),
+  ].sort()
+);
 const magicLabel = computed(() =>
   settings.gameSystem === 'mage' ? 'Power' : 'Arcana'
 );
@@ -115,47 +112,49 @@ const filteredSpells = computed(() => {
     return matchesQuery && matchesType;
   });
 });
-let spellNew = ref({
+// Spells of a disabled source stay saved but are hidden until it is turned back on.
+const spellGroups = computed(() =>
+  settings.enabledPowerSources
+    .map((id) => ({
+      id,
+      label: sourcePluralLabel(id, settings.gameSystem),
+      spells: filteredSpells.value.filter((spell) => spellSourceId(spell) === id),
+    }))
+    .filter((group) => group.spells.length > 0)
+);
+const showGroupHeadings = computed(() => settings.enabledPowerSources.length > 1);
+// CharacterSpell builds its accordion ids from index, so it must be unique across sections.
+const rowIndex = (spell) => filteredSpells.value.indexOf(spell);
+const blankSpell = () => ({
   _id: '',
   name: '',
+  sourceId: settings.enabledPowerSources[0] ?? 'arcana',
   arcanaType: '',
-  requirements:'',
+  requirements: '',
   shortDescription: '',
   description: '',
-  ability:'',
-  spellType:'',
-  spellTypeBonus:0,
-  mpCost:0,
-  castingTime:'',
-  targetNumber:0,
-  spellTest:'',
-  extendable:false,
-  damageHit:'',
-  damageMiss:'',
-  })
-  function resetSpell(){
-    spellNew.value = {
-      _id: '',
-      name: '',
-      arcanaType: '',
-      requirements:'',
-      shortDescription: '',
-      description: '',
-      ability:'',
-      spellType:'',
-      spellTypeBonus:0,
-      mpCost:0,
-      castingTime:'',
-      targetNumber:0,
-      spellTest:'',
-      extendable:false,
-      damageHit:'',
-      damageMiss:'',
-    }
-  };
+  ability: '',
+  spellType: '',
+  spellTypeBonus: 0,
+  mpCost: 0,
+  castingTime: '',
+  targetNumber: 0,
+  priceTN: 0,
+  spellTest: '',
+  extendable: false,
+  damageHit: '',
+  damageMiss: '',
+});
+let spellNew = ref(blankSpell());
+function resetSpell() {
+  spellNew.value = blankSpell();
+}
 </script>
 
 <style scoped lang="scss">
+.power-group-section {
+  padding: 6px 0;
+}
 .traits {
   &__body {
   }

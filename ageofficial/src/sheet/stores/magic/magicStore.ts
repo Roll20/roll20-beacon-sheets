@@ -10,12 +10,15 @@ import { useMetaStore } from '@/sheet/stores/meta/metaStore';
 import { useAbilityScoreStore } from '../abilityScores/abilityScoresStore';
 import { useCharacterStore } from '../character/characterStore';
 import { powerFatiguePenalty } from '@/utility/arcanaPower';
+import { spellSourceId } from '@/utility/powerSources';
+import type { PowerSourceId } from '@/utility/powerSources';
 
 // See "inventoryStore.ts" for an explanation of how to use list/repeating sections
 interface Spell {
   _id: string;
   name: string;
   arcanaType: string;
+  sourceId?: PowerSourceId;
   requirements:string;
   shortDescription: string;
   description: string;
@@ -26,6 +29,8 @@ interface Spell {
   mpCost:number;
   castingTime:string;
   targetNumber:number;
+  // Optional TN for the Price Test of price-based powers; 0 means none set.
+  priceTN?: number;
   spellTest:string;
   extendable:boolean;
   damageHit:string;
@@ -49,6 +54,7 @@ export const useSpellStore = defineStore('spells', () => {
       _id: uuidv4(),
       name: spell ? spell?.name : '',
       arcanaType: spell ? spell?.arcanaType : '',
+      sourceId: spell?.sourceId ?? 'arcana',
       requirements:spell ? spell?.requirements : '',
       shortDescription: spell ? spell?.shortDescription : '',
       description: spell ? spell?.description : '',
@@ -59,6 +65,7 @@ export const useSpellStore = defineStore('spells', () => {
       mpCost:spell ? spell?.mpCost : 0,
       castingTime:spell ? spell?.castingTime : '',
       targetNumber:spell ? spell?.targetNumber : 0,
+      priceTN: Number(spell?.priceTN) || 0,
       spellTest:spell ? spell?.spellTest : '',
       spellResistance:spell ? spell?.spellResistance : '',
       extendable:spell ? spell?.extendable : false,
@@ -75,48 +82,62 @@ export const useSpellStore = defineStore('spells', () => {
     if (indexToRemove >= 0) spells.value.splice(indexToRemove, 1);
   };
 
-  const printSpell = async (_id: string, bonus?:number, familiarity:number = 0) => {
+  const rollPriceTest = async (spell: Spell) => {
+    const ability = useAbilityScoreStore();
+    await rollToChat({
+      characterName: useMetaStore().name,
+      title: spell.name,
+      subtitle: 'Price Test',
+      rollType: 'priceTest',
+      // Optional per-spell TN; without one the card shows the Stunt Die for the player to judge.
+      targetNumber: Number(spell.priceTN) || undefined,
+      components: [
+        { label: 'Base Roll', sides: 6, count: 3, alwaysShowInBreakdown: true },
+        { label: 'Willpower', value: Number(ability.WillpowerBase) },
+      ],
+    });
+  };
+
+  const printSpell = async (_id: string, bonus?: number, familiarity: number = 0, powerFocus: number = 0) => {
     const settings = useSettingsStore();
+    const char = useCharacterStore();
     const spell = spells.value.find((item) => item._id === _id);
     if (!spell) return;
-    const modifier = ref(0);
+    const sourceId = spellSourceId(spell);
+    const costModel = settings.costModelFor(sourceId);
 
-    const components:any[] = [
-      { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
+    const components: any[] = [
+      { label: `Base Roll`, sides: 6, count: 3, alwaysShowInBreakdown: true },
       { label: spell.ability, value: Number(bonus) },
     ];
-    const aim = useSettingsStore().aim
-    if(useSettingsStore().aim){
-      components.push(
-        { label: 'Aim', value: useSettingsStore().aimValue  }
-      )  
+    if (settings.aim) {
+      components.push({ label: 'Aim', value: settings.aimValue });
     }
-    if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
+    if (powerFatiguePenalty.value > 0 && settings.usesPowerFatigue) {
       components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
     }
-    // if (familiarity) {
-    //   components.push(
-    //     { label: 'Familiarity', value: familiarity },
-    //   );
-    // }
-    // components.push(      
-    //   { label: 'Modifier', value: modifier.value },
-    // );
-    if (settings.gameSystem !== 'blue rose') {
-      spendMP(spell.mpCost);
+    if (costModel === 'points') {
+      char.spendPool(sourceId, Number(spell.mpCost));
     }
     const ability = useAbilityScoreStore();
     const spellResistance = settings.gameSystem === 'blue rose' ? spell.spellTest : 'Spellpower ('+ (10 + Number(ability.WillpowerBase))+')';
     const spellTest = settings.gameSystem === 'blue rose' ? spell.ability + ` (${spell.abilityFocus}) <br /> vs. ${spellResistance}` : '';
-    
+
     await rollToChat({
       title: spell.name,
       subtitle: spell.spellType,
       characterName: useMetaStore().name,
       textContent: spellTest,
-      targetNumber:spell.targetNumber + familiarity,
+      targetNumber: spell.targetNumber + familiarity,
       components
     });
+
+    if (costModel === 'fatigue') {
+      await char.rollPowerFatigueTest(Number(spell.mpCost), powerFocus);
+    }
+    if (costModel === 'price') {
+      await rollPriceTest(spell);
+    }
   };
   const printSpellDamage = async(spell: any)=> {
     // const attack = attacks.value.find((item) => item._id === _id);
@@ -160,12 +181,6 @@ export const useSpellStore = defineStore('spells', () => {
     if (!spell) return;
     selectedSpell = spell;
   };
-
-  const spendMP = (mp:number) => {
-    const char = useCharacterStore()
-    // char.magic = char.magic - mp;
-    char.magic -= mp;
-  }
 
   /*
    * Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id

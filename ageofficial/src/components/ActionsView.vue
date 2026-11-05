@@ -176,12 +176,12 @@ const onRest = (type) => {
         char.health + 5 + ability.ConstitutionBase + char.level,
         char.healthMax
       );
-      if (settings.userPowerFatigue && char.powerFatigue === 1) {
+      if (settings.usesPowerFatigue && char.powerFatigue === 1) {
         char.powerFatigue = 0;
       }
       break;
     case "Light Rest":
-      if (settings.userPowerFatigue) {
+      if (settings.usesPowerFatigue) {
         char.powerFatigue = 0;
       }
       break;
@@ -190,10 +190,8 @@ const onRest = (type) => {
         char.health + 10 + ability.ConstitutionBase + char.level,
         char.healthMax
       );
-      if (settings.showArcana) {
-        char.magic = char.magicMax;
-      }
-      if (settings.userPowerFatigue) {
+      char.refillPools();
+      if (settings.usesPowerFatigue) {
         char.powerFatigue = 0;
       }
       break;
