@@ -38,7 +38,7 @@
     "vite-svg-loader": "4.0.0",
     "vue": "3.4.15",
     "vue-component-library": "0.0.8",
-    "vue-i18n": "9.14.4",
+    "vue-i18n": "11.4.14",
     "vue-router": "4.2.5",
     "zod": "3.25.71"
   },
