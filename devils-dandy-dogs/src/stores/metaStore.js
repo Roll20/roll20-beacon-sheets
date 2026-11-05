@@ -31,11 +31,15 @@ export const useMetaStore = defineStore('meta', () => {
 
   // Handles updating these values in the store.
   const hydrate = (hydrateStore) => {
+    // An absent profile field keeps its value. A null one is a clear: the SDK types bio
+    // and gmNotes as string | null, and keeping the old text would save it straight back
+    // (ddd-i0q8 audit). '' is every profile field's blank.
+    const incoming = (value, current) => (value === undefined ? current : value ?? '')
     id.value = hydrateStore.id ?? id.value
-    name.value = hydrateStore.name ?? name.value
-    avatar.value = hydrateStore.avatar ?? avatar.value
-    bio.value = hydrateStore.bio ?? bio.value
-    gmNotes.value = hydrateStore.gmNotes ?? gmNotes.value
+    name.value = incoming(hydrateStore.name, name.value)
+    avatar.value = incoming(hydrateStore.avatar, avatar.value)
+    bio.value = incoming(hydrateStore.bio, bio.value)
+    gmNotes.value = incoming(hydrateStore.gmNotes, gmNotes.value)
 
     token.value = hydrateStore.token ?? token.value
   }

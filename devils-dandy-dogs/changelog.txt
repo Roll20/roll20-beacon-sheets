@@ -1,0 +1,26 @@
+The Devil's Dandy Dogs Character Sheet - Changelog
+==================================================
+
+2026-10-30
+- A sheet that failed to save no longer stops saving. If a save was interrupted,
+  the sheet could be left waiting for it forever, and every later change would
+  sit unsaved with nothing on screen to say so. It now always goes back to
+  accepting changes, whether the save worked or not.
+- A character whose stored list order has been damaged now loads anyway. The
+  sheet used to stop part way through opening such a character, and a row could
+  go missing. All the rows now come back, in a sensible order.
+- A character that only half loaded is no longer saved back over the good copy.
+  If the sheet cannot finish reading a character, it now refuses to save until a
+  clean load has arrived, instead of writing the half it managed to read back as
+  though it were the whole thing.
+
+2026-09-16
+- Renaming a Dog in the journal sticks. A rename, portrait, bio or GM notes
+  change made in the journal was being written back over by the next edit on the
+  sheet, so the old name reappeared. The sheet now keeps what the journal says.
+- An edit made at the same moment the sheet is loading no longer wins over what
+  arrived. A change typed within about a second of a load from Roll20 used to
+  overwrite it; the load is now respected.
+
+2026-09-08
+- First release.

@@ -1,6 +1,10 @@
-/* DDD Dog sheet styles. Every colour, spacing and type decision is a custom property so the
-   sheet can be re-skinned without touching layout. Palette values are anchored on a sample of
-   the printed character-sheet insert — see the design spec §3.1 for the exact commands and the
+/* DDD Dog sheet styles. Colour and type come from custom properties so the sheet can be
+   re-skinned without touching layout. Size and spacing are tokenised for the fourteen tunable
+   metrics only; the incidental geometry below is a literal on purpose. Design spec §7 carries
+   the rule and ddd-9fa carries the measurement — this comment used to claim every value was a
+   custom property, which was never true of size and spacing and stopped being true of colour
+   when ddd-4ra added the two #fff glyph fills. Palette values are anchored on a sample of the
+   printed character-sheet insert — see the design spec §3.1 for the exact commands and the
    caveat that quantisation is renderer-dependent. */
 @import 'tailwindcss';
 
