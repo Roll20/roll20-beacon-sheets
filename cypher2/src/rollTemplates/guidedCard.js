@@ -38,7 +38,7 @@ const attackEaseParts = (attack) => {
 // caller, exactly as `assets` and `effortLevels` already do.
 export const easesLine = ({
   skill, attack = null, assets, effortLevels, eased,
-  stressHindrance = 0, armorHindered = false, burnedStress = false
+  stressHindrance = 0, situationalHindrance = 0, armorHindered = false, burnedStress = false
 }) => {
   const parts = []
   // skillEase, never SKILL_EASES[rating] — one source with easedSteps (ddd-c8f)
@@ -48,6 +48,20 @@ export const easesLine = ({
   const a = Math.min(Math.max(assets, 0), 2)
   if (a > 0) parts.push(a === 1 ? 'asset +1' : `assets +${a}`)
   if (effortLevels > 0) parts.push(`Effort ${effortLevels}`)
+  // ddd-hcn3, and HERE rather than with the Magnus terms below: those are gated on a rule
+  // and this one is always available, so it belongs with the other terms every table can
+  // use. "situation", the owner's wording (2026-10-29) — the summary already says
+  // "Hindered 2", so a term reading `hindrance −2` would say it twice. Clamped the way
+  // easedSteps clamps it, so a negative adds no term any more than it adds a step.
+  //
+  // The Math.max and the `> 0` are REDUNDANT WITH EACH OTHER and that is deliberate:
+  // either alone suppresses the term, which is why removing just one leaves the suite
+  // green (measured, ddd-hcn3). The test that owns this behaviour only goes red when both
+  // are gone, so do not read the pair as one guard plus dead code and delete half of it.
+  // The shape mirrors the Stress line below so a reader comparing the two sees the same
+  // thing twice rather than two spellings of it.
+  const situational = Math.max(situationalHindrance, 0)
+  if (situational > 0) parts.push(`situation ${signed(-situational)}`)
   // Clamped the way easedSteps clamps it: a negative hindrance adds no step, so it
   // must add no term either — `Stress +3` would describe an ease the math never gave.
   // `signed` for all three, so the minus sign is the card's U+2212 and not a hyphen.
@@ -227,7 +241,11 @@ const specialFor = (interp, damage) => {
 // a Pool is reduced to 0 (spec §9). The sheet never moves the track itself (owner
 // ruling, ddd-4uhf), so the card tells the player to. Fixed copy rather than the
 // resulting step, so it stays correct whatever position the sheet believes.
-export const NUDGE_LINE = 'Pool emptied. Move one step down the damage track.'
+//
+// Module-local on purpose. Every test that asserts this line re-declares the literal
+// instead of importing it, which is what lets the test fail when the copy changes, so an
+// export would have no consumer anywhere.
+const NUDGE_LINE = 'Pool emptied. Move one step down the damage track.'
 
 // The burn's own line (spec §6.4), kept OUT of spendLine: a natural 20 refunds the
 // Effort points and gives the burned level no equivalent, so the refund wording
@@ -289,17 +307,24 @@ export const luckLine = ({ luckCharged = 0, luckAfter = null, luckLabel = 'Luck'
 // no card. `luckAfter` is the caller's pair, built from ONE read like `stressAfter`, so the
 // two figures can never come from different snapshots. `luckLabel` is the Pool's stored name, because a player who renamed
 // it must not read "Luck" in chat.
-export const guidedRollTemplateData = ({ statLabel, skill, attack = null, assets, effortLevels, damageEffortLevels = 0, interp, cost, rawCost, edge, poolAfter, poolMax, refunded = false, damageTrack = false, emptied = false, surchargeTotal = 0, stressRule = false, stressHindrance = 0, armorHindered = false, burnedStress = false, stressAfter = null, luckCharged = 0, poolCost = cost - luckCharged, luckAfter = null, luckLabel = 'Luck' }) => {
+export const guidedRollTemplateData = ({ statLabel, skill, attack = null, initiative = false, assets, effortLevels, damageEffortLevels = 0, interp, cost, rawCost, edge, poolAfter, poolMax, refunded = false, damageTrack = false, emptied = false, surchargeTotal = 0, stressRule = false, stressHindrance = 0, situationalHindrance = 0, armorHindered = false, burnedStress = false, stressAfter = null, luckCharged = 0, poolCost = cost - luckCharged, luckAfter = null, luckLabel = 'Luck' }) => {
   const damage = attack
     ? attackDamage({ weaponDamage: attack.damage, damageEffortLevels, die: interp.die })
     : null
   return {
-    stat: attack ? `${attackLabel(attack)} · ${statLabel}` : statLabel,
+    // ddd-gouw. An initiative roll says so, which is the whole reason the bead is not
+    // "just click the Speed pool": a card headed "Speed" is the state the owner asked to
+    // fix. An ATTACK still wins, and that precedence is deliberate rather than incidental
+    // — the store's entry points are mutually exclusive, so a compounded
+    // "Broadsword · Initiative · Speed" could only ever describe a roll nobody made.
+    stat: attack
+      ? `${attackLabel(attack)} · ${statLabel}`
+      : initiative ? `Initiative · ${statLabel}` : statLabel,
     die: interp.die,
     auto: interp.die === null,
     verdict: verdictLine(interp, { attack: !!attack }),
     tone: interp.difficulty === null ? null : interp.success ? 'success' : 'failure',
-    eases: easesLine({ skill, attack, assets, effortLevels, eased: interp.eased, stressHindrance, armorHindered, burnedStress }),
+    eases: easesLine({ skill, attack, assets, effortLevels, eased: interp.eased, stressHindrance, situationalHindrance, armorHindered, burnedStress }),
     spend: spendLine({ cost, rawCost, edge, statLabel, poolAfter, poolMax, refunded, surchargeTotal, poolCost, luckCharged, luckLabel }),
     // null unless a level was burned, so the template's {{#if}} leaves every
     // other card unchanged.

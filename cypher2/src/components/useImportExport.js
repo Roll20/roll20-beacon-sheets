@@ -93,7 +93,16 @@ export const useImportExport = ({ parse, apply, buildExport, describeExportFailu
       await navigator.clipboard.writeText(JSON.stringify(doc, null, 2))
       if (attempt === exportAttempt) copyStatus.value = { ok: true, message: 'Copied to clipboard.' }
     } catch {
-      // e.g. sandboxed-iframe CSP blocks clipboard access — surface it rather than fail silently.
+      // The Roll20 sheet frame is NOT sandboxed and carries NO content security policy —
+      // both were probed directly and disproved (ddd-idha, docs/testing/
+      // 2026-10-15-roll20-sheet-frame-csp-probe.md). The probe read the frame's whole
+      // attribute set: cross-origin, `sandbox: null`, `allow: null`. With no `allow`,
+      // Permissions-Policy denies clipboard-write to a cross-origin frame, which is the
+      // mechanism — inferred from those attributes, not from a clipboard probe of its
+      // own. Naming the wrong mechanism here is not a
+      // typo — this exact claim propagated into a sync feasibility memo and produced an
+      // auth model built on a sandbox that does not exist. Surface it rather than fail
+      // silently.
       if (attempt === exportAttempt) {
         copyStatus.value = { ok: false, message: 'Could not copy to clipboard. Use Download JSON instead.' }
       }

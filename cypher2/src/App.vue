@@ -96,6 +96,7 @@ watch(() => npc.isNpc, (on) => {
   sheet.rollerStat = null
   sheet.rollerSkillId = null
   sheet.rollerAttackId = null // ddd-keb3: the attack entry is a third way in, and closes the same way
+  sheet.rollerInitiative = false // ddd-gouw: a fourth, and it is in the open predicate too
 })
 </script>
 

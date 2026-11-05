@@ -1,4 +1,4 @@
-import { formatError, formatPath } from './validation.js'
+import { formatError, formatPath, supportedVersionsPhrase } from './validation.js'
 
 // Plain-language lines for character schema errors (ddd-ag26, plan
 // docs/superpowers/plans/2026-09-16-ddd-ag26-import-export-plan.md §2.2-2.3).
@@ -64,7 +64,17 @@ const POOLS = { might: 'Might pool', speed: 'Speed pool', intellect: 'Intellect 
 
 // Where each top-level key is edited (plan §2.3). A container routes with its members.
 const TOP_OF_SHEET = 'the top of the sheet'
-const PLACES = {
+// Exported for one guard only (ddd-f3py): a PLACES entry sitting beside a whole-key
+// suppression in NO_EDITOR_PATTERNS is dead config nobody can reach, and placeFor cannot
+// be asked about it — placeFor applies that suppression itself and answers null either
+// way. Nothing in the app reads this export; the lookup goes through placeFor.
+//
+// Frozen because exporting it would otherwise hand any importer a write into the table
+// placeFor reads, and `PLACES.name = 'elsewhere'` would change the place every later
+// import refusal prints. SUPPORTED_SCHEMA_VERSIONS in validation.js is frozen for the
+// same reason. Nothing can reach it in a bundled sheet; this costs one call and removes
+// the question (2026-10-29 review).
+export const PLACES = Object.freeze({
   name: TOP_OF_SHEET,
   sentence: TOP_OF_SHEET,
   tier: TOP_OF_SHEET,
@@ -102,7 +112,7 @@ const PLACES = {
   armorModifiers: 'Kit › Gear',
   background: 'Notes & Background',
   notes: 'Notes & Background'
-}
+})
 
 // Paths nothing on the sheet can edit, so an export line names no place. secondDescriptor
 // and secondFocus are display-only, import-only by owner ruling ddd-5vb.
@@ -244,6 +254,29 @@ const plainMessage = (e) => {
     case 'additionalProperties':
       return `has an unexpected field "${p.additionalProperty}"`
     case 'const':
+      // ddd-lrgq. A document whose schemaVersion is neither 2 nor 3, or is a string,
+      // falls to the v2 validator by design, and that validator refuses it on its const.
+      // "must be 2" is accurate for the validator that actually ran and still wrong to
+      // show a player: it printed directly beneath an import hint reading "Accepts Cypher
+      // character JSON (schema versions 2 and 3)", so the sheet showed two numbers that
+      // disagreed, one above the other.
+      //
+      // The phrase comes from the SAME helper the hint itself reads, never a retyped list,
+      // so a third supported version cannot make the two disagree again.
+      //
+      // Only a figure is echoed back. `quote` is String(value) for anything non-string, so
+      // an array printed as NOTHING — "and this file says  (" with a double space, reading
+      // as a bug in the sheet — and an object printed "[object Object]", reading as a
+      // crash. Both are reachable from a hand-edited or tool-mangled file, and before this
+      // branch existed every bad value got the same flat "must be 2", so this is the only
+      // path by which arbitrary JSON reaches a player-facing refusal (2026-10-29 review).
+      // ddd-ag26's rule is that a refusal speaks in plain words.
+      if (e.instancePath === '/schemaVersion') {
+        const named = typeof e.data !== 'object' || e.data === null
+        return named
+          ? `this sheet reads ${supportedVersionsPhrase()}, and this file says ${quote(e.data)}`
+          : `this sheet reads ${supportedVersionsPhrase()}, and this file does not name one of them`
+      }
       return `must be ${quote(p.allowedValue)}`
     default:
       return e.message

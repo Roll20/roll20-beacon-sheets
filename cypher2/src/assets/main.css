@@ -505,9 +505,21 @@
   text-transform: uppercase;
 }
 /* One die-face design element, two homes: the pool cards' d20 and the recovery
-   column's d6 (ddd-5v9) share the rule so they can never drift apart. */
+   column's d6 (ddd-5v9) share the rule so they can never drift apart.
+
+   WCAG 2.2 SC 2.5.8 (Target Size Minimum), the same 1.5rem floor .btn,
+   .header__settings, .item-list__add and the (i) chip carry. Both are the ONLY route
+   to the roll they make, so both must be tappable at 280px. The floor sits HERE, on
+   the shared rule, and not in a rule of its own: ddd-5v9 floored the d6 alone and left
+   the d20 at 35.0x20.4px in Chromium, which is the drift this rule exists to prevent.
+   `min-*` only raises the floor, so the padding below still sets the resting size —
+   measured after: the d20 goes 20.4px -> 24px tall, width unchanged at 35.0px, and the
+   pool head is a centred flex row so nothing moves sideways (ddd-v3yj). rem is
+   root-relative, so 1.5rem is exactly 24px regardless of .cypher-sheet's font-size. */
 .pool-card__roll,
 .recovery__roll {
+  min-width: 1.5rem;
+  min-height: 1.5rem;
   padding: 0.2rem 0.45rem;
   background: var(--cy-accent);
   color: var(--cy-accent-contrast);
@@ -523,11 +535,6 @@
 }
 .pool-card__roll:focus-visible,
 .recovery__roll:focus-visible { outline: 2px solid var(--cy-ink); outline-offset: -3px; }
-/* WCAG 2.5.8: the d6 is the ONLY recovery-roll target, so it gets the same
-   1.5rem floor as .btn (ddd-5v9 audit P2). Deliberately NOT on the shared rule
-   above: the pool d20 shares the defect but sits on an accepted surface —
-   resizing it is ddd-v3yj's call, not this bead's. */
-.recovery__roll { min-width: 1.5rem; min-height: 1.5rem; }
 /* The printed sheet gives a pool TWO fields (Pool, Edge); this sheet has three
    (Current, Max, Edge). Three numeric inputs do not fit a 147px card at 480px — they
    render two-digit values clipped to "1(" — so the row wraps to 2+1 instead. The
@@ -596,8 +603,11 @@
    reflow inside the row (the 280px layout, where Stone Body sets minor.max=8), and
    .wounds__tier's wrap is the outer safety valve for maxima high enough that even a
    wrapped pip run, the label and the max input can't share one line. Do not flatten.
-   WoundsTrack.test.js regex-matches both selectors at line start with exactly one
-   space before the brace — do not reformat these two rules. */
+   WoundsTrack.test.js:273 matches both selectors with the same /^\.selector \{/ shape the
+   damage-track block below documents: the selector must start a line with exactly one
+   space before its brace. Indenting or minifying these two rules reds that test. Spreading
+   one over several lines does not, and .wounds__tier is written that way already — so
+   "do not reformat", which this comment used to say, was wider than the truth. */
 .wounds__tier {
   display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;
   padding: 0.3rem 0.25rem; margin-bottom: 0.25rem; border-radius: var(--cy-geo-corner);
@@ -675,7 +685,13 @@
    the wounds column already solves, including its two wrap valves at 280px. Only these
    two rules are its own, so the two injury models cannot drift apart visually.
    The narrow-mode @container block needs no override here: this column is a
-   .vitals__col, so it takes the stacking reset already written for the other three. */
+   .vitals__col, so it takes the stacking reset already written for the other three.
+   DamageTrack.test.js:279 reads this file and matches both selectors below with
+   /^\.selector \{/, so each selector must START a line and carry exactly ONE space before
+   its brace. Mutation-proven 2026-10-29: indenting a rule, or closing up the space before
+   the brace, reds that test with `expected '' to match /flex:/`. Expanding a rule onto
+   three lines does NOT break it, so an ordinary prettier pass is safe — indentation and
+   minification are what this cannot survive. */
 /* One pip per row, and it must not shrink: the wounds column's pip runs fill the row and
    absorb the pressure between the label and the max input, while this row has a single
    pip with a wide label beside it. */
@@ -902,6 +918,13 @@
 
 /* --- Item lists --- */
 .item-list { margin-bottom: var(--cy-gap); }
+/* ddd-gouw, owner ruling 2026-10-29: the Attacks panel's Initiative button, INSIDE the
+   panel and below its banner, where it was previously a second root above the whole
+   panel. So the gap it needs is BELOW it, parting it from the first row; above it the
+   panel's own padding and header already do the work. The token, never a literal.
+   Nothing here governs its width: `.panel` is a plain block, so the button keeps its
+   natural size with no help, which is why this rule says nothing about alignment. */
+.attacks__initiative { margin-bottom: var(--cy-gap); }
 .item-list__head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
 /* Band scale, right edge — a `+` sized to the banner beside it, not a full-width
    worded button stranded at the far side of a wide panel (spec ⑦ §4.4 item 3). */
@@ -1261,6 +1284,22 @@
    tab width instead of stretching across the box. */
 .npc-card__group { display: grid; gap: 0.45rem; min-width: 0; }
 .npc-card__field { display: grid; gap: 0.1rem; min-width: 0; }
+/* ddd-c9qs, owner ruling 2026-10-29. The description's text and its send-to-chat chip
+   share a flex row, which is .npc-card__action's own shape so the two kinds of chip on
+   this card match in position as well as in skin: the text takes the remaining space and
+   the chip keeps its natural size at the right-hand end.
+   This replaces a `justify-self: start` on the chip itself. .npc-card__field is a GRID,
+   and as a third grid item the chip both stretched its column — 1463px, measured — and
+   landed on its own row below the paragraph. `justify-self` fixed the width and not the
+   row, and in this flex row it would be ignored outright. The chip needs nothing of its
+   own now: `flex: 0 0 auto` from the shared chat-chip rule finally applies, because for
+   the first time the chip is actually in a flex container.
+   A class of its own on the paragraph rather than a descendant selector, which is exactly
+   how .npc-card__action-text does the same job a few rules down: main.css enumerates its
+   descendant rules in tokens.test.js so each one has to be argued for, and this one does
+   not need to be. */
+.npc-card__description { display: flex; align-items: start; gap: 0.35rem; min-width: 0; }
+.npc-card__description-text { flex: 1 1 auto; min-width: 0; }
 /* Health and Armor share one row (owner amendment 2026-09-14). flex-wrap drops Armor
    under Health when the card is too narrow for both. */
 .npc-card__vitals { display: flex; flex-wrap: wrap; align-items: start; gap: 0.45rem 1.5rem; min-width: 0; }

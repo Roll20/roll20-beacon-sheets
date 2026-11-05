@@ -12,7 +12,7 @@ import {
 } from './handlers/handlers'
 import { reactive, ref, watch, nextTick, shallowRef, computed } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import { healthBarGet, healthBarWrite } from '@/creature/creature.js'
+import { tokenBars, computedPools, computedHealth, TOKEN_BAR_UPDATE_ID } from './tokenBars.js'
 
 /* 
 This is the configuration for the relay. It defines the handlers and actions that the sheet will use.
@@ -21,82 +21,16 @@ The actions are custom functions that can be called by the sheet to perform spec
 the computed properties are exposed by the sheet to be used in macros, inline rolls and tokens.
 */
 
-// Token-bar exposure (spec §4): campaigns bind bars to these computed pools.
-// The get shape follows the Beacon advanced-example convention; the sandbox
-// walkthrough is the real gate (spec §8 risk). Attributes carry contract paths
-// at their root (stores/index.js), so pools live at attributes.pools.<name>.
-const poolFromCharacter = (character, pool) => {
-  const p = character?.attributes?.pools?.[pool]
-  return { current: p?.current ?? 0, max: p?.max ?? 0 }
-}
+/*
+Token-bar exposure. The whole set lives in tokenBars.js, which owns the values, their
+names, their write rules and the SDK's read/write shape; this file is only the seam that
+hands them to initRelay.
 
-// Marks a write as token-originated. doUpdate stamps the sheet's own id here so
-// the beaconPulse watcher can skip its own echo; a token-bar write must NOT
-// inherit that id, or the watcher swallows the pulse and the sheet UI drifts
-// away from the bar. Any non-sheetId value forces the hydrate (ddd-6qe).
-export const TOKEN_BAR_UPDATE_ID = 'token-bar'
-
-// Token-side edits (ddd-6qe). The SDK derives read-only from the ABSENCE of a
-// set handler (actionHandler.js: `readonly: !computed[property].set`), which is
-// why the bar bubble showed a blocked cursor with get alone. Args arrive as raw
-// host strings, and onSetComputed re-runs get() right after set() to echo the
-// value back to the bar — so the dispatch must land in the SDK's character
-// cache before that read, which dispatch.updateCharacter does synchronously.
-const setPoolCurrent = (pool) => async ({ character, dispatch }, value) => {
-  if (!dispatch?.updateCharacter) return
-  const parsed = Number(String(value ?? '').trim())
-  // A cleared or garbled bubble must not silently zero a GM's pool mid-combat.
-  if (String(value ?? '').trim() === '' || !Number.isFinite(parsed)) return
-  const { max } = poolFromCharacter(character, pool)
-  const current = Math.min(Math.max(0, Math.floor(parsed)), max)
-  // updateCharacter jsonDiffs `attributes` against the cached document and
-  // treats every OMITTED key as a deletion (deep-object-diff yields undefined,
-  // replaceUndefined turns it into null, deleteNullValues drops the key). A
-  // one-pool fragment would therefore wipe wounds, armor, the other pools, and
-  // even this pool's own max/edge. Send the whole tree with only `current`
-  // moved; unchanged branches are shared by reference and never mutated, and
-  // updateCharacter deep-clones before diffing.
-  const attributes = {
-    ...character?.attributes,
-    pools: {
-      ...character?.attributes?.pools,
-      [pool]: { ...character?.attributes?.pools?.[pool], current }
-    },
-    updateId: TOKEN_BAR_UPDATE_ID
-  }
-  await dispatch.updateCharacter({ character: { id: character?.id, attributes } })
-}
-
-const poolComputed = (pool) => ({
-  tokenBarValue: true,
-  get: ({ character }) => poolFromCharacter(character, pool),
-  set: setPoolCurrent(pool)
-})
-
-export const computedPools = {
-  might: poolComputed('might'),
-  speed: poolComputed('speed'),
-  intellect: poolComputed('intellect')
-}
-
-// NPC health bar (NPC spec §6). Declared for every sheet, because Beacon computed
-// values are sheet-wide, so a PC token can pick it too and reads ''. Both halves take
-// raw attributes, never Pinia: computed values run headless, where no store has
-// hydrated. The rules live in creature.js; this is only the SDK seam, and it mirrors
-// setPoolCurrent: no dispatch or an ignored value writes nothing, and a real write
-// sends the whole tree with the token-bar updateId so the open sheet hydrates it.
-export const computedHealth = {
-  tokenBarValue: true,
-  get: ({ character }) => healthBarGet(character?.attributes ?? {}),
-  set: async ({ character, dispatch }, value) => {
-    if (!dispatch?.updateCharacter) return
-    const attributes = healthBarWrite(character?.attributes ?? {}, value)
-    if (!attributes) return
-    await dispatch.updateCharacter({
-      character: { id: character?.id, attributes: { ...attributes, updateId: TOKEN_BAR_UPDATE_ID } }
-    })
-  }
-}
+Re-exported here because both halves were defined in this file until the bar set was
+widened beyond the three Pools and NPC health, and the relay's own tests and the
+compendium drop path reach for them by these names.
+*/
+export { tokenBars, computedPools, computedHealth, TOKEN_BAR_UPDATE_ID }
 
 // Exported for the handler-registration test (spec ⑥ §7.2 "Relay").
 export const relayConfig = {
@@ -111,7 +45,7 @@ export const relayConfig = {
   },
   // Refer to our advanced example sheet on how to setup actions and computed properties.
   actions: {},
-  computed: { ...computedPools, health: computedHealth }
+  computed: tokenBars
 }
 
 // Almost everything below here is Boilerplate and you probably want to keep it intact.

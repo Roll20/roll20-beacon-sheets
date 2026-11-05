@@ -1,6 +1,6 @@
 <script setup>
 import { computed, reactive } from 'vue'
-import { useSheetStore } from '@/stores/sheetStore.js'
+import { stressSeed, useSheetStore } from '@/stores/sheetStore.js'
 import { clampInt, syncClamped } from '@/utility/clamp.js'
 import { stressLevels } from '@/dice/rolls.js'
 
@@ -114,8 +114,12 @@ const levelLine = computed(() => {
 // export validator with an error naming the missing member, and healStress nulls the whole
 // object on the way back in, so a column that wrote one member would have destroyed the
 // other with nothing on screen to show it. DamageTrack.setStep is the pattern.
+//
+// The starting values come from the store's stressSeed, which the rule checkbox in StatusRow
+// also calls. Written out here as well, the two copies could be changed one at a time
+// (ddd-iohk).
 const writeStress = (patch) => {
-  if (!sheet.stress) sheet.stress = { points: 0, supernaturalLevels: 0 }
+  if (!sheet.stress) sheet.stress = stressSeed()
   Object.assign(sheet.stress, patch)
 }
 

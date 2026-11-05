@@ -2,7 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import ModalShell from '@/components/ModalShell.vue'
 import { useSheetStore } from '@/stores/sheetStore.js'
-import { attackDamage, easedSteps, effortCost, maxAffordableEffort, rawEffortCost, stressLevels } from '@/dice/rolls.js'
+import { attackDamage, easedSteps, effortCost, maxAffordableEffort, rawEffortCost, stressLevels, SITUATIONAL_HINDRANCE_MAX } from '@/dice/rolls.js'
 import { attackLabel, costAttribution, damageLine, easesLine, noSpendLine, rawCostTerms } from '@/rollTemplates/guidedCard.js'
 import { POOL_NAMES, poolLabel } from '@/components/pools.js'
 import { clampInt } from '@/utility/clamp.js'
@@ -26,6 +26,11 @@ const skillId = ref(
 // from the sheet (the ItemList rule).
 const attackId = sheet.rollerAttackId
 const attackMode = attackId !== null
+// ddd-gouw. Read ONCE at setup like attackId, and for the same reason: App keys this
+// modal by rollerSession, so a mount belongs to exactly one open and the mode cannot
+// change under it. Everything else about this mode is a plain Speed task — the skill
+// picker, the pool select and the 0–10 field all behave exactly as they do for one.
+const initiativeMode = sheet.rollerInitiative === true
 const attack = computed(() =>
   attackMode ? (sheet.attacks.find((r) => r._id === attackId) ?? null) : null
 )
@@ -50,6 +55,15 @@ const busy = ref(false)
 // use, which is the preview-and-card drift this whole design exists to prevent. The
 // resolved computeds make the store's gate defence in depth instead of the only gate.
 const stressHindrance = ref(0) // seeded from the live ceiling by the watcher below
+// ddd-hcn3. The GM's own call on this roll, in the sense Assets are: always present,
+// starting at 0, and leaving it alone changes nothing. It is NOT in the Magnus group —
+// that group is gated on the Stress rule and its stepper is capped by the character's own
+// Stress levels, which makes it a rules control. This is a situational one, so it sits
+// with Assets and Effort and every table can reach it.
+//
+// Nothing resets it between opens, because nothing has to: App keys this modal by
+// rollerSession, so each open is a fresh mount and a fresh ref(0).
+const situationalHindrance = ref(0)
 const armorHindered = ref(true) // defaults to CHECKED (spec §6.3): the book hinders by default
 const burnStress = ref(false)
 // Owner, 2026-10-26, walkthrough item 12: the book copy beside the burn box goes behind a
@@ -111,6 +125,10 @@ const dialogLabel = computed(() => {
   // attackLabel, not attack.name: a cleared name would title the dialog "Attack: "
   // (closeout audit). Same helper the chat card uses, so they can never differ.
   if (attackMode) return attack.value ? `Attack: ${attackLabel(attack.value)}` : 'Attack'
+  // ddd-gouw: named for the task, not the pool, and unconditionally — the pool is a
+  // choice inside the modal, so "Initiative" stays true after the player changes it.
+  // Below attackMode, the card's precedence (guidedCard.js stat).
+  if (initiativeMode) return 'Initiative'
   return stat.value ? `${statLabel.value} Roll` : 'Roll'
 })
 // ddd-wc3, third instance of the prototype-key false guard after ddd-9ir
@@ -196,6 +214,12 @@ const hindranceCeiling = computed(() =>
 // the tick before the watcher below brings the stepper down.
 const resolvedHindrance = computed(() =>
   Math.min(Math.max(stressHindrance.value, 0), hindranceCeiling.value)
+)
+// The same shape, against a ceiling that does not move with the document. The RESOLVED
+// value is what reaches the preview, the card builder and the payload — never the raw
+// ref — so the three can never describe a different number than the roll uses.
+const resolvedSituational = computed(() =>
+  Math.min(Math.max(situationalHindrance.value, 0), SITUATIONAL_HINDRANCE_MAX)
 )
 
 // ddd-khaj: the impaired damage-track surcharge, one extra point PER LEVEL of Effort.
@@ -344,6 +368,7 @@ const eased = computed(() => easedSteps({
   effortLevels: effortLevels.value,
   // The RESOLVED values, never the refs (spec §6.3).
   stressHindrance: resolvedHindrance.value,
+  situationalHindrance: resolvedSituational.value,
   armorHindered: resolvedArmor.value,
   burnedStress: resolvedBurn.value
 }))
@@ -389,6 +414,7 @@ const breakdown = computed(() =>
     skill: skill.value, attack: attack.value, assets: assets.value,
     effortLevels: effortLevels.value, eased: eased.value,
     stressHindrance: resolvedHindrance.value,
+    situationalHindrance: resolvedSituational.value,
     armorHindered: resolvedArmor.value,
     burnedStress: resolvedBurn.value
   })
@@ -467,7 +493,7 @@ const normalizeDifficulty = () => {
 // MOST likely to reach for after an insufficient-pool refusal: taking points from Luck is
 // how that refusal gets corrected.
 watch([skillId, showAllSkills, assets, effortLevels, damageEffortLevels, difficultyRaw, stat,
-  stressHindrance, armorHindered, burnStress, luckSpend], () => {
+  stressHindrance, situationalHindrance, armorHindered, burnStress, luckSpend], () => {
   error.value = null
 }, { flush: 'sync' })
 
@@ -489,6 +515,10 @@ const close = () => {
   sheet.rollerStat = null
   sheet.rollerSkillId = null
   sheet.rollerAttackId = null
+  // ddd-gouw. THE failure mode of a mode flag: left set, it is part of the open predicate
+  // AND it would title the next ordinary Speed roll "Initiative". Two places clear it,
+  // here and App.vue's forced close on a switch to NPC, exactly as rollerAttackId is.
+  sheet.rollerInitiative = false
 }
 const doRoll = async () => {
   if (busy.value || !stat.value) return // no pool chosen yet (ddd-669y) — the Roll button is disabled, this is the belt
@@ -503,12 +533,13 @@ const doRoll = async () => {
   let res
   try {
     res = await sheet.rollGuided({
-      stat: stat.value, skillId: skillId.value, attackId, assets: assets.value,
+      stat: stat.value, skillId: skillId.value, attackId, initiative: initiativeMode, assets: assets.value,
       effortLevels: effortLevels.value, damageEffortLevels: damageEffortLevels.value,
       difficulty: difficulty.value,
       // The RESOLVED values, so the roll is charged for exactly what the preview showed.
       // The store gates all three again at its own resolution boundary (ddd-xrug).
       stressHindrance: resolvedHindrance.value,
+      situationalHindrance: resolvedSituational.value,
       armorHindered: resolvedArmor.value,
       burnStress: resolvedBurn.value,
       // The resolved ALLOCATION (ddd-xrug.1), never the raw ref and never luckShare: the
@@ -648,6 +679,24 @@ const doRoll = async () => {
             <button type="button" class="roller__step-down" :aria-label="attackMode ? 'Decrease Effort to hit' : 'Decrease Effort'" :disabled="busy || effortLevels <= 0" @click="effortLevels--">−</button>
             <strong>{{ effortLevels }}</strong>
             <button type="button" class="roller__step-up" :aria-label="attackMode ? 'Increase Effort to hit' : 'Increase Effort'" :disabled="busy || effortLevels >= maxEffort" @click="effortLevels++">+</button>
+          </div>
+        </div>
+        <!-- ddd-hcn3. Reuses .roller__field / .roller__stepper / .roller__step-* wholesale,
+             like the Stress and Luck steppers, so it is skinned and spaced exactly like
+             Assets and Effort with no new CSS. The maximum is printed the way theirs are,
+             so a player can see why the + is dead. -->
+        <div class="roller__field roller__situational">
+          <!-- "Hindrance", not "Situational hindrance": owner ruling 2026-10-29. The full
+               phrase wrapped to two lines where Assets, Effort and Difficulty each sit on
+               one, which pushed this stepper down and broke the alignment of the row a
+               player reads on every roll. The CARD still says "situation −2", which he
+               chose separately — these are deliberately different strings in different
+               places, so neither change moves the other. -->
+          <span class="roller__label">Hindrance (max {{ SITUATIONAL_HINDRANCE_MAX }})</span>
+          <div class="roller__stepper">
+            <button type="button" class="roller__step-down" aria-label="Decrease situational hindrance" :disabled="busy || situationalHindrance <= 0" @click="situationalHindrance--">−</button>
+            <strong>{{ situationalHindrance }}</strong>
+            <button type="button" class="roller__step-up" aria-label="Increase situational hindrance" :disabled="busy || situationalHindrance >= SITUATIONAL_HINDRANCE_MAX" @click="situationalHindrance++">+</button>
           </div>
         </div>
         <!-- The second application (ddd-keb3). Its ceiling is what the attack

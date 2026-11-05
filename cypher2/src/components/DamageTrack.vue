@@ -1,6 +1,6 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
-import { useSheetStore } from '@/stores/sheetStore.js'
+import { damageTrackSeed, useSheetStore } from '@/stores/sheetStore.js'
 import { DAMAGE_TRACK_STEPS, DAMAGE_TRACK_STEP_LABELS } from '@/components/enums.js'
 
 // ddd-xrug spec §8. The damage track column of the vitals panel, in the slot the wounds
@@ -183,8 +183,12 @@ const rows = computed(() =>
 // the first write builds the whole object. WHOLE: a partial one is refused by the export
 // validator with an error naming the missing member, and healDamageTrack nulls the lot on
 // the way back in, so a column that wrote one member would destroy the others.
+//
+// The starting values come from the store's damageTrackSeed, which the rule checkbox in
+// StatusRow also calls. Written out here as well, the two copies could be changed one at
+// a time (ddd-iohk).
 const writeTrack = (patch) => {
-  if (!sheet.damageTrack) sheet.damageTrack = { step: 'hale', hurtAvailable: false, hurt: false }
+  if (!sheet.damageTrack) sheet.damageTrack = damageTrackSeed()
   Object.assign(sheet.damageTrack, patch)
 }
 

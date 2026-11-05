@@ -65,7 +65,10 @@
   }
   // The damage-track nudge (ddd-xrug, spec §9). Instruction, not detail, so it is
   // body-sized and rule-separated like __wounds rather than dimmed like the spend
-  // line it follows. Below __detail so a source-order tie-break goes this way.
+  // line it follows. There is NO tie-break here, unlike __damage and __stress above:
+  // those two divs carry __detail as well, so equal specificity makes source order
+  // decide, while the nudge div carries this class alone (index.hbs). Its placement in
+  // this file is free, and moving it breaks nothing.
   &__nudge {
     font-size: 0.85rem;
     font-weight: 600;

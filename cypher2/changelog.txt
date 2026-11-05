@@ -1,6 +1,79 @@
 Cypher System 2 Character Sheet - Changelog
 ============================================
 
+2026-11-03
+- Token bars can now be pointed at most of the sheet instead of just the three
+  Pools. Open a token's settings, pick bar 1, 2 or 3, and the list of values now
+  includes your minor, moderate and major wounds as three separate bars, the
+  same three for a shield if you carry one, the Luck Pool, Stress points, where
+  you are on the damage track, how many recovery rolls you have left, how many
+  cyphers you are carrying against your limit, XP, Story XP, resource points,
+  your tier, your Effort and superhero rank.
+- Most of those bars can be typed into, and the number goes back onto the sheet.
+  Wounds, the shield, Luck, Stress, the damage track and the three XP-style
+  counters all work that way, the way the Pools already did. Clearing a bubble
+  or typing something that is not a number changes nothing, so a stray keystroke
+  in the middle of a fight cannot wipe a value.
+- A few are deliberately read-only, because a bar is a bad place to change them.
+  Tier and Effort are read-only so a mis-drag cannot quietly re-rank your
+  character. Recovery rolls are read-only because the slots are in order and a
+  single number cannot say which rest you spent. Cyphers carried counts your
+  rows, so it changes when you add or remove a cypher.
+- A wound bar fills up as you get hurt, the opposite of a Pool bar, because it
+  is counting the wounds you have taken rather than what you have left.
+- A value your character does not have reads as blank rather than as zero. A
+  shield you are not carrying, a Luck Pool you do not have, Stress or the damage
+  track at a table that does not use them, and a rank outside the superhero
+  genre all show nothing at all.
+- Anything you put on a bar can be read on the map by anyone allowed to see that
+  bar. That has always been true of Health on an NPC, and it is worth knowing now
+  that wounds, Stress and the damage track can go there too.
+
+2026-10-30
+- A character file that arrives with a rule switched off but numbers still in it
+  now keeps those numbers when you switch the rule on. That covers Stress points
+  and the damage track step. Before, turning the rule on wrote fresh starting
+  values over whatever the file carried, and there was no way to keep it. Because
+  nothing is thrown away any more, turning a rule on no longer asks twice.
+  Switching one off still throws its numbers away and still asks twice.
+- Exporting a character no longer refuses over a damaged value in the file it was
+  built from. A shield, pools, wounds, advancement or armor modifiers saved in the
+  wrong shape used to stop the whole export at that field.
+- A character whose list rows carry a damaged position now loads. One case could
+  silently drop a row, another could leave two rows fighting over one slot, and a
+  third could stall the sheet for over a minute per list. Rows now load in the
+  order their positions give, with anything unreadable last.
+- A Luck Pool whose name is blank in the file now reads "Luck" on the panel and on
+  the chat card. Before, the panel heading printed nothing and the card read
+  "Spent 3 - 1 Might, 2 " with nothing after it.
+- The d20 on the pool cards is taller, so it is easier to hit on a touch screen.
+  It matches the minimum size the cog and the other small controls already used.
+
+2026-10-29
+- The Attacks tab has a Roll initiative button above the list. Initiative is a
+  Speed task, so you could always roll it from the Speed pool, but you had to
+  know that and find it on the other side of the sheet in the middle of a fight.
+  The button opens the usual roller with Speed already chosen, and the card it
+  posts to chat says Initiative. You can still change the pool and pick a skill
+  the way you would for any other task.
+- The guided roller has a Situational hindrance counter, beside Assets and
+  Effort. It starts at 0 and leaving it alone changes nothing, so it works the
+  way Assets do. When the GM says a task is hindered two steps, set it to 2 and
+  both the preview and the chat card say so. It goes up to 10 and resets every
+  time the roller opens. The Magnus Archives Stress hindrances are unchanged and
+  still sit in their own group.
+- On a creature sheet, the Description's "Share description" button is now a
+  small send-to-chat icon sitting with the description itself, matching the
+  icons the creature's combat actions already use. It posts exactly what it
+  posted before.
+- Importing a character file written for a schema version this sheet does not
+  read used to say "Schema version: must be 2" directly beneath a hint saying
+  the sheet accepts versions 2 and 3. It now names both versions and the one the
+  file claims.
+- Dragging a compendium page that Roll20 has not filed under a category used to
+  refuse with "No Category pages can't be added to a sheet." It now says the
+  page is not filed under a category and to drag it from the category list.
+
 2026-10-26
 - A character with the Lucky descriptor now gets a Luck Pool. It sits as a
   fourth panel below the three pool cards, with a Pool box, a Max box and the

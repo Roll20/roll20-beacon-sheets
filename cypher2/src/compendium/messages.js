@@ -21,7 +21,16 @@ export const CATEGORY_HINTS = new Map([
   ['Superhero Types', TYPE_HINT],
   ['Descriptors', "A descriptor can't be added to a sheet. Enter its bonuses on the sheet by hand."],
   ['Fantasy Species', SPECIES_HINT],
-  ['Science Fiction Species', SPECIES_HINT]
+  ['Science Fiction Species', SPECIES_HINT],
+  // ddd-mndr. Not a reference category but the literal name Roll20 supplies for a page its
+  // in-game index has not filed. Without an entry the generic fallback below reads "No
+  // Category pages can't be added to a sheet.", which assumes the category name is a noun
+  // phrase that pluralises — true of "Equipment" and "Arcs", broken English for this one.
+  // It names the category list rather than calling the page unsupported, because the web
+  // compendium had the same pages filed correctly (ddd-sjaz probe, two of eleven).
+  ['No Category',
+    "This compendium page isn't filed under a category, so the sheet can't tell what it " +
+    'is. Find it under a category in the compendium and drag it from there.']
 ])
 
 export const notAnItem = (category) => CATEGORY_HINTS.get(category) ?? `${category} pages can't be added to a sheet.`
