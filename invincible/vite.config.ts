@@ -80,35 +80,12 @@ function generateSvgSpritesPlugin() {
   };
 }
 
-function forceProdBaseUrlPlugin() {
-  return {
-    name: "force-prod-base-url",
-    enforce: "post",
-    config(config: any, { mode }: any) {
-      if (mode === "production") {
-        config.base = "https://raw.githubusercontent.com/Roll20/roll20-beacon-sheets/refs/heads/main/invincible/src/";
-      }
-    },
-    generateBundle(options: any, bundle: any) {
-      const targetUrl = "https://raw.githubusercontent.com/Roll20/roll20-beacon-sheets/refs/heads/main/invincible/src/";
-      for (const fileName in bundle) {
-        const chunk = bundle[fileName];
-        if (chunk.type === 'asset' && typeof chunk.source === 'string') {
-          chunk.source = chunk.source.replace(/\/undefined\/undefined\//g, targetUrl);
-        } else if (chunk.type === 'chunk' && chunk.code) {
-          chunk.code = chunk.code.replace(/\/undefined\/undefined\//g, targetUrl);
-        }
-      }
-    }
-  };
-}
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  plugins: [generateEffectPathsPlugin(), generateSvgSpritesPlugin(), tailwindcss(), vue(), svgLoader(), forceProdBaseUrlPlugin() as any],
+  plugins: [generateEffectPathsPlugin(), generateSvgSpritesPlugin(), tailwindcss(), vue(), svgLoader()],
   base:
     mode === "production"
-      ? "https://raw.githubusercontent.com/Roll20/roll20-beacon-sheets/refs/heads/main/invincible/src/"
+      ? `${process.env.VITE_SHEET_PATH}/${process.env.VITE_SHEET_SHORT_NAME}/`
       : "/",
   build: {
     target: 'esnext',
