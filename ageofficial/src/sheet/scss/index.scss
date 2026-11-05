@@ -939,6 +939,18 @@ body {
       & h3 {
         font-size: 2rem;
       }
+      & .btn-close {
+        flex-shrink: 0;
+        width: 1em;
+        height: 1em;
+        padding: 0.25em;
+        background: transparent var(--bs-btn-close-bg) center / 1em auto
+          no-repeat;
+        opacity: 0.5;
+        &:hover {
+          opacity: 0.75;
+        }
+      }
     }
     & .age-modal-container {
       row-gap: 10px;
