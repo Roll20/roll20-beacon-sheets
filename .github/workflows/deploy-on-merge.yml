@@ -9,7 +9,6 @@ on:
       folder:
         description: 'Sheet folder to deploy'
         required: true
-        default: 'ci-testing-sheet'
         type: string
 
 concurrency:
