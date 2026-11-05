@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useSheetStore } from '@/stores/sheetStore.js'
 import { clampInt, syncClamped } from '@/utility/clamp.js'
 
@@ -32,6 +33,22 @@ const set = (field, value) => (sheet.luck[field] = clampInt(value))
 // being spent — so a box here would invite a player to set a number that changes nothing.
 const EDGE_NOTE =
   'Carried from the character file and shown as stored. The book gives Luck no Edge, and this value enters no calculation on this sheet.'
+
+// A BLANK name is not a rename, it is a gap (ddd-rcp0). The contract sets no minimum
+// length, so a hand-edited or third-party document imports an empty name cleanly and this
+// heading printed nothing at all. The word below is the same stand-in the chat card's
+// builders already default to, so the panel and the card cannot disagree about what an
+// unnamed Pool is called. The owner ruled on exactly these two surfaces: the sheet shows a
+// name the document does not contain, and the document is left as the author wrote it.
+//
+// Trimmed to DECIDE, never to display: whitespace alone reaches a player as the same blank
+// gap, while a name with real characters around its padding is the author's own and prints
+// as stored. `?? ''` rather than a bare `.trim()` so a name the contract would reject
+// cannot throw inside the render.
+const LUCK_FALLBACK = 'Luck'
+const luckName = computed(() =>
+  (sheet.luck.name ?? '').trim() === '' ? LUCK_FALLBACK : sheet.luck.name
+)
 </script>
 
 <!-- The panel reuses PoolCard's head, name and fields classes wholesale, the way the
@@ -43,10 +60,11 @@ const EDGE_NOTE =
 <template>
   <section class="luck-pool panel">
     <header class="pool-card__head">
-      <!-- The Pool's own name, never a hardcoded "Luck": the contract lets it be any
-           string, and a hardcoded heading would silently contradict a stored one
-           (spec §3.2). -->
-      <h3 class="pool-card__name">{{ sheet.luck.name }}</h3>
+      <!-- The Pool's own name whenever it has one, never a hardcoded "Luck" over a stored
+           name: the contract lets it be any string, and a hardcoded heading would silently
+           contradict a stored one (spec §3.2). A blank name is the one case the word stands
+           in for, because nothing is what it contradicts (ddd-rcp0). -->
+      <h3 class="pool-card__name">{{ luckName }}</h3>
     </header>
     <div class="pool-card__fields">
       <label>

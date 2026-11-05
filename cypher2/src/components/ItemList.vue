@@ -173,7 +173,8 @@ const closeEditor = () => {
   confirming.value = null
 }
 
-// Two-click delete: native confirm() can be blocked in the sandboxed iframe.
+// Two-click delete: native confirm() can be blocked in the Roll20 frame (ddd-2dx). NOT
+// because the frame is sandboxed — it is not, probed and disproved in ddd-idha.
 const onRemove = (id) => {
   if (confirming.value !== id) {
     confirming.value = id
@@ -209,6 +210,18 @@ const onRemove = (id) => {
         +
       </button>
     </header>
+
+    <!-- ddd-gouw, owner ruling 2026-10-29. A control that belongs to this list but is not
+         a row and is not the add button — the Attacks list's "Roll initiative". It sits
+         INSIDE the panel frame and BELOW the banner, because the button first shipped
+         above the whole <section>, where it was unframed, read as tab chrome rather than
+         as part of Attacks, and came ahead of the heading that is the only navigation
+         below 27rem.
+         It must stay here, between the header and the v-if/v-else pair below, and never
+         between them: `v-if` and `v-else` have to be adjacent siblings, and an element
+         dropped between them silently breaks the chain. Renders nothing when no segment
+         fills it, so every other list is byte-identical. -->
+    <slot name="prelude" />
 
     <!-- ddd-lwl. This duplicates the band "+" above, on purpose: an empty panel needs a
          worded affordance rather than dead-end text. But both took their accessible name

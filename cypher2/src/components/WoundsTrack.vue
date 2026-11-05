@@ -70,8 +70,14 @@ const addShield = () => {
   parkFocus('.shield__tier .wound-pip')
 }
 
-// Two-click remove, like ItemList's row delete: native confirm() can be blocked
-// in the sandboxed iframe, and removing a shield destroys six values.
+// Two-click remove, like ItemList's row delete: native confirm() can be blocked in the
+// Roll20 frame (ddd-2dx), and removing a shield destroys six values. NOT because the
+// frame is sandboxed — it is not, probed and disproved in ddd-idha — and which mechanism
+// does block it has never been established. The guard stands on the block ddd-2dx
+// records, which is a grep of another project's source comment rather than an observation
+// in this sheet or in any Roll20 session we have run. "Observed" stood here until the
+// 2026-10-29 review; ddd-idqh exists because an unverified mechanism became a design
+// premise, so that is the one word these four comments must not use.
 const confirmingRemove = ref(false)
 // An armed destructive confirm must not outlive the context that armed it
 // (ItemList's closeEditor owns the same reset for row deletes): leaving edit

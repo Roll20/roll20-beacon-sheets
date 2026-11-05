@@ -2,12 +2,13 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { arrayToObject, objectToArray } from '@/utility/objectify'
+import { decodeStoredArray, ARRAY_MARKER } from '@/utility/storedArray.js'
 import { clampInt } from '@/utility/clamp.js'
 // Import cycle (relay.js → handlers.js → drop.js → stores → relay.js): read relay bindings only inside functions, never at module top level.
 import { dispatchRef } from '@/relay/relay.js'
 import { post } from '@/utility/post.js'
 import { createRollTemplate } from '@/rollTemplates/index.js'
-import { interpretStatRoll, interpretGuidedRoll, easedSteps, effortCost, rawEffortCost, stressLevels } from '@/dice/rolls.js'
+import { interpretStatRoll, interpretGuidedRoll, easedSteps, effortCost, rawEffortCost, stressLevels, SITUATIONAL_HINDRANCE_MAX } from '@/dice/rolls.js'
 import { guidedRollTemplateData } from '@/rollTemplates/guidedCard.js'
 import { recoveryRollTemplateData } from '@/rollTemplates/recoveryCard.js'
 import { itemCardTemplateData } from '@/rollTemplates/itemCard.js'
@@ -51,6 +52,27 @@ export const DROP_HIGHLIGHT_MS = 2000
 // burn's effects: the task eases a step and the level that would have hindered it is
 // gone. Named because four places charge or return it and they must never disagree.
 const STRESS_BURN_COST = 3
+
+// The pool an initiative task rolls against (ddd-gouw). Initiative is a Speed task in
+// every Cypher edition the sheet carries, so this is the book's answer and not a
+// preference — but it is named rather than inlined because rollInitiative tests it
+// against the live pools graph, and a literal in both places could be changed one at a
+// time. It is NOT a stored field: nothing about initiative reaches the document.
+const INITIATIVE_POOL = 'speed'
+
+// What a damage track starts at when a control creates one from nothing. A factory, not a
+// shared constant: the pips mutate the object in place. It lives here, beside the other
+// document-shape factories, because TWO controls start a track from nothing — the rule
+// checkbox in StatusRow and the first pip click in DamageTrack — and a second literal of the
+// same three values is a second chance for them to drift (ddd-iohk). WHOLE: not one member is
+// nullable, the export validator refuses a partial object with an error naming the missing
+// member, and healDamageTrack nulls a malformed one on the way back in.
+export const damageTrackSeed = () => ({ step: 'hale', hurtAvailable: false, hurt: false })
+
+// What a Stress object starts at, for the same reason and with the same hazard: the rule
+// checkbox in StatusRow and the first plus click in StressTrack both start one from nothing,
+// and healStress nulls a partial object outright on the way back in (ddd-iohk).
+export const stressSeed = () => ({ points: 0, supernaturalLevels: 0 })
 
 // The five schemaVersion 3 root fields at their defaults (ddd-xrug, spec §7). A factory,
 // not a shared constant: rules is an object the checkboxes mutate in place.
@@ -279,9 +301,20 @@ const sheetStore = () => {
   // roller is open — and part of the open predicate for the same reason skillId is:
   // an attack whose pool is illegal opens with NO stat.
   const rollerAttackId = ref(null)
+  // ddd-gouw: a fourth way in, and the same transient shape. A BOOLEAN rather than an id
+  // because the contract carries no initiative anywhere — the only mention in the whole
+  // schema is a note on an ability's `activation` string — so there is no row to point at
+  // and nothing is stored, exported or validated for this.
+  //
+  // In the open predicate for the reason rollerSkillId is: hydrate never validates the
+  // pools graph, so a document with no `speed` opens with NO stat, and rollerStat alone
+  // could then not express "open". The modal would not mount AND the other entry points
+  // would fall straight through it into a quick roll.
+  const rollerInitiative = ref(false)
   const rollerSession = ref(0)
   const rollerOpen = computed(() =>
-    rollerStat.value !== null || rollerSkillId.value !== null || rollerAttackId.value !== null
+    rollerStat.value !== null || rollerSkillId.value !== null ||
+    rollerAttackId.value !== null || rollerInitiative.value
   )
 
   const rollIntent = (statName) => {
@@ -339,6 +372,25 @@ const sheetStore = () => {
     rollerStat.value = typeof row.pool === 'string' && Object.hasOwn(pools.value, row.pool) ? row.pool : null
   }
 
+  // Initiative entry (ddd-gouw). Initiative is a Speed task, so the ROLL was always
+  // possible from the Speed pool's own d20 — what was missing is that the player had to
+  // know that, cross to the other side of the sheet mid-combat, and read a chat card
+  // headed "Speed Roll" that never said initiative. rollSkill's shape: an explicit button
+  // is its own opt-in, so it ignores ui.guidedRoll, and an open roller owns the session.
+  //
+  // The pool PRESELECTS and stays changeable in the modal (the pool-changeable ruling),
+  // and only when it legally exists — the rollSkill rule, because hydrate applies no enum
+  // validation to the pools graph and a stat naming no real pool makes rollGuided throw.
+  // No skill preselects: skill names are free text, so matching on the word "initiative"
+  // would pick a skill the player never chose (owner, 2026-10-29). They pick from the
+  // roller's own list, as they do for any other task.
+  const rollInitiative = () => {
+    if (rollerOpen.value) return
+    rollerSession.value += 1
+    rollerInitiative.value = true
+    rollerStat.value = Object.hasOwn(pools.value, INITIATIVE_POOL) ? INITIATIVE_POOL : null
+  }
+
   // The roller owns pool costs (spec ① decision). Concurrency policy (audit
   // passes 2–3): the spend is RESERVED synchronously at commit — no await
   // sits between the affordability check and the deduction, so the check can
@@ -384,7 +436,7 @@ const sheetStore = () => {
     ]).finally(() => clearTimeout(timer))
   }
 
-  const rollGuided = async ({ stat, skillId = null, attackId = null, assets = 0, effortLevels = 0, damageEffortLevels = 0, difficulty = null, stressHindrance = 0, armorHindered = false, burnStress = false, luckSpend = 0 }) => {
+  const rollGuided = async ({ stat, skillId = null, attackId = null, initiative = false, assets = 0, effortLevels = 0, damageEffortLevels = 0, difficulty = null, stressHindrance = 0, situationalHindrance = 0, armorHindered = false, burnStress = false, luckSpend = 0 }) => {
     // Resolution-boundary clamps (the modal mirrors both, but no caller may
     // exceed them): Effort ≤ the character's Effort stat; difficulty 0–10.
     // Policy: silent normalization — the card is built from the clamped
@@ -550,6 +602,19 @@ const sheetStore = () => {
     // spellings apart — that proof lives in rolls.test.js and guidedCard.test.js, which
     // own the clamp. The Math.min is this layer's own rule and is proven here.
     const hindrance = Math.min(Math.max(stressHindrance, 0), hindranceCeiling)
+    // ddd-hcn3, the situational hindrance, clamped at THIS boundary like every other
+    // input: the modal mirrors the bound and no caller may exceed it. Unlike the Stress
+    // ceiling above, this one does not move with the document — it is the sheet's own
+    // bound on a GM's call, so the ceiling is the same number on every roll.
+    //
+    // Math.floor() || 0 spelt exactly like `diff` above, and for the same reason: a clamp
+    // on magnitude alone is not a clamp on TYPE. 2.5 would survive a bare Math.min/max and
+    // post "Hindered 2.5: situation −2.5", and NaN would survive as NaN, where
+    // interpretGuidedRoll's `base.beats >= effective` is false for every comparison —
+    // the every-roll-a-failure shape this file warns about in four other places. The modal
+    // can reach neither, its ref being an integer bounded by its own stepper, so this
+    // guards the direct caller the comment above promises to guard (2026-10-29 review).
+    const situational = Math.min(Math.max(Math.floor(situationalHindrance) || 0, 0), SITUATIONAL_HINDRANCE_MAX)
     // Worn armor hinders Speed-based tasks (Magnus). Gated on the rule too: the toggle
     // lives in the Stress column and the book rule comes with it.
     const armor = armorHindered === true && stressRule && wearingArmor.value === true && stat === 'speed'
@@ -560,6 +625,7 @@ const sheetStore = () => {
       assets,
       effortLevels: levels,
       stressHindrance: hindrance,
+      situationalHindrance: situational,
       armorHindered: armor,
       burnedStress: burn
     })
@@ -637,6 +703,15 @@ const sheetStore = () => {
     // exemption is only that. It does not suppress a line the stat Pool earned — a roll
     // that empties both prints one line, for the Pool — because read wider it would hand a
     // free step down the track to anyone who spent a single point of Luck.
+    //
+    // Computed ONCE, here, from the reservation-time pair, and reused by every card on
+    // every path below. The refunded on-time path re-reads its Pool figures from whatever
+    // object is live, so a hydrate that swapped the pools graph mid-flight leaves a card
+    // whose numbers describe the newer document and whose nudge describes the one this
+    // roll actually drew from. That residual is deliberate, and it is the same window
+    // where refund() is skipped on object identity. Do NOT 'fix' it into a live read: the
+    // nudge is an instruction about what THIS roll took out of the Pool, and the live
+    // object no longer carries that history.
     const emptiedByReservation = poolCost > 0 && poolBefore > 0 && poolAfter === 0
     // SIX helpers, not three extended ones, because a refund and a re-deduction follow
     // opposite rules and the three resources do not agree about which paths do which.
@@ -747,7 +822,15 @@ const sheetStore = () => {
     // mid-roll must not reword a card for a spend already made. `undefined` when there is no
     // Luck object, which lets the builders' own default stand — and nothing reads it at all
     // unless luckCharged is positive, which implies a live object.
-    const luckLabel = luckObj?.name
+    //
+    // A BLANK name takes that same `undefined` route (ddd-rcp0). The contract sets no
+    // minimum length, so an empty name imports cleanly and the card the whole table reads
+    // printed `Spent 3 — 1 Might, 2 ` with nothing after it. A default parameter only
+    // answers `undefined`, so the empty string walked straight past the builders' own
+    // 'Luck' default and had to be turned back into an absence here. Trimmed to DECIDE,
+    // never to display: whitespace alone is the same blank gap in chat, while a padded name
+    // with real characters in it is the author's own and posts as stored.
+    const luckLabel = luckObj?.name?.trim() ? luckObj.name : undefined
     // Card pool figures always come as a PAIR from the same snapshot (4th
     // audit F3): reservation-time by default, live-time whenever a branch
     // reports the live current — never reservation-max with live-current.
@@ -757,10 +840,10 @@ const sheetStore = () => {
     // itself, so a branch that forgets defaults to no nudge rather than a wrong one.
     const cardFor = (interp, { refunded = false, shownAfter = poolAfter, shownMax = poolMax, emptied = false, shownStress = stressAfter, shownLuck = luckAfter } = {}) => createRollTemplate({
       guidedRoll: guidedRollTemplateData({
-        statLabel, skill, attack, assets, effortLevels: levels, damageEffortLevels: damageLevels,
+        statLabel, skill, attack, initiative, assets, effortLevels: levels, damageEffortLevels: damageLevels,
         interp, cost, rawCost, edge, poolAfter: shownAfter, poolMax: shownMax, refunded,
         damageTrack: trackOn, emptied, surchargeTotal, stressRule,
-        stressHindrance: hindrance, armorHindered: armor, burnedStress: burn,
+        stressHindrance: hindrance, situationalHindrance: situational, armorHindered: armor, burnedStress: burn,
         stressAfter: shownStress,
         // `poolCost`, never `cost`: the stat Pool's share is what left the Pool, and a
         // card claiming the whole cost is the defect these four inputs exist to fix.
@@ -915,33 +998,127 @@ const sheetStore = () => {
   // and the VTT host hands them back as '$__$<json>' marker STRINGS in the
   // onInit payload (sandbox ground truth, ddd-bt6). Restore each row to its
   // schema shape — missing fields fall back to the row factory's defaults
-  // (which carry the schema's nulls), nested arrays are decoded from either
-  // readback form. A complete row passes through unchanged, so
+  // (which carry the schema's nulls), nested arrays are decoded from any of the three
+  // readback shapes by storedArray.js. A complete row passes through unchanged, so
   // import/round-trip behavior is unaffected.
-  const ARRAY_MARKER = '$__$'
-  const decodeMarkerArray = (v, fallback) => {
-    try {
-      const parsed = JSON.parse(v.slice(ARRAY_MARKER.length))
-      return Array.isArray(parsed) ? parsed : fallback
-    } catch {
-      return fallback
-    }
+  // ddd-64k3. Twelve nullable fields live INSIDE a row, and normalizeRow's
+  // `{ ...defaults, ...row }` below lets the layer's value overwrite the factory's null
+  // for every one of them. ddd-wbc established what the layer sends: Firebase drops a
+  // null-valued key on write and Roll20's attribute layer hands it back as an EMPTY
+  // STRING. So that '' survived hydrate, the export validator refused the document, and
+  // there was nothing the player could do on the sheet to repair it — the fields it hits
+  // are the ones a player legitimately leaves alone.
+  //
+  // The heal is that documented readback and NOTHING MORE. '' becomes null; every other
+  // stored value passes through untouched.
+  //
+  // It deliberately does not validate the value against the schema, which is what this
+  // fix did first and was wrong. Five of the twelve are enums, and each renders a stored
+  // out-of-enum value in a disabled <option> that says what is wrong with it
+  // (strayOptions — ddd-9ir, ddd-4s3, ddd-fwr), so the player can see it and fix it.
+  // Nulling it is the silent write ddd-9ir rejected. For the two objects it is worse:
+  // modifier.direction and depletion.die carry stray options of their own, so nulling the
+  // container over one bad member would take the sibling with it, and a depletion die of
+  // '1d7' would lose its `chance` as well.
+  //
+  // An out-of-enum value does still fail the export, and that is DECIDED, not left open.
+  // OWNER RULING 2026-10-29: keep showing it. The row keeps displaying the bad value with
+  // its warning and the export keeps refusing it, because a refusal naming the field is
+  // worth more to the player than a silent blank — and because two of these fields come in
+  // pairs, so blanking the container would take the good half with it. This re-affirms
+  // ddd-9ir rather than adding to it. Do not widen this heal into a validator; three tests
+  // in sheetStore.test.js go red if you do.
+  //
+  // abilities.stressCost is the twelfth and keeps its own line below rather than joining
+  // this list: it shipped with ddd-xrug as a full integer check, it is a number field with
+  // no stray option of its own, and narrowing it is not this bead's call.
+  //
+  // The list was found by enumerating every row field the v3 schema lets be null and
+  // diffing that against this table. That is the check to repeat when a field is added:
+  // the bead named ten, the schema says twelve, and attacks.weaponClass was the one
+  // everybody missed because its factory default is 'light' rather than null, so the
+  // absent-key path restores a real value and the field reads as safe.
+  const ROW_NULLABLE = {
+    skills: ['pool'],
+    abilities: ['cost'],
+    attacks: ['weaponClass', 'range', 'modifier'],
+    equipment: ['level'],
+    cyphers: ['level', 'cypherKind', 'power'],
+    artifacts: ['level', 'depletion']
   }
+
+  // Three of the twelve are objects, and they take two repairs the nine scalars do not.
+  // Both are the same distinction as the '' heal: repair what the player cannot see or
+  // cannot reach, leave alone what a row already shows them.
+  //
+  // A NON-OBJECT container nulls. No editor can render `cost: 5` or `modifier: 5`, and two
+  // of them CRASH on it: AbilityCost's mode getter reads any non-null cost as fixed, so
+  // editing points threw `TypeError: Cannot create property 'points' on number`, and
+  // AttacksSegment's `v-if="row.modifier"` is truthy for 5 while its steps input assigns
+  // into `row.modifier.steps`. Both reproduced, not inferred. depletion's 'automatic' is
+  // the one legal non-object and is exempt.
+  //
+  // An UNKNOWN KEY is dropped. additionalProperties is false on all three objects and the
+  // exporter copies rows verbatim, so one extra key blocks the export — and unlike a stray
+  // enum member it is rendered nowhere, so the player cannot remove it from the sheet.
+  // This FILTERS keys and never rebuilds from the enum: every known member keeps whatever
+  // it holds, including a depletion die of '1d7' or a modifier with no direction at all.
+  // That is deliberate — ddd-44o found a rebuild-from-the-enum silently deleting a stray
+  // value, the one member of the ddd-9ir class that lost data.
+  //
+  // One consequence to know before editing either: the loop runs BEFORE the dropped-points
+  // repair below, so by the time that line reads out.cost it is a plain object or null.
+  // Its isPlainObject guard is therefore unreachable and carries no test — measured, by
+  // reverting it to the old `typeof` check and watching the suite stay green. It stays
+  // because a repair should not depend on reading a loop twenty lines above it, and
+  // because `cost: []` reaching that line is what used to spread an array into
+  // `{ 0: .., points: null }`.
+  const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
+  const ROW_OBJECT_MEMBERS = {
+    cost: ['points', 'plus', 'variable'],
+    modifier: ['steps', 'direction'],
+    depletion: ['chance', 'die']
+  }
+  // Object.hasOwn, never `k in v`: the same rule enumLabel follows in enums.js, and for the
+  // same reason (ddd-9ir / ddd-5vb). A stored `{"__proto__": {points: 7, plus: true,
+  // variable: false}}` has ONE own key, the one this filter exists to strip — but plainClone
+  // assigns keys by bracket, and `out['__proto__'] = obj` SETS the prototype rather than
+  // creating a property. So `in` finds all three members on the chain, reads them, and
+  // writes them back as real own properties: the filter would invent a valid cost out of
+  // the junk it was asked to remove, and export it. Measured, with a test.
+  const pickKnown = (v, keys) => {
+    const out = {}
+    for (const k of keys) if (Object.hasOwn(v, k)) out[k] = v[k]
+    return out
+  }
+
   const normalizeRow = (key, row) => {
     const defaults = rowFactories[key]()
     const out = { ...defaults, ...row }
     for (const [field, dv] of Object.entries(defaults)) {
       const v = out[field]
       if (!Array.isArray(dv)) continue
-      if (typeof v === 'string' && v.startsWith(ARRAY_MARKER)) {
-        out[field] = decodeMarkerArray(v, dv)
-      } else if (v && typeof v === 'object' && !Array.isArray(v)) {
-        out[field] = Object.values(v)
+      if ((typeof v === 'string' && v.startsWith(ARRAY_MARKER)) || (v && typeof v === 'object')) {
+        out[field] = decodeStoredArray(v, dv)
       }
     }
+    for (const field of ROW_NULLABLE[key] ?? []) {
+      const v = out[field]
+      if (v === '') {
+        out[field] = null
+        continue
+      }
+      const members = ROW_OBJECT_MEMBERS[field]
+      if (!members || v === null) continue
+      if (field === 'depletion' && v === 'automatic') continue
+      out[field] = isPlainObject(v) ? pickKnown(v, members) : null
+    }
     // ability cost is the one nested object with a nullable required member:
-    // a dropped cost.points must come back as null, not stay absent.
-    if (key === 'abilities' && out.cost && typeof out.cost === 'object' && out.cost.points === undefined) {
+    // a dropped cost.points must come back as null, not stay absent. The '' heal above
+    // runs first, so `out.cost &&` is no longer the hole it was: an '' cost is null by
+    // the time this line reads it. That hole was the ddd-64k3 bug for this field, and it
+    // is why a reader who found this repair concluded the whole field was handled.
+    if (key === 'abilities' && isPlainObject(out.cost) && out.cost.points === undefined) {
       out.cost = { ...out.cost, points: null }
     }
     // stressCost is a nullable SCALAR inside a row, where `{ ...defaults, ...row }`
@@ -964,14 +1141,7 @@ const sheetStore = () => {
   const normalizeRecovery = (r) => {
     if (!r || typeof r !== 'object') return undefined
     const bonus = typeof r.bonus === 'number' ? r.bonus : 1
-    let slots = r.slots
-    if (typeof slots === 'string' && slots.startsWith(ARRAY_MARKER)) {
-      slots = decodeMarkerArray(slots, [])
-    } else if (slots && typeof slots === 'object' && !Array.isArray(slots)) {
-      slots = Object.values(slots) // numeric keys iterate ascending — order preserved
-    }
-    if (!Array.isArray(slots)) slots = []
-    slots = slots
+    let slots = decodeStoredArray(r.slots, [])
       .filter((s) => s && typeof s === 'object')
       .map((s) => {
         const { kind = 'action', used = false, note = '' } = s
@@ -985,37 +1155,46 @@ const sheetStore = () => {
   }
 
   // ddd-xrug. damageTrack, luck and stress are three more nullable objects in the ddd-wbc
-  // family, and they get a STRICTER heal than shield's in two ways. `typeof [] ===
-  // 'object'`, so shield's check accepts an array. A plain-object check alone also accepts
+  // family, and they get a STRICTER heal than shield's. A plain-object check alone accepts
   // a PARTIAL object, so `luck: { current: 1 }` would survive hydrate and reach the export
-  // validator with no way for the player to repair it from the sheet.
+  // validator with no way for the player to repair it from the sheet. (It was stricter in
+  // two ways until ddd-zwp3: shield read `typeof s.shield === 'object'`, which also says
+  // yes to an array. shield uses this same isPlainObject now.)
   //
   // So each is healed by SHAPE: every member present and of the right type, or null. And
   // rebuilt member by member rather than passed through, so an extra key cannot reach an
   // additionalProperties: false export either.
   //
-  // `!Array.isArray(v)` inside isPlainObject is UNREACHABLE at all four call sites below.
-  // With the shape checks in place an array already fails every one of them: an array has
-  // no `step`, `current` or `points` when it came from JSON, and the rules branch rebuilds
-  // an array into a value identical to the default anyway. The clause stays as defence in
-  // depth for the fourth heal someone writes, because a shared helper named isPlainObject
-  // that says yes to an array is a trap, and it costs one token. It carries no test, and
-  // no test can be written that fails without it.
+  // `!Array.isArray(v)` inside isPlainObject is unreachable at the four SHAPE-CHECKED call
+  // sites below. With the shape checks in place an array already fails every one of them:
+  // an array has no `step`, `current` or `points` when it came from JSON, and the rules
+  // branch rebuilds an array into a value identical to the default anyway. It was kept
+  // anyway, as defence in depth for the fourth heal someone writes, because a shared helper
+  // named isPlainObject that says yes to an array is a trap, and it costs one token.
+  //
+  // ddd-zwp3 is that fourth heal, and the clause is now load-bearing: hydrate's shield,
+  // advancement, pools and wounds have no shape check, so the array clause is the whole fix
+  // at those four sites and their test goes red without it. The sentence this paragraph
+  // used to end with, that no test can be written that fails without the clause, was true
+  // when it was written and is now false.
   //
   // Nulling a partial object does lose it, and that is still the right trade. hydrate
   // HEALS persisted state, and a partial object cannot have come from this sheet's own
   // dehydrate(). Neither dehydrate nor hydrate runs a validator, so no save is at stake
-  // here. The real choice is between silently dropping a field the sheet may give the
-  // player no control to rebuild, and an export refusal that names the missing member,
-  // because useImportExport.js validates the export and fieldLabels.js labels a
-  // `/luck/max` error by field.
+  // here. The real choice is between silently dropping the field and an export refusal
+  // that names the missing member AND where to rebuild it: useImportExport.js validates
+  // the export, and fieldLabels.js labels a `/luck/max` error by field and places it in
+  // the Luck Pool panel. All three of these objects have an editor behind them now —
+  // phase 2 took the broad `luck` entry out of NO_EDITOR_PATTERNS and phase 3 took
+  // `stress` and `wearingArmor` — so the refusal sends the player somewhere real. While
+  // phase 1 suppressed all three it would have named a dead end, which is the stronger
+  // version of this argument and no longer the one that applies.
   //
   // The stronger reason to null is that not one member of the three is nullable. They are
   // one enum string, two booleans, five integers and two strings, every one required. So
   // the only documented way a stored value loses a key, Firebase dropping a null on write,
   // cannot produce a partial object here. The partial branch guards an undocumented
   // corruption mode rather than a known one. shield sets the precedent by nulling.
-  const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
   const int = (v) => Number.isInteger(v)
   const healDamageTrack = (v) =>
     isPlainObject(v) && DAMAGE_TRACK_STEPS.includes(v.step) &&
@@ -1080,14 +1259,33 @@ const sheetStore = () => {
     // missing key — Roll20's attribute layer materializes it as an EMPTY
     // STRING (ddd-wbc, live-verified), so the heal must be type-checked:
     // `?? null` would pass '' into the store and the export validator.
+    //
+    // ddd-zwp3. The four lines after rank are the same rule. shield used to read
+    // `typeof s.shield === 'object'`, which says yes to an ARRAY, and advancement, pools,
+    // wounds and armorModifiers took the stored value with a bare `??`, which catches only
+    // null and undefined. Every one of those values reaches the export validator and is
+    // refused there, as object for the first four and as string for armorModifiers. Run
+    // against the real validator, not inferred. isPlainObject is the predicate the v3 heals
+    // below already use. `''` stays legal at armorModifiers, because for a required string
+    // field the empty string IS the absent value.
+    //
+    // The four keep the STORED value rather than nulling, because none of them is nullable:
+    // three required objects and one required string, so the value the store already holds
+    // is the only legal fallback. Only shield and rank null.
+    //
+    // A type check, not a shape check. A partial object at any of the four would still
+    // reach the export validator, and the ddd-xrug block below carries the reasoning for
+    // leaving that alone: Firebase dropping a null is the one documented way a stored value
+    // loses a key, and not one member of these four is nullable, so a partial cannot arrive
+    // that way.
     rank.value = Number.isInteger(s.rank) ? s.rank : null
-    advancement.value = s.advancement ?? advancement.value
-    pools.value = s.pools ?? pools.value
+    advancement.value = isPlainObject(s.advancement) ? s.advancement : advancement.value
+    pools.value = isPlainObject(s.pools) ? s.pools : pools.value
     recovery.value = normalizeRecovery(s.recovery) ?? recovery.value
-    wounds.value = s.wounds ?? wounds.value
-    shield.value = s.shield && typeof s.shield === 'object' ? s.shield : null
+    wounds.value = isPlainObject(s.wounds) ? s.wounds : wounds.value
+    shield.value = isPlainObject(s.shield) ? s.shield : null
     armor.value = s.armor ?? armor.value
-    armorModifiers.value = s.armorModifiers ?? armorModifiers.value
+    armorModifiers.value = typeof s.armorModifiers === 'string' ? s.armorModifiers : armorModifiers.value
     cypherLimit.value = s.cypherLimit ?? cypherLimit.value
     genre.value = s.genre ?? genre.value
     subgenre.value = s.subgenre ?? subgenre.value
@@ -1126,8 +1324,9 @@ const sheetStore = () => {
     addRow, removeRow,
     addDroppedRow, dropNotice, dropAnnouncement, dropHighlightId,
     showDropNotice, dismissDropNotice, announceDrop, highlightDroppedRow,
-    postItem, rollStat, rollerStat, rollerSkillId, rollerAttackId, rollerSession, rollerOpen,
-    rollIntent, rollSkill, rollAttack, rollGuided, rollRecovery, dehydrate, hydrate
+    postItem, rollStat, rollerStat, rollerSkillId, rollerAttackId, rollerInitiative,
+    rollerSession, rollerOpen,
+    rollIntent, rollSkill, rollAttack, rollInitiative, rollGuided, rollRecovery, dehydrate, hydrate
   }
 }
 

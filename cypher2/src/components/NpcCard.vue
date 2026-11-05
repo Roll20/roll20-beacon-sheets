@@ -161,17 +161,6 @@ const onPostAction = async (action) => {
         <span class="npc-card__level">{{ creature.level }} ({{ targetNumber(creature.level) }})</span>
       </h3>
       <div class="npc-card__actions">
-        <!-- spec §7.4: the description post. postDescription passes whisper: false
-             itself, so the hidden "whisper item cards" setting cannot reach it. Hidden
-             when Description is blank after trimming. -->
-        <button
-          v-if="!isBlank(creature.description)"
-          class="npc-card__share btn"
-          type="button"
-          @click="onShare"
-        >
-          Share description
-        </button>
         <button
           class="npc-card__edit btn"
           :class="{ 'npc-card__edit--active': editing }"
@@ -264,6 +253,53 @@ const onPostAction = async (action) => {
             <ul class="npc-card__intrusions">
               <li v-for="row in intrusions" :key="row._id" class="npc-card__intrusion">{{ row.text }}</li>
             </ul>
+          </div>
+
+          <!-- spec §7.4: the description post. postDescription passes whisper: false
+               itself, so the hidden "whisper item cards" setting cannot reach it. Hidden
+               when Description is blank after trimming — a creature with none must not
+               render a dead control.
+               ddd-c9qs, owner 2026-09-15: it WAS a worded button up in the card header,
+               standing apart from the thing it posts. It is now the same send-to-chat chip
+               the combat actions use, sitting with the description. It borrows the
+               character sheet's chat chip, whose rule main.css already holds, so it adds
+               ONE declaration of its own and no more: `.npc-card__share { justify-self:
+               start }`. That one is load-bearing — .npc-card__field is a grid and a grid
+               item stretches its column, which rendered the chip 1463px wide until the
+               rule went in. This comment said "no CSS of its own" until the 2026-10-29
+               review, which is the opposite of what the fix was. The icon carries no text,
+               so the aria-label is the only
+               accessible name there is and it says WHAT gets posted, the way each action
+               chip names its action.
+               NO v-if ON THE BUTTON. It had one in the header, where it was load-bearing
+               because the header always renders. Here it is dead: isShown drops a blank
+               text field from shownFields, so this whole block is absent for a creature
+               with no description and the chip cannot render beside text that is not
+               there. Measured — with the v-if removed the suite stayed green, which is
+               what proved it redundant rather than protective. The behaviour is still
+               owned by a test; what guards it is isShown above. -->
+          <div v-else-if="field === 'description'" class="npc-card__field" data-field="description">
+            <span v-if="showLabel(group, field)" class="microlabel">{{ LABELS.description }}</span>
+            <!-- Owner ruling 2026-10-29: the chip sits BESIDE the text, at the right, the
+                 way every combat-action chip does. It first shipped on its own row below
+                 the paragraph, because .npc-card__field is a grid and this was a third
+                 grid item. The text and the chip share a flex row now, copied from
+                 .npc-card__action, so the two chips on this card finally match in
+                 position as well as in skin. The microlabel stays outside the row, above
+                 both. `.npc-card__description` already existed here as a class with no
+                 rule behind it; this is the rule it was waiting for. -->
+            <div class="npc-card__description">
+              <p class="npc-card__text npc-card__description-text">{{ creature.description }}</p>
+              <button
+                class="npc-card__share item-list__chat"
+                type="button"
+                title="Send to chat"
+                aria-label="Post the description to chat"
+                @click="onShare"
+              >
+                <IconChat />
+              </button>
+            </div>
           </div>
 
           <div v-else class="npc-card__field" :data-field="field">

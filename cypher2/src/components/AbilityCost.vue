@@ -18,11 +18,10 @@ const sheet = useSheetStore()
 // clause false and unmounts this control in the same tick. That is deliberate — the gate
 // is a live read of the row, not a latch taken at mount — and it is recoverable, because
 // the Stress rule toggle in the vitals panel (StatusRow.vue) brings the box straight back.
-// Since ddd-houn that recovery carries a destructive confirm. Over a live non-empty
-// `stress` object the first tick only ARMS: the box snaps back unchecked and a warning
-// label appears. A second click turns the rule on and reseeds `stress` to zeros, which is
-// the loss the warning names. The path is still real, it just costs two clicks and the
-// character's stored Stress points and supernatural levels.
+// Since ddd-rn28 that recovery is one click and costs nothing: the Stress rule toggle
+// ADOPTS whatever `stress` object is stored rather than reseeding it, so the character's
+// stored points and supernatural levels come back along with the box. ddd-houn put a
+// destructive confirm on that tick, which this replaces.
 // A latch would also keep the box in front of a player who has just said they do not want
 // it, so the simpler rule wins until someone reports otherwise.
 const stressEditable = computed(() => sheet.rules.stress === true || props.row.stressCost != null)

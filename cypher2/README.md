@@ -7,10 +7,12 @@ published by **Monte Cook Games**. Built with Vue 3, Pinia, and the Beacon SDK.
 
 - Full character sentence (descriptor / type / focus, with optional species and
   second descriptor/focus), tier, effort, XP, and pools with edge
-- Quick d20 pool rolls and a guided roller with skill selection, assets,
-  effort spending (edge-aware), and live cost/ease preview
+- Quick d20 pool rolls and a guided roller with skill selection, assets, a
+  situational hindrance counter, effort spending (edge-aware), and live
+  cost/ease preview
 - Attack rolls from the guided roller, with training, light weapons and the
-  attack's own modifier applied as ease, and effort spendable on damage
+  attack's own modifier applied as ease, and effort spendable on damage, plus a
+  Roll initiative button above the attacks list
 - Wound boxes, recovery rolls, shield and armor tracking. A game that uses the
   damage track gets the four-step track in place of the wound boxes, set from
   the Damage & Recovery panel, and an impaired character pays the track's extra
@@ -26,7 +28,12 @@ published by **Monte Cook Games**. Built with Vue 3, Pinia, and the Beacon SDK.
 - Skills (with proficiencies), abilities, attacks, cyphers, artifacts, gear,
   and character arcs
 - NPC mode: a GM can turn any sheet into a stat block following the Cypher GM's
-  Guide, with health linkable to a token bar
+  Guide
+- Token bars: 21 of the sheet's values can drive a token's three bars, including
+  each wound tier, a shield's tiers, the Luck Pool, Stress, the damage track,
+  recoveries remaining, cyphers carried against the limit, XP, Story XP,
+  resource points, tier, effort, superhero rank and an NPC's health. Sixteen
+  accept an edit typed into the bubble; five are read-only
 - Import and export of character data, and of NPC creature stat blocks
 - Genre skins configurable from the sheet's settings
 - Drag a page from the Cypher compendium onto the sheet to add an ability,

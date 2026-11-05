@@ -123,12 +123,39 @@ export const easedSteps = ({
   assets = 0,
   effortLevels = 0,
   stressHindrance = 0,
+  situationalHindrance = 0,
   armorHindered = false,
   burnedStress = false
 }) =>
   skillEase(skillRating) + weaponClassEase(weaponClass) + modifierEase(modifier) +
   Math.min(Math.max(assets, 0), 2) + Math.max(effortLevels, 0) -
-  Math.max(stressHindrance, 0) - (armorHindered ? 1 : 0) + (burnedStress ? 1 : 0)
+  Math.max(stressHindrance, 0) - Math.max(situationalHindrance, 0) -
+  (armorHindered ? 1 : 0) + (burnedStress ? 1 : 0)
+
+// ddd-hcn3. The GM's "that is hindered two steps", which a current-edition table had
+// nowhere to put: a skill's own inability is the one hinder path a Cypher 2 character
+// has, and that is a property of the SKILL rather than of the situation. Clamped at 0
+// exactly like stressHindrance above — a negative hindrance would quietly become a free
+// ease, which is a hindrance control that helps you.
+//
+// The ceiling the roller prints and the store enforces. The book does not bound how many
+// steps a GM may hinder, so this is the sheet's own bound, and 10 matches the difficulty
+// field's own domain so the two numbers a player types into this row share one range.
+//
+// It is NOT true that the projection makes a higher number inert, which is what this
+// comment claimed until the 2026-10-29 review disproved it. `effective` is
+// Math.max(0, difficulty - eased) — a FLOOR, and it engages only while `eased` is
+// positive. A hindrance makes `eased` negative, so difficulty - eased is difficulty PLUS
+// the hindrance and grows without bound; the card prints that figure, so 11 and 10 print
+// different numbers. What is really true is that beatsDifficulty is Math.floor(die / 3),
+// so `beats` tops out at 6 on a natural 20: a hindrance of 6 already puts any task beyond
+// the dice, and every value above it is identical in OUTCOME while still differing on the
+// card. Raise the cap freely; nothing mechanical depends on 10.
+//
+// Named rather than written in
+// both places, because the stepper's printed maximum and the resolution boundary's clamp
+// have to be the same number or the + goes dead at a figure the label does not explain.
+export const SITUATIONAL_HINDRANCE_MAX = 10
 
 // Effort applied to damage adds 3 damage per level (book). Area and explosive
 // attacks add only 2, but the contract carries no field marking an attack as

@@ -17,6 +17,14 @@ const sheet = useSheetStore()
 // gate: unlike skills, every attack is rollable.
 const rollRow = (row) => sheet.rollAttack(row._id)
 
+// Initiative entry (ddd-gouw), placed by the owner: ABOVE the attacks list, in the
+// Attacks tab, "that's where they will most likely need it" — not on the NPC card, which
+// is the only part of the sheet currently called Combat. The roll itself was already
+// possible from the Speed pool's d20; what this adds is finding it mid-combat and a chat
+// card that says initiative. The store owns the pool, the open-roller guard and the
+// ignore-the-setting rule, exactly as it does for a row's own d20 chip.
+const rollInitiative = () => sheet.rollInitiative()
+
 // v2 fields (ddd-5vb). range: null is LEGAL ("unspecified — treat as
 // immediate", schema note), so it collapses; a stray value degrades to its raw
 // self (the poolLabel rule). modifier: a standing ease/hinder on this attack —
@@ -58,6 +66,16 @@ const setModifierMode = (row, value) => {
 
 <template>
   <ItemList :contents="contents" :roll="rollRow" store-key="attacks" title="Attacks" add-label="Add attack">
+    <!-- Owner ruling 2026-10-29: INSIDE the Attacks card, under its banner and above the
+         rows. It shipped as a second root above the whole panel, which read as floating
+         in the gap between cards on a narrow sheet and sat ahead of the heading. The
+         segment is a single root again as a result. `.btn` is the shared primitive —
+         main.css resets `button` to bare, so a new button ships unstyled unless something
+         skins it back (ddd-001, where seven did), and this needs no rule of its own
+         beyond its spacing. -->
+    <template #prelude>
+      <button type="button" class="btn attacks__initiative" @click="rollInitiative">Roll initiative</button>
+    </template>
     <!-- spec ⑦ §4.2: name · damage · skill rating. `damage` is always an integer
          (factory default 0), so its cell never collapses. -->
     <template #summary="{ row }">
