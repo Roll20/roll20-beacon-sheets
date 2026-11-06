@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { z } from 'zod';
 import fs from 'fs';
 import path from 'path';
 
@@ -32,7 +32,7 @@ async function generateAllSchemas() {
         continue;
       }
 
-      const jsonSchema = zodToJsonSchema(zodSchema, mapping.schemaExport);
+      const jsonSchema = z.toJSONSchema(zodSchema);
 
       const destDir = path.dirname(mapping.destination);
       if (!fs.existsSync(destDir)) {
