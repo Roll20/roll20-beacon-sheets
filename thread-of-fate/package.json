@@ -61,7 +61,7 @@
     "vue": "3.4.15",
     "vue-component-library": "0.0.8",
     "vue-router": "4.2.5",
-    "zod": "3.25.76"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "1.7.0",
