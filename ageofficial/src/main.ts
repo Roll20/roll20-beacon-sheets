@@ -1,6 +1,5 @@
 import { createPinia } from "pinia";
 import { createApp } from "vue";
-import { createI18n } from "vue-i18n";
 
 import App from "./App.vue";
 import router from "./router";
@@ -88,7 +87,6 @@ import QuillFirefoxFix from "./utility/quill-firefox-fix";
 
 const main = async () => {
   const pinia = createPinia();
-  const i18n = createI18n({});
   const app = createApp(App);
   const { relayPinia, relayVue } = await createRelay({
     devMode: isDevEnvironment,
@@ -96,7 +94,6 @@ const main = async () => {
   app.component("font-awesome-icon", FontAwesomeIcon);
   app.use(pinia);
   app.use(router);
-  app.use(i18n);
   app.use(relayVue);
   pinia.use(relayPinia);
   app.component("QuillEditor", QuillEditor);
