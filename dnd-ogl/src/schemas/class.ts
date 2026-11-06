@@ -13,7 +13,7 @@ export const FeatureIdSchema = z.object({
   id: z.string(),
 });
 
-export const DataFeaturesSchema = z.record(
+export const DataFeaturesSchema = z.partialRecord(
   z.enum([
     'level-1',
     'level-2',
