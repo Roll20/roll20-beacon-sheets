@@ -17,7 +17,6 @@ import { type Resource, useResourcesStore } from '@/sheet/stores/resources/resou
 import { type TagGroup, useTagsStore } from '@/sheet/stores/tags/tagsStore';
 import { v4 as uuidv4 } from 'uuid';
 import { useProgressionStore } from '@/sheet/stores/progression/progressionStore';
-import { effect } from 'zod';
 import { useEquipmentStore } from '@/sheet/stores/equipment/equipmentStore';
 
 const operationPriority: Record<SingleEffect['operation'], number> = {
