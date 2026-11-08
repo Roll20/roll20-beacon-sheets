@@ -7,6 +7,7 @@ import { fetchEntry } from '@/compendium/fetchEntry.js'
 import { readPage } from '@/compendium/payload.js'
 import { stepsFor, stepDone, unfinishedSteps } from '@/builder/steps.js'
 import { buildCharacter } from '@/builder/build.js'
+import { premadeDraft } from '@/builder/premades.js'
 import { characterVision } from '@/rules/tokens.js'
 import { updateCharacterTokens } from '@/relay/characterTokens.js'
 
@@ -63,8 +64,16 @@ export const useBuilder = () => {
     }
   }
 
+  const startPremade = async (premade, level) => {
+    const draft = premadeDraft(premade, level)
+    if (!draft || building.value) return
+    builder.draft = draft
+    if (premade.art && !meta.avatar) meta.avatar = premade.art
+    await build()
+  }
+
   return {
     builder, steps, index, current, unfinished, isDone, notice, building,
-    go, next, previous, review, start, build,
+    go, next, previous, review, start, build, startPremade,
   }
 }
