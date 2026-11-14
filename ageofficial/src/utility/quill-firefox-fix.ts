@@ -7,7 +7,7 @@ export default {
       return; // only patch Firefox
     }
 
-    const Keyboard = Quill.import("modules/keyboard");
+    const Keyboard = Quill.import("modules/keyboard") as any;
 
     // Save original bindings
     const defaultBindings = Keyboard.DEFAULTS.bindings;
