@@ -350,7 +350,7 @@
 <script setup>
   import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
   import { computed, ref } from 'vue';
-  import { fage2eWG,mageWG, blueRoseWG, expanseWG } from '../attack/weaponGroups';
+  import { fage2eWG,mageWG, blueRoseWG, expanseWG, technofantasyWG } from '../attack/weaponGroups';
   import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 
   const props = defineProps({
@@ -360,21 +360,27 @@
   })
 
   const settings = useSettingsStore();
-  const weaponGroups = ref(fage2eWG)
-  switch(settings.gameSystem){
-    case 'mage':
-      weaponGroups.value = mageWG;
-    break;
-    case 'blue rose':
-      weaponGroups.value = blueRoseWG;  
-    break;
-    case 'expanse':
-      weaponGroups.value = expanseWG;
-    break;
-    default:
-      weaponGroups.value = fage2eWG;
-    break;
-  }
+  const weaponGroups = computed(() => {
+    let base;
+    switch(settings.gameSystem){
+      case 'mage':
+        base = mageWG;
+      break;
+      case 'blue rose':
+        base = blueRoseWG;
+      break;
+      case 'expanse':
+        base = expanseWG;
+      break;
+      default:
+        base = fage2eWG;
+      break;
+    }
+    if (settings.technofantasy) {
+      return [...new Set([...base, ...technofantasyWG])].sort();
+    }
+    return base;
+  });
 
   const isArmor = computed(() => {
   return props.item.type === 'armor';
@@ -389,6 +395,8 @@
     switch(props.item.weaponGroup){
       // ACCURACY
       case('Black Powder'):
+      case('Blaster Longarms'):
+      case('Blaster Pistols'):
       case('Bows'):
       case('Dueling'):
       case('Slings'):
