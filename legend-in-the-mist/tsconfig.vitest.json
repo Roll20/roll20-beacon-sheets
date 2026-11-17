@@ -3,7 +3,7 @@
   "exclude": [],
   "compilerOptions": {
     "lib": [],
-    "types": ["node", "jsdom"],
+    "types": ["node", "jsdom", "vite/client"],
     "allowJs": true
   }
 }
