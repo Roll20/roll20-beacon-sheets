@@ -105,7 +105,7 @@ import {
   type LabeledBonus,
 } from '@/utility/roll';
 import SvgIcon from '../shared/SvgIcon.vue';
-import { evaluateDiceFormula } from '@/sheet/stores/formulas';
+import { evaluateDiceFormula, parseFormulaAndEvaluate } from '@/sheet/stores/formulas';
 import { parseSimpleMarkdown } from '@/utility/markdownParser';
 import { resolveAbility } from '@/utility/resolveAbility';
 
@@ -164,7 +164,7 @@ const rollArgs = computed((): D20RollArgs => {
       (spell.attackAbility === 'spellcasting' || !spell.attackAbility) &&
       source?.type === 'flat'
     ) {
-      bonuses.push({ label: t('titles.base-score'), value: source.flat });
+      bonuses.push({ label: t('titles.base-score'), value: parseFormulaAndEvaluate(source.flat) });
     }
   }
 

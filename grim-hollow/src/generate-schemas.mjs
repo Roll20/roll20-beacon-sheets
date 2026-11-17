@@ -1,56 +1,58 @@
-import { zodToJsonSchema } from 'zod-to-json-schema';
-import fs from 'fs';
-import path from 'path';
+import { z } from 'zod';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { unconstrainedJsonSchemas } from './schemas/common/jsonSchema.ts';
 
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+const projectDir = fileURLToPath(new URL('../', import.meta.url));
+const schemaDir = path.join(projectDir, 'src', 'schemas');
+const outputDir = path.join(projectDir, 'generatedSchemas');
+
+export function toJsonSchema(schema) {
+  return z.toJSONSchema(schema, {
+    target: 'draft-7',
+    io: 'input',
+    reused: 'ref',
+    unrepresentable: ({ zodSchema }) => {
+      if (zodSchema.type === 'undefined') return { not: {} };
+      if (zodSchema.type === 'custom' && unconstrainedJsonSchemas.has(zodSchema)) return 'any';
+      return 'throw';
+    },
+  });
 }
 
-const schemaMappings = fs
-  .readdirSync('./src/schemas')
-  .filter(file => file.endsWith('.ts'))
-  .map(file => {
-    const fileName = path.parse(file).name;
-    const schemaExport = `${capitalize(fileName)}CompendiumSchema`;
-    return {
-      source: `./schemas/${file}`,
-      schemaExport,
-      destination: `generatedSchemas/${fileName}.json`
-    };
-  });
+export async function generateSchemas() {
+  const files = (await fs.readdir(schemaDir)).filter(file => file.endsWith('.ts')).sort();
+  if (files.length === 0) throw new Error(`No schema files found in ${schemaDir}`);
 
-async function generateAllSchemas() {
-  console.log('Generating JSON schemas from Zod schemas...');
-
-  for (const mapping of schemaMappings) {
+  const schemas = [];
+  for (const file of files) {
+    const name = path.parse(file).name;
+    const schemaExport = `${name.charAt(0).toUpperCase()}${name.slice(1)}CompendiumSchema`;
+    const module = await import(pathToFileURL(path.join(schemaDir, file)).href);
+    const schema = module[schemaExport];
+    if (!schema) throw new Error(`Schema '${schemaExport}' not found in '${file}'`);
     try {
-      const module = await import(mapping.source);
-      const zodSchema = module[mapping.schemaExport];
-
-      if (!zodSchema) {
-        console.error(`❌ Error: Schema '${mapping.schemaExport}' not found in '${mapping.source}'. Skipping.`);
-        continue;
-      }
-
-      const jsonSchema = zodToJsonSchema(zodSchema, mapping.schemaExport);
-
-      const destDir = path.dirname(mapping.destination);
-      if (!fs.existsSync(destDir)) {
-        fs.mkdirSync(destDir, { recursive: true });
-      }
-
-      fs.writeFileSync(
-        mapping.destination,
-        JSON.stringify(jsonSchema, null, 2)
-      );
-
-      console.log(`✅ Generated ${mapping.destination}`);
+      schemas.push({ name, schema: toJsonSchema(schema) });
     } catch (error) {
-      console.error(`❌ Failed to process ${mapping.source}:`, error);
+      throw new Error(`Failed to convert '${schemaExport}' in '${file}'`, { cause: error });
     }
   }
-
-  console.log('\nSchema generation complete!');
+  return schemas;
 }
 
-generateAllSchemas();
+async function main() {
+  const schemas = await generateSchemas();
+  await fs.mkdir(outputDir, { recursive: true });
+  for (const { name, schema } of schemas) {
+    await fs.writeFile(path.join(outputDir, `${name}.json`), `${JSON.stringify(schema, null, 2)}\n`);
+    console.log(`Generated generatedSchemas/${name}.json`);
+  }
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch(error => {
+    console.error('Schema generation failed:', error);
+    process.exitCode = 1;
+  });
+}

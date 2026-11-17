@@ -233,7 +233,7 @@ export const useActionsStore = defineStore('actions', () => {
     const source = getActionSource(action);
 
     if (action.attackAbility === 'spellcasting' && source?.type === 'flat') {
-      baseBonus = source.flat;
+      baseBonus = parseFormulaAndEvaluate(source.flat);
     } else {
       const abilityKey = resolveAbility(
         action.attackAbility,

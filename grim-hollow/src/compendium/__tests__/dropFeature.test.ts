@@ -2,7 +2,7 @@ import { useEffectsStore } from "@/sheet/stores/modifiers/modifiersStore";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { onDropFeature } from "../dropFeature";
 import { useFeaturesStore } from "@/sheet/stores/features/faturesStore";
-import { DropContext } from "../drop";
+import type { DropContext } from "../drop";
 import { useTagsStore } from "@/sheet/stores/tags/tagsStore";
 import { createPinia, setActivePinia } from "pinia";
 

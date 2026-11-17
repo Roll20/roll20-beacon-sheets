@@ -3,7 +3,7 @@ import {
   checkRequirements,
   EffectsCalculator,
   processItemTags,
-  RequirementContext,
+  type RequirementContext,
 } from '../effectsCalculator';
 import type {
   DicePool,
@@ -16,7 +16,7 @@ import { evaluate } from 'mathjs';
 import { createComponentsFromFormula, getDicePoolAverage } from '@/utility/diceParser';
 import { parseFormula, parseFormulaAndEvaluate } from '@/sheet/stores/formulas';
 import { createPinia, setActivePinia } from 'pinia';
-import { Action } from '@/sheet/stores/actions/actionsStore';
+import { type Action } from '@/sheet/stores/actions/actionsStore';
 import { v4 as uuidv4 } from 'uuid';
 import { useTagsStore } from '@/sheet/stores/tags/tagsStore';
 import { useProgressionStore } from '@/sheet/stores/progression/progressionStore';
@@ -654,7 +654,7 @@ describe('processItemTags', () => {
 
   it('should process items with data-tags correctly', () => {
     const store = useTagsStore();
-    const items = [{ name: 'Magic Sword', 'data-tags': ['magical', 'versatile'] }];
+    const items: (Record<string, any> & { 'data-tags'?: string[] })[] = [{ name: 'Magic Sword', 'data-tags': ['magical', 'versatile'] }];
 
     processItemTags(items, 'equipment');
 
@@ -674,7 +674,7 @@ describe('processItemTags', () => {
 
   it('should generate unique IDs for multiple items', () => {
     const store = useTagsStore();
-    const items = [
+    const items: (Record<string, any> & { 'data-tags'?: string[] })[] = [
       { name: 'A', 'data-tags': ['a'] },
       { name: 'B', 'data-tags': ['b'] },
     ];

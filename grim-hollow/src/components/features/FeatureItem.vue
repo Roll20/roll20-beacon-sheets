@@ -87,7 +87,7 @@ import type { Tag } from '@/sheet/stores/tags/tagsStore';
 import SidebarLink from '../shared/SidebarLink.vue';
 import { useEffectsStore } from '@/sheet/stores/modifiers/modifiersStore';
 import { parseSimpleMarkdown } from '@/utility/markdownParser';
-import { CompendiumResults, createPageRequest } from '@/compendium/drop';
+import { type CompendiumResults, createPageRequest } from '@/compendium/drop';
 import { dispatchRef } from '@/relay/relay';
 import { drag } from '@/compendium/drop';
 import { id } from 'zod/v4/locales';

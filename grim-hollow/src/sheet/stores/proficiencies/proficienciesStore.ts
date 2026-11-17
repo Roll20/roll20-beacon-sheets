@@ -13,6 +13,9 @@ import { effectKeys } from '@/effects.config';
 import { EffectsCalculator, type EffectToolProficiency } from '@/utility/effectsCalculator';
 import { useI18n } from 'vue-i18n';
 
+const getEffectKey = (key: string): string | undefined =>
+  (effectKeys as Record<string, string | undefined>)[key];
+
 export const proficiencyLevelsValues = [0, 0.5, 1, 2];
 
 export const proficiencyLevels = {
@@ -104,7 +107,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     const basePassiveScore = computed(() => modifier.value.final + 10);
     return useEffectsStore().getModifiedValue(
       basePassiveScore.value,
-      effectKeys[`${proficiency.label}-passive` as keyof typeof effectKeys],
+      getEffectKey(`${proficiency.label}-passive`),
     );
   };
 
@@ -198,7 +201,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     if (proficiency.group === 'tools') {
       perToolKey = getToolProficiencyEffectKey(proficiency);
     } else {
-      perToolKey = effectKeys[`${proficiency.label}-proficiency` as keyof typeof effectKeys];
+      perToolKey = getEffectKey(`${proficiency.label}-proficiency`);
     }
 
     const keysToQuery: (string | undefined)[] = [perToolKey];
@@ -218,7 +221,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
 
   const getProficiencyAbility = (proficiency: RankedProficiency): AbilityData | undefined =>
     getEntryByLabel(proficiency.ability, useAbilitiesStore().abilities) as AbilityData | undefined;
-  const getProficiencyModifier = (proficiency: RankedProficiency): ModifiedValue => {
+  const getProficiencyModifier = (proficiency: RankedProficiency | RankedProficiencyWithEffect): ModifiedValue => {
     const ability = getProficiencyAbility(proficiency);
 
     const rawAbilityBonus = ability && proficiency.label !== 'death-saving'
@@ -232,8 +235,8 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
 
     const baseValue = rawAbilityBonus + proficiencyBonus;
 
-    const keysToQuery: string[] = [];
-    keysToQuery.push(effectKeys[`${proficiency.label}` as keyof typeof effectKeys]);
+    const keysToQuery: (string | undefined)[] = [];
+    keysToQuery.push(getEffectKey(proficiency.label));
     if (proficiency.group === 'savings') {
       keysToQuery.push(effectKeys.saving);
     } else if (proficiency.group === 'default-skills') {
@@ -242,7 +245,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     } else if (proficiency.group === 'tools') {
       const toolKey = resolveToolKey(proficiency);
       if (toolKey) {
-        keysToQuery.push(effectKeys[`${toolKey}` as keyof typeof effectKeys]);
+        keysToQuery.push(getEffectKey(toolKey));
       }
       keysToQuery.push(effectKeys.tools);
       keysToQuery.push(effectKeys.check);

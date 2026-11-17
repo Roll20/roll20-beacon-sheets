@@ -325,6 +325,7 @@ describe('useCombatStore', () => {
         life: { hitPoints: 50, temporary: 10 },
         exhaustion: 3,
         inspiration: 1,
+        useRollDialog: true,
       };
 
       store.hydrate(payload);

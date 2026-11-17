@@ -243,12 +243,13 @@ export const useSpellsStore = defineStore('spells', () => {
         ...patch,
       };
     } else {
-      const { type, ability, ...rest } = patch;
+      const { type, ...rest } = patch;
+      const ability = 'ability' in patch ? patch.ability : undefined;
       return {
         ...base,
         ...rest,
         type: 'ability',
-        ability: config.abilities[0],
+        ability: ability ?? config.abilities[0],
       };
     }
   };
@@ -565,7 +566,7 @@ export const useSpellsStore = defineStore('spells', () => {
       }
     } else {
       if ((spell.attackAbility === 'spellcasting' || !spell.attackAbility) && source?.type === 'flat') {
-        base = source.flat;
+        base = parseFormulaAndEvaluate(source.flat);
       }
     }
 
