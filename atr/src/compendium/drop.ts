@@ -1,7 +1,7 @@
-import { type DropArgs } from "@roll20-official/beacon-sdk/lib/types/dragAndDrop";
+import { type DropOver } from "@roll20-official/beacon-sdk";
 import { onDropEquipment } from "./dropEquipment";
 import { onDropSpell } from "./dropSpell";
-import { type Character, type CompendiumResults as DefaultCompendiumResults } from "@roll20-official/beacon-sdk/lib/types/partials";
+import { type Character } from "@roll20-official/beacon-sdk";
 import { dispatchRef } from "@/relay/relay";
 import { onDropFeature } from "./dropFeature";
 import { onDropClass } from "./dropClass";
@@ -18,6 +18,8 @@ import { type Dispatch } from "@roll20-official/beacon-sdk";
 import { SpellSchema } from "@/schemas/spell";
 
 type Feature = z.infer<typeof FeatureSchema>;
+type DropArgs = Pick<DropOver, 'coordinates' | 'dropData'>;
+type DefaultCompendiumResults = Awaited<ReturnType<Dispatch['compendiumRequest']>>;
 
 export type compendiumCategory = "Core Personality Traits" | "Spells" | "Survival Gear" | "Features" | "Feats" | "Classes" | "Subclasses" | "Ancestries" | "Backgrounds" | "Artistry Maneuvers" | "Fighting Styles" | "Sharpshooting Maneuvers" | "Slip Tricks" | "Ammunition" | "Armor" | "Firearms and Explosives" | "Boost Enhancements" | "Optional Background Features" | "Otherwordly Traits" | "Racial Templates" | "Clothing" | "Animals and Gear" | "Drugs" | "Tools" | "Vehicles" | "Monsters" | "Armor Modifications" | "Firearm Modifications" | "Firearm Accessories" | "Melee and Missile Modifications" | "Melee and Missile Weapons" | "Vehicle Modifications" | "Miscellaneous Magic Items" | "Brews" | "Magic Weapons" | "Magic Armor" | "Wondrous Items" | "Mutations" | "Progeny - Sin Nature" | "Descended - Angelic Banner Origin" | "NPC Classes" | "Positive Reactions" | "Negative Reactions";
 

@@ -38,7 +38,7 @@
 import { ref, computed } from 'vue';
 import type { AbilityKey } from '@/sheet/stores/abilities/abilitiesStore';
 import { config } from '@/config';
-import { ProficiencyLevel } from '@/sheet/stores/proficiencies/proficienciesStore';
+import type { ProficiencyLevelBase } from '@/sheet/stores/proficiencies/proficienciesStore';
 import type { RankedProficiency } from '@/sheet/stores/proficiencies/proficienciesStore';
 import { proficiencyLevelsBase } from '@/sheet/stores/proficiencies/proficienciesStore';
 import { useI18n } from 'vue-i18n'; 
@@ -50,7 +50,7 @@ const emit = defineEmits(['save', 'back']);
 
 const label = ref(props.skill?.label ?? '');
 const ability = ref<AbilityKey>(props.skill?.ability ?? 'strength');
-const level = ref<ProficiencyLevel>(props.skill?.level ?? -1);
+const level = ref<ProficiencyLevelBase>(props.skill?.level ?? -1);
 const _id = props.skill?._id;
 const isNew = computed(() => !props.skill);
 

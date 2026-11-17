@@ -5,7 +5,7 @@ import { indexedObjectToArray, objectToArray } from '@/utility/objectify';
 import { EffectsCalculator, type RequirementContext } from '@/utility/effectsCalculator';
 import { getLevel } from './computed';
 
-const isEffectActive = (effect: Effect, character: Character): boolean => {
+const isEffectActive = (effect: Effect, character: Character): boolean | RequirementContext => {
   if (!effect.enabled) {
     return false;
   }

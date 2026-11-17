@@ -1,6 +1,6 @@
 <template>
   <div class="tags-input-container">
-    <label class="item-tags-input__label">{{ $t(label) }}</label>
+    <label class="item-tags-input__label">{{ $t(label!) }}</label>
     <vue-tags-input
       v-model="currentTag"
       :tags="tagsForDisplay"
