@@ -176,8 +176,8 @@
   </Transition>
 </template>
 <script setup>
-import { ref } from 'vue';
-import { expanseWG, fage2eWG, mageWG } from './weaponGroups';
+import { computed } from 'vue';
+import { expanseWG, fage2eWG, mageWG, technofantasyWG } from './weaponGroups';
 import { useSettingsStore } from '@/sheet/stores/settings/settingsStore'
 import { at } from 'lodash';
 
@@ -186,29 +186,34 @@ const props = defineProps({
   attack: { type: Object },
 })
 const settings = useSettingsStore();
-const weaponGroups = ref(fage2eWG);
-switch(settings.gameSystem){
-  case 'mage':
-    weaponGroups.value = mageWG;
-  break;
-  case 'expanse':
-      weaponGroups.value = expanseWG;
+const weaponGroups = computed(() => {
+  let base;
+  switch(settings.gameSystem){
+    case 'mage':
+      base = mageWG;
     break;
-  default:
-    weaponGroups.value = fage2eWG;
-  break;
-};
+    case 'expanse':
+      base = expanseWG;
+    break;
+    default:
+      base = fage2eWG;
+    break;
+  }
+  return settings.technofantasy ? [...new Set([...base, ...technofantasyWG])].sort() : base;
+});
 const setWeaponGroupAbility = () => {
-    switch(props.item.weaponGroup){
+    switch(props.attack.weaponGroup){
       // ACCURACY
       case('Black Powder'):
+      case('Blaster Longarms'):
+      case('Blaster Pistols'):
       case('Bows'):
       case('Brawling'):
       case('Dueling'):
       case('Light Blades'):
       case('Slings'):
       case('Staves'):
-        props.item.weaponGroupAbility = 'Accuracy';
+        props.attack.weaponGroupAbility = 'Accuracy';
       break;
       // FIGHTING
       case('Axes'):
@@ -217,10 +222,10 @@ const setWeaponGroupAbility = () => {
       case('Lances'):
       case('Polearms'):
       case('Spears'):
-        props.item.weaponGroupAbility = 'Fighting';
+        props.attack.weaponGroupAbility = 'Fighting';
       break;
       default:
-        props.item.weaponGroupAbility = ''
+        props.attack.weaponGroupAbility = ''
       break;
     }
 }

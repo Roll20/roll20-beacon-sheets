@@ -117,13 +117,19 @@ export const useAttackStore = defineStore('attacks', () => {
   const printAttack = async (weapon: any, bonus?:number,focus?:any) => {
     if (!weapon) return;
     const settings = useSettingsStore();
-    const components = [
+    const isThrownItem = weapon.type === 'consumable' && !!weapon.hasAttack;
+    const components: any[] = [
       { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
-      { label: weapon.weaponGroupAbility, value: Number(bonus) },
-      { label: 'Focus', value: focus ? focus : 0 },
     ];
-    const aim = useSettingsStore().aim
-    if(useSettingsStore().aim){
+    // Thrown items (grenades) have no weapon group; a ranged throw rolls Accuracy (Grenades) and
+    // the caller supplies the Grenades focus. Melee throws get no ability or focus.
+    if(!isThrownItem || weapon.weaponGroupAbility){
+      components.push(
+        { label: weapon.weaponGroupAbility, value: Number(bonus) },
+        { label: 'Focus', value: focus ? focus : 0 },
+      );
+    }
+    if(useSettingsStore().aim && !isThrownItem){
       components.push(
         { label: 'Aim', value: useSettingsStore().aimValue  }
       )  

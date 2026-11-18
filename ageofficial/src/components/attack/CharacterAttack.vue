@@ -22,7 +22,7 @@
           <div class="age-combat-section age-combat-shotguns-icon" v-if="attack.weaponGroup === 'Shotguns'"></div>
           <div class="age-combat-section age-combat-assaultrifles-icon" v-if="attack.weaponGroup === 'Assault Rifles'"></div>
           <div class="age-combat-section age-combat-smgs-icon" v-if="attack.weaponGroup === 'SMGs'"></div>
-          <div class="age-combat-section age-combat-grenades-icon" v-if="attack.weaponGroup === 'Grenades'"></div>
+          <div class="age-combat-section age-combat-grenades-icon" v-if="attack.weaponGroup === 'Grenades' || isThrown"></div>
           <div class="age-combat-section age-item-weapon-icon" v-if="settings.gameSystem === 'expanse' && attack.weaponType === 'Melee'"></div>
           <div class="age-combat-section age-item-weapon-ranged-icon" v-if="settings.gameSystem === 'expanse' && attack.weaponType === 'Ranged'"></div>
 
@@ -31,30 +31,30 @@
           </div>
           <div>
           <div class="label age-combat-name">
-            <div class="age-weapon-name">{{ attack.name }}</div>
+            <div class="age-weapon-name">{{ attack.name }}<span v-if="isThrown"> (x{{ attack.quantity }})</span></div>
             <div class="age-weapon-type">{{ attack.weaponType }}</div>
           </div>        
         </div>
         
         <div class="age-weapon-range-reload age-combat-range">
-          <div v-if="attack.weaponType === 'Ranged' || attack.weaponType === 'Spell Ranged'">
+          <div v-if="!isThrown && (attack.weaponType === 'Ranged' || attack.weaponType === 'Spell Ranged')">
             {{ attack.shortRange }} ~ {{ attack.longRange }} yds
           </div>
           <div class="age-weapon-reload" v-if="attack.reload">
             {{ attack.reload }} Action
           </div>
-        </div>        
+        </div>
       <div class="age-weapon-btn-container age-combat-attack">
-        <button class="age-btn" @click="handlePrint">
+        <button class="age-btn" @click="handlePrint" :disabled="outOfThrown" :class="{ 'age-btn-disabled': outOfThrown }">
           {{ (attackHit + trained > 0 ? `+` : '') + (attackHit + trained) }}
         </button>
       </div>
       <div class="age-weapon-btn-container age-combat-damage" v-if="hasDamage && filteredDamageMods.length === 0"> 
-  <button class="age-btn" @click="handlePrintDamage(modsBonus)">{{ modsBonus }}</button>
+  <button class="age-btn" @click="handlePrintDamage(modsBonus)" :disabled="damageDisabled" :class="{ 'age-btn-disabled': damageDisabled }">{{ modsBonus }}</button>
 </div>
       <div class="age-weapon-btn-container age-combat-damage" v-if="hasDamage && filteredDamageMods.length > 0">   
                
-        <button class="age-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="age-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" :disabled="damageDisabled" :class="{ 'age-btn-disabled': damageDisabled }">
           Damage
         </button>
 		
@@ -113,6 +113,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { useAttackStore } from '@/sheet/stores/attack/attackStore';
+import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
 import AttackModal from '@/components/attack/AttackModal.vue';
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
 import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
@@ -141,8 +142,14 @@ const settings = useSettingsStore();
 const damageMods = damageMod; 
 const damage = ref(props.attack.damage);
 const damageDie = ref('');
-const trained = computed(() => { 
-  if(props.attack.option === 'Custom Attack'){
+const isThrown = computed(() => props.attack.type === 'consumable' && !!props.attack.hasAttack);
+// A thrown item with none left can't attack or roll damage.
+const outOfThrown = computed(() => isThrown.value && !(props.attack.quantity > 0));
+// True between throwing and rolling damage, so the last grenade of a stack can still roll its damage.
+const pendingThrow = ref(false);
+const damageDisabled = computed(() => outOfThrown.value && !pendingThrow.value);
+const trained = computed(() => {
+  if(props.attack.option === 'Custom Attack' || isThrown.value){
     return 0;
   }
   // console.log(
@@ -161,8 +168,16 @@ const hasDamage = computed(() => {
     && props.attack.damage !== null
     && String(props.attack.damage).trim() !== '';
 });
-const attackHit = computed(() => attackToHit(props.attack).value);
+const thrownAbility = computed(() => isThrown.value && props.attack.weaponType === 'Ranged' ? 'Accuracy' : '');
+// A ranged throw uses Accuracy (Grenades): the Grenades focus applies even though the item has no weapon group.
+const thrownFocus = computed(() => thrownAbility.value ? attackFocus({ ...props.attack, weaponGroup: 'Grenades' }) : 0);
+const thrownBase = computed(() => thrownAbility.value ? Number(ability.abilityScores[thrownAbility.value]?.base || 0) : 0);
+const attackHit = computed(() => isThrown.value
+  ? thrownBase.value + thrownFocus.value
+  : attackToHit(props.attack).value);
 const modsBonus = computed(() => {
+  // Thrown items have no weapon group, ability or Min Str: damage is exactly what's written on the item.
+  if(isThrown.value) return props.attack.damage;
   if(props.attack.minStr > ability.StrengthBase) return '1d6-1';
   const [base, mod] = props.attack.damage? props.attack.damage.split('+').map(part => part.trim()) : ['',''];
   // useModifiersStore().modifiers = []
@@ -211,6 +226,10 @@ const filteredDamageMods = computed(()=>{
 let toAttackRoll = 0
 
 const setAttackRoll = () => {
+  if(isThrown.value){
+    toAttackRoll = thrownBase.value;
+    return;
+  }
   if(useAbilityScoreStore().abilityScores[props.attack.weaponGroupAbility]){
     const attackAbility = props.attack.option === 'Custom Attack' && props.attack.weaponType === 'Spell Ranged' ? 'Accuracy' : props.attack.weaponGroupAbility;
     toAttackRoll = Number(useAbilityScoreStore().abilityScores[attackAbility].base) + trained.value;
@@ -226,7 +245,7 @@ const checkFocusBonus = (objectsArray, weapon) => {
     if (obj.name === 'custom') {
       return obj.customName.toLowerCase() === weapon.name.toLowerCase();
     } else {
-      return (obj.name.toLowerCase() === weapon.weaponGroup.toLowerCase() && obj.weaponGroup === weapon.weaponGroup);
+      return (obj.name.toLowerCase() === (weapon.weaponGroup || '').toLowerCase() && obj.weaponGroup === weapon.weaponGroup);
     }
   });
   if (obj) {
@@ -250,8 +269,23 @@ const handleDelete = () => {
   const attackStore = useAttackStore();
   attackStore.removeAttack(props.attack._id);
 };
-const handlePrint = () => {
+const handlePrint = async () => {
   const attackStore = useAttackStore();
+  const inventory = useInventoryStore();
+  if (isThrown.value) {
+    // Thrown items are consumed by the attack roll (a miss still spends the grenade).
+    if (!inventory.spendItem(props.attack._id)) return;
+    pendingThrow.value = true;
+    // No weapon group: a ranged throw rolls Accuracy plus the Grenades focus, on a copy so the item isn't changed.
+    try {
+      await attackStore.printAttack({ ...props.attack, weaponGroupAbility: thrownAbility.value }, thrownBase.value, thrownFocus.value);
+    } catch (e) {
+      inventory.restoreItem(props.attack._id);
+      pendingThrow.value = false;
+      throw e;
+    }
+    return;
+  }
   setAttackRoll()
   const theAttack = props.attack;
   theAttack.weaponGroupAbility = props.attack.option === 'Custom Attack' && props.attack.weaponType === 'Spell Ranged' ? 'Accuracy' : props.attack.weaponGroupAbility;
@@ -260,6 +294,8 @@ const handlePrint = () => {
 
 const handlePrintDamage = (damageRoll,attackDmgLabel) => {
   const attackStore = useAttackStore();
+  // The damage roll for the throw that used the last grenade is the last one allowed.
+  if (isThrown.value && !(props.attack.quantity > 0)) pendingThrow.value = false;
   const attackDamage = Object.assign({}, props.attack);
   attackDamage.damage = damageRoll;
   attackDamage.trained = trained.value === 0 ? true : false;
