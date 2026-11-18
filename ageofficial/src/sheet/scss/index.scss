@@ -96,7 +96,8 @@ body {
     left: 0;
     top: 24%;
   }
-  & .age-btn-disabled {
+  & .age-btn-disabled,
+  & .age-btn.age-btn-disabled:disabled {
     color: #fff;
     pointer-events: none;
     background-color: #6c757d;
@@ -918,7 +919,7 @@ body {
     border-radius: 2px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     transition: all 0.3s ease;
-    & button:not(.btn-close) {
+    & button:where(:not(.btn-close)) {
       margin: 0;
       border: 0;
       padding: 0;

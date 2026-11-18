@@ -59,6 +59,20 @@
     </div>
   </div>
 </div>
+                <div class="row age-modal-row" v-if="item.type === 'consumable'">
+                  <div class="mb-3 col">
+                    <label class="age-input-label" for="thrown-toggle">
+                      <input
+                        id="thrown-toggle"
+                        type="checkbox"
+                        data-testid="test-inventory-hasAttack-input"
+                        :checked="!!item.hasAttack"
+                        @change="toggleAttack($event.target.checked)"
+                      >
+                      Thrown / explosive (can be equipped as an attack)
+                    </label>
+                  </div>
+                </div>
 
 
             <div class="row" style="margin: 0">
@@ -136,7 +150,7 @@
                     </div>
                      </div>
               </div>
-              <div v-if="item.type === 'weapon'" style="flex:1;min-width: 300px;">
+              <div v-if="hasAttackFields" style="flex:1;min-width: 300px;">
                 <div class="row" style="margin:0">
 
                 <div class="mb-3 col">
@@ -151,7 +165,7 @@
                         </select>
                 </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row" style="margin:0" v-if="!isThrown">
 
                   <div class="mb-3 col" v-if="settings.gameSystem === 'fage2e' || settings.gameSystem === 'blue rose'" >
                     <span class="age-input-label" id="basic-addon1">Weapon Group</span>
@@ -191,7 +205,7 @@
                   </div>
                 </div>
                 <div class="row" style="margin:0">
-                  <div class="mb-3 col">
+                  <div class="mb-3 col" v-if="!isThrown">
                     <span class="age-input-label" id="basic-addon1">Min Str</span>
                     <div>
                       <input type="number" class="form-control" aria-label="Min Str" v-model="item.minStr"  aria-describedby="basic-addon1">
@@ -256,7 +270,7 @@
                         </select>
                   </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row" style="margin:0" v-if="!isThrown">
 
                     <div class="mb-3 col" v-if="item.weaponType === 'Ranged' && settings.gameSystem !== 'mage'">
                         <span class="age-input-label" id="basic-addon1">Short Range</span>
@@ -286,7 +300,7 @@
                     </div>                        
                 </div>
                 </div>
-                <div class="row" style="margin:0">
+                <div class="row" style="margin:0" v-if="!isThrown">
                   <div class="mb-3 col" v-if="item.weaponType === 'Ranged' && (settings.gameSystem === 'mage' || settings.gameSystem === 'expanse')">
                         <span class="age-input-label" id="basic-addon1">Capacity</span>
                         <div>
@@ -391,6 +405,25 @@
   const isWeapon = computed(() => {
     return props.item.type === 'weapon';
   });
+  const isThrown = computed(() => {
+    return props.item.type === 'consumable' && !!props.item.hasAttack;
+  });
+  const hasAttackFields = computed(() => isWeapon.value || isThrown.value);
+  // Turns a consumable into a thrown/explosive item that can be equipped as an attack, seeding
+  // sensible defaults the first time. Turning it off keeps the data but removes it from the attack list.
+  const toggleAttack = (enabled) => {
+    props.item.hasAttack = enabled;
+    if (!enabled) {
+      props.item.equipped = false;
+      return;
+    }
+    props.item.equipped = props.item.equipped ?? false;
+    props.item.configurable = false;
+    props.item.weaponType = props.item.weaponType || 'Ranged';
+    props.item.weaponGroup = '';
+    props.item.weaponGroupAbility = '';
+    props.item.damage = props.item.damage ?? '';
+  };
   const setWeaponGroupAbility = () => {
     switch(props.item.weaponGroup){
       // ACCURACY
@@ -435,6 +468,11 @@
   const setConfigurability = () => {
     if(isWeapon.value){
       props.item.configurable = true;
+    }
+    // Leaving Consumable ends the thrown behavior, so it can't linger equipped in the attack list.
+    if(props.item.type !== 'consumable' && props.item.hasAttack){
+      props.item.hasAttack = false;
+      props.item.equipped = false;
     }
   }
   const weaponTypes = computed(() => {

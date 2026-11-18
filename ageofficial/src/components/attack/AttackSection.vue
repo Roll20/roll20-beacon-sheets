@@ -146,7 +146,10 @@ const allAttacks = computed(() => {
   return [
     ...attackStore.attacks,
     ...inventoryStore.items.filter(
-      (item) => item.type === "weapon" && item.equipped
+      (item) =>
+        (item.type === "weapon" ||
+          (item.type === "consumable" && item.hasAttack)) &&
+        item.equipped
     ),
     ...qualities.items.flatMap((item) =>
       (item.modifiers || [])

@@ -24,7 +24,7 @@
       <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;"></div>
       <div style="display: grid;align-items: center;grid-template-columns: 1fr;height: 100%;">
         <div class="inventory-item__type__toggle">
-            <label class="age-checkbox-toggle" v-if="item.type === 'armor' || item.type === 'weapon'  || item.type === 'shield'">
+            <label class="age-checkbox-toggle" v-if="item.type === 'armor' || item.type === 'weapon'  || item.type === 'shield' || (item.type === 'consumable' && item.hasAttack)">
             <input type="checkbox" v-model="item.equipped" @change="handleEquip" />
             <span class="slider round"  v-tippy="{ content: 'Equipable' }"></span>
           </label>
