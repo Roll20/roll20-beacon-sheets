@@ -1,8 +1,9 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.node.json",
+  "extends": "@vue/tsconfig/tsconfig.json",
   "include": ["vite.config.*", "vitest.config.*", "playwright.config.*"],
   "compilerOptions": {
+    "lib": [],
     "types": ["node"],
-    "target": "ES2022",
+    "target": "ES2022"
   }
 }
