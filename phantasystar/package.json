@@ -19,11 +19,10 @@
   },
   "dependencies": {
     "@roll20-official/beacon-sdk": "^0.2.2",
-    "handlebars": "^4.7.8",
-    "lodash": "^4.17.21",
+    "handlebars": "^4.7.10",
+    "lodash": "^4.18.1",
     "pinia": "^2.1.7",
-    "uuid": "^9.0.1",
-    "vue": "^3.4.21"
+    "vue": "^3.5.45"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

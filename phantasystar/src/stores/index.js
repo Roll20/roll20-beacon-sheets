@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { editFlag } from '@/relay/permissions.js'
 import { ref, watch } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from '@/utility/uuid.js'
 import {
   equipmentPlan, backgroundRanks, mergeLevelFeatures, mergeLevelResources,
 } from '@/compendium/drops.js'
