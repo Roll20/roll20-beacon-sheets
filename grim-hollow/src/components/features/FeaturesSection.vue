@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import FeatureItem from './FeatureItem.vue';
-import { Feature, type FeatureGroup } from '@/sheet/stores/features/faturesStore';
+import type { Feature, FeatureGroup } from '@/sheet/stores/features/faturesStore';
 import { useFeaturesStore } from '@/sheet/stores/features/faturesStore';
 import { useI18n } from 'vue-i18n';
 import SidebarLink from '../shared/SidebarLink.vue';

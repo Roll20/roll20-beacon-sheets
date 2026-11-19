@@ -3,6 +3,7 @@ import { EffectSchema } from './effect';
 import { SpellSchema } from './spell';
 import { type AbilityKey } from '@/sheet/stores/abilities/abilitiesStore';
 import { config } from '@/config';
+import { unconstrainedJsonSchemas } from './common/jsonSchema';
 
 export const NpcSpellSchema = SpellSchema.extend({
   innateUsage: z.string().optional(),
@@ -13,7 +14,7 @@ export const NpcSpellSourceSchema = z.object({
   spellAttackBonus: z.number(),
   spellSaveDC: z.number(),
   isInnate: z.boolean().optional(),
-  ability: z.custom<AbilityKey>(),
+  ability: z.custom<AbilityKey>().register(unconstrainedJsonSchemas),
   spellSlots: z.object({
     1: z.number(),
     2: z.number(),

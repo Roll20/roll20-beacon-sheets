@@ -1,10 +1,10 @@
-import { type DropArgs } from '@roll20-official/beacon-sdk/lib/types/dragAndDrop';
+import { type DropOver } from '@roll20-official/beacon-sdk';
 import { onDropEquipment } from './dropEquipment';
 import { onDropSpell } from './dropSpell';
 import {
   type Character,
-  type CompendiumResults as DefaultCompendiumResults, type JSONValue,
-} from '@roll20-official/beacon-sdk/lib/types/partials';
+  type JSONObject,
+} from '@roll20-official/beacon-sdk';
 import { dispatchRef } from '@/relay/relay';
 import { onDropFeature } from './dropFeature';
 import { onDropClass } from './dropClass';
@@ -23,6 +23,8 @@ import { type Dispatch } from "@roll20-official/beacon-sdk";
 import { SpellSchema } from "@/schemas/spell";
 
 type Feature = z.infer<typeof FeatureSchema>;
+type DropArgs = Pick<DropOver, 'coordinates' | 'dropData'>;
+type DefaultCompendiumResults = Awaited<ReturnType<Dispatch['compendiumRequest']>>;
 
 export type compendiumCategory =
   | 'Spells'
@@ -70,7 +72,7 @@ export type CompendiumPage = {
   children?: [
     {
       name: string;
-      properties: Record<string, JSONValue>;
+      properties: JSONObject;
     }
   ];
   book: {
@@ -221,7 +223,7 @@ export const drag = async (
   console.log('Dropping page', page);
 
   let npcId: string | undefined = undefined;
-  if (coordinates) {
+  if (coordinates && coordinates.left !== null && coordinates.top !== null) {
     const elements = document.elementsFromPoint(coordinates.left, coordinates.top);
     const targetEl = elements.find((el) => el.closest('[data-npc-id]'));
     if (targetEl) {

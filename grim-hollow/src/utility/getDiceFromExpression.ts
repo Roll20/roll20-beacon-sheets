@@ -1,9 +1,5 @@
 import { parse, serialize } from 'dice-notation';
 
-type ParsedComponent = {
-  type: 'rollable' | 'constant';
-};
-
 /**
  * Extracts only the dice components from a damage expression string.
  */
@@ -13,9 +9,9 @@ export function getDiceFromExpression(expression: string): string {
   }
 
   try {
-    let components: ParsedComponent[];
+    let components: ReturnType<typeof parse>;
     try {
-      components = parse(expression) as ParsedComponent[];
+      components = parse(expression);
     } catch {
       return '';
     }

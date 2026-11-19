@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import {
-  D20RollArgs,
-  DamageRollArgs,
+  type D20RollArgs,
+  type DamageRollArgs,
   getD20RollBreakdown,
   getDamageRollBreakdown,
   getRollProperties,

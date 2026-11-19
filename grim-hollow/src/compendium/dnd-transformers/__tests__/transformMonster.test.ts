@@ -175,12 +175,12 @@ describe('dnd-transformers/transformMonster', () => {
 
     const result = transformDnDMonster({ name: 'Caster' }, {}, properties);
 
-    const attack = result.actions.find((a) => a.name === 'Fire Ray');
+    const attack = result.actions.find((a: any) => a.name === 'Fire Ray');
     expect(attack).toBeDefined();
     expect(attack?.isAttack).toBe(true);
     expect(attack?.sourceType).toBe('spell');
 
-    const reaction = result.actions.find((a) => a.name === 'Shield');
+    const reaction = result.actions.find((a: any) => a.name === 'Shield');
     expect(reaction).toBeDefined();
     expect(reaction?.group).toBe('reactions');
   });

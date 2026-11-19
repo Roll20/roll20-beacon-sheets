@@ -13,7 +13,7 @@ export type FilterOperator = 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'inclu
 
 export type FilterCondition = {
   op: FilterOperator;
-  value: string | number | boolean;
+  value: string | number | boolean | (string | number)[];
 };
 
 export type CompendiumPicker = {
@@ -26,7 +26,7 @@ export type CompendiumPicker = {
     pageName: string;
     expansionId?: string;
   };
-  defaultId: string;
+  defaultId?: string;
 }
 export type Feature = {
   _id: string;
