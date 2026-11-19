@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;0,700;1,200;1,400;1,700&display=swap');
 
 $rem: 10px;
@@ -5,9 +7,9 @@ $rem: 10px;
 $font-family-primary: 'Montserrat', sans-serif;
 
 $color-primary: black;//rgb(50, 50, 50);
-$color-secondary: transparentize($color-primary, 0.30);
-$color-tertiary: transparentize($color-primary, 0.65);
-$color-disabled: transparentize($color-primary, 0.90);
+$color-secondary: color.adjust($color-primary, $alpha: -0.30);
+$color-tertiary: color.adjust($color-primary, $alpha: -0.65);
+$color-disabled: color.adjust($color-primary, $alpha: -0.90);
 $color-highlight: #fc0902;
 $color-negative: rgb(179, 27, 27);
 $color-positive: rgb(27, 179, 52);

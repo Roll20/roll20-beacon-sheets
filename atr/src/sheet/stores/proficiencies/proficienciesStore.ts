@@ -12,6 +12,9 @@ import { useProgressionStore } from '../progression/progressionStore';
 import { effectKeys } from '@/effects.config';
 import { useI18n } from 'vue-i18n';
 
+const getEffectKey = (key: string): string | undefined =>
+  (effectKeys as Record<string, string | undefined>)[key];
+
 export const proficiencyLevelsValues = [0, 0.5, 1, 2];
 
 export const proficiencyLevels: Record<string, (typeof proficiencyLevelsValues)[number]> = {
@@ -98,7 +101,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
     const basePassiveScore = computed(() => modifier.value.final + 10);
     return useEffectsStore().getModifiedValue(
       basePassiveScore.value,
-      effectKeys[`${proficiency.label}-passive`],
+      getEffectKey(`${proficiency.label}-passive`),
     );
   };
 
@@ -119,7 +122,7 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
 
   const getModifiedProficiencyLevel = (proficiency: RankedProficiency): ModifiedProficiency => {
     const keysToQuery: (string | undefined)[] = [
-      effectKeys[`${proficiency.label}-proficiency` as keyof typeof effectKeys],
+      getEffectKey(`${proficiency.label}-proficiency`),
     ];
 
     if (proficiency.group === 'savings') {
@@ -157,8 +160,8 @@ export const useProficienciesStore = defineStore('proficiencies', () => {
 
     const baseValue = rawAbilityBonus + proficiencyBonus + addCharacterLevel;
 
-    const keysToQuery: string[] = [];
-    keysToQuery.push(effectKeys[`${proficiency.label}`]);
+    const keysToQuery: (string | undefined)[] = [];
+    keysToQuery.push(getEffectKey(proficiency.label));
     if (proficiency.group === 'savings') {
       keysToQuery.push(effectKeys.saving);
     } else if (proficiency.group === 'default-skills') {

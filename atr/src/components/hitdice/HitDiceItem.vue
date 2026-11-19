@@ -1,5 +1,6 @@
 <template>
   <div class="resource-item">
+    <!-- @vue-expect-error: Preserve the original hit-die roll arguments. -->
     <DicePool :pool="pool" :rollArgs="hitDiceArgs" class="hit-die" />
     <CurrentMaxNumber :count="count" :max="max" @update="updateCount" />
   </div>

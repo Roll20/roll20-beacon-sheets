@@ -247,7 +247,7 @@ export function getDamageRollBreakdown(args: DamageRollArgs) {
   const effectsStore = useEffectsStore();
   const abilitiesStore = useAbilitiesStore();
 
-  const baseComponents: LabeledBonus[] = [];
+  const baseComponents: { label: string; value: string | number }[] = [];
   if (damageRolls) {
     damageRolls.forEach((roll) => {
       if (roll.damage) {

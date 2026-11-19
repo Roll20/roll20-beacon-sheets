@@ -323,7 +323,7 @@ const removeFeature = (index: number) => {
 
 const addAction = (context: 'actions' | 'legendary' | 'lair') => {
   if (localNpc.value) {
-    const newAction = store.getEmptyNpcAction(context);
+    const newAction = store.getEmptyNpcAction({});
     if (context === 'legendary') localNpc.value.legendaryActions.actions.push(newAction);
     else if (context === 'lair') localNpc.value.lairActions.actions.push(newAction);
     else localNpc.value.actions.push(newAction);
