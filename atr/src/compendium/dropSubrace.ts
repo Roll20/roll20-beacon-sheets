@@ -15,15 +15,16 @@ export const onDropSubrace = async ({
 
   const progressionStore = useProgressionStore();
 
-  //First we check for a compatible race
-  const inCompatible = Object.entries(result.data["data-compatibility"] || {}).find(([key, value]) => {
-    return progressionStore.ancestry.name.trim().toLowerCase() === value.name.trim().toLowerCase() &&
-      (value.sourceBook !== undefined
-        ? value.sourceBook === progressionStore.ancestry.sourceBook
-        : true);
-  });
+  //First we check for a compatible race, an empty list means any race is compatible
+  const compatibility = result.data["data-compatibility"] ?? [];
+  const isCompatible = !compatibility.length || compatibility.some((race) =>
+    progressionStore.ancestry.name.trim().toLowerCase() === race.name.trim().toLowerCase() &&
+      (race.sourceBook !== undefined
+        ? race.sourceBook === progressionStore.ancestry.sourceBook
+        : true)
+  );
 
-  if(!inCompatible) return;
+  if(!isCompatible) return;
 
   progressionStore.removeSubrace();
 

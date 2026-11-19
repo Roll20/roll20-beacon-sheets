@@ -2,6 +2,7 @@ import { config } from '@/config';
 import { EquipmentSchema } from '@/schemas/equipment';
 import { type Equipment, useEquipmentStore } from '@/sheet/stores/equipment/equipmentStore';
 import { useEffectsStore } from '@/sheet/stores/modifiers/modifiersStore';
+import { useProficienciesStore } from '@/sheet/stores/proficiencies/proficienciesStore';
 import { dispatchRef } from '@/relay/relay';
 import { createPageRequest, type DropContext } from './drop';
 import { type TagGroup } from '@/sheet/stores/tags/tagsStore';
@@ -137,4 +138,13 @@ export const onDropEquipment = async ({
 
   const newEquipment = equipmentStore.getEmptyEquipment(result.data as Partial<Equipment>);
   equipmentStore.update(newEquipment);
+};
+
+export const onDropTool = async (ctx: DropContext) => {
+  await onDropEquipment(ctx);
+
+  const proficiencies = useProficienciesStore();
+  if (!proficiencies.getProficiencyByLabel(ctx.payload.name)) {
+    proficiencies.updateRanked(undefined, { label: ctx.payload.name });
+  }
 };
