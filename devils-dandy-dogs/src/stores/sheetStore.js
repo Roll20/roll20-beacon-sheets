@@ -129,8 +129,12 @@ const sheetStore = () => {
   }
 
   // Beacon integration
-  const post = (content) =>
+  // messageId: a card that reports dice must pass the id dispatch.roll() returned.
+  // Roll20 animates 3D dice only for the message posted under the roll's own id
+  // (ddd-g93x). Cards with no dice behind them leave it out and the SDK mints one.
+  const post = (content, { messageId } = {}) =>
     dispatchRef.value.post({
+      ...(messageId && { messageId }),
       characterId: initValues.character.id,
       content,
       options: { whisper: undefined }
@@ -143,7 +147,7 @@ const sheetStore = () => {
     // dispatch is in flight must not relabel dice already rolled.
     const rolledTier = tierLabel(trait)
     const rolledMode = mode.value
-    const { results } = await dispatchRef.value.roll({ rolls: { [trait]: `${pool}d6` } })
+    const { results, messageId } = await dispatchRef.value.roll({ rolls: { [trait]: `${pool}d6` } })
     const faces = results[trait].results.rolls[0].results
     const interpreted = interpretTraitRoll(faces, rolledMode)
     const label = trait.charAt(0).toUpperCase() + trait.slice(1)
@@ -163,7 +167,7 @@ const sheetStore = () => {
       // Holds the roll RESULT once one exists, not a flag — hence the name (ddd-4zr, ddd-7qi).
       temptation: null
     }
-    return post(createRollTemplate({ traitRoll: { trait: label, tierLabel: rolledTier, ...interpreted } }))
+    return post(createRollTemplate({ traitRoll: { trait: label, tierLabel: rolledTier, ...interpreted } }), { messageId })
   }
 
   // In-flight guard for rollTemptation. NOT redundant with `exchange.temptation` — see below.
@@ -183,7 +187,7 @@ const sheetStore = () => {
     if (temptationBusy.value || exchange.value?.temptation) return
     temptationBusy.value = true
     try {
-      const { results } = await dispatchRef.value.roll({ rolls: { temptation: '1d6' } })
+      const { results, messageId } = await dispatchRef.value.roll({ rolls: { temptation: '1d6' } })
       const value = results.temptation.results.rolls[0].results[0]
       const result = temptationResult(value)
       // Holds the RESULT, not just a flag (ddd-4zr) — the sheet shows the symbol that was rolled,
@@ -192,7 +196,7 @@ const sheetStore = () => {
       // updateCharacter's not-a-patch-API semantics (ddd-6qe). Frozen once written — enforced
       // by the guard above, not merely intended.
       if (exchange.value) exchange.value.temptation = { value, band: result.band }
-      return post(createRollTemplate({ temptation: result }))
+      return post(createRollTemplate({ temptation: result }), { messageId })
     } finally {
       // `finally`, not a trailing assignment: a dispatch that throws would otherwise leave the
       // flag set and both buttons permanently disabled with no way back — the busy-freeze class

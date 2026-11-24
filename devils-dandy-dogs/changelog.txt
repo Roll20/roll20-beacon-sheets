@@ -1,6 +1,11 @@
 The Devil's Dandy Dogs Character Sheet - Changelog
 ==================================================
 
+2026-11-24
+- Rolls from the sheet now show Roll20's 3D dice. Every roll made from the
+  sheet used to post its result to chat with no dice on the table, even with
+  3D dice turned on. Turn on "Enable 3D dice" in Roll20's settings to see them.
+
 2026-10-30
 - A sheet that failed to save no longer stops saving. If a save was interrupted,
   the sheet could be left waiting for it forever, and every later change would
