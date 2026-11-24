@@ -1,6 +1,11 @@
 Cypher System 2 Character Sheet - Changelog
 ============================================
 
+2026-11-24
+- Rolls from the sheet now show Roll20's 3D dice. Every roll made from the
+  sheet used to post its result to chat with no dice on the table, even with
+  3D dice turned on. Turn on "Enable 3D dice" in Roll20's settings to see them.
+
 2026-11-03
 - Token bars can now be pointed at most of the sheet instead of just the three
   Pools. Open a token's settings, pick bar 1, 2 or 3, and the list of values now

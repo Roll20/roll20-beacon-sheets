@@ -247,10 +247,10 @@ const sheetStore = () => {
   // Quick roll: 1d20 on a stat. Reports the ladder; NEVER deducts pool points.
 
   const rollStat = async (statName) => {
-    const { results } = await dispatchRef.value.roll({ rolls: { [statName]: '1d20' } })
+    const { results, messageId } = await dispatchRef.value.roll({ rolls: { [statName]: '1d20' } })
     const die = results[statName].results.rolls[0].results[0]
     const stat = statName.charAt(0).toUpperCase() + statName.slice(1)
-    return post(createRollTemplate({ statRoll: { stat, ...interpretStatRoll(die) } }))
+    return post(createRollTemplate({ statRoll: { stat, ...interpretStatRoll(die) } }), { messageId })
   }
 
   // Recovery roll (ddd-5v9; tier inference dropped by ddd-4uhf): recoveries
@@ -276,11 +276,11 @@ const sheetStore = () => {
     const bonus = recovery.value.bonus
     const liveLuck = luck.value
     const luckSnapshot = liveLuck ? { name: liveLuck.name, max: liveLuck.max } : null
-    const { results } = await dispatchRef.value.roll({ rolls: { recovery: '1d6' } })
+    const { results, messageId } = await dispatchRef.value.roll({ rolls: { recovery: '1d6' } })
     const die = results.recovery.results.rolls[0].results[0]
     return post(createRollTemplate({
       recoveryRoll: recoveryRollTemplateData({ die, bonus, luck: luckSnapshot })
-    }))
+    }), { messageId })
   }
 
   // Guided roller (spec ③ + ddd-669y). rollerStat / rollerSkillId /
@@ -881,7 +881,7 @@ const sheetStore = () => {
     // On-time finish: a natural 20 refunds the spend BEFORE the card is
     // built. Non-refunded cards keep reporting reservation-time truth
     // (documented policy); the nat-20 card reports the pool after its refund.
-    const finishRoll = (die) => {
+    const finishRoll = (die, messageId) => {
       const refunded = die === 20 && cost > 0
       // The pool and Luck, never Stress (matrix row 4). The book's refund rule is about
       // Effort points: Luck's share of this cost WAS Effort points and comes back, while
@@ -902,18 +902,20 @@ const sheetStore = () => {
         ? { shownAfter: live.current, shownMax: live.max, shownLuck: luckPair() }
         : {}
       return post(cardFor(interpretGuidedRoll({ die, eased, difficulty: diff }),
-        { refunded, ...shown, emptied: emptiedByReservation }))
+        { refunded, ...shown, emptied: emptiedByReservation }), { messageId })
     }
 
     let rolling
     let die
+    let messageId
     try {
       // Inside try: a synchronous throw refunds too (5th audit F3). A sync
       // throw can never be TIMEOUT_ERROR, so the late-settlement branch
       // below only runs with `rolling` defined.
       rolling = dispatchRef.value.roll({ rolls: { [stat]: '1d20' } })
-      const { results } = await withTimeout(rolling)
-      die = results[stat].results.rolls[0].results[0]
+      const settled = await withTimeout(rolling)
+      die = settled.results[stat].results.rolls[0].results[0]
+      messageId = settled.messageId
     } catch (err) {
       refundPool()
       refundLuck() // matrix row 2
@@ -922,7 +924,7 @@ const sheetStore = () => {
         // Dice may still land after the timeout refund. Re-deduct and post
         // then — except a late natural 20, which nets to zero: the timeout
         // already refunded, so the pool is never touched again.
-        rolling.then(({ results }) => {
+        rolling.then(({ results, messageId: lateMessageId }) => {
           const lateDie = results[stat].results.rolls[0].results[0]
           const refunded = lateDie === 20 && cost > 0
           // Read BEFORE the re-deduction (ddd-xrug). redeductPool floors at 0, so a
@@ -946,7 +948,7 @@ const sheetStore = () => {
               // a reservation-time pair on this branch would print figures a concurrent
               // edit, a replacement or this very re-deduction has already changed.
               shownStress: stressPair(), shownLuck: luckPair()
-            }))
+            }), { messageId: lateMessageId })
         }, () => {}).catch(() => {})
         // ^ outer catch, not inner: a SYNCHRONOUS throw from post() rejects
         // the .then-returned promise, which an inner .catch on post's own
@@ -955,7 +957,7 @@ const sheetStore = () => {
       return { ok: false, reason: 'dispatch-failed' }
     }
     try {
-      await withTimeout(finishRoll(die))
+      await withTimeout(finishRoll(die, messageId))
     } catch {
       // Card lost but dice hit the table — the spend (or nat-20 refund) stands.
     }
