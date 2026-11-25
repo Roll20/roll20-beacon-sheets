@@ -1,0 +1,28 @@
+# Security updates only, for dependencies that ship in a sheet's bundle.
+# Needs "Dependabot security updates" on and "Grouped security updates" off in repo settings.
+# Don't add security-update groups (they skip the allow filter), ignore rules (they also block security fixes)
+# or target-branch (it stops this config applying to security PRs).
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "/ageofficial"
+      - "/atr"
+      - "/chroniques-enyllion"
+      - "/cypher2"
+      - "/devils-dandy-dogs"
+      - "/dnd-ogl"
+      - "/grim-hollow"
+      - "/invincible"
+      - "/legend-in-the-mist"
+      - "/magiknights"
+      - "/otherscape"
+      - "/phantasystar"
+      - "/taintedgrail"
+      - "/thread-of-fate"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 0
+    allow:
+      - dependency-type: "production"
+    versioning-strategy: "increase-if-necessary"
