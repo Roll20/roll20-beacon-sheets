@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clockpunkstudios.com/cypher-contract/cypher-creature.schema.json",
+  "title": "Cypher Creature",
+  "description": "Canonical Cypher creature document, schemaVersion 1. One creature or NPC stat block: the 14 fields of the GM's Guide \"Understanding the Listings\" (printed pages 156-157) in that order, after schemaVersion, kind and name, then adventureSeed and other. combatActions follows combat and holds each named ability, while combat keeps only the prelude. All three were added by the owner on 2026-09-14. Independent of cypher-character.schema.json and versioned on its own. Conventions match the character contract: additionalProperties false everywhere, every field required, an absent value is an explicit \"\" or [] rather than an omitted key, and strings are verbatim, including whitespace and line breaks. A document is always complete: Bestiary variants that print only their differences are resolved editorially before export, the schema models no inheritance, and 0 is never a stand-in for \"not listed\". Target number is never stored; it is always level x 3. Current health is session state and is never stored. Design: docs/superpowers/specs/2026-09-13-cypher-npc-mode-design.md section 4.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "kind", "name", "level", "description", "motive", "environment",
+    "health", "damageInflicted", "armor", "armorNote", "movement", "modifications",
+    "combat", "combatActions", "interaction", "use", "loot", "gmIntrusions", "adventureSeed", "other"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "const": "cypher-creature" },
+    "name": { "type": "string", "minLength": 1 },
+    "level": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Printed as \"3 (9)\": the level, then the target number. No maximum; the Bestiary runs 1 to 13."
+    },
+    "description": { "type": "string" },
+    "motive": { "type": "string" },
+    "environment": { "type": "string" },
+    "health": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum health as printed. Never derived from level."
+    },
+    "damageInflicted": {
+      "type": "string",
+      "description": "A wound tier as text, e.g. \"Moderate wound\" or \"See Combat\". Not points."
+    },
+    "armor": { "type": "integer", "minimum": 0, "description": "0 when the book prints no Armor line." },
+    "armorNote": {
+      "type": "string",
+      "description": "A condition on the armor value, e.g. \"10 against radiation\". \"\" when none."
+    },
+    "movement": { "type": "string" },
+    "modifications": { "type": "string" },
+    "combat": {
+      "type": "string",
+      "description": "The prelude before the first named ability, such as \"A wyrm bites.\" \"\" when none."
+    },
+    "combatActions": {
+      "type": "array",
+      "description": "One item per named ability in the Combat block, in book order. May be empty. An item whose title and description are both whitespace-only is rejected.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "description"],
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "not": {
+          "type": "object",
+          "required": ["title", "description"],
+          "properties": {
+            "title": { "type": "string", "pattern": "^\\s*$" },
+            "description": { "type": "string", "pattern": "^\\s*$" }
+          }
+        }
+      }
+    },
+    "interaction": { "type": "string" },
+    "use": { "type": "string" },
+    "loot": { "type": "string" },
+    "gmIntrusions": {
+      "type": "array",
+      "description": "One item per GM intrusion, in book order. May be empty. Each item must contain a non-whitespace character.",
+      "items": { "type": "string", "pattern": "\\S" }
+    },
+    "adventureSeed": {
+      "type": "string",
+      "description": "The book's Adventure Seed margin note, verbatim without its label. \"\" when none."
+    },
+    "other": {
+      "type": "string",
+      "description": "The book's unlabelled margin notes, one per line, then anything else the GM keeps that fits no other field. \"\" when none."
+    }
+  }
+}

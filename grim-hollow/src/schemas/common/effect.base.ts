@@ -27,11 +27,11 @@ export const SingleEffectBase = z.object({
 
 const SingleEffectWithValue = SingleEffectBase.extend({
   value: z.union([z.number(), z.string()]),
-  formula: z.undefined(),
+  formula: z.undefined().optional(),
 });
 
 const SingleEffectWithFormula = SingleEffectBase.extend({
-  value: z.undefined(),
+  value: z.undefined().optional(),
   formula: z.string(),
 });
 

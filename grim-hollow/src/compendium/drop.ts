@@ -1,10 +1,10 @@
-import { type DropArgs } from '@roll20-official/beacon-sdk/lib/types/dragAndDrop';
+import { type DropOver } from '@roll20-official/beacon-sdk';
 import { onDropEquipment } from './dropEquipment';
 import { onDropSpell } from './dropSpell';
 import {
   type Character,
-  type CompendiumResults as DefaultCompendiumResults,
-} from '@roll20-official/beacon-sdk/lib/types/partials';
+  type JSONObject,
+} from '@roll20-official/beacon-sdk';
 import { dispatchRef } from '@/relay/relay';
 import { onDropFeature } from './dropFeature';
 import { onDropClass } from './dropClass';
@@ -23,10 +23,13 @@ import { type Dispatch } from "@roll20-official/beacon-sdk";
 import { SpellSchema } from "@/schemas/spell";
 
 type Feature = z.infer<typeof FeatureSchema>;
+type DropArgs = Pick<DropOver, 'coordinates' | 'dropData'>;
+type DefaultCompendiumResults = Awaited<ReturnType<Dispatch['compendiumRequest']>>;
 
 export type compendiumCategory =
   | 'Spells'
   | 'Features'
+  | 'Other Options and Features'
   | 'Feats'
   | 'Classes'
   | 'Subclasses'
@@ -66,6 +69,12 @@ export type CompendiumPage = {
     'data-List': 'true' | 'false';
     [key: string]: any;
   };
+  children?: [
+    {
+      name: string;
+      properties: JSONObject;
+    }
+  ];
   book: {
     name: string;
     itemId: string;
@@ -92,6 +101,10 @@ pages(name: "${decodeURIComponent(pageName)}") {
     name
     itemId
   }
+  children {
+    name
+    properties
+  }
   category {
     name
   }
@@ -105,6 +118,10 @@ pages {
   book {
     name
     itemId
+  }
+  children {
+    name
+    properties
   }
   category {
     name
@@ -178,6 +195,7 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   Mutations: onDropFeature,
   Heritages: onDropRace,
   Proficiencies: onDropProficiency,
+  'Other Options and Features': onDropFeature,
 };
 export const drag = async (
   { dropData, coordinates }: DropArgs,
@@ -205,7 +223,7 @@ export const drag = async (
   console.log('Dropping page', page);
 
   let npcId: string | undefined = undefined;
-  if (coordinates) {
+  if (coordinates && coordinates.left !== null && coordinates.top !== null) {
     const elements = document.elementsFromPoint(coordinates.left, coordinates.top);
     const targetEl = elements.find((el) => el.closest('[data-npc-id]'));
     if (targetEl) {
@@ -219,18 +237,21 @@ export const drag = async (
 
       if (page.properties.hasOwnProperty('data-payload')) {
         payload = JSON.parse(page.properties['data-payload']);
-        if (category === 'Monsters' && (!payload.token || payload.token.length === 0) && page.properties.Token) {
-          payload.token = page.properties.Token;
-        }
-        if (category === 'Monsters' && payload.token) {
-          payload.token = normalizeTokenUrl(payload.token);
+        if (category === 'Monsters') {
+          const chosenToken = page.properties.Token || page.properties.token || payload.token;
+          if (chosenToken) {
+            payload.token = normalizeTokenUrl(chosenToken);
+          }
         }
       } else if (transformers[category]) {
         const transformer = transformers[category];
         const rawPayload = { name: page.name, book: page.book, properties: page.properties };
         payload = transformer(rawPayload, page.book, page.properties);
-        if (category === 'Monsters' && payload?.token) {
-          payload.token = normalizeTokenUrl(payload.token);
+        if (category === 'Monsters') {
+          const chosenToken = page.properties.Token || page.properties.token || payload?.token;
+          if (chosenToken && payload) {
+            payload.token = normalizeTokenUrl(chosenToken);
+          }
         }
       } else {
         console.error(

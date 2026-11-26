@@ -14,7 +14,7 @@ export const getHitPoints = ({ character }: { character: Character }): { current
 
   const max = typeof progression === 'object' && progression !== null && 'classes' in progression
     ? Object.values((progression as ProgressionHydrate).classes).reduce((total, cls) => {
-        return total + Object.values(cls.hitPoints).reduce((sum, hp) => sum + hp, 0);
+        return total + Object.values(cls.hitPoints ?? {}).reduce((sum, hp) => sum + hp, 0);
       }, 0) + (getAbilityModifier({ character }, 'constitution') * getLevel({ character }))
     : 0;
   const modifiedMax = getModifiedValue(max, 'hit-points-max', undefined, character);
@@ -67,9 +67,10 @@ export const setTempHitPoints = (
 
 export const getArmorClass = ({ character }: { character: Character }): number => {
   const combat = character.attributes?.combat as CombatHydrate | undefined;
-  const baseAc = combat?.armorClass.base || 10;
-  const abilityMod = getAbilityModifier({ character }, combat?.armorClass.ability || 'dexterity');
-  const modifiedAc = getModifiedValue(baseAc + abilityMod, 'armor-class', undefined, character);
+  const baseAc = combat?.armorClass?.base ?? 10;
+  const abilityMod = getAbilityModifier({ character }, combat?.armorClass?.ability ?? 'dexterity');
+  const attribute = combat?.armorClass?.mode === 'manual' ? 'manual-armor-class' : 'armor-class';
+  const modifiedAc = getModifiedValue(baseAc + abilityMod, attribute, undefined, character);
   return modifiedAc;
 };
 

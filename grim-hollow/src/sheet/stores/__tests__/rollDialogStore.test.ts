@@ -32,7 +32,7 @@ describe('useRollDialogStore', () => {
 
         it('should open dialog with damage roll type and default crit mode false', () => {
             const store = useRollDialogStore();
-            const args: DamageRollArgs = { rollName: 'Damage', subtitle: 'Slash', t: (k) => k };
+            const args: DamageRollArgs = { rollName: 'Damage', subtitle: 'Slash', isCrit: false, t: (k) => k };
 
             store.open('damage', args);
 

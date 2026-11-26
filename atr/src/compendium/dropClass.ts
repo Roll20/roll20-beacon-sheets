@@ -10,6 +10,7 @@ import { type SpellCastingProgression, type Spell } from "@/sheet/stores/spells/
 import { useSpellsStore } from "@/sheet/stores/spells/spellsStore";
 import { type AbilityKey } from "@/sheet/stores/abilities/abilitiesStore";
 import type { DropContext, CascadeData } from "./drop";
+import { useNpcStore } from "@/sheet/stores/npc/npcStore";
 
 export type Feature = z.infer<typeof FeatureSchema>;
 
@@ -109,11 +110,17 @@ export const onDropClass = async ({
   payload,
   features,
   expansionId,
+  isNewSheet,
 }: DropContext) => {
   const result = ClassSchema.safeParse(payload);
   if(!result.success) {
     console.error("Invalid class data", result.error);
     return;
+  }
+
+  if (isNewSheet) {
+    const npcStore = useNpcStore();
+    npcStore.isNpc = false;
   }
 
   const progressionStore = useProgressionStore();

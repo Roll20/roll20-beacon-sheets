@@ -100,13 +100,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-  deploy:
+  # The build runs untrusted sheet code (package.json scripts, vite config,
+  # plugins, dependencies). It must never hold cloud credentials. Its only
+  # output is the artifact handed to the deploy job below.
+  build:
     needs: detect
     if: needs.detect.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      issues: write
 
     steps:
       - name: Checkout repository
@@ -120,17 +122,9 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.SHEET_ACCESS_KEY_FILE }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
       - name: Install dependencies
         working-directory: ${{ needs.detect.outputs.detected_folder }}
-        run: npm i
+        run: npm ci --ignore-scripts
 
       - name: Compute CDN path
         id: cdn_path
@@ -150,32 +144,79 @@ jobs:
         working-directory: ${{ needs.detect.outputs.detected_folder }}
         run: npm run build
 
-      - name: Deploy to Google Cloud Storage
+      - name: Stage deploy output
         run: |
           DETECTED_FOLDER="${{ needs.detect.outputs.detected_folder }}"
-          TARGET_FOLDER="${{ needs.detect.outputs.target_folder }}"
-          BUCKET_NAME="${{ secrets.GCS_BUCKET_NAME }}"
-
-          echo "Deploying $DETECTED_FOLDER to gs://$BUCKET_NAME/$TARGET_FOLDER/"
-
-          # Sheet entry filenames (sheet.js, sheet.css, assets/[name][extname])
-          # are unhashed, so we tell the CDN/browser not to cache them.
-          CACHE_CONTROL="no-cache, max-age=0, must-revalidate"
-
-          gsutil -m -h "Cache-Control:$CACHE_CONTROL" rsync -r -d "$DETECTED_FOLDER/dist" "gs://$BUCKET_NAME/$TARGET_FOLDER/"
-
-          # Upload preview.png and sheet.json from the sheet root if they exist
+          mkdir -p staged
+          cp -r "$DETECTED_FOLDER/dist" staged/dist
           for FILE in preview.png sheet.json; do
             if [ -f "$DETECTED_FOLDER/$FILE" ]; then
-              echo "Uploading $FILE"
-              gsutil -h "Cache-Control:$CACHE_CONTROL" cp "$DETECTED_FOLDER/$FILE" "gs://$BUCKET_NAME/$TARGET_FOLDER/$FILE"
+              cp "$DETECTED_FOLDER/$FILE" "staged/$FILE"
             else
               echo "::warning::$FILE not found in $DETECTED_FOLDER"
             fi
           done
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sheet-${{ needs.detect.outputs.target_folder }}
+          path: staged
+          if-no-files-found: error
+          retention-days: 1
+
+  # The deploy job holds the cloud credential and runs nothing from the
+  # repository: no checkout, no npm. It only copies the artifact to GCS.
+  deploy:
+    needs: [detect, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sheet-${{ needs.detect.outputs.target_folder }}
+          path: staged
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.SHEET_ACCESS_KEY_FILE }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Google Cloud Storage
+        run: |
+          TARGET_FOLDER="${{ needs.detect.outputs.target_folder }}"
+          BUCKET_NAME="${{ secrets.GCS_BUCKET_NAME }}"
+
+          echo "Deploying to gs://$BUCKET_NAME/$TARGET_FOLDER/"
+
+          # Sheet entry filenames (sheet.js, sheet.css, assets/[name][extname])
+          # are unhashed, so we tell the CDN/browser not to cache them.
+          CACHE_CONTROL="no-cache, max-age=0, must-revalidate"
+
+          gsutil -m -h "Cache-Control:$CACHE_CONTROL" rsync -r -d staged/dist "gs://$BUCKET_NAME/$TARGET_FOLDER/"
+
+          for FILE in preview.png sheet.json; do
+            if [ -f "staged/$FILE" ]; then
+              echo "Uploading $FILE"
+              gsutil -h "Cache-Control:$CACHE_CONTROL" cp "staged/$FILE" "gs://$BUCKET_NAME/$TARGET_FOLDER/$FILE"
+            fi
+          done
+
+  notify:
+    needs: [detect, build, deploy]
+    if: always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
       - name: Create issue on build/deploy failure
-        if: failure()
         uses: actions/github-script@v7
         with:
           script: |

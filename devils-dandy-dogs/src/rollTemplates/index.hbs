@@ -1,0 +1,35 @@
+<div class="ddd-roll">
+  {{#if traitRoll}}
+    <div class="ddd-roll__header">
+      <span class="ddd-roll__trait">{{traitRoll.trait}} &mdash; {{traitRoll.tierLabel}}</span>
+      <span class="ddd-roll__mode">{{traitRoll.mode}}</span>
+    </div>
+    <ol class="ddd-roll__dice">
+      {{#each traitRoll.dice}}
+        <li class="ddd-roll__die">
+          <span class="ddd-die ddd-die--{{this.face}}"></span>
+          <span class="ddd-roll__value">{{this.value}}</span>
+          <span class="ddd-roll__face">{{this.label}}</span>
+          {{#if this.showEffect}}<span class="ddd-roll__effect">{{this.effect}}</span>{{/if}}
+        </li>
+      {{/each}}
+    </ol>
+    <div class="ddd-roll__prompt">Choose one die now &mdash; keep the rest for Call &amp; Response.</div>
+  {{/if}}
+  {{#if temptation}}
+    <div class="ddd-roll__header">
+      <span>Temptation Die</span>
+      <span class="ddd-roll__temptation">
+        <span class="ddd-die ddd-die--{{temptation.band}}"></span>
+        <span class="ddd-roll__value">{{temptation.value}}</span>
+      </span>
+    </div>
+    <ul class="ddd-roll__lines">
+      {{#each temptation.lines}}<li>{{this}}</li>{{/each}}
+    </ul>
+  {{/if}}
+  {{#if ability}}
+    <div class="ddd-roll__header">{{ability.kind}}: {{ability.name}}</div>
+    <div class="ddd-roll__text">{{{ability.text}}}</div>
+  {{/if}}
+</div>

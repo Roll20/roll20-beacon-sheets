@@ -36,6 +36,11 @@ export type ModifierBreakdown = {
   value: number;
 };
 
+export type DicePoolModifierBreakdown = {
+  name: string;
+  value: string | number;
+};
+
 export const SingleEffectSchema = z.object({
   _id: z.string(),
   attribute: z.string(),
@@ -105,7 +110,7 @@ export type ExtendedSingleEffect = SingleEffect & {
 
 export type ModifiedValue = ComputedRef<{ final: number; modifiers: ModifierBreakdown[] }>;
 export type DicePool = Array<string | number>;
-export type ModifiedDicePool = ComputedRef<{ final: DicePool; modifiers: ModifierBreakdown[] }>;
+export type ModifiedDicePool = ComputedRef<{ final: DicePool; modifiers: DicePoolModifierBreakdown[] }>;
 export type ModifiedProficiency = ComputedRef<{
   final: ProficiencyLevel;
   modifiers: ModifierBreakdown[];
@@ -330,7 +335,7 @@ export const useEffectsStore = defineStore('effects', () => {
 
   const getModifiedValue = (
     _baseValue: number,
-    _attribute: string | string[],
+    _attribute: string | (string | undefined)[] | undefined,
     constrainTo: number[] = [],
   ): ModifiedValue => {
     return computed(() => {

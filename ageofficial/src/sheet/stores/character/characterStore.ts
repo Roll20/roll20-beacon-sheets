@@ -1,17 +1,19 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore';
-import levelTable from '@/system/levelTable';
-import rollToChat from '@/utility/rollToChat';
-import sendToChat from '@/utility/sendToChat';
-import type { ComputedRef } from 'vue';
-import { useInventoryStore } from '@/sheet/stores/inventory/inventoryStore';
-import getRollResult from '@/utility/getRollResult';
-import { useBioStore } from '../bio/bioStore';
-import { useSettingsStore } from '../settings/settingsStore';
-import { useMetaStore } from '../meta/metaStore';
-import { arrayToObject, objectToArray } from '@/utility/objectify';
-import { v4 as uuidv4 } from 'uuid';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { useAbilityScoreStore } from "@/sheet/stores/abilityScores/abilityScoresStore";
+import levelTable from "@/system/levelTable";
+import rollToChat from "@/utility/rollToChat";
+import sendToChat from "@/utility/sendToChat";
+import type { ComputedRef } from "vue";
+import { useInventoryStore } from "@/sheet/stores/inventory/inventoryStore";
+import getRollResult from "@/utility/getRollResult";
+import { useBioStore } from "../bio/bioStore";
+import { useSettingsStore } from "../settings/settingsStore";
+import { useMetaStore } from "../meta/metaStore";
+import { arrayToObject, objectToArray } from "@/utility/objectify";
+import { v4 as uuidv4 } from "uuid";
+import { MAX_POWER_FATIGUE, POWER_SOURCE_IDS, fatigueTestTN } from "@/utility/powerSources";
+import type { PowerSourceId } from "@/utility/powerSources";
 
 export type CharacterHydrate = {
   character: {
@@ -21,18 +23,23 @@ export type CharacterHydrate = {
     heroDiceCurrent: number;
     manaCurrent: number;
     defenseMod: number;
-    speed:number;
-    armor:number;
-    stunts:number;
+    speed: number;
+    armor: number;
+    stunts: number;
     health: number;
     healthMax: number;
     magic: number;
     magicMax: number;
-    weaponGroups:string;
-    peril:number;
-    daring:number;
-    fortuneInjured:boolean;
-    fortuneWounded:boolean;
+    eldritchPoints?: number;
+    eldritchPointsMax?: number;
+    psychicPoints?: number;
+    psychicPointsMax?: number;
+    eldritchPrice?: number;
+    weaponGroups: string;
+    peril: number;
+    daring: number;
+    fortuneInjured: boolean;
+    fortuneWounded: boolean;
     fatigue?: number;
     toughnessPrimary?: string | null;
     powerFatigue?: number;
@@ -41,9 +48,29 @@ export type CharacterHydrate = {
   };
 };
 
-export type Level = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20;
+export type Level =
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+  | 13
+  | 14
+  | 15
+  | 16
+  | 17
+  | 18
+  | 19
+  | 20;
 
-export const useCharacterStore = defineStore('character', () => {
+export const useCharacterStore = defineStore("character", () => {
   const abilityScoresStore = useAbilityScoreStore();
   const inventory = useInventoryStore();
   const settings = useSettingsStore();
@@ -52,7 +79,7 @@ export const useCharacterStore = defineStore('character', () => {
     () =>
       Object.values(levelTable)
         .reverse()
-        .find((level) => level?.xp <= xp.value)?.level || 0,
+        .find((level) => level?.xp <= xp.value)?.level || 0
   );
   const xp = ref(0);
   // Example of auto-calculated field. These don't need to be saved into firebase and should handled internally in the app whenever.
@@ -61,12 +88,14 @@ export const useCharacterStore = defineStore('character', () => {
   //   () =>
   //     levelTable[level.value].life + level.value * abilityScoresStore.EnduranceBase + lifeMod.value,
   // );
-  
+
   // const manaMax = computed(
   //   () =>
   //     levelTable[level.value].mana + level.value * abilityScoresStore.ThoughtBase + manaMod.value,
   // );
-  const profBonus: ComputedRef<number> = computed(() => levelTable[level.value].profBonus);
+  const profBonus: ComputedRef<number> = computed(
+    () => levelTable[level.value].profBonus
+  );
   const defenseMod = ref(0);
   const speed = ref(0);
   const armor = ref(0);
@@ -76,7 +105,35 @@ export const useCharacterStore = defineStore('character', () => {
   const healthMax = ref(0);
   const magic = ref(0);
   const magicMax = ref(0);
-  const weaponGroups = ref('');
+  const eldritchPoints = ref(0);
+  const eldritchPointsMax = ref(0);
+  const psychicPoints = ref(0);
+  const psychicPointsMax = ref(0);
+  // Eldritch Price stacks between castings; the player records it by hand.
+  const eldritchPrice = ref(0);
+  // Arcana keeps the original magic/magicMax fields so the magicPoints token bar keeps working.
+  const pools: Record<PowerSourceId, { current: typeof magic; max: typeof magic }> = {
+    arcana: { current: magic, max: magicMax },
+    eldritch: { current: eldritchPoints, max: eldritchPointsMax },
+    psychic: { current: psychicPoints, max: psychicPointsMax },
+  };
+  const poolCurrent = (id: PowerSourceId) => Number(pools[id].current.value) || 0;
+  const poolMax = (id: PowerSourceId) => Number(pools[id].max.value) || 0;
+  const setPoolCurrent = (id: PowerSourceId, value: number) => {
+    pools[id].current.value = value;
+  };
+  const setPoolMax = (id: PowerSourceId, value: number) => {
+    pools[id].max.value = value;
+  };
+  const spendPool = (id: PowerSourceId, amount: number) => {
+    pools[id].current.value = Math.max(0, poolCurrent(id) - (Number(amount) || 0));
+  };
+  const refillPools = () => {
+    POWER_SOURCE_IDS.forEach((id) => {
+      pools[id].current.value = poolMax(id);
+    });
+  };
+  const weaponGroups = ref("");
   // const defense = computed(
   //   () =>
   //     8 +
@@ -92,103 +149,130 @@ export const useCharacterStore = defineStore('character', () => {
   const peril = ref(0);
   const daring = ref(0);
   const powerFatigue = ref(0);
-  const toughnessPrimary = ref('');
+  const toughnessPrimary = ref("");
   const toughnessLevelMod = ref(0);
   const defenseLevelMod = ref(0);
-  const customMovements = ref<{ _id: string; name: string; speed: number }[]>([]);
-  const originFaction = ref('');
+  const customMovements = ref<{ _id: string; name: string; speed: number }[]>(
+    []
+  );
+  const originFaction = ref("");
   const gameModeBonus = () => {
-    if(settings.gameSystem !== 'mage') return;
-    switch (useSettingsStore().campaignMode) {  
-    case 'cinematic':
-      if(level.value < 4){
+    if (settings.gameSystem !== "mage") return;
+    switch (useSettingsStore().campaignMode) {
+      case "cinematic":
+        if (level.value < 4) {
+          toughnessLevelMod.value = 0;
+          defenseLevelMod.value = 0;
+        }
+        if (level.value >= 4) {
+          toughnessLevelMod.value = 1;
+          defenseLevelMod.value = 1;
+        }
+        if (level.value >= 8) {
+          toughnessLevelMod.value = 2;
+          defenseLevelMod.value = 2;
+        }
+        if (level.value >= 12) {
+          toughnessLevelMod.value = 3;
+          defenseLevelMod.value = 3;
+        }
+        if (level.value >= 16) {
+          toughnessLevelMod.value = 4;
+          defenseLevelMod.value = 4;
+        }
+        if (level.value >= 20) {
+          toughnessLevelMod.value = 5;
+          defenseLevelMod.value = 5;
+        }
+        break;
+      case "pulpy":
+        if (level.value < 4) {
+          toughnessLevelMod.value = 0;
+          defenseLevelMod.value = 0;
+        }
+        if (level.value >= 4) {
+          toughnessLevelMod.value =
+            toughnessPrimary.value === "toughness" && !toughnessPrimary.value
+              ? 1
+              : 0;
+          defenseLevelMod.value = toughnessPrimary.value === "defense" ? 1 : 0;
+        }
+        if (level.value >= 8) {
+          toughnessLevelMod.value =
+            toughnessPrimary.value === "toughness" && !toughnessPrimary.value
+              ? 2
+              : 0;
+          defenseLevelMod.value = toughnessPrimary.value === "defense" ? 2 : 0;
+        }
+        if (level.value >= 12) {
+          toughnessLevelMod.value =
+            toughnessPrimary.value === "toughness" && !toughnessPrimary.value
+              ? 3
+              : 0;
+          defenseLevelMod.value = toughnessPrimary.value === "defense" ? 3 : 0;
+        }
+        if (level.value >= 16) {
+          toughnessLevelMod.value =
+            toughnessPrimary.value === "toughness" && !toughnessPrimary.value
+              ? 4
+              : 0;
+          defenseLevelMod.value = toughnessPrimary.value === "defense" ? 4 : 0;
+        }
+        if (level.value >= 20) {
+          toughnessLevelMod.value =
+            toughnessPrimary.value === "toughness" && !toughnessPrimary.value
+              ? 5
+              : 0;
+          defenseLevelMod.value = toughnessPrimary.value === "defense" ? 5 : 0;
+        }
+        break;
+      case "gritty":
         toughnessLevelMod.value = 0;
         defenseLevelMod.value = 0;
-      }
-      if(level.value >= 4){
-        toughnessLevelMod.value = 1;
-        defenseLevelMod.value = 1;
-      } if(level.value >= 8){
-        toughnessLevelMod.value = 2;
-        defenseLevelMod.value = 2;
-      } if(level.value >= 12){
-        toughnessLevelMod.value = 3;
-        defenseLevelMod.value = 3;
-      } if(level.value >= 16){
-        toughnessLevelMod.value = 4;
-        defenseLevelMod.value = 4;
-      } if(level.value >= 20){
-        toughnessLevelMod.value = 5;
-        defenseLevelMod.value = 5;
-      } 
-      break;
-    case 'pulpy':
-      if(level.value < 4){
+        break;
+      default:
         toughnessLevelMod.value = 0;
         defenseLevelMod.value = 0;
-      }
-      if(level.value >= 4){
-        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 1 : 0;
-        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 1 : 0;
-      } 
-      if(level.value >= 8){
-        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 2 : 0;
-        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 2 : 0;
-      } 
-      if(level.value >= 12){
-        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 3 : 0;
-        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 3 : 0;
-      } 
-      if(level.value >= 16){
-        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 4 : 0;
-        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 4 : 0;
-      } 
-      if(level.value >= 20){
-        toughnessLevelMod.value = toughnessPrimary.value === 'toughness' && !toughnessPrimary.value ? 5 : 0;
-        defenseLevelMod.value = toughnessPrimary.value === 'defense' ? 5 : 0;
-      }
-      break;
-    case 'gritty':
-      toughnessLevelMod.value = 0;
-      defenseLevelMod.value = 0;
-      break;
-    default:
-      toughnessLevelMod.value = 0;
-      defenseLevelMod.value = 0;
-      break;
+        break;
     }
   };
   const levelUp = () => {
-    const newLevel:number = Number(level.value+1);
+    const newLevel: number = Number(level.value + 1);
     // @ts-ignore
-    xp.value = levelTable[newLevel].xp
+    xp.value = levelTable[newLevel].xp;
     gameModeBonus();
-  }
+  };
   const levelDown = () => {
-    const newLevel:number = Number(level.value-1)
+    const newLevel: number = Number(level.value - 1);
     // @ts-ignore
-    xp.value = levelTable[newLevel].xp
+    xp.value = levelTable[newLevel].xp;
     gameModeBonus();
-  }
-  const levelSet = (newLevel:number)=> {
+  };
+  const levelSet = (newLevel: number) => {
     // @ts-ignore
-    xp.value = levelTable[newLevel].xp
+    xp.value = levelTable[newLevel].xp;
     gameModeBonus();
-  }
-  
+  };
+
   const resetStunts = () => {
     stunts.value = 0;
-  }
+  };
   const resetPowerFatigue = () => {
     powerFatigue.value = 0;
-  }  
+  };
+  const addPowerFatigue = () => {
+    powerFatigue.value = Math.min(powerFatigue.value + 1, MAX_POWER_FATIGUE);
+  };
+  const resetEldritchPrice = () => {
+    eldritchPrice.value = 0;
+  };
 
   const addMovement = () => {
-    customMovements.value.push({ _id:uuidv4(), name: '', speed: 0 });
-  }
-  const deleteMovement = (index:number) => {
+    customMovements.value.push({ _id: uuidv4(), name: "", speed: 0 });
+  };
+  const deleteMovement = (index: number) => {
     customMovements.value.splice(index, 1);
-  }
+  };
 
   const dehydrate = () => {
     return {
@@ -202,11 +286,16 @@ export const useCharacterStore = defineStore('character', () => {
         healthMax: healthMax.value,
         magic: magic.value,
         magicMax: magicMax.value,
+        eldritchPoints: eldritchPoints.value,
+        eldritchPointsMax: eldritchPointsMax.value,
+        psychicPoints: psychicPoints.value,
+        psychicPointsMax: psychicPointsMax.value,
+        eldritchPrice: eldritchPrice.value,
         weaponGroups: weaponGroups.value,
-        peril:peril.value,
-        daring:daring.value,
-        fortuneInjured:fortuneInjured.value,
-        fortuneWounded:fortuneWounded.value,
+        peril: peril.value,
+        daring: daring.value,
+        fortuneInjured: fortuneInjured.value,
+        fortuneWounded: fortuneWounded.value,
         fatigue: fatigue.value,
         toughnessPrimary: toughnessPrimary.value,
         powerFatigue: powerFatigue.value,
@@ -229,15 +318,29 @@ export const useCharacterStore = defineStore('character', () => {
     healthMax.value = hydrateStore.character.healthMax ?? healthMax.value;
     magic.value = hydrateStore.character.magic ?? magic.value;
     magicMax.value = hydrateStore.character.magicMax ?? magicMax.value;
-    weaponGroups.value = hydrateStore.character.weaponGroups ?? weaponGroups.value;
+    eldritchPoints.value =
+      hydrateStore.character.eldritchPoints ?? eldritchPoints.value;
+    eldritchPointsMax.value =
+      hydrateStore.character.eldritchPointsMax ?? eldritchPointsMax.value;
+    psychicPoints.value = hydrateStore.character.psychicPoints ?? psychicPoints.value;
+    psychicPointsMax.value =
+      hydrateStore.character.psychicPointsMax ?? psychicPointsMax.value;
+    eldritchPrice.value = hydrateStore.character.eldritchPrice ?? eldritchPrice.value;
+    weaponGroups.value =
+      hydrateStore.character.weaponGroups ?? weaponGroups.value;
     peril.value = hydrateStore.character.peril ?? peril.value;
     daring.value = hydrateStore.character.daring ?? daring.value;
-    fortuneInjured.value = hydrateStore.character.fortuneInjured ?? fortuneInjured.value;
-    fortuneWounded.value = hydrateStore.character.fortuneWounded ?? fortuneWounded.value;
+    fortuneInjured.value =
+      hydrateStore.character.fortuneInjured ?? fortuneInjured.value;
+    fortuneWounded.value =
+      hydrateStore.character.fortuneWounded ?? fortuneWounded.value;
     fatigue.value = hydrateStore.character.fatigue ?? fatigue.value;
-    toughnessPrimary.value = hydrateStore.character.toughnessPrimary ?? toughnessPrimary.value;
-    powerFatigue.value = hydrateStore.character.powerFatigue ?? powerFatigue.value;
-    originFaction.value = hydrateStore.character.originFaction ?? originFaction.value;
+    toughnessPrimary.value =
+      hydrateStore.character.toughnessPrimary ?? toughnessPrimary.value;
+    powerFatigue.value =
+      hydrateStore.character.powerFatigue ?? powerFatigue.value;
+    originFaction.value =
+      hydrateStore.character.originFaction ?? originFaction.value;
 
     // Safely convert stored object -> array. If nothing stored, set empty array.
     const stored = hydrateStore.character.customMovements;
@@ -246,8 +349,8 @@ export const useCharacterStore = defineStore('character', () => {
     customMovements.value = Array.isArray(arr)
       ? arr.map((m: any) => ({
           _id: m._id ?? uuidv4(),
-          name: m.name ?? '',
-          speed: typeof m.speed === 'number' ? m.speed : Number(m.speed) || 0,
+          name: m.name ?? "",
+          speed: typeof m.speed === "number" ? m.speed : Number(m.speed) || 0,
         }))
       : [];
   };
@@ -256,7 +359,7 @@ export const useCharacterStore = defineStore('character', () => {
   const heroDiceFailure = async (title: string): Promise<void> => {
     await sendToChat({
       title,
-      subtitle: 'Failure!',
+      subtitle: "Failure!",
       textContent: "Uh Oh! You've run out of Hero Dice!!",
     });
   };
@@ -265,41 +368,46 @@ export const useCharacterStore = defineStore('character', () => {
     const abilityScoreStore = useAbilityScoreStore();
     const weapon = useInventoryStore().equippedWeapon;
     const weaponName = weapon?.name;
-    const weaponAbilityScore = weapon?.abilityScore || 'Strength';
-    const attackBonus = abilityScoreStore.abilityScores[`${weaponAbilityScore}`].base;
-    const [diceAmount, diceSides] = (weapon?.damage || '1d3').split('d');
+    const weaponAbilityScore = weapon?.abilityScore || "Strength";
+    const attackBonus =
+      abilityScoreStore.abilityScores[`${weaponAbilityScore}`].base;
+    const [diceAmount, diceSides] = (weapon?.damage || "1d3").split("d");
     const { total: damage } = await getRollResult([
       { count: Number(diceAmount), sides: Number(diceSides) },
-      { label: 'Prof Bonus', value: profBonus.value },
+      { label: "Prof Bonus", value: profBonus.value },
     ]);
     await rollToChat({
-      title: `Attack Using ${weaponAbilityScore} ${weaponName ? 'With ' + weaponName : ''}`,
+      title: `Attack Using ${weaponAbilityScore} ${
+        weaponName ? "With " + weaponName : ""
+      }`,
       keyValues: { Actions: 1, Damage: damage.toString() },
-      traits: ['Attack'],
+      traits: ["Attack"],
       components: [
         { label: `Base Roll`, sides: 20 },
         { label: `${weaponAbilityScore} Bonus`, value: attackBonus },
-        { label: 'Proficiency', value: profBonus.value },
+        { label: "Proficiency", value: profBonus.value },
       ],
     });
   };
 
-  const rollPowerFatigueTest = async (powerCost:number, focus:number) => {
+  const rollPowerFatigueTest = async (powerCost: number, focus: number) => {
     const ability = useAbilityScoreStore();
-    const halfPower = Math.floor(powerCost/2);
+    const targetNumber = fatigueTestTN(powerCost);
     const components = [
-      { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
-      { label: 'Willpower', value: ability.WillpowerBase },
-      { label: 'Focus', value: focus ? focus : 0 },
-    ];    
-    await rollToChat({
+      { label: `Base Roll`, sides: 6, count: 3, alwaysShowInBreakdown: true },
+      { label: "Willpower", value: ability.WillpowerBase },
+      { label: "Focus", value: focus ? focus : 0 },
+    ];
+    const total = await rollToChat({
       characterName: useMetaStore().name,
-      title: '',
-      subtitle: 'Power Fatigue Test',
-      rollType:'powerFatigue',
-      targetNumber: 9 + halfPower,
-      components
+      title: "",
+      subtitle: "Power Fatigue Test",
+      rollType: "powerFatigue",
+      targetNumber,
+      components,
     });
+    if (total < targetNumber) addPowerFatigue();
+    return total;
   };
   // const rollSpell = async () => {
   //   const abilityScoreStore = useAbilityScoreStore();
@@ -340,6 +448,19 @@ export const useCharacterStore = defineStore('character', () => {
     healthMax,
     magic,
     magicMax,
+    eldritchPoints,
+    eldritchPointsMax,
+    psychicPoints,
+    psychicPointsMax,
+    eldritchPrice,
+    resetEldritchPrice,
+    poolCurrent,
+    poolMax,
+    setPoolCurrent,
+    setPoolMax,
+    spendPool,
+    refillPools,
+    addPowerFatigue,
     weaponGroups,
     peril,
     daring,
@@ -359,30 +480,29 @@ export const useCharacterStore = defineStore('character', () => {
     gameModeBonus,
     rollPowerFatigueTest,
     addMovement,
-    deleteMovement
+    deleteMovement,
   };
 });
 
 /* After any Ability Roll you can choose to spend 1 hero die to roll 1d6 and add it to the total.
  * Follow-up Rolls need to be defined outside of the Store since it may not be available when clicking on the button
  *  */
-export const addToStunts = (props: any,stunts:number) => {
-  if(stunts){
+export const addToStunts = (props: any, stunts: number) => {
+  if (stunts) {
     const stuntPoints = useCharacterStore().stunts;
-  const currentStuntPoints = props?.character?.attributes?.character?.character?.stunts || 0;
-  props.dispatch.update({
-    character: {
-      id: props.character.id,
-      attributes: {
-        character: {
+    const currentStuntPoints =
+      props?.character?.attributes?.character?.character?.stunts || 0;
+    props.dispatch.update({
+      character: {
+        id: props.character.id,
+        attributes: {
           character: {
-            stunts: stuntPoints + stunts,
+            character: {
+              stunts: stuntPoints + stunts,
+            },
           },
         },
       },
-    },
-  });
+    });
   }
-  
-  
-}
+};

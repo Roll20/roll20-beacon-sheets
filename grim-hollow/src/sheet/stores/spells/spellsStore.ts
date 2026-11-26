@@ -243,12 +243,13 @@ export const useSpellsStore = defineStore('spells', () => {
         ...patch,
       };
     } else {
-      const { type, ability, ...rest } = patch;
+      const { type, ...rest } = patch;
+      const ability = 'ability' in patch ? patch.ability : undefined;
       return {
         ...base,
         ...rest,
         type: 'ability',
-        ability: config.abilities[0],
+        ability: ability ?? config.abilities[0],
       };
     }
   };
@@ -403,6 +404,8 @@ export const useSpellsStore = defineStore('spells', () => {
     const level = classes.reduce((acc, cls) => {
       const type = cls.spellcasting;
       if (type !== 'none' && type !== 'pact' && config.casterTypes[type] && cls.level > 0) {
+        if (type === 'half') return acc + Math.ceil(cls.level / 2);
+        if (type === 'third') return acc + Math.floor(cls.level / 3);
         return acc + cls.level * (config.casterTypes[type].multiclassMultiplier || 1);
       }
       return acc;
@@ -437,7 +440,10 @@ export const useSpellsStore = defineStore('spells', () => {
         }, Array(config.spellLevels.length).fill(0));
       } else {
         const level = getMulticlassCasterLevel(spellcasterClasses);
-        availableSlots = config.casterMulticlassing[level - 1];
+        availableSlots =
+          level <= 0
+            ? Array(config.spellLevels.length - 1).fill(0)
+            : config.casterMulticlassing[level - 1];
       }
     } else {
       const caster = spellcasterClasses[0];
@@ -560,7 +566,7 @@ export const useSpellsStore = defineStore('spells', () => {
       }
     } else {
       if ((spell.attackAbility === 'spellcasting' || !spell.attackAbility) && source?.type === 'flat') {
-        base = source.flat;
+        base = parseFormulaAndEvaluate(source.flat);
       }
     }
 

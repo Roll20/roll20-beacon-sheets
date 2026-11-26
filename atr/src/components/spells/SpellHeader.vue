@@ -57,10 +57,12 @@ const calculatedSlotsTotal = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+@use 'sass:math';
+
 $originalHeight: 155px;
 $originalWidth: 79px;
 $targetWidth: 30px;
-$ratio: $targetWidth / $originalWidth;
+$ratio: math.div($targetWidth, $originalWidth);
 .spell-header {
   display: grid;
   grid-template-columns: $targetWidth 1fr calc(57px * $ratio) 1fr calc(70px * $ratio);

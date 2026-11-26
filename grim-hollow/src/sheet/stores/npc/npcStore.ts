@@ -519,7 +519,7 @@ export const useNpcStore = defineStore('npcs', () => {
       const source = npc.spellSources.find((s) => s._id === sourceId);
       if (!source) return { final: 0, modifiers: [] };
       const baseBonus = source.spellAttackBonus;
-      const keys = [effectKeys['spell-attack'], effectKeys['attack']];
+      const keys: string[] = [effectKeys['spell-attack'], effectKeys['attack']];
 
       if (spell) {
         keys.push(effectKeys[`${spell.attackType}-attack`]);

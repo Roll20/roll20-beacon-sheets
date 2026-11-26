@@ -121,7 +121,7 @@ describe('equipmentStore', () => {
 
             const dehydrated = store.dehydrate();
             expect(dehydrated.equipment[item._id].name).toBe(item.name);
-            expect(dehydrated.equipment[item._id].arrayPosition).toBeDefined();
+            expect((dehydrated.equipment[item._id] as any).arrayPosition).toBeDefined();
 
             store.equipment = [];
             store.hydrate(dehydrated);
@@ -152,7 +152,7 @@ describe('equipmentStore', () => {
                 }
             };
 
-            store.hydrate(mockHydrateData);
+            store.hydrate(mockHydrateData as any);
 
             expect(store.equipment).toHaveLength(1);
             expect(store.equipment[0].name).toBe('New Item');

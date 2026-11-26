@@ -1,0 +1,45 @@
+{{#> wrapper type="roll" keyValues=keyValues }}
+  {{#> header characterName=(or characterName ../characterName) title=(or title ../title) subtitle=(or subtitle ../subtitle)}}
+  {{/ header}}
+
+  <div class="roll-card-body space-y-3">
+    {{> rollTotal total=(sumComponents ../components multiplier) resultType=resultType}}
+
+    {{#if description}}
+      <div class="roll-card-description">
+        {{{description}}}
+      </div>
+    {{/if}}
+
+    <details class="roll-card-details group">
+      <summary>
+        <span>Show Details</span>
+        <svg class="w-3.5 h-3.5 transform group-open:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </summary>
+      <div class="roll-card-details-content">
+        {{> rollComponents components=components }}
+      </div>
+    </details>
+
+    {{#if keyValues}}
+      {{> keyValues keyValues=keyValues }}
+    {{/if}}
+
+    {{#if textContent}}
+      {{> textContent textContent=textContent }}
+    {{/if}}
+
+    {{#if traits}}
+      <div class="roll-card-traits-wrapper">
+        {{#each traits as |trait|}}
+          <span class="roll-card-trait-badge">
+            {{capitalize trait}}
+          </span>
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+{{/ wrapper }}
+

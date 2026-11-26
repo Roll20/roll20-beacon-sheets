@@ -19,7 +19,7 @@ import {
   useEffectsStore,
 } from '../modifiers/modifiersStore';
 import { useProgressionStore } from '../progression/progressionStore';
-import { useTagsStore, type Tag } from '../tags/tagsStore';
+import { useTagsStore, type Tag, type TagGroup } from '../tags/tagsStore';
 import { useI18n } from 'vue-i18n';
 import { getRollProperties, performDamageRoll } from '@/utility/roll';
 import { effectKeys } from '@/effects.config';
@@ -326,7 +326,7 @@ export const useActionsStore = defineStore('actions', () => {
 
   const getActionTags = (tagId: string): Tag[] => {
     const tagsStore = useTagsStore();
-    const tagGroup = tagsStore.tagGroups[tagId];
+    const tagGroup: TagGroup | undefined = Reflect.get(tagsStore.tagGroups, tagId);
     return tagGroup ? tagGroup.tags : [];
   };
 

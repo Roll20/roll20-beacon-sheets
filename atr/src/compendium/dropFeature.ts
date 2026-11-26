@@ -20,8 +20,11 @@ export const onDropFeature = async ({
   cascade
 }: DropContext): Promise<string | void> => {
   
-  // JORGE - cascade.spellSourceId should have the spellsourceId
-  // of the class that is dropping this feature, if any.
+  let resolvedSpells = spells;
+  if (!resolvedSpells && payload['data-spells'] && Array.isArray(payload['data-spells'])) {
+    resolvedSpells = payload['data-spells'];
+    delete payload['data-spells'];
+  }
 
   const result = FeatureSchema.safeParse(payload);
   if (!result.success) {
@@ -44,9 +47,20 @@ export const onDropFeature = async ({
     result.data.tagId = id;
   }
   
-  if (effects && spells && Array.isArray(spells)) {
+  let resolvedEffects = effects;
+  if (!resolvedEffects && resolvedSpells && Array.isArray(resolvedSpells) && resolvedSpells.length > 0) {
+    resolvedEffects = {
+      label: result.data.label || payload.label || 'Effects',
+      enabled: true,
+      toggleable: false,
+      removable: false,
+      effects: [],
+    };
+  }
+
+  if (resolvedEffects && resolvedSpells && Array.isArray(resolvedSpells)) {
     try {
-      const spellHydrationPromises = spells.map(
+      const spellHydrationPromises = resolvedSpells.map(
         async (spellStub: { name: string; [key: string]: any }) => {
           if (!spellStub.name) return null; 
 
@@ -74,7 +88,7 @@ export const onDropFeature = async ({
       );
 
       const hydratedSpells = (await Promise.all(spellHydrationPromises)).filter(Boolean);
-      effects.spells = hydratedSpells;
+      resolvedEffects.spells = hydratedSpells;
     } catch (e) {
       console.error('Failed to hydrate spells from compendium.', e);
     }
@@ -82,32 +96,32 @@ export const onDropFeature = async ({
   const featuresStore = useFeaturesStore();
   const effectsStore = useEffectsStore();
 
-  if (effects && effects.spells && cascade?.spellSourceId) {
-    if (!effects.spellSources || effects.spellSources.length === 0) {
-      effects.spells.forEach((spell: Record<string, any>) => {
+  if (resolvedEffects && Array.isArray(resolvedEffects.spells) && cascade?.spellSourceId) {
+    if (!resolvedEffects.spellSources || resolvedEffects.spellSources.length === 0) {
+      resolvedEffects.spells.forEach((spell: Record<string, any>) => {
         spell.spellSourceId = cascade.spellSourceId;
       });
     }
   }
 
-if (
-    effects &&
-    effects.spellSources &&
-    Array.isArray(effects.spellSources) &&
-    effects.spellSources.length > 0 &&
-    effects.spells &&
-    Array.isArray(effects.spells)
+  if (
+    resolvedEffects &&
+    resolvedEffects.spellSources &&
+    Array.isArray(resolvedEffects.spellSources) &&
+    resolvedEffects.spellSources.length > 0 &&
+    resolvedEffects.spells &&
+    Array.isArray(resolvedEffects.spells)
   ) {
     const sourceIdMap = new Map<number, string>();
     const sourceRegex = /^\$source:(\d+)$/;
 
-    effects.spellSources.forEach((source: Record<string, any>, index: number) => {
+    resolvedEffects.spellSources.forEach((source: Record<string, any>, index: number) => {
       const newId = source._id || uuidv4();
       source._id = newId;
       sourceIdMap.set(index, newId);
     });
 
-    effects.spells.forEach((spell: Record<string, any>) => {
+    resolvedEffects.spells.forEach((spell: Record<string, any>) => {
       if (typeof spell.spellSourceId === 'string') {
         const match = spell.spellSourceId.match(sourceRegex);
         if (match && match[1]) {
@@ -123,11 +137,11 @@ if (
     });
   }
 
-  if (effects) {
-    processItemTags(effects.actions, 'action');
-    processItemTags(effects.spells, 'spell');
+  if (resolvedEffects) {
+    processItemTags(resolvedEffects.actions, 'action');
+    processItemTags(resolvedEffects.spells, 'spell');
 
-    const newEffect = effectsStore.getEmptyEffect(effects);
+    const newEffect = effectsStore.getEmptyEffect(resolvedEffects);
     effectsStore.update(newEffect);
     result.data.effectId = newEffect._id;
   }

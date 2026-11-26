@@ -26,6 +26,7 @@ export type FormulaKey =
 export type NpcFormulaContext = {
   resolveHitDice?: (cost: number) => string;
   variables?: Record<string, number>;
+  resolveVariable?: (key: string) => number | undefined;
 };
 
 export const parseFormula = (formula: string, context?: NpcFormulaContext): string => {
@@ -84,8 +85,9 @@ export const parseFormula = (formula: string, context?: NpcFormulaContext): stri
 
     let value: number | undefined;
 
-    // Check npc context first
-    if (context?.variables && attributeKey in context.variables) {
+    if (context?.resolveVariable) {
+      value = context.resolveVariable(attributeKey);
+    } else if (context?.variables && attributeKey in context.variables) {
       value = context.variables[attributeKey];
     } else {
       // Fallback to global formulas

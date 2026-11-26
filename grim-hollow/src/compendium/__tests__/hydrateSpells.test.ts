@@ -153,7 +153,7 @@ describe('hydrateSpells', () => {
     const result = await hydrateSpells([spellStub]);
 
     expect(result).toHaveLength(1);
-    expect(result[0].source).toBe('SRD');
+    expect((result[0] as any).source).toBe('SRD');
   });
 
   it('should fallback to the first available page if book ID "5" is not found', async () => {
@@ -180,7 +180,7 @@ describe('hydrateSpells', () => {
     const result = await hydrateSpells([spellStub]);
 
     expect(result).toHaveLength(1);
-    expect(result[0].source).toBe('Homebrew');
+    expect((result[0] as any).source).toBe('Homebrew');
   });
 
   it('should skip hydration and warn if compendium request fails or returns no pages', async () => {

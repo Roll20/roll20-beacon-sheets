@@ -27,6 +27,7 @@ type Feature = z.infer<typeof FeatureSchema>;
 export type compendiumCategory =
   | 'Spells'
   | 'Features'
+  | 'Other Options and Features'
   | 'Feats'
   | 'Classes'
   | 'Subclasses'
@@ -150,6 +151,7 @@ export type DropContext = {
 export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void> = {
   Spells: onDropSpell,
   Features: onDropFeature,
+  'Other Options and Features': onDropFeature,
   Feats: onDropFeature,
   Classes: onDropClass,
   Subclasses: onDropSubclass,

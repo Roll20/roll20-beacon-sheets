@@ -8,12 +8,13 @@ import { EffectsCalculator } from './effectsCalculator';
 import { useEffectsStore, type Effect } from '@/sheet/stores/modifiers/modifiersStore';
 import { type DamageRoll } from '@/sheet/stores/actions/damage';
 import { createComponentsFromFormula } from './diceParser';
-import { type AbilityData, useAbilitiesStore } from '@/sheet/stores/abilities/abilitiesStore';
+import { type AbilityData, type AbilityKey, useAbilitiesStore } from '@/sheet/stores/abilities/abilitiesStore';
 import { getEntryByLabel } from './getEntryBy';
 import { getDiceFromExpression } from './getDiceFromExpression';
 import type { NpcAction, NpcSpell } from '@/sheet/stores/npc/npcStore';
 import type { Spell } from '@/sheet/stores/spells/spellsStore';
 import type { Action } from '@/sheet/stores/actions/actionsStore';
+import { useCombatStore } from '@/sheet/stores/combat/combatStore';
 
 export type LabeledBonus = {
   label: string;
@@ -42,11 +43,27 @@ export type D20RollArgs = {
   avatar?: string;
 };
 
+const getExhaustionBonus = (args: D20RollArgs): LabeledBonus | undefined => {
+  if (args.effectsSource || args.isCompanion) return undefined;
+
+  const exhaustionLevel = useCombatStore().exhaustion;
+  if (exhaustionLevel <= 0) return undefined;
+
+  return {
+    label: 'Exhaustion',
+    value: exhaustionLevel * -2,
+  };
+};
+
 export function getD20RollBreakdown(args: D20RollArgs) {
   const { bonuses, rollBonusKeys = [], effectsSource } = args;
   const effectsStore = useEffectsStore();
 
-  const baseComponents: LabeledBonus[] = bonuses.filter((bonus) => bonus.value !== 0);
+  const exhaustionBonus = getExhaustionBonus(args);
+  const baseComponents: LabeledBonus[] = [
+    ...bonuses,
+    ...(exhaustionBonus ? [exhaustionBonus] : []),
+  ].filter((bonus) => bonus.value !== 0);
 
   const allEffects = effectsSource ?? effectsStore.effects;
   const isActiveCheck = effectsSource
@@ -87,7 +104,8 @@ export const performD20Roll = async (
   } = args;
 
   const effectsStore = useEffectsStore();
-  const bonusComponents = bonuses
+  const exhaustionBonus = getExhaustionBonus(args);
+  const bonusComponents = [...bonuses, ...(exhaustionBonus ? [exhaustionBonus] : [])]
     .filter((bonus) => bonus.value !== 0)
     .map((bonus) => ({
       label: bonus.label,
@@ -231,17 +249,27 @@ export type DamageRollArgs = {
   damageModifierKeys?: string[];
   damageRollKeys?: string[];
   effectsSource?: Effect[];
+  abilityModifiers?: Partial<Record<AbilityKey, number>>;
   characterName?: string;
   additionalComponents?: DiceComponent[];
   t: (key: string) => string;
 };
 
+function getDamageAbilityModifier(
+  ability: DamageRoll['ability'],
+  abilityModifiers: DamageRollArgs['abilityModifiers'],
+): number {
+  if (ability === 'none' || ability === 'spellcasting') return 0;
+  if (abilityModifiers !== undefined) return abilityModifiers[ability] ?? 0;
+  const store = useAbilitiesStore();
+  return store.getAbilityModifier(getEntryByLabel(ability, store.abilities) as AbilityData).value.final;
+}
+
 export function getDamageRollBreakdown(args: DamageRollArgs) {
   const { damageRolls, damageModifierKeys = [], damageRollKeys = [], effectsSource, t } = args;
   const effectsStore = useEffectsStore();
-  const abilitiesStore = useAbilitiesStore();
 
-  const baseComponents: LabeledBonus[] = [];
+  const baseComponents: { label: string; value: string | number }[] = [];
   if (damageRolls) {
     damageRolls.forEach((roll) => {
       if (roll.damage) {
@@ -251,9 +279,7 @@ export function getDamageRollBreakdown(args: DamageRollArgs) {
         });
       }
       if (roll.ability && roll.ability !== 'none') {
-        const modifier = abilitiesStore.getAbilityModifier(
-          getEntryByLabel(roll.ability, abilitiesStore.abilities) as AbilityData,
-        ).value.final;
+        const modifier = getDamageAbilityModifier(roll.ability, args.abilityModifiers);
         if (modifier !== 0) {
           baseComponents.push({ label: t(`titles.abilities.${roll.ability}`), value: modifier });
         }
@@ -317,9 +343,7 @@ export const performDamageRoll = async (args: DamageRollArgs) => {
         );
       }
       if (roll.ability && roll.ability !== 'none') {
-        const modifier = useAbilitiesStore().getAbilityModifier(
-          getEntryByLabel(roll.ability, useAbilitiesStore().abilities) as AbilityData,
-        ).value.final;
+        const modifier = getDamageAbilityModifier(roll.ability, args.abilityModifiers);
         if (modifier !== 0) {
           damageGroups[roll.type].components.push({
             label: t(`titles.abilities.${roll.ability}`),

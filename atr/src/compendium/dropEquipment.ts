@@ -23,7 +23,19 @@ export const onDropEquipment = async ({
     console.error('Invalid equipment data', result.error);
     return;
   }
-  if (effects && spells && Array.isArray(spells)) {
+
+  let resolvedEffects = effects;
+  if (!resolvedEffects && spells && Array.isArray(spells) && spells.length > 0) {
+    resolvedEffects = {
+      label: result.data.name || payload.name || 'Effects',
+      enabled: true,
+      toggleable: false,
+      removable: false,
+      effects: [],
+    };
+  }
+
+  if (resolvedEffects && spells && Array.isArray(spells)) {
     try {
       const spellHydrationPromises = spells.map(
         async (spellStub: { name: string; [key: string]: any }) => {
@@ -53,7 +65,7 @@ export const onDropEquipment = async ({
       );
 
       const hydratedSpells = (await Promise.all(spellHydrationPromises)).filter(Boolean);
-      effects.spells = hydratedSpells;
+      resolvedEffects.spells = hydratedSpells;
     } catch (e) {
       console.error('Failed to hydrate spells from compendium.', e);
     }
@@ -62,23 +74,23 @@ export const onDropEquipment = async ({
   const effectsStore = useEffectsStore();
 
   if (
-    effects &&
-    effects.spellSources &&
-    Array.isArray(effects.spellSources) &&
-    effects.spellSources.length > 0 &&
-    effects.spells &&
-    Array.isArray(effects.spells)
+    resolvedEffects &&
+    resolvedEffects.spellSources &&
+    Array.isArray(resolvedEffects.spellSources) &&
+    resolvedEffects.spellSources.length > 0 &&
+    resolvedEffects.spells &&
+    Array.isArray(resolvedEffects.spells)
   ) {
     const sourceIdMap = new Map<number, string>();
     const sourceRegex = /^\$source:(\d+)$/;
 
-    effects.spellSources.forEach((source: Record<string, any>, index: number) => {
+    resolvedEffects.spellSources.forEach((source: Record<string, any>, index: number) => {
       const newId = source._id || uuidv4();
       source._id = newId;
       sourceIdMap.set(index, newId);
     });
 
-    effects.spells.forEach((spell: Record<string, any>) => {
+    resolvedEffects.spells.forEach((spell: Record<string, any>) => {
       if (typeof spell.spellSourceId === 'string') {
         const match = spell.spellSourceId.match(sourceRegex);
         if (match && match[1]) {
@@ -109,11 +121,11 @@ export const onDropEquipment = async ({
     result.data.tagId = id;
   }
 
-  if (effects) {
-    processItemTags(effects.actions, 'action');
-    processItemTags(effects.spells, 'spell');
+  if (resolvedEffects) {
+    processItemTags(resolvedEffects.actions, 'action');
+    processItemTags(resolvedEffects.spells, 'spell');
 
-    const newEffect = effectsStore.getEmptyEffect(effects);
+    const newEffect = effectsStore.getEmptyEffect(resolvedEffects);
     effectsStore.update(newEffect);
     result.data.effectId = newEffect._id;
   }

@@ -446,6 +446,17 @@ describe('spellsStore', () => {
       expect(slots.standard[2]).toBe(0);
     });
 
+    it('should grant level 1 half casters two level 1 slots', () => {
+      const store = useSpellsStore();
+      const progressionStore = useProgressionStore();
+
+      progressionStore.updateClass({ name: 'Paladin', level: 1, spellcasting: 'half' });
+
+      const slots = store.getSlots;
+      expect(slots.standard[0]).toBe(2);
+      expect(slots.standard.slice(1).every((slot) => slot === 0)).toBe(true);
+    });
+
     it('should handle invalid caster type in multiclass calculation', () => {
       const store = useSpellsStore();
       const progressionStore = useProgressionStore();
@@ -489,6 +500,38 @@ describe('spellsStore', () => {
       expect(slots.standard[0]).toBe(4);
       expect(slots.standard[1]).toBe(3);
       expect(slots.standard[2]).toBe(2);
+    });
+
+    it('should round each half-caster contribution up when multiclassing', () => {
+      const store = useSpellsStore();
+      const progressionStore = useProgressionStore();
+
+      progressionStore.updateClass({ name: 'Wizard', level: 1, spellcasting: 'full' });
+      progressionStore.updateClass({ name: 'Paladin', level: 1, spellcasting: 'half' });
+
+      const slots = store.getSlots;
+      expect(slots.standard[0]).toBe(3);
+    });
+
+    it('should round each third-caster contribution down when multiclassing', () => {
+      const store = useSpellsStore();
+      const progressionStore = useProgressionStore();
+
+      progressionStore.updateClass({ name: 'Wizard', level: 1, spellcasting: 'full' });
+      progressionStore.updateClass({ name: 'Eldritch Knight', level: 2, spellcasting: 'third' });
+
+      const slots = store.getSlots;
+      expect(slots.standard[0]).toBe(2);
+    });
+
+    it('should return no slots when multiclass caster level rounds to zero', () => {
+      const store = useSpellsStore();
+      const progressionStore = useProgressionStore();
+
+      progressionStore.updateClass({ name: 'Eldritch Knight', level: 2, spellcasting: 'third' });
+      progressionStore.updateClass({ name: 'Arcane Trickster', level: 2, spellcasting: 'third' });
+
+      expect(store.getSlots.standard).toEqual(Array(config.spellLevels.length - 1).fill(0));
     });
 
     it('should calculate slots for Pact Magic', () => {

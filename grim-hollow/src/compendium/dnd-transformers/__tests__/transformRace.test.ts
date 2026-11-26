@@ -160,7 +160,7 @@ describe('transformDnDRace', () => {
       // Should have Main Traits + Ancestral Legacy
       expect(features.length).toBeGreaterThanOrEqual(1);
 
-      const legacyFeature = features.find((f) => f.label === 'Ancestral Legacy');
+      const legacyFeature = features.find((f: any) => f.label === 'Ancestral Legacy');
       expect(legacyFeature).toBeDefined();
       expect(legacyFeature['data-effects'].effects).toContainEqual(
         expect.objectContaining({
@@ -188,7 +188,7 @@ describe('transformDnDRace', () => {
       expect(result['data-features']).toBeDefined();
       const features = result['data-features']['level-1'];
       
-      const ageFeature = features.find(f => f.label === 'Age');
+      const ageFeature = features.find((f: any) => f.label === 'Age');
       
       expect(ageFeature).toBeDefined();
       expect(ageFeature.description).toContain('late teens');

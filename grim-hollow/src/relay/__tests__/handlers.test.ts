@@ -35,12 +35,11 @@ describe('Relay Handlers', () => {
 
   describe('onInit', () => {
     it('should initialize global values correctly', async () => {
-      const args: InitArgs = {
+      const args = {
         character: mockCharacter as any,
         settings: mockSettings as any,
         compendiumDropData: null,
-        user: { id: 'user-1', display_name: 'Player' }
-      };
+      } as unknown as InitArgs;
 
       await onInit(args, mockDispatch);
 
@@ -51,12 +50,11 @@ describe('Relay Handlers', () => {
     });
 
     it('should NOT trigger drag if compendiumDropData is missing', async () => {
-      const args: InitArgs = {
+      const args = {
         character: mockCharacter as any,
         settings: mockSettings as any,
         compendiumDropData: null,
-        user: { id: 'user-1', display_name: 'Player' }
-      };
+      } as unknown as InitArgs;
 
       await onInit(args, mockDispatch);
 
@@ -64,7 +62,7 @@ describe('Relay Handlers', () => {
     });
 
     it('should NOT trigger drag if compendiumDropData category is not "Monsters"', async () => {
-      const args: InitArgs = {
+      const args = {
         character: mockCharacter as any,
         settings: mockSettings as any,
         compendiumDropData: {
@@ -72,8 +70,7 @@ describe('Relay Handlers', () => {
           pageName: 'Fireball',
           expansionId: 1
         },
-        user: { id: 'user-1', display_name: 'Player' }
-      };
+      } as unknown as InitArgs;
 
       await onInit(args, mockDispatch);
 
@@ -87,12 +84,11 @@ describe('Relay Handlers', () => {
         expansionId: 1
       };
 
-      const args: InitArgs = {
+      const args = {
         character: mockCharacter as any,
         settings: mockSettings as any,
         compendiumDropData: dropData,
-        user: { id: 'user-1', display_name: 'Player' }
-      };
+      } as unknown as InitArgs;
 
       await onInit(args, mockDispatch);
 

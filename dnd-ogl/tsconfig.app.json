@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.d.ts"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.d.ts", "vite.worker.config.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "baseUrl": ".",
