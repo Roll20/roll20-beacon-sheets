@@ -13,7 +13,7 @@ import {
 import sheetComputed from './handlers/computed'
 import devRelay from './devRelay'
 import { reactive, ref, watch, nextTick, shallowRef } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from '@/utility/uuid.js'
 
 const relayConfig = {
   handlers: {

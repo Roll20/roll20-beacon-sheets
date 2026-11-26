@@ -1,13 +1,25 @@
 <script setup>
+import { computed, ref } from 'vue'
 import { useAppStore } from '@/stores/index.js'
 import { useBuilder } from '@/composables/useBuilder.js'
+import { useCatalog } from '@/composables/useCatalog.js'
+import { premadesOf, PREMADES_CATEGORY } from '@/builder/premades.js'
 import { NPC } from '@/sheetTypes.js'
 import psLogo from '@/assets/img/ps-logo.webp'
+import PremadePicker from './PremadePicker.vue'
 
 defineProps({ available: { type: Boolean, default: true } })
 
 const app = useAppStore()
 const { builder, start } = useBuilder()
+
+const { lists, loadCategory } = useCatalog()
+loadCategory(PREMADES_CATEGORY)
+const premades = computed(() => {
+  const list = lists[PREMADES_CATEGORY]
+  return list?.status === 'ok' ? premadesOf(list.options) : []
+})
+const picking = ref(false)
 
 const editDirectly = () => builder.skip()
 const makeNpc = () => {
@@ -17,12 +29,18 @@ const makeNpc = () => {
 </script>
 
 <template>
-  <div class="landing">
+  <PremadePicker v-if="picking" :premades="premades" @back="picking = false" />
+  <div v-else class="landing">
     <div class="landing__banner">
       <img :src="psLogo" class="landing__logo" alt="Phantasy Star Tabletop Roleplaying" />
       <h1 class="landing__title">Press Start!</h1>
       <p class="landing__lead">Design a new hero step by step, or fill in the sheet yourself.</p>
-      <button type="button" class="landing__build" :disabled="!available" @click="start">Build a Character</button>
+      <div class="landing__starts">
+        <button type="button" class="landing__build" :disabled="!available" @click="start">Build a Character</button>
+        <button v-if="premades.length" type="button" class="landing__build landing__build--alt" @click="picking = true">
+          Ready-to-Play Characters
+        </button>
+      </div>
       <p v-if="!available" class="landing__needs">
         The character builder requires the <em>Phantasy Star Tabletop Roleplaying</em> core book on Roll20.
       </p>
@@ -74,6 +92,10 @@ const makeNpc = () => {
 }
 
 .landing__build:disabled { opacity: 0.45; cursor: default; }
+
+.landing__starts { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.landing__build--alt { @include ps-button(var(--ps-field), var(--ps-panel-alt)); color: var(--ps-heading); }
 
 .landing__needs { margin: 0; color: var(--ps-text-muted); font-size: 12px; }
 
