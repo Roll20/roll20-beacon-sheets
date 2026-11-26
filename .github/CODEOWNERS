@@ -1,4 +1,7 @@
-# These owners will be the default owners for everything in
-# the repo unless a later match takes precedence.
+# Dependency manifests and repository configuration need review from beacon-devs.
+# Sheet source code has no code owner and follows main's normal review rule.
 
-* @Roll20/beacon-devs
+/.github/ @Roll20/beacon-devs
+**/package.json @Roll20/beacon-devs
+**/package-lock.json @Roll20/beacon-devs
+**/.npmrc @Roll20/beacon-devs
