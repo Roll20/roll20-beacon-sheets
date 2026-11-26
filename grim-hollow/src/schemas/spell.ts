@@ -5,6 +5,7 @@ import { type AbilityKey } from '@/sheet/stores/abilities/abilitiesStore';
 import { EffectCompendiumCoreSchema } from './common/effect.core';
 import { ta } from 'zod/v4/locales';
 import { RequirementSchema } from './common/common';
+import { unconstrainedJsonSchemas } from './common/jsonSchema';
 
 const SpellLevelSchema = z
   .number()
@@ -30,7 +31,7 @@ export const BaseSpellSourceCompendiumSchema = BaseSpellSourceSchema.omit({ _id:
 
 export const StandardSpellSourceSchema = BaseSpellSourceSchema.extend({
   type: z.literal('ability'),
-  ability: z.custom<AbilityKey>(),
+  ability: z.custom<AbilityKey>().register(unconstrainedJsonSchemas),
 });
 
 export const FlatSpellSourceSchema = BaseSpellSourceSchema.extend({

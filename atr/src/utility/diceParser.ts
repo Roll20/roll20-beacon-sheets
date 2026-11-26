@@ -21,7 +21,7 @@ export function createComponentsFromFormula(formula: string, baseLabel?: string)
           count: sign * term.rollable.count,
         });
       } else if (term.type === 'constant') {
-        if (term.value !== 0) {
+        if (Reflect.get(term, 'value') !== 0) {
           components.push({
             value: sign * term.constant.value,
             label: baseLabel,

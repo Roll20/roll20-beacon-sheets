@@ -23,10 +23,12 @@ vi.mock('@/compendium/dropBackground', () => ({
 }));
 
 vi.mock('@dice-roller/rpg-dice-roller', () => ({
-  DiceRoll: vi.fn().mockImplementation(() => ({
-    roll: vi.fn(),
-    total: 8,
-  })),
+  DiceRoll: vi.fn().mockImplementation(function () {
+    return {
+      roll: vi.fn(),
+      total: 8,
+    };
+  }),
 }));
 
 vi.mock('vue-i18n', () => ({

@@ -166,7 +166,16 @@ export const useCombatStore = defineStore('combat', () => {
         }
       }
 
-      return modification;
+      const exhaustionPenalty = exhaustion.value * 5;
+      if (exhaustionPenalty === 0) return modification;
+
+      return {
+        final: Math.max(0, modification.final - exhaustionPenalty),
+        modifiers: [
+          ...modification.modifiers,
+          { name: t('titles.exhaustion'), value: -exhaustionPenalty },
+        ],
+      };
     });
   };
 

@@ -1,0 +1,37 @@
+<div class="pstr-card pstr-card--technique{{#if advanced}} pstr-card--advanced{{/if}}">
+  {{> header}}
+
+  <div class="pstr-card__cost">
+    <span class="pstr-cost">{{tpCost}} TP</span>
+    {{#if boosted}}<span class="pstr-tag">Boosted to {{rankLabel}}</span>{{/if}}
+    {{#if advanced}}<span class="pstr-tag pstr-tag--advanced">Advanced &middot; once per long rest</span>{{/if}}
+    {{#if concentration}}<span class="pstr-tag">Concentration</span>{{/if}}
+    {{#if tpRemaining}}<span class="pstr-card__remaining">{{tpRemaining}} TP left</span>{{/if}}
+  </div>
+
+  {{#if rollLabel}}
+    <div class="pstr-card__result pstr-card__result--cast{{#if resultType}} pstr-card--{{resultType}}{{/if}}">
+      <div class="pstr-card__roll-label">{{rollLabel}}</div>
+      <div class="pstr-card__total">{{total}}</div>
+      {{#if resultType}}
+        <div class="pstr-card__verdict">
+          {{#if (isEqual resultType 'crit-success')}}Critical Hit{{/if}}
+          {{#if (isEqual resultType 'crit-fail')}}Critical Miss{{/if}}
+        </div>
+      {{/if}}
+    </div>
+    {{> components}}
+  {{/if}}
+
+  {{> keyValues}}
+  {{> textContent}}
+
+  {{#if boost}}
+    <div class="pstr-card__boost">
+      <span class="pstr-card__boost-label">{{#if (isEqual rank 0)}}Prime Upgrade{{else}}Rank Boosting{{/if}}</span>
+      {{#each boost}}<p>{{this}}</p>{{/each}}
+    </div>
+  {{/if}}
+
+  {{#if footnote}}<div class="pstr-card__footnote">{{footnote}}</div>{{/if}}
+</div>

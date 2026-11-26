@@ -4,7 +4,7 @@ import type { Ref } from 'vue';
 import { arrayToObject, objectToArray } from '@/utility/objectify';
 import { v4 as uuidv4 } from 'uuid';
 import { getEntryById } from '@/utility/getEntryBy';
-import { useTagsStore, type Tag } from '../tags/tagsStore'; 
+import { useTagsStore, type Tag, type TagGroup } from '../tags/tagsStore';
 import { useEffectsStore } from '../modifiers/modifiersStore';
 import { e } from 'mathjs';
 
@@ -43,7 +43,7 @@ export const useFeaturesStore = defineStore('features', () => {
 
     const getFeatureTags = (tagId: string): Tag[] => {
       const tagsStore = useTagsStore();
-      const tagGroup = tagsStore.tagGroups[tagId];
+      const tagGroup: TagGroup | undefined = Reflect.get(tagsStore.tagGroups, tagId);
       return tagGroup ? tagGroup.tags : [];
     };
 

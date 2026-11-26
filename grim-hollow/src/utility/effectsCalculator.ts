@@ -5,19 +5,20 @@ import type {
   ExtendedSingleEffect,
   DicePool,
   ModifierBreakdown,
+  DicePoolModifierBreakdown,
   Picker,
 } from '@/sheet/stores/modifiers/modifiersStore';
 import { createComponentsFromFormula, getDicePoolAverage } from '@/utility/diceParser';
 import type { DiceComponent } from '@/rolltemplates/rolltemplates';
 import { config } from '@/config';
-import { parseFormula, parseFormulaAndEvaluate } from '@/sheet/stores/formulas';
+import { parseFormula, parseFormulaAndEvaluate, type NpcFormulaContext } from '@/sheet/stores/formulas';
 import { type Spell, type SpellSource, useSpellsStore } from '@/sheet/stores/spells/spellsStore';
 import { type Action, useActionsStore } from '@/sheet/stores/actions/actionsStore';
 import { type Resource, useResourcesStore } from '@/sheet/stores/resources/resourcesStore';
 import { type TagGroup, useTagsStore } from '@/sheet/stores/tags/tagsStore';
 import { v4 as uuidv4 } from 'uuid';
 import { useProgressionStore } from '@/sheet/stores/progression/progressionStore';
-import { effect } from 'zod';
+
 import { useEquipmentStore } from '@/sheet/stores/equipment/equipmentStore';
 
 const operationPriority: Record<SingleEffect['operation'], number> = {
@@ -172,7 +173,7 @@ const defaultGetters = {
 
 function getValidEffects(
   allEffects: Effect[],
-  attribute: string | string[],
+  attribute: string | (string | undefined)[] | undefined,
   isActiveCheck: (effect: Effect, singleEffect: SingleEffect) => boolean,
 ): ExtendedSingleEffect[] {
   const attributesToCheck = Array.isArray(attribute) ? attribute : [attribute];
@@ -218,7 +219,9 @@ function collectFromEffects<T extends { _id: string }>(
 
   const getDefault = defaultGetters[key as keyof typeof defaultGetters];
   const equipmentStore = useEquipmentStore();
-  const owner = equipmentStore.equipment.find((item) => item.effectId === effect._id);
+  // The former Zod effect export had no _id; preserve the previous owner lookup.
+  const owner = equipmentStore.equipment.find((item) => item.effectId === undefined);
+
   const progressionStore = useProgressionStore();
 
   allEffects.forEach((effect) => {
@@ -351,6 +354,7 @@ function calculateModifiedValue(
   baseValue: number,
   validEffects: ExtendedSingleEffect[],
   constrainTo: number[] = [],
+  formulaContext?: NpcFormulaContext,
 ): { final: number; modifiers: ModifierBreakdown[] } {
   let finalValue = baseValue;
   const modifiers: ModifierBreakdown[] = [];
@@ -361,7 +365,7 @@ function calculateModifiedValue(
     const formulaRegex = /-formula$/g;
     const value = Number(
       formulaRegex.test(effect.operation)
-        ? parseFormulaAndEvaluate(getPicker(effect.formula as string, effect.pickers) as string)
+        ? parseFormulaAndEvaluate(getPicker(effect.formula as string, effect.pickers) as string, formulaContext)
         : effect.value,
     );
     const operation = effect.operation.replace(formulaRegex, '');
@@ -408,9 +412,9 @@ function calculateModifiedValue(
 function calculateModifiedDicePool(
   basePool: DicePool,
   validEffects: ExtendedSingleEffect[],
-): { final: DicePool; modifiers: ModifierBreakdown[] } {
+): { final: DicePool; modifiers: DicePoolModifierBreakdown[] } {
   let finalPool: DicePool = [...basePool];
-  const modifiers: ModifierBreakdown[] = [];
+  const modifiers: DicePoolModifierBreakdown[] = [];
 
   validEffects.forEach((effect) => {
     const formulaRegex = /-formula$/g;
@@ -429,7 +433,7 @@ function calculateModifiedDicePool(
     }
     const operation = effect.operation.replace(formulaRegex, '');
 
-    let contribution = 0;
+    let contribution: string | number = 0;
 
     switch (operation) {
       case 'set-base': {
@@ -450,7 +454,7 @@ function calculateModifiedDicePool(
         break;
       case 'subtract':
         finalPool.push(`-${value}`);
-        contribution = -value;
+        contribution = -Number(value);
         break;
       case 'set': {
         const currentAvg = getDicePoolAverage(finalPool);

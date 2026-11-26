@@ -9,22 +9,17 @@ on:
       - '**.css'
 
 jobs:
+  # Runs a script from the repository, so it must never hold cloud
+  # credentials. Its only output is the artifact handed to the upload job.
   process-fonts:
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install required tools
         run: sudo apt-get update && sudo apt-get install -y zsh perl curl
-
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.GCP_KEYFILE }}'
-
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
 
       - name: Process Font URLs
         run: |
@@ -32,6 +27,36 @@ jobs:
           CLIENT_ID=${{ github.ref_name == 'main' && '1199271093882589195' || '1199270539278164008' }}
           DISCORD_ACTIVITY_CLIENT_ID=$CLIENT_ID \
           ./process-fonts.sh --no-prompt --output-dir ${{ runner.temp }}/sheet-fonts
+
+      - name: Upload fonts artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sheet-fonts
+          path: ${{ runner.temp }}/sheet-fonts
+          if-no-files-found: error
+          retention-days: 1
+
+  # Holds the cloud credential and runs nothing from the repository.
+  upload-fonts:
+    needs: process-fonts
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Download fonts artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sheet-fonts
+          path: ${{ runner.temp }}/sheet-fonts
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_KEYFILE }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
 
       - name: Upload to GCS
         run: |

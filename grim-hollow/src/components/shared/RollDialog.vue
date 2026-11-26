@@ -119,7 +119,7 @@ import type { D20RollArgs, DamageRollArgs, LabeledBonus } from '@/utility/roll';
 import { jsonClone } from '@/utility/jsonTools';
 import { type DiceComponent } from '@/rolltemplates/rolltemplates';
 import { parseFormula } from '@/sheet/stores/formulas';
-import { HitDieSize, useProgressionStore } from '@/sheet/stores/progression/progressionStore';
+import { type HitDieSize, useProgressionStore } from '@/sheet/stores/progression/progressionStore';
 import { config } from '@/config';
 import ToggleSwitch from './ToggleSwitch.vue';
 import { useCombatStore } from '@/sheet/stores/combat/combatStore';

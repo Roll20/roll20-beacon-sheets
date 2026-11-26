@@ -136,7 +136,6 @@ rolltemplate.sheet-roll__card {
   position: relative;
   overflow: hidden;
   clip-path: var(--path-gothic);
-  filter: invert(1);
 }
 rolltemplate.sheet-roll__card::before {
   content: "";
@@ -350,6 +349,9 @@ rolltemplate.sheet-roll__card .damage-group__subtotal {
 }
 rolltemplate.sheet-roll__card .damage-group__total {
   font-weight: bold;
+}
+rolltemplate.sheet-roll__card {
+  filter: invert(1);
 }
 rolltemplate.sheet-roll__card:before, rolltemplate.sheet-roll__card:after, rolltemplate.sheet-roll__card .roll__total--crit-success, rolltemplate.sheet-roll__card .roll__total--crit-fail, rolltemplate.sheet-roll__card .show-more, rolltemplate.sheet-roll__card .roll__component {
   filter: invert(1);

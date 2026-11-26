@@ -4,7 +4,7 @@
             <div class="label" data-testid="test-spell-header" style="flex:1;">{{ spell.name }}<br />({{ spell.requirements }})</div>     
         </div>
         <div>
-            <img v-if="spell.arcanaType && settings.gameSystem !== 'blue rose'" :src="'/src/assets/arcana/' + spell.arcanaType.toLowerCase() + '.png'" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
+            <img v-if="arcanaIconSrc && settings.gameSystem !== 'blue rose'" :src="arcanaIconSrc" class="age-arcana-logo" v-tippy="{ content: '<span>'+spell.arcanaType+' '+ magicLabel+'</span>'}" />
         </div>   
         <!-- <div class="age-cost-tn-number" v-tippy="{ content: 'Magic Point Cost'}">
             <span>{{ spell.mpCost }}</span>
@@ -18,10 +18,10 @@
                 data-bs-target="#spellDetailsModal" 
                 data-bs-dismiss="showModal = false" 
                 data-bs-backdrop="static" 
-                v-tippy="{ content: settings.gameSystem === 'blue rose' ? 'Cast '+magicLabel : 'Cast '+magicLabel+' (' + spell.mpCost + ''+magicPoints+')' }"
+                v-tippy="{ content: castTooltip }"
                 @click="handlePrint"
-                :disabled="(settings.userPowerFatigue ? false : char.magic < spell.mpCost)"
-                :class="{ 'spell-btn-disabled':(settings.userPowerFatigue ? false : char.magic < spell.mpCost)}">
+                :disabled="castDisabled"
+                :class="{ 'spell-btn-disabled': castDisabled }">
             <div class="age-spell-cast"></div>
         </button>
         <div>
@@ -33,9 +33,7 @@
                 data-bs-dismiss="showModal = false" 
                 data-bs-backdrop="static" 
                 v-tippy="{ content: magicLabel+ ' Damage' }"
-                @click="handleDamagePrint"
-                :disabled="(char.magic < spell.mpCost)"
-                :class="{ 'spell-btn-disabled':(char.magic < spell.mpCost)}">
+                @click="handleDamagePrint">
             <div class="age-spell-damage"></div>
         </button>
         </div>
@@ -64,10 +62,12 @@
                 <span>{{ spell.spellType }}</span>
               <span class="age-spell-details__label">Casting Time</span>
                 <span>{{ spell.castingTime + ' Action' }}</span>
-              <span class="age-spell-details__label">{{ magicPoints }} Cost</span>
-                <span>{{ spell.mpCost }}</span>
+              <span class="age-spell-details__label" v-if="costModel !== 'price'">{{ magicPoints }} </span>
+                <span v-if="costModel !== 'price'">{{ spell.mpCost }}</span>
               <span class="age-spell-details__label">Target Number</span>
                 <span>{{ spell.targetNumber }}</span>
+              <span class="age-spell-details__label" v-if="costModel === 'price' && spell.priceTN">Price Test TN</span>
+                <span v-if="costModel === 'price' && spell.priceTN">{{ spell.priceTN }}</span>
               <span class="age-spell-details__label" v-if="spell.spellTest">Test</span>
                 <span v-if="spell.spellTest">{{  spell.spellTest + ' vs. Spellpower' }}</span>
             </div>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useSpellStore } from '@/sheet/stores/magic/magicStore';
 import { useAbilityScoreStore } from '@/sheet/stores/abilityScores/abilityScoresStore'
 import SpellModal from './SpellModal.vue';
@@ -106,6 +106,7 @@ import { useSettingsStore } from '@/sheet/stores/settings/settingsStore';
 import { useAbilityFocusesStore } from '@/sheet/stores/abilityScores/abilityFocusStore';
 import SpellFamiliarityModal from './SpellFamiliarityModal.vue';
 import { useItemStore } from '@/sheet/stores/character/characterQualitiesStore';
+import { pointsLabel, sourceLabel, spellSourceId } from '@/utility/powerSources';
 
 const bio = useBioStore();
 const char = useCharacterStore();
@@ -125,8 +126,7 @@ const props = defineProps({
 
 const expanded = ref(false);
 
-const magicLabel = ref('Arcana');
-const magicPoints = ref('MP');
+
 
 const familiarity = ref(0);
 const familiarityOptions = ref([
@@ -137,20 +137,40 @@ const familiarityOptions = ref([
   { value: 8, label: 'Casually Familiar' },
   { value: 10, label: 'Slightly Familiar' }
 ]);
-switch(settings.gameSystem){
-  case 'mage':
-    magicLabel.value = 'Power';
-    if(settings.userPowerFatigue){
-      magicPoints.value = ' Power Cost';
-    } else {
-      magicPoints.value = 'PP';
-    }
-  break;
-  default:
-    magicLabel.value = 'Arcana';
-    magicPoints.value = 'MP';
-  break;
-}
+const sourceId = computed(() => spellSourceId(props.spell));
+const costModel = computed(() => settings.costModelFor(sourceId.value));
+const magicLabel = computed(() => sourceLabel(sourceId.value, settings.gameSystem));
+const magicPoints = computed(() =>
+  costModel.value === 'points' ? pointsLabel(sourceId.value, settings.gameSystem) : 'Power Cost'
+);
+const castDisabled = computed(
+  () => costModel.value === 'points' && char.poolCurrent(sourceId.value) < Number(props.spell.mpCost)
+);
+const castTooltip = computed(() => {
+  if (costModel.value === 'price') return `Cast ${magicLabel.value} (Price Test)`;
+  if (costModel.value === 'fatigue') return `Cast ${magicLabel.value} (Fatigue Test)`;
+  return `Cast ${magicLabel.value} (${props.spell.mpCost} ${magicPoints.value})`;
+});
+
+// Resolve arcana icons through Vite so they work in the built/hosted sheet.
+// A raw "/src/assets/arcana/x.png" path only resolves under the dev server;
+// import.meta.glob emits the bundled, base-prefixed URL for each file.
+const arcanaIconUrls = import.meta.glob('../../assets/arcana/*.png', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+const arcanaIconMap = Object.fromEntries(
+  Object.entries(arcanaIconUrls).map(([path, url]) => [
+    path.split('/').pop().replace(/\.png$/, '').toLowerCase(),
+    url,
+  ])
+);
+const arcanaIconSrc = computed(() =>
+  props.spell?.arcanaType
+    ? arcanaIconMap[props.spell.arcanaType.toLowerCase()]
+    : undefined
+);
 const toggleExpand = () => {
   expanded.value = !expanded.value;
 };
@@ -191,7 +211,8 @@ const handlePrint = () => {
   if(settings.gameSystem === 'blue rose'){
     showFamiliarityModal.value = true;
   } else {
-    spellStore.printSpell(props.spell._id,parseInt(toAttackRoll) + focusBonus());
+    const focus = focusBonus();
+    spellStore.printSpell(props.spell._id, parseInt(toAttackRoll) + focus, 0, focus);
   }
 };
 const handleDamagePrint = () => {

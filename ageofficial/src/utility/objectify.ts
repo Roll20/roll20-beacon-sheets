@@ -1,6 +1,7 @@
 export const arrayToObject = (array: { _id: string; [x: string]: any }[]) => {
-  const isValidArray = array.every((item) => '_id' in item);
-  if (!isValidArray) throw new Error('Tried to objectify an array, but not every item had ids');
+  const isValidArray = array.every((item) => "_id" in item);
+  if (!isValidArray)
+    throw new Error("Tried to objectify an array, but not every item had ids");
   const newObject: Record<string, any> = {};
   array.forEach((item, index) => {
     const { _id, ...rest } = item;

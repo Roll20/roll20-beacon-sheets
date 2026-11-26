@@ -46,7 +46,7 @@ describe('transformDnDSpell', () => {
       expect(result.upcast).toBeDefined();
       expect(result.upcast).toHaveLength(6); // Levels 4, 5, 6, 7, 8, 9
       expect(result.upcast?.[0].level).toBe(4);
-      expect(result.upcast?.[0].damage[0].damage).toBe('9d6'); // 8d6 + 1d6
+      expect(result.upcast?.[0].damage?.[0].damage).toBe('9d6'); // 8d6 + 1d6
     });
 
     it('transforms a legacy cantrip', () => {
@@ -136,7 +136,7 @@ describe('transformDnDSpell', () => {
       expect(result.upcast).toBeDefined();
       expect(result.upcast).toHaveLength(8); 
       expect(result.upcast?.[0].level).toBe(2);
-      expect(result.upcast?.[0].damage[0].damage).toBe('4d4');
+      expect(result.upcast?.[0].damage?.[0].damage).toBe('4d4');
     });
 
     it('transforms a cantrip with scaling', () => {
@@ -385,11 +385,11 @@ describe('transformDnDSpell', () => {
       expect(result.upcast).toBeDefined();
       expect(result.upcast).toHaveLength(8); // Levels 2-9
       expect(result.upcast?.[0].level).toBe(2);
-      expect(result.upcast?.[0].damage[0].damage).toBe('2d4');
-      expect(result.upcast?.[0].damage[0].type).toBe('healing');
-      expect(result.upcast?.[0].damage[0].ability).toBe('spellcasting');
+      expect(result.upcast?.[0].damage?.[0].damage).toBe('2d4');
+      expect(result.upcast?.[0].damage?.[0].type).toBe('healing');
+      expect(result.upcast?.[0].damage?.[0].ability).toBe('spellcasting');
       expect(result.upcast?.[7].level).toBe(9);
-      expect(result.upcast?.[7].damage[0].damage).toBe('9d4');
+      expect(result.upcast?.[7].damage?.[0].damage).toBe('9d4');
     });
 
     it('transforms a modern temporary hit points spell', () => {
@@ -455,8 +455,8 @@ describe('transformDnDSpell', () => {
 
       expect(result.upcast).toBeDefined();
       expect(result.upcast?.[0].level).toBe(2);
-      expect(result.upcast?.[0].damage[0].damage).toBe('2d8');
-      expect(result.upcast?.[0].damage[0].type).toBe('healing');
+      expect(result.upcast?.[0].damage?.[0].damage).toBe('2d8');
+      expect(result.upcast?.[0].damage?.[0].type).toBe('healing');
     });
 
     it('transforms a legacy healing spell without casting modifier', () => {

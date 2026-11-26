@@ -22,6 +22,12 @@ export type Item = {
   description: string;
   quantity: number;
   cost:string;
+  qualities?: string;
+  flaws?: string;
+  // Thrown/explosive consumables (e.g. grenades): a consumable that also carries attack data.
+  // When `hasAttack` is set and the item is `equipped`, it shows up in the attack list
+  // and each attack roll spends one from `quantity`.
+  hasAttack?: boolean;
 };
 
 export type Weapon = Item & {
@@ -36,6 +42,8 @@ export type Weapon = Item & {
   shortRange?:number | null;
   longRange?:number | null;
   reload?:string;
+  damageQualities?: string;
+  damageFlaws?: string;
   configurable:boolean
   minStr?: number;
   damageType?:string;
@@ -139,7 +147,24 @@ export const useInventoryStore = defineStore('inventory', () => {
       if (isWeapon(item)) (item as Weapon).equipped = false;
       if (isArmor(item)) (item as Armor).equipped = false;
       if (isShield(item)) (item as Armor).equipped = false;
+      if (isThrownConsumable(item)) (item as Weapon).equipped = false;
     }
+  };
+  // A consumable with attack data (grenade, bomb, etc.) that can be equipped into the attack list.
+  const isThrownConsumable = (item: AnyItem) => {
+    return item.type === 'consumable' && !!item.hasAttack;
+  };
+  // Spends one use of a consumable. Returns false when none are left.
+  const spendItem = (_id: string) => {
+    const item = items.value.find((item) => item._id === _id);
+    if (!item || Number(item.quantity) <= 0) return false;
+    item.quantity = Number(item.quantity) - 1;
+    return true;
+  };
+  // Gives back a use spent by spendItem (e.g. the roll failed to post).
+  const restoreItem = (_id: string) => {
+    const item = items.value.find((item) => item._id === _id);
+    if (item) item.quantity = Number(item.quantity) + 1;
   };
   const equipWeapon = (weapon: Weapon) => {
     if (!weapon) return;
@@ -165,26 +190,38 @@ export const useInventoryStore = defineStore('inventory', () => {
     const settings = useSettingsStore();
     const emptyItem: Item = {
       _id: uuidv4(),
-      slots: 1,
+      slots: newItem?.slots ?? 1,
       name: newItem ? newItem.name : '',
       description: newItem ? newItem.description : '',
       type: newItem ? newItem.type : '',
       quantity: newItem ? newItem.quantity : '',
-      cost: newItem.cost || ''
+      cost: newItem?.cost ?? '',
+      qualities: newItem?.qualities ?? '',
+      flaws: newItem?.flaws ?? '',
     };
-    if(newItem.type === 'weapon'){
+    const isThrown = newItem.type === 'consumable' && !!newItem.hasAttack;
+    if(isThrown){
+      Object.assign(emptyItem,{
+        hasAttack: true,
+        equipped: false,
+        configurable: false,
+      })
+    }
+    if(newItem.type === 'weapon' || isThrown){
       Object.assign(emptyItem,{
         damage: newItem ? newItem.damage : '',
         abilityScore: newItem ? newItem.abilityScore : '',
         weaponType: newItem ? newItem.weaponType : '',
         ability: newItem ? newItem.ability : '',
-        weaponGroup: newItem ? newItem.weaponGroup : '',
-        weaponGroupAbility:newItem ? newItem.weaponGroupAbility : '',
-        shortRange:newItem ? newItem.shortRange : '',
+        weaponGroup: newItem?.weaponGroup ?? '',
+        weaponGroupAbility: newItem?.weaponGroupAbility ?? '',
+		shortRange:newItem ? newItem.shortRange : '',
         longRange:newItem ? newItem.longRange : '',
         reload:newItem ? newItem.reload : '',
+        damageQualities: newItem?.damageQualities ?? '',
+        damageFlaws: newItem?.damageFlaws ?? '',
         minStr: newItem.minStr || 0,
-        configurable:true,
+        configurable: !isThrown,
       })
       if(settings.gameSystem === 'mage'){
         Object.assign(emptyItem,{
@@ -276,6 +313,8 @@ export const useInventoryStore = defineStore('inventory', () => {
 
     equipItem,
     unEquipItem,
+    spendItem,
+    restoreItem,
     swapItem,
     addItem,
     removeItem,

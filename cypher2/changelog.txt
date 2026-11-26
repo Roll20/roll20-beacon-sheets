@@ -1,0 +1,243 @@
+Cypher System 2 Character Sheet - Changelog
+============================================
+
+2026-11-24
+- Rolls from the sheet now show Roll20's 3D dice. Every roll made from the
+  sheet used to post its result to chat with no dice on the table, even with
+  3D dice turned on. Turn on "Enable 3D dice" in Roll20's settings to see them.
+
+2026-11-03
+- Token bars can now be pointed at most of the sheet instead of just the three
+  Pools. Open a token's settings, pick bar 1, 2 or 3, and the list of values now
+  includes your minor, moderate and major wounds as three separate bars, the
+  same three for a shield if you carry one, the Luck Pool, Stress points, where
+  you are on the damage track, how many recovery rolls you have left, how many
+  cyphers you are carrying against your limit, XP, Story XP, resource points,
+  your tier, your Effort and superhero rank.
+- Most of those bars can be typed into, and the number goes back onto the sheet.
+  Wounds, the shield, Luck, Stress, the damage track and the three XP-style
+  counters all work that way, the way the Pools already did. Clearing a bubble
+  or typing something that is not a number changes nothing, so a stray keystroke
+  in the middle of a fight cannot wipe a value.
+- A few are deliberately read-only, because a bar is a bad place to change them.
+  Tier and Effort are read-only so a mis-drag cannot quietly re-rank your
+  character. Recovery rolls are read-only because the slots are in order and a
+  single number cannot say which rest you spent. Cyphers carried counts your
+  rows, so it changes when you add or remove a cypher.
+- A wound bar fills up as you get hurt, the opposite of a Pool bar, because it
+  is counting the wounds you have taken rather than what you have left.
+- A value your character does not have reads as blank rather than as zero. A
+  shield you are not carrying, a Luck Pool you do not have, Stress or the damage
+  track at a table that does not use them, and a rank outside the superhero
+  genre all show nothing at all.
+- Anything you put on a bar can be read on the map by anyone allowed to see that
+  bar. That has always been true of Health on an NPC, and it is worth knowing now
+  that wounds, Stress and the damage track can go there too.
+
+2026-10-30
+- A character file that arrives with a rule switched off but numbers still in it
+  now keeps those numbers when you switch the rule on. That covers Stress points
+  and the damage track step. Before, turning the rule on wrote fresh starting
+  values over whatever the file carried, and there was no way to keep it. Because
+  nothing is thrown away any more, turning a rule on no longer asks twice.
+  Switching one off still throws its numbers away and still asks twice.
+- Exporting a character no longer refuses over a damaged value in the file it was
+  built from. A shield, pools, wounds, advancement or armor modifiers saved in the
+  wrong shape used to stop the whole export at that field.
+- A character whose list rows carry a damaged position now loads. One case could
+  silently drop a row, another could leave two rows fighting over one slot, and a
+  third could stall the sheet for over a minute per list. Rows now load in the
+  order their positions give, with anything unreadable last.
+- A Luck Pool whose name is blank in the file now reads "Luck" on the panel and on
+  the chat card. Before, the panel heading printed nothing and the card read
+  "Spent 3 - 1 Might, 2 " with nothing after it.
+- The d20 on the pool cards is taller, so it is easier to hit on a touch screen.
+  It matches the minimum size the cog and the other small controls already used.
+
+2026-10-29
+- The Attacks tab has a Roll initiative button above the list. Initiative is a
+  Speed task, so you could always roll it from the Speed pool, but you had to
+  know that and find it on the other side of the sheet in the middle of a fight.
+  The button opens the usual roller with Speed already chosen, and the card it
+  posts to chat says Initiative. You can still change the pool and pick a skill
+  the way you would for any other task.
+- The guided roller has a Situational hindrance counter, beside Assets and
+  Effort. It starts at 0 and leaving it alone changes nothing, so it works the
+  way Assets do. When the GM says a task is hindered two steps, set it to 2 and
+  both the preview and the chat card say so. It goes up to 10 and resets every
+  time the roller opens. The Magnus Archives Stress hindrances are unchanged and
+  still sit in their own group.
+- On a creature sheet, the Description's "Share description" button is now a
+  small send-to-chat icon sitting with the description itself, matching the
+  icons the creature's combat actions already use. It posts exactly what it
+  posted before.
+- Importing a character file written for a schema version this sheet does not
+  read used to say "Schema version: must be 2" directly beneath a hint saying
+  the sheet accepts versions 2 and 3. It now names both versions and the one the
+  file claims.
+- Dragging a compendium page that Roll20 has not filed under a category used to
+  refuse with "No Category pages can't be added to a sheet." It now says the
+  page is not filed under a category and to drag it from the category list.
+
+2026-10-26
+- A character with the Lucky descriptor now gets a Luck Pool. It sits as a
+  fourth panel below the three pool cards, with a Pool box, a Max box and the
+  descriptor's rule. Luck is never rolled on its own, so the panel has no d20
+  button.
+- The Luck Pool has a checkbox in the gear menu. Turning it off clears the Pool,
+  so the checkbox asks twice before it does anything.
+- The guided roller has a "Luck toward this roll" stepper above the Effort
+  steppers. You take the points from Luck first, and they raise what the action
+  can cost, so a level of Effort your stat Pool could not pay for on its own
+  becomes available. Nothing is spent until you roll, and a line near the bottom
+  shows what your Luck will be afterwards.
+- The roller's cost line and the chat card both name the two halves of what an
+  action costs, as in "1 Might, 1 Luck", with your Edge coming off the whole cost
+  once rather than off either share. A line below the card's gives your Luck
+  after the roll.
+- Luck reaching 0 does not move you down the damage track. Only the three stat
+  Pools do that.
+- A recovery roll's card states the rule that Luck refreshes by the same number
+  of points you restore to your other Pools, up to its maximum. The sheet does
+  not know how you split a recovery roll, so that arithmetic stays yours.
+- If your character file renames the Pool, the new name is used everywhere: the
+  panel, the roller's stepper and after-line, and every chat card.
+- The book's longer rules now sit behind a small arrow instead of being printed
+  in full. That covers the worn armor rule, the lines about moving on the damage
+  track, and the restrictions on burning a Stress level. Click the arrow to read
+  them, and click it again to put them away.
+- The checkbox behind the pencil that grants the Hurt step is now labelled HURT
+  STEP, to match the other labels in that panel. The two things that grant the
+  step, the Tough ability and the Never Says Die focus, moved into the Hurt
+  step's own note. Click the word Hurt to read it.
+
+2026-10-12
+- A game that uses The Magnus Archives Stress rules now gets a Stress column in
+  the Damage & Recovery panel. Click the pencil and tick Stress to turn it on.
+  The column has a Points row and a Supernatural levels row. Each has a minus
+  button, a box you can type in, and a plus button. Click a row's name to read
+  the book's rules for that row.
+- Ticking the Damage track or Stress checkbox on now asks twice as well. Before,
+  only switching one off did. A character can arrive from another sheet carrying
+  Stress points while the Stress rule is off, and turning the rule on there sets
+  those points back to zero. So the first click turns the label red and says what
+  it is about to clear, and only a second click turns the rule on. The 2026-09-30
+  entry below says this happens when you switch a rule off. It now happens in
+  both directions. It still asks only when that rule is holding something you
+  could lose, so a checkbox with nothing behind it flips on the first click.
+- The Points row also has a -3 button. Three points is one hour of rest, and
+  also exactly one Stress level.
+- A line under the Points row gives your Stress level and says how many steps
+  your actions are hindered. Every 3 points is one level. From four levels a
+  second line says each further level is also a serious injury and the character
+  moves one step down the damage track. The sheet never moves the track for you.
+  From ten supernatural levels a line says the character can take supernatural
+  type abilities and become an Avatar.
+- The Stress column has a Worn armor checkbox with the book's rule printed
+  beside it. Ticking it gives the character the Hurt step on the damage track,
+  and it hinders Speed tasks in the guided roller.
+- The damage track now has a Hurt step above Impaired. It appears when the
+  character wears armor, or when you tick the checkbox behind the pencil that
+  reads "Has the Hurt step: the Tough ability, or the Never Says Die focus".
+  Hurt imposes no penalties. Most characters skip it and go straight to
+  Impaired.
+- With the Stress rule on, the guided roller gains a Hindrances group. It holds
+  a stepper for how many Stress levels hinder this roll, capped at the levels
+  the character has. It holds a checkbox for worn armor hindering a Speed task,
+  ticked by default. It holds a checkbox to burn a Stress level, which eases the
+  roll one step, costs 3 points and lowers the hindrance cap. The GM owes you an
+  intrusion for a burn, and the roller says so beside the box.
+- The chat card names each of those terms, so you can see what hindered the roll
+  and what the burn cost. A burn also prints your Stress points and level after
+  the roll.
+- An ability row can carry a Stress cost. It shows beside the ability's Pool
+  cost, on the row and on the ability's chat card. The sheet records the cost and
+  does not spend it for you.
+- An impaired character now pays the damage track's extra Effort point per
+  level. One level costs 4 instead of 3, and two cost 7 instead of 5. The chat
+  card breaks the cost out, as in "5 + 2 impaired". A game with the damage track
+  off is unchanged.
+
+2026-09-30
+- The sheet now reads character files that use the Old Gods of Appalachia and
+  The Magnus Archives rules. Import one from Cypher Tools the same way you
+  always have.
+- A game that uses the damage track gets it in place of the wound boxes. The
+  Damage & Recovery panel lists Hale, Impaired, Debilitated and Dead. Click the
+  marker beside a step to say that is where your character is, and it fills in.
+  Click the step's name instead to read what that step does to the character. A
+  line under the track says how a character moves up and down it. The sheet never
+  moves the step for you.
+- To turn the track on or off, click the pencil on the Damage & Recovery panel
+  and use the Damage track checkbox. Turning it off brings the wound boxes back
+  with the values they had. It also forgets which step you were on, so turning
+  the track back on starts again at Hale.
+- Switching the Damage track or Stress checkbox off throws away what that rule
+  was holding: the step your character was on, or your Stress points and
+  supernatural levels. There is no way to get those back from the sheet, so the
+  checkbox now asks twice. The first click turns the label red and tells you what
+  it is about to clear, and only a second click does it. Use the other checkbox
+  instead, or close the pencil, and nothing is cleared. It asks only when there is
+  something to lose. A track still sitting at Hale, or Stress at zero, switches
+  off on the first click, the way the bullet above describes.
+- In a game that uses the damage track, a guided roll that spends Effort and
+  empties a Pool now says so on the chat card, because emptying a Pool moves a
+  character one step down the track. A game with the track off is unchanged and
+  gets no such line.
+
+2026-09-17
+- You can drag a page out of the Cypher compendium and drop it onto the sheet.
+  An ability, a skill, a cypher, an artifact or a piece of equipment lands as a
+  new row in the right list, the sheet switches to the tab holding that list, and
+  the new row is highlighted so you can see where it went. Drop the same page
+  twice and you get two rows, because the sheet does not assume a duplicate is a
+  mistake.
+- A page the sheet cannot turn into a row says so instead of doing nothing. A
+  focus or a type page tells you to pick it in the character's sentence. A page
+  with nothing for the sheet to read says the page is malformed. A page written
+  for a newer sheet says the sheet needs updating, and one written for an older
+  sheet says it cannot be read.
+- An NPC stat block refuses a drop, because its rows are not the character
+  lists.
+- A viewer who can see a character but cannot change it should not drag onto it.
+  The row appears for a moment and then disappears, because the server refuses
+  the change. Nothing is damaged and nothing is saved. This is a known rough
+  edge and it is being fixed.
+
+2026-09-16
+- A character renamed in the Roll20 journal keeps its new name. Before, the
+  next edit on the sheet could put the old name back. Portrait, bio and GM
+  notes changes stick the same way.
+- Importing the wrong file now says what it is. If you picked the Foundry
+  export in Cypher Tools, the sheet tells you to export again with the Roll20
+  option. Problems in a file are listed by field, and a refused export says
+  where on the sheet to fix it.
+
+2026-09-15
+- Attacks can now be rolled. Click the d20 beside an attack to open the guided
+  roller for it. Your training with the attack, a light weapon, and the
+  attack's modifier ease the roll automatically, and each one is listed so you
+  can see where the ease came from.
+- Enter the creature's level instead of a difficulty. The chat card says Hit or
+  Miss, and shows your damage only on a hit.
+- You can spend Effort on damage as well as on hitting. Each level adds 3
+  damage. Both kinds of Effort share one cost, so your Edge comes off once for
+  the attack.
+- A natural 17 or 18 adds its bonus damage to the total. On a 19 or 20 the card
+  offers a choice between the special effect and extra damage. A natural 20
+  refunds all the Effort you spent.
+
+2026-09-14
+- New characters now open the Settings window automatically the first time the
+  sheet is opened, so you can pick a skin and your roll options right away.
+  It only happens once per character. Characters you already have are not
+  affected.
+- GMs can turn any sheet into an NPC stat block. Open the gear menu and set
+  Sheet type to NPC. The card follows the Cypher GM's Guide, with level,
+  health, damage, armor, movement, combat actions, GM intrusions and more.
+  Switching back to Character keeps everything the sheet had.
+- An NPC's health can be linked to a token bar.
+- Only GMs see an NPC's stat block. Players see a short notice instead, but
+  keep NPC journal entries hidden from players, since the sheet only hides the
+  view.
+- GMs can export a creature to a file and import it onto another NPC sheet.

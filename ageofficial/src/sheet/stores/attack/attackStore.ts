@@ -17,6 +17,8 @@ interface Attack {
   description: string;
   ability:string;
   damage:string;
+  damageQualities?: string;
+  damageFlaws?: string;
   weaponGroup:string;
   weaponGroupAbility:string;
   shortRange:number | null;
@@ -115,24 +117,34 @@ export const useAttackStore = defineStore('attacks', () => {
   const printAttack = async (weapon: any, bonus?:number,focus?:any) => {
     if (!weapon) return;
     const settings = useSettingsStore();
-    const components = [
+    const isThrownItem = weapon.type === 'consumable' && !!weapon.hasAttack;
+    const components: any[] = [
       { label: `Base Roll`, sides: 6, count:3, alwaysShowInBreakdown: true },
-      { label: weapon.weaponGroupAbility, value: Number(bonus) },
-      { label: 'Focus', value: focus ? focus : 0 },
     ];
-    const aim = useSettingsStore().aim
-    if(useSettingsStore().aim){
+    // Thrown items (grenades) have no weapon group; a ranged throw rolls Accuracy (Grenades) and
+    // the caller supplies the Grenades focus. Melee throws get no ability or focus.
+    if(!isThrownItem || weapon.weaponGroupAbility){
+      components.push(
+        { label: weapon.weaponGroupAbility, value: Number(bonus) },
+        { label: 'Focus', value: focus ? focus : 0 },
+      );
+    }
+    if(useSettingsStore().aim && !isThrownItem){
       components.push(
         { label: 'Aim', value: useSettingsStore().aimValue  }
       )  
     }
-    if( powerFatiguePenalty.value > 0 && settings.userPowerFatigue){
+    if( powerFatiguePenalty.value > 0 && settings.usesPowerFatigue){
       components.push({ label: 'Power Fatigue', value: powerFatiguePenalty.value * -1 });
     }
     await rollToChat({
       characterName: useMetaStore().name,
       title: weapon.name,
-      rollType:'attack',
+      rollType: 'attack',
+      keyValues: {
+        'Damage Qualities': weapon.damageQualities || '',
+        'Damage Flaws': weapon.damageFlaws || '',
+      },
       components
     });
   };
@@ -141,7 +153,12 @@ export const useAttackStore = defineStore('attacks', () => {
     await sendToChat({
       title: weapon.name,
       subtitle: weapon.weaponType,
-      traits: ['Weapon Type: ' + weapon.weaponType, 'Weapon Group: ' + weapon.weaponGroup],
+      traits: [
+  'Weapon Type: ' + weapon.weaponType,
+  weapon.weaponGroup ? 'Weapon Group: ' + weapon.weaponGroup : '',
+  weapon.damageQualities ? 'Damage Qualities: ' + weapon.damageQualities : '',
+  weapon.damageFlaws ? 'Damage Flaws: ' + weapon.damageFlaws : '',
+].filter(Boolean),
       description: weapon.description,
     });
   }
@@ -192,15 +209,21 @@ export const useAttackStore = defineStore('attacks', () => {
     await rollToChat({
       characterName: useMetaStore().name,
       title: attack.name,
-      rollType:'damage',
+      rollType: 'damage',
+      keyValues: {
+        'Damage Qualities': attack.damageQualities || '',
+        'Damage Flaws': attack.damageFlaws || '',
+      },
       components
     });
-  }
+  };
   const setCurrentAttack = (_id: string) => {
     const attack = attacks.value.find((item) => item._id === _id);
     if (!attack) return;
     selectedAttack = attack;
   };
+
+  
   /*
    * Firebase is not able to store Arrays, so the items array must be stored as an object indexed by the _id
    * */

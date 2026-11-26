@@ -1,0 +1,183 @@
+/* Polices médiévales-fantasy de l'identité Enyllion */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Eagle+Lake&family=Macondo&display=swap');
+
+:root {
+  /* Palette parchemin */
+  --parchment: #d4a574;
+  --parchment-light: #e6c79c;
+  --parchment-frame: rgba(58, 38, 22, 0.10);
+  --ink: #1a1208;
+  --ink-soft: #4a3722;
+  --brown: #6b4a2b;
+  --brown-dark: #3a2616;
+  --gold: #8a5a2b;
+  --red: #9b0000;
+  --green: #1f7a1f;
+
+  /* Polices */
+  --font-title: 'Eagle Lake', serif;
+  --font-head: 'Cinzel Decorative', serif;
+  --font-label: 'Macondo', serif;
+  --font-body: 'Cinzel Decorative', serif;
+}
+
+body {
+  background-color: #2b1d10;
+  color: var(--ink);
+  width: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Conteneur racine de la fiche : fond parchemin + grain (repris du legacy) */
+.enyllion-sheet {
+  position: relative;
+  min-width: 640px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background-color: #d9b487;
+  background-clip: padding-box;
+  background-image:
+    /* Grain fin (fibres) */
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="7"/></filter><rect width="120" height="120" fill="%23000000" filter="url(%23g)" opacity="0.07"/></svg>');
+  background-size: 120px 120px;
+  background-repeat: repeat;
+  /* Bords uniformes (vignette retirée) */
+  /* Cadre déchiré (border-image 9-slice) : bords abîmés sur les 4 côtés,
+     les morsures laissent voir le fond grâce à background-clip: padding-box */
+  border: 16px solid transparent;
+  border-image: url('/images/parchemin-frame.svg') 34 round;
+}
+
+/* ---- Apparence commune des composants (thème parchemin) ---- */
+
+/* Cadres de sections */
+.enyllion-sheet .area {
+  background: var(--parchment-frame);
+  border: 1px solid var(--brown-dark);
+  border-radius: 0.6rem;
+  padding: 1rem;
+  min-width: 0; /* permet aux cartes de rétrécir dans une grille (sinon débordement) */
+}
+
+/* Empêche le débordement des grilles : les libellés/champs peuvent rétrécir
+   sous leur largeur intrinsèque, et les champs remplissent leur cellule. */
+.enyllion-sheet label {
+  min-width: 0;
+}
+.enyllion-sheet input,
+.enyllion-sheet select,
+.enyllion-sheet textarea {
+  min-width: 0;
+}
+
+/* Titres */
+.enyllion-sheet .section-title {
+  font-family: var(--font-title);
+  font-size: 1.4rem;
+  color: var(--ink);
+  text-align: center;
+  margin: 0 0 0.6rem;
+  border-bottom: 1px solid var(--brown);
+  padding-bottom: 0.3rem;
+}
+.enyllion-sheet .subtitle {
+  font-family: var(--font-head);
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink);
+  margin: 0.6rem 0 0.3rem;
+  text-transform: none;
+}
+
+/* Libellés de champs */
+.enyllion-sheet label {
+  font-family: var(--font-label);
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+/* Champs de saisie : transparents, bordure encre (comme le legacy) */
+.enyllion-sheet input,
+.enyllion-sheet select,
+.enyllion-sheet textarea {
+  background: rgba(255, 250, 235, 0.35);
+  color: var(--ink);
+  border: 1px solid var(--brown-dark);
+  border-radius: 0.25rem;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.enyllion-sheet input:focus,
+.enyllion-sheet select:focus,
+.enyllion-sheet textarea:focus {
+  outline: 1px solid var(--gold);
+  background: rgba(255, 250, 235, 0.6);
+}
+.enyllion-sheet input:disabled {
+  color: var(--ink);
+  opacity: 0.85;
+}
+/* Cache les flèches des champs nombre (rendu type texte, comme le legacy) */
+.enyllion-sheet input[type='number']::-webkit-outer-spin-button,
+.enyllion-sheet input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.enyllion-sheet input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Boutons de jet (dé) */
+.enyllion-sheet .roll-btn {
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-weight: 700;
+  background: var(--brown-dark);
+  color: var(--parchment-light);
+  border: 1px solid #000;
+  border-radius: 0.3rem;
+}
+.enyllion-sheet .roll-btn:hover {
+  background: var(--brown);
+}
+
+/* Variante « chuchoter au MJ » du bouton de jet */
+.enyllion-sheet .whisper-btn {
+  background: var(--brown);
+}
+.enyllion-sheet .whisper-btn:hover {
+  background: var(--gold);
+}
+
+/* Boutons d'ajout */
+.enyllion-sheet .add {
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-weight: 700;
+  background: var(--brown-dark);
+  color: var(--parchment-light);
+  border: 1px solid #000;
+  border-radius: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+}
+.enyllion-sheet .add:hover {
+  background: var(--brown);
+}
+
+/* Boutons de suppression */
+.enyllion-sheet .del {
+  cursor: pointer;
+  background: var(--red);
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 0.3rem;
+}
+.enyllion-sheet .del:hover {
+  filter: brightness(1.2);
+}

@@ -223,6 +223,10 @@ const damageRollArgs = computed((): DamageRollArgs => {
     rollName: action.name,
     subtitle: t('rolls.damage-roll'),
     damageRolls: action.damage,
+    abilityModifiers: Object.fromEntries(
+      Object.entries(store.getNpcModifiedAbilities(props.npcId).value)
+        .map(([ability, values]) => [ability, values.bonus.value.final]),
+    ),
     isCrit: lastAttackResult.value === 'crit-success',
     canCrit: action.isAttack,
     whisper: false,
