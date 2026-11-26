@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
-import { createI18n } from 'vue-i18n';
 import App from '@/App.vue';
 
 /** Mount the whole app shell in jsdom to catch any setup/render crash (blank-page guard). */
@@ -10,7 +9,7 @@ describe('App shell', () => {
 
   it('mounts without throwing and renders the header', () => {
     const wrapper = mount(App, {
-      global: { plugins: [createPinia(), createI18n({ legacy: false })] },
+      global: { plugins: [createPinia()] },
     });
     expect(wrapper.html()).toContain('Thread of Fate');
   });
@@ -30,7 +29,7 @@ describe('App shell', () => {
       }),
     );
     const wrapper = mount(App, {
-      global: { plugins: [createPinia(), createI18n({ legacy: false })] },
+      global: { plugins: [createPinia()] },
     });
     expect(wrapper.html()).toContain('Thread of Fate');
   });
