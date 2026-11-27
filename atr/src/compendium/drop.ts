@@ -1,5 +1,5 @@
 import { type DropOver } from "@roll20-official/beacon-sdk";
-import { onDropEquipment } from "./dropEquipment";
+import { onDropEquipment, onDropTool } from "./dropEquipment";
 import { onDropSpell } from "./dropSpell";
 import { type Character } from "@roll20-official/beacon-sdk";
 import { dispatchRef } from "@/relay/relay";
@@ -111,7 +111,7 @@ export const dropHandlers: Record<compendiumCategory, (ctx: DropContext) => void
   "Clothing": onDropEquipment,
   "Animals and Gear": onDropEquipment,
   "Drugs": onDropEquipment,
-  "Tools": onDropEquipment,
+  "Tools": onDropTool,
   "Vehicles": onDropEquipment,
   "Firearm Modifications": onDropEquipment,
   "Firearm Accessories": onDropEquipment,

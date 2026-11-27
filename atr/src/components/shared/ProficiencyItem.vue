@@ -1,6 +1,6 @@
 <template>
   <div class="proficiency-item">
-    <div>
+    <div class="proficiency-item__name">
       <SidebarLink
         componentName="SkillSidebar"
         :props="sidebarProps"
@@ -12,6 +12,16 @@
         :label="linkLabel"
         class="proficiency-item__label"
       />
+      <select
+        v-if="group === 'tools'"
+        class="proficiency-item__select"
+        :value="ability"
+        @change="$emit('update:ability', ($event.target as HTMLSelectElement).value as AbilityKey)"
+      >
+        <option v-for="key in abilityKeys" :key="key" :value="key">
+          {{ $t(`abbreviations.${key}`) }}
+        </option>
+      </select>
     </div>
     <div class="proficiency-item__proficiency">
       <!-- <select
@@ -91,7 +101,9 @@ const linkLabel = computed(() => {
   const baseLabel =
     props.group === 'tools' ? props.label : t(`titles.${props.group}.${props.label}`);
   const abilityAbbr = t(`abbreviations.${props.ability}`);
-  return props.group === 'savings' ? baseLabel : `${baseLabel} (${abilityAbbr})`;
+  return props.group === 'savings' || props.group === 'tools'
+    ? baseLabel
+    : `${baseLabel} (${abilityAbbr})`;
 });
 
 const sidebarProps = computed(() => ({
@@ -183,6 +195,11 @@ const rollArgs = computed(() => {
 <style lang="scss" scoped>
 .proficiency-item {
   display: contents;
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: var(--size-gap-small);
+  }
   &__label {
     min-width: 6rem;
     white-space: nowrap;
